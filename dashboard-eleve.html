@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Espace Élève - LearnHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- NAVBAR -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">📚</span>
+                    </div>
+                    <div>
+                        <div class="text-lg font-bold text-gray-900">Espace Élève</div>
+                        <div class="text-xs text-gray-500" id="userClasse">Chargement...</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="#" class="text-gray-600 hover:text-green-600 font-medium">Mes cours</a>
+                        <a href="#" class="text-gray-600 hover:text-green-600 font-medium">Exercices</a>
+                        <a href="#" class="text-gray-600 hover:text-green-600 font-medium">Progression</a>
+                    </div>
+                    
+                    <div class="relative">
+                        <button id="userMenuBtn" class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                <span id="userInitial">E</span>
+                            </div>
+                            <span class="hidden md:block font-medium" id="userName">Élève</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border">
+                            <a href="index.html" class="block px-4 py-2 hover:bg-gray-50">🏠 Accueil</a>
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-50">⚙️ Paramètres</a>
+                            <hr>
+                            <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">🚪 Déconnexion</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- STATS RAPIDES -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Bonjour <span id="userNameTitle">!</span> 👋</h1>
+            <p class="text-gray-600">Prêt à apprendre aujourd'hui ?</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-600 text-sm">Cours complétés</span>
+                    <span class="text-2xl">📖</span>
+                </div>
+                <div class="text-3xl font-bold text-gray-900" id="statCours">0</div>
+                <div class="text-xs text-green-600 mt-1">+2 cette semaine</div>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-600 text-sm">Exercices réussis</span>
+                    <span class="text-2xl">✅</span>
+                </div>
+                <div class="text-3xl font-bold text-gray-900" id="statExercices">0</div>
+                <div class="text-xs text-green-600 mt-1">+5 aujourd'hui</div>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-600 text-sm">Points XP</span>
+                    <span class="text-2xl">⭐</span>
+                </div>
+                <div class="text-3xl font-bold text-gray-900" id="statPoints">0</div>
+                <div class="text-xs text-green-600 mt-1">Niveau 5</div>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-600 text-sm">Série de jours</span>
+                    <span class="text-2xl">🔥</span>
+                </div>
+                <div class="text-3xl font-bold text-gray-900" id="statStreak">0</div>
+                <div class="text-xs text-green-600 mt-1">Continue comme ça!</div>
+            </div>
+        </div>
+
+        <!-- MATIÈRES -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Mes Matières</h2>
+                <select id="classeFilter" class="px-4 py-2 border border-gray-200 rounded-lg">
+                    <option value="">Toutes les matières</option>
+                </select>
+            </div>
+
+            <div id="matieresGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Les matières seront chargées ici -->
+                <div class="col-span-full text-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+                    <p class="text-gray-500">Chargement de vos matières...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROGRESSION RÉCENTE -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Progression Récente</h2>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div id="progressionList" class="space-y-4">
+                    <!-- La progression sera chargée ici -->
+                    <p class="text-gray-500 text-center py-8">Aucune progression pour le moment. Commence un cours !</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration Supabase
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        let currentUser = null
+        let userProfile = null
+
+        // Vérifier l'authentification
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser()
+            
+            if (!user) {
+                window.location.href = 'login.html'
+                return
+            }
+
+            currentUser = user
+
+            // Charger le profil
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single()
+
+            if (!profile || profile.type_parcours !== 'eleve') {
+                alert('Accès refusé. Cette page est réservée aux élèves.')
+                window.location.href = 'index.html'
+                return
+            }
+
+            userProfile = profile
+            
+            // Afficher les infos utilisateur
+            const prenom = profile.nom.split(' ')[0]
+            document.getElementById('userName').textContent = prenom
+            document.getElementById('userNameTitle').textContent = prenom
+            document.getElementById('userInitial').textContent = prenom.charAt(0).toUpperCase()
+            document.getElementById('userClasse').textContent = profile.niveau_actuel || 'Élève'
+
+            // Charger les données
+            loadStats()
+            loadMatieres()
+            loadProgression()
+        }
+
+        // Charger les statistiques
+        async function loadStats() {
+            try {
+                // Cours complétés
+                const { count: coursCount } = await supabase
+                    .from('progressions_cours')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', currentUser.id)
+                    .eq('est_termine', true)
+
+                document.getElementById('statCours').textContent = coursCount || 0
+
+                // Exercices réussis
+                const { count: exercicesCount } = await supabase
+                    .from('soumissions_exercices')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', currentUser.id)
+                    .eq('est_reussi', true)
+
+                document.getElementById('statExercices').textContent = exercicesCount || 0
+
+                // Points et streak
+                document.getElementById('statPoints').textContent = userProfile.points_total || 0
+                document.getElementById('statStreak').textContent = userProfile.streak_jours || 0
+
+            } catch (error) {
+                console.error('Erreur chargement stats:', error)
+            }
+        }
+
+        // Charger les matières
+        async function loadMatieres() {
+            try {
+                const { data: matieres, error } = await supabase
+                    .from('matieres')
+                    .select('*')
+                    .eq('type_parcours', 'eleve')
+                    .order('ordre', { ascending: true })
+
+                if (error) throw error
+
+                const grid = document.getElementById('matieresGrid')
+                
+                if (!matieres || matieres.length === 0) {
+                    grid.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-gray-500">Aucune matière disponible pour le moment.</p></div>'
+                    return
+                }
+
+                grid.innerHTML = matieres.map(matiere => `
+                    <div class="card-hover bg-white rounded-xl p-6 shadow-sm border border-gray-100 cursor-pointer" onclick="goToMatiere('${matiere.slug}')">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style="background-color: ${matiere.couleur}20;">
+                                ${getMatiereIcon(matiere.nom)}
+                            </div>
+                            <span class="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded-full">
+                                0/10 chapitres
+                            </span>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">${matiere.nom}</h3>
+                        <p class="text-sm text-gray-600 mb-4">${matiere.description || 'Découvrez cette matière'}</p>
+                        
+                        <!-- Progress bar -->
+                        <div class="mb-2">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">Progression</span>
+                                <span class="font-semibold text-green-600">0%</span>
+                            </div>
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-green-500 to-emerald-600" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full mt-4 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all">
+                            Commencer →
+                        </button>
+                    </div>
+                `).join('')
+
+            } catch (error) {
+                console.error('Erreur chargement matières:', error)
+                document.getElementById('matieresGrid').innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <p class="text-red-500">Erreur lors du chargement des matières</p>
+                    </div>
+                `
+            }
+        }
+
+        // Icônes pour les matières
+        function getMatiereIcon(nom) {
+            const icons = {
+                'Mathématiques': '📐',
+                'Français': '📝',
+                'Anglais': '🇬🇧',
+                'Sciences Physiques': '⚗️',
+                'SVT': '🌱',
+                'Histoire-Géo': '🌍'
+            }
+            return icons[nom] || '📚'
+        }
+
+        // Charger la progression
+        async function loadProgression() {
+            try {
+                const { data: progressions } = await supabase
+                    .from('progressions_cours')
+                    .select(`
+                        *,
+                        cours:cours(
+                            titre,
+                            chapitre:chapitres(
+                                titre,
+                                matiere:matieres(nom, couleur)
+                            )
+                        )
+                    `)
+                    .eq('user_id', currentUser.id)
+                    .order('updated_at', { ascending: false })
+                    .limit(5)
+
+                const container = document.getElementById('progressionList')
+
+                if (!progressions || progressions.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center py-8">Aucune progression pour le moment. Commence un cours !</p>'
+                    return
+                }
+
+                container.innerHTML = progressions.map(prog => `
+                    <div class="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition">
+                        <div class="flex-1">
+                            <div class="font-semibold text-gray-900">${prog.cours?.titre || 'Cours'}</div>
+                            <div class="text-sm text-gray-500">${prog.cours?.chapitre?.matiere?.nom || 'Matière'}</div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right">
+                                <div class="text-sm font-semibold text-green-600">${prog.progression_pourcentage}%</div>
+                                <div class="text-xs text-gray-500">${Math.floor(prog.temps_passe / 60)} min</div>
+                            </div>
+                            <button class="px-4 py-2 bg-green-100 text-green-700 font-semibold rounded-lg hover:bg-green-200 transition">
+                                Continuer
+                            </button>
+                        </div>
+                    </div>
+                `).join('')
+
+            } catch (error) {
+                console.error('Erreur chargement progression:', error)
+            }
+        }
+
+        // Navigation vers une matière
+        function goToMatiere(slug) {
+            window.location.href = `matiere.html?slug=${slug}`
+        }
+
+        // Menu utilisateur
+        document.getElementById('userMenuBtn').addEventListener('click', (e) => {
+            e.stopPropagation()
+            document.getElementById('userDropdown').classList.toggle('hidden')
+        })
+
+        document.addEventListener('click', () => {
+            document.getElementById('userDropdown').classList.add('hidden')
+        })
+
+        // Déconnexion
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabase.auth.signOut()
+            window.location.href = 'login.html'
+        })
+
+        // Initialisation
+        checkAuth()
+    </script>
+</body>
+</html>

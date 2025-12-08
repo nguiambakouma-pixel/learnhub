@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Direct</title></head>
+<body>
+    <h1>Test Firestore Direct</h1>
+    <div id="result"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWCoy_YUEHpw_K0-XR59CsGUgAm9u64xQ",
+            authDomain: "myclass-699b4.firebaseapp.com",
+            projectId: "myclass-699b4",
+            storageBucket: "myclass-699b4.firebasestorage.app",
+            messagingSenderId: "65232464261",
+            appId: "1:65232464261:web:457c35e894bef3f8883cec"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const result = document.getElementById('result');
+
+        async function test() {
+            try {
+                result.innerHTML += '<p>🔐 Connexion...</p>';
+                const cred = await signInWithEmailAndPassword(auth, "l@gmail.com", "123456");
+                result.innerHTML += '<p>✅ Connecté: ' + cred.user.uid + '</p>';
+
+                result.innerHTML += '<p>📖 Lecture Firestore...</p>';
+                
+                // IMPORTANT : Forcer la connexion online
+                const userDoc = await getDoc(doc(db, "users", cred.user.uid));
+                
+                if (userDoc.exists()) {
+                    result.innerHTML += '<p>✅ DOCUMENT TROUVÉ !</p>';
+                    result.innerHTML += '<pre>' + JSON.stringify(userDoc.data(), null, 2) + '</pre>';
+                } else {
+                    result.innerHTML += '<p>❌ Document n\'existe pas</p>';
+                }
+
+            } catch (error) {
+                result.innerHTML += '<p style="color:red">❌ ' + error.code + '</p>';
+                result.innerHTML += '<p style="color:red">' + error.message + '</p>';
+            }
+        }
+
+        test();
+    </script>
+</body>
+</html>
+```
+
+Remplacez `"votre-mot-de-passe"` par le vrai mot de passe, testez et dites-moi le résultat.
+
+---
+
+### **Solution 4 : Le vrai problème - Config Firebase**
+
+Le message d'erreur suggère d'aller sur :
+```
+https://console.cloud.google.com/datastore/setup?project=myclass-699b4

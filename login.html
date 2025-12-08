@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - LearnHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full">
+            <!-- Logo -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center space-x-3 mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <span class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">LearnHub</span>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900" id="formTitle">Connexion</h2>
+                <p class="mt-2 text-gray-600">Accédez à votre espace d'apprentissage</p>
+            </div>
+
+            <!-- Formulaire -->
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <!-- Tabs -->
+                <div class="flex mb-8 bg-gray-100 rounded-lg p-1">
+                    <button id="loginTab" class="flex-1 py-2 px-4 rounded-md font-semibold transition-all bg-white text-purple-600 shadow-sm">
+                        Connexion
+                    </button>
+                    <button id="signupTab" class="flex-1 py-2 px-4 rounded-md font-semibold transition-all text-gray-600">
+                        Inscription
+                    </button>
+                </div>
+
+                <!-- Message d'erreur/succès -->
+                <div id="message" class="hidden mb-4 p-4 rounded-lg"></div>
+
+                <!-- Formulaire de connexion -->
+                <form id="loginForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="loginEmail" required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                            placeholder="votre@email.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+                        <input type="password" id="loginPassword" required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                            placeholder="••••••••">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                            <span class="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
+                        </label>
+                        <button type="button" id="forgotPassword" class="text-sm text-purple-600 hover:text-purple-700 font-medium">
+                            Mot de passe oublié?
+                        </button>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
+                        Se connecter
+                    </button>
+                </form>
+
+                <!-- Formulaire d'inscription -->
+                <form id="signupForm" class="space-y-6 hidden">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
+                        <input type="text" id="signupName" required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                            placeholder="Jean Dupont">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="signupEmail" required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                            placeholder="votremail@gmail.com">
+                        <p class="text-xs text-amber-600 mt-1">⚠️ Utilisez un vrai email (pas de test@..., teste@..., etc.)</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+                        <input type="password" id="signupPassword" required minlength="6"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                            placeholder="Minimum 6 caractères">
+                        <p class="text-xs text-gray-500 mt-1">Minimum 6 caractères</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Parcours</label>
+                        <select id="signupParcours" required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition">
+                            <option value="">Choisissez votre parcours</option>
+                            <option value="eleve">Collégien / Lycéen</option>
+                            <option value="dev-web">Développeur Web</option>
+                            <option value="designer">Designer UI/UX</option>
+                        </select>
+                    </div>
+                    <div id="classeField" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Classe</label>
+                        <select id="signupClasse"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition">
+                            <option value="">Sélectionnez votre classe</option>
+                            <option value="6eme">6ème</option>
+                            <option value="5eme">5ème</option>
+                            <option value="4eme">4ème</option>
+                            <option value="3eme">3ème</option>
+                            <option value="2nde">2nde</option>
+                            <option value="1ere">1ère</option>
+                            <option value="terminale">Terminale</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
+                        Créer mon compte
+                    </button>
+                </form>
+
+                <!-- Divider -->
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-4 bg-white text-gray-500">Ou continuer avec</span>
+                    </div>
+                </div>
+
+                <!-- Social Login -->
+                <div class="grid grid-cols-2 gap-4">
+                    <button class="flex items-center justify-center px-4 py-3 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                        <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Google
+                    </button>
+                    <button class="flex items-center justify-center px-4 py-3 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lien retour -->
+            <div class="text-center mt-6">
+                <a href="index.html" class="text-purple-600 hover:text-purple-700 font-medium">
+                    ← Retour à l'accueil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration Supabase
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
+        
+        // Créer le client Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        
+        console.log('✅ Supabase initialized:', supabase)
+
+        // Éléments
+        const loginTab = document.getElementById('loginTab')
+        const signupTab = document.getElementById('signupTab')
+        const loginForm = document.getElementById('loginForm')
+        const signupForm = document.getElementById('signupForm')
+        const formTitle = document.getElementById('formTitle')
+        const messageDiv = document.getElementById('message')
+        const signupParcours = document.getElementById('signupParcours')
+        const classeField = document.getElementById('classeField')
+
+        // Fonction d'affichage de message
+        function showMessage(message, isError = false) {
+            messageDiv.textContent = message
+            messageDiv.className = `mb-4 p-4 rounded-lg ${isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`
+            messageDiv.classList.remove('hidden')
+            setTimeout(() => messageDiv.classList.add('hidden'), 5000)
+        }
+
+        // Switch entre Login et Signup
+        loginTab.addEventListener('click', (e) => {
+            e.preventDefault()
+            console.log('🔄 Switch to Login')
+            loginTab.classList.add('bg-white', 'text-purple-600', 'shadow-sm')
+            loginTab.classList.remove('text-gray-600')
+            signupTab.classList.remove('bg-white', 'text-purple-600', 'shadow-sm')
+            signupTab.classList.add('text-gray-600')
+            loginForm.classList.remove('hidden')
+            signupForm.classList.add('hidden')
+            formTitle.textContent = 'Connexion'
+        })
+
+        signupTab.addEventListener('click', (e) => {
+            e.preventDefault()
+            console.log('🔄 Switch to Signup')
+            signupTab.classList.add('bg-white', 'text-purple-600', 'shadow-sm')
+            signupTab.classList.remove('text-gray-600')
+            loginTab.classList.remove('bg-white', 'text-purple-600', 'shadow-sm')
+            loginTab.classList.add('text-gray-600')
+            signupForm.classList.remove('hidden')
+            loginForm.classList.add('hidden')
+            formTitle.textContent = 'Inscription'
+        })
+
+        // Afficher le champ classe si parcours élève
+        signupParcours.addEventListener('change', () => {
+            console.log('📚 Parcours changed:', signupParcours.value)
+            if (signupParcours.value === 'eleve') {
+                classeField.classList.remove('hidden')
+            } else {
+                classeField.classList.add('hidden')
+            }
+        })
+
+        // Connexion
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault()
+            console.log('🔐 Login attempt')
+            
+            const email = document.getElementById('loginEmail').value
+            const password = document.getElementById('loginPassword').value
+            
+            const btn = loginForm.querySelector('button[type="submit"]')
+            btn.disabled = true
+            btn.textContent = 'Connexion...'
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                })
+                
+                if (error) throw error
+                
+                console.log('✅ Login success:', data)
+                console.log('User ID:', data.user.id)
+                showMessage('Connexion réussie! Redirection...')
+                
+                // Attendre un peu pour que la session soit bien établie
+                await new Promise(resolve => setTimeout(resolve, 500))
+                
+                // Récupérer le profil pour rediriger vers le bon dashboard
+                console.log('📊 Fetching profile...')
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('type_parcours, nom, niveau_actuel')
+                    .eq('id', data.user.id)
+                    .single()
+                
+                console.log('Profile result:', profile, 'Error:', profileError)
+                
+                if (profileError) {
+                    console.error('❌ Profile error:', profileError)
+                    showMessage('Profil introuvable. Veuillez contacter le support.', true)
+                    btn.disabled = false
+                    btn.textContent = 'Se connecter'
+                    return
+                }
+                
+                if (!profile || !profile.type_parcours) {
+                    console.error('❌ No profile or type_parcours found')
+                    showMessage('Profil incomplet. Redirection vers l\'accueil...', true)
+                    setTimeout(() => {
+                        window.location.href = 'index.html'
+                    }, 1500)
+                    return
+                }
+                
+                // Redirection intelligente selon le type de parcours
+                console.log('🎯 Redirecting to:', profile.type_parcours)
+                setTimeout(() => {
+                    switch(profile.type_parcours) {
+                        case 'eleve':
+                            console.log('→ Going to dashboard-eleve.html')
+                            window.location.href = 'dashboard-eleve.html'
+                            break
+                        case 'dev-web':
+                            console.log('→ Going to dashboard-dev.html')
+                            window.location.href = 'dashboard-dev.html'
+                            break
+                        case 'designer':
+                            console.log('→ Going to dashboard-designer.html')
+                            window.location.href = 'dashboard-designer.html'
+                            break
+                        default:
+                            console.warn('⚠️ Unknown type_parcours:', profile.type_parcours)
+                            window.location.href = 'index.html'
+                    }
+                }, 1000)
+            } catch (error) {
+                console.error('❌ Login error:', error)
+                showMessage(error.message || 'Erreur de connexion', true)
+                btn.disabled = false
+                btn.textContent = 'Se connecter'
+            }
+        })
+
+        // Inscription
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault()
+            console.log('📝 Signup attempt')
+            
+            const nom = document.getElementById('signupName').value
+            const email = document.getElementById('signupEmail').value.trim().toLowerCase()
+            const password = document.getElementById('signupPassword').value
+            const typeParcours = document.getElementById('signupParcours').value
+            const niveau = document.getElementById('signupClasse').value || 'debutant'
+            
+            // Validation
+            if (!typeParcours) {
+                showMessage('Veuillez choisir un parcours', true)
+                return
+            }
+            
+            // Vérifier le format de l'email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            if (!emailRegex.test(email)) {
+                showMessage('Format d\'email invalide', true)
+                return
+            }
+            
+            if (password.length < 6) {
+                showMessage('Le mot de passe doit contenir au moins 6 caractères', true)
+                return
+            }
+            
+            const btn = signupForm.querySelector('button[type="submit"]')
+            btn.disabled = true
+            btn.textContent = 'Création...'
+            
+            try {
+                console.log('📧 Tentative d\'inscription avec:', email)
+                
+                // 1. Créer le compte avec emailRedirectTo pour éviter l'erreur de validation
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            nom,
+                            type_parcours: typeParcours,
+                            niveau_actuel: niveau
+                        },
+                        emailRedirectTo: `${window.location.origin}/login.html`
+                    }
+                })
+                
+                if (authError) {
+                    console.error('❌ Auth error details:', authError)
+                    
+                    // Messages d'erreur plus explicites
+                    if (authError.message.includes('invalid')) {
+                        throw new Error('Email invalide. Veuillez utiliser un vrai email (ex: votremail@gmail.com)')
+                    } else if (authError.message.includes('already registered')) {
+                        throw new Error('Cet email est déjà enregistré. Essayez de vous connecter.')
+                    } else {
+                        throw authError
+                    }
+                }
+                
+                console.log('✅ User created:', authData)
+                
+                // 2. Créer le profil si l'utilisateur existe
+                if (authData.user) {
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .insert({
+                            id: authData.user.id,
+                            nom,
+                            email,
+                            type_parcours: typeParcours,
+                            niveau_actuel: niveau,
+                            created_at: new Date().toISOString()
+                        })
+                    
+                    if (profileError) {
+                        console.warn('⚠️ Profile creation error:', profileError)
+                        // On continue même si le profil n'est pas créé
+                    } else {
+                        console.log('✅ Profile created')
+                    }
+                }
+                
+                // Message de succès
+                if (authData.user && authData.user.identities && authData.user.identities.length === 0) {
+                    // Email déjà utilisé mais pas confirmé
+                    showMessage('Cet email existe déjà. Vérifiez votre boîte mail pour confirmer votre compte.')
+                } else {
+                    showMessage('✅ Compte créé! Vérifiez votre email pour confirmer votre inscription, puis connectez-vous.')
+                }
+                
+                setTimeout(() => {
+                    loginTab.click()
+                    signupForm.reset()
+                }, 3000)
+            } catch (error) {
+                console.error('❌ Signup error:', error)
+                showMessage(error.message || 'Erreur lors de l\'inscription. Utilisez un email valide.', true)
+            }
+            
+            btn.disabled = false
+            btn.textContent = 'Créer mon compte'
+        })
+
+        // Mot de passe oublié
+        document.getElementById('forgotPassword').addEventListener('click', async () => {
+            const email = document.getElementById('loginEmail').value
+            if (!email) {
+                showMessage('Veuillez entrer votre email d\'abord', true)
+                return
+            }
+            
+            try {
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: `${window.location.origin}/reset-password.html`
+                })
+                
+                if (error) throw error
+                
+                showMessage('Email de réinitialisation envoyé!')
+            } catch (error) {
+                console.error('❌ Reset password error:', error)
+                showMessage(error.message || 'Erreur', true)
+            }
+        })
+
+        console.log('✅ Login page initialized')
+    </script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Dashboard - LearnHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
+        .gradient-dev { background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%); }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- NAVBAR -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">💻</span>
+                    </div>
+                    <div>
+                        <div class="text-lg font-bold text-gray-900">Dev Dashboard</div>
+                        <div class="text-xs text-gray-500">Développeur Web</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-6">
+                        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium">Parcours</a>
+                        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium">Projets</a>
+                        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium">Communauté</a>
+                    </div>
+                    
+                    <div class="relative">
+                        <button id="userMenuBtn" class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                <span id="userInitial">D</span>
+                            </div>
+                            <span class="hidden md:block font-medium" id="userName">Dev</span>
+                        </button>
+                        
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border">
+                            <a href="index.html" class="block px-4 py-2 hover:bg-gray-50">🏠 Accueil</a>
+                            <a href="#" class="block px-4 py-2 hover:bg-gray-50">⚙️ Paramètres</a>
+                            <hr>
+                            <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">🚪 Déconnexion</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HEADER WITH STATS -->
+    <div class="gradient-dev py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <div class="text-white mb-6 md:mb-0">
+                    <h1 class="text-4xl font-bold mb-2">Hey <span id="userNameHeader">Developer</span>! 👨‍💻</h1>
+                    <p class="text-blue-100 text-lg">Construisons quelque chose d'incroyable aujourd'hui</p>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <div class="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg text-white">
+                        <div class="text-2xl font-bold" id="statStreak">0</div>
+                        <div class="text-xs text-blue-100">Jours de code</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg text-white">
+                        <div class="text-2xl font-bold" id="statProjects">0</div>
+                        <div class="text-xs text-blue-100">Projets terminés</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-white">
+                    <div class="text-3xl font-bold" id="statCourses">0</div>
+                    <div class="text-sm text-blue-100">Cours complétés</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-white">
+                    <div class="text-3xl font-bold" id="statHours">0h</div>
+                    <div class="text-sm text-blue-100">Temps de code</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-white">
+                    <div class="text-3xl font-bold" id="statXP">0</div>
+                    <div class="text-sm text-blue-100">Points XP</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-white">
+                    <div class="text-3xl font-bold" id="statLevel">1</div>
+                    <div class="text-sm text-blue-100">Niveau</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- PARCOURS D'APPRENTISSAGE -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Ton Parcours d'Apprentissage</h2>
+            
+            <div id="parcoursContainer" class="space-y-4">
+                <!-- Parcours sera chargé ici -->
+                <div class="text-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <p class="text-gray-500">Chargement de ton parcours...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TECHNOLOGIES -->
+        <div class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Technologies à Maîtriser</h2>
+                <select id="difficultyFilter" class="px-4 py-2 border border-gray-200 rounded-lg">
+                    <option value="">Tous les niveaux</option>
+                    <option value="debutant">Débutant</option>
+                    <option value="intermediaire">Intermédiaire</option>
+                    <option value="avance">Avancé</option>
+                </select>
+            </div>
+
+            <div id="techGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Technologies seront chargées ici -->
+            </div>
+        </div>
+
+        <!-- PROJETS EN COURS -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Projets en Cours</h2>
+            
+            <div id="projectsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
+                    <div class="text-6xl mb-4">🚀</div>
+                    <h3 class="font-bold text-gray-900 mb-2">Commence ton premier projet!</h3>
+                    <p class="text-gray-600 mb-4">Mets en pratique tes compétences</p>
+                    <button class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700">
+                        Voir les projets
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        let currentUser = null
+        let userProfile = null
+
+        async function checkAuth() {
+            const { data: { user } } = await supabase.auth.getUser()
+            
+            if (!user) {
+                window.location.href = 'login.html'
+                return
+            }
+
+            currentUser = user
+
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single()
+
+            if (!profile || profile.type_parcours !== 'dev-web') {
+                alert('Accès refusé. Cette page est réservée aux développeurs web.')
+                window.location.href = 'index.html'
+                return
+            }
+
+            userProfile = profile
+            
+            const prenom = profile.nom.split(' ')[0]
+            document.getElementById('userName').textContent = prenom
+            document.getElementById('userNameHeader').textContent = prenom
+            document.getElementById('userInitial').textContent = prenom.charAt(0).toUpperCase()
+
+            loadStats()
+            loadParcours()
+            loadTechnologies()
+        }
+
+        async function loadStats() {
+            try {
+                const { count: coursCount } = await supabase
+                    .from('progressions_cours')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', currentUser.id)
+                    .eq('est_termine', true)
+
+                document.getElementById('statCourses').textContent = coursCount || 0
+
+                const { data: progressions } = await supabase
+                    .from('progressions_cours')
+                    .select('temps_passe')
+                    .eq('user_id', currentUser.id)
+
+                const totalSeconds = progressions?.reduce((acc, p) => acc + (p.temps_passe || 0), 0) || 0
+                document.getElementById('statHours').textContent = Math.floor(totalSeconds / 3600) + 'h'
+
+                document.getElementById('statXP').textContent = userProfile.points_total || 0
+                document.getElementById('statStreak').textContent = userProfile.streak_jours || 0
+                document.getElementById('statLevel').textContent = Math.floor((userProfile.points_total || 0) / 100) + 1
+
+            } catch (error) {
+                console.error('Erreur chargement stats:', error)
+            }
+        }
+
+        async function loadParcours() {
+            try {
+                const { data: matieres } = await supabase
+                    .from('matieres')
+                    .select('*')
+                    .eq('type_parcours', 'dev-web')
+                    .order('ordre', { ascending: true })
+
+                const container = document.getElementById('parcoursContainer')
+                
+                if (!matieres || matieres.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center py-12">Aucun parcours disponible</p>'
+                    return
+                }
+
+                container.innerHTML = matieres.map((matiere, index) => `
+                    <div class="card-hover bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4 flex-1">
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">
+                                    ${getTechIcon(matiere.nom)}
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-gray-900 text-lg">${matiere.nom}</h3>
+                                    <p class="text-sm text-gray-600">${matiere.description || ''}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-right mr-4">
+                                    <div class="text-sm font-semibold text-blue-600">0%</div>
+                                    <div class="text-xs text-gray-500">Progression</div>
+                                </div>
+                                <button onclick="goToMatiere('${matiere.slug}')" class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
+                                    Commencer
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress bar -->
+                        <div class="mt-4">
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-600" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')
+
+            } catch (error) {
+                console.error('Erreur chargement parcours:', error)
+            }
+        }
+
+        async function loadTechnologies() {
+            const technologies = [
+                { name: 'HTML5', icon: '📄', color: 'orange', level: 'Débutant' },
+                { name: 'CSS3', icon: '🎨', color: 'blue', level: 'Débutant' },
+                { name: 'JavaScript', icon: '⚡', color: 'yellow', level: 'Intermédiaire' },
+                { name: 'React', icon: '⚛️', color: 'cyan', level: 'Intermédiaire' },
+                { name: 'Node.js', icon: '🟢', color: 'green', level: 'Intermédiaire' },
+                { name: 'Git & GitHub', icon: '🐙', color: 'purple', level: 'Débutant' }
+            ]
+
+            const grid = document.getElementById('techGrid')
+            grid.innerHTML = technologies.map(tech => `
+                <div class="card-hover bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <div class="text-4xl mb-3">${tech.icon}</div>
+                    <h3 class="font-bold text-gray-900 mb-2">${tech.name}</h3>
+                    <span class="px-3 py-1 bg-${tech.color}-100 text-${tech.color}-700 text-xs font-semibold rounded-full">
+                        ${tech.level}
+                    </span>
+                    <div class="mt-4 w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-blue-500" style="width: ${Math.random() * 60}%"></div>
+                    </div>
+                </div>
+            `).join('')
+        }
+
+        function getTechIcon(nom) {
+            const icons = {
+                'HTML & CSS': '📄',
+                'JavaScript': '⚡',
+                'React': '⚛️',
+                'Node.js': '🟢',
+                'Bases de données': '🗄️'
+            }
+            return icons[nom] || '💻'
+        }
+
+        function goToMatiere(slug) {
+            window.location.href = `matiere.html?slug=${slug}`
+        }
+
+        document.getElementById('userMenuBtn').addEventListener('click', (e) => {
+            e.stopPropagation()
+            document.getElementById('userDropdown').classList.toggle('hidden')
+        })
+
+        document.addEventListener('click', () => {
+            document.getElementById('userDropdown').classList.add('hidden')
+        })
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabase.auth.signOut()
+            window.location.href = 'login.html'
+        })
+
+        checkAuth()
+    </script>
+</body>
+</html>
