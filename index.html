@@ -3,1012 +3,528 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LearnHub - Apprendre autrement</title>
+    <title>LearnHub - Plateforme d'Apprentissage en Ligne</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .gradient-hero {
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-hero { 
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
-        .card-hover {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
         .card-hover:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
-        
-        .floating {
-            animation: floating 3s ease-in-out infinite;
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
         }
-        
-        @keyframes floating {
+        @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
         }
-        
-        .fade-in {
-            animation: fadeIn 0.6s ease-out forwards;
-            opacity: 0;
-        }
-        
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .stagger-1 { animation-delay: 0.1s; }
-        .stagger-2 { animation-delay: 0.2s; }
-        .stagger-3 { animation-delay: 0.3s; }
-        
-        .progress-ring {
-            transition: stroke-dashoffset 0.5s ease;
-        }
-        
-        /* Navbar glass effect */
-        .nav-glass {
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.9);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 5px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-        
-        .tooltip {
-            position: relative;
-        }
-        
-        .tooltip::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1f2937;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        
-        .tooltip:hover::after {
-            opacity: 1;
-        }
-        
-        /* Skeleton loader */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-        
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
-    
-    <!-- NAVBAR STICKY -->
-    <nav class="nav-glass fixed w-full top-0 z-50">
+<body class="bg-gradient-to-br from-slate-50 via-white to-blue-50">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-md shadow-sm z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
+            <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
                 <div class="flex items-center space-x-3 cursor-pointer">
-                    <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                         </svg>
                     </div>
-                    <span class="text-xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">LearnHub</span>
+                    <span class="text-2xl font-bold gradient-text">LearnHub</span>
                 </div>
-                
-                <!-- Menu Desktop -->
+
+                <!-- Nav Links - Desktop -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="#parcours" class="text-gray-700 hover:text-purple-600 font-medium transition-all relative group">
-                        Parcours
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-600 transition-all group-hover:w-full"></span>
-                    </a>
-                    <a href="#cours" class="text-gray-700 hover:text-purple-600 font-medium transition-all relative group">
-                        Catalogue
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-600 transition-all group-hover:w-full"></span>
-                    </a>
-                    <a href="#communaute" class="text-gray-700 hover:text-purple-600 font-medium transition-all relative group">
-                        Communauté
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-600 transition-all group-hover:w-full"></span>
-                    </a>
-                    <a href="#tarifs" class="text-gray-700 hover:text-purple-600 font-medium transition-all relative group">
-                        Tarifs
-                        <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-600 transition-all group-hover:w-full"></span>
-                    </a>
+                    <a href="#parcours" class="text-gray-700 hover:text-purple-600 font-medium transition">Parcours</a>
+                    <a href="#fonctionnalites" class="text-gray-700 hover:text-purple-600 font-medium transition">Fonctionnalités</a>
+                    <a href="#statistiques" class="text-gray-700 hover:text-purple-600 font-medium transition">Statistiques</a>
+                    <a href="#contact" class="text-gray-700 hover:text-purple-600 font-medium transition">Contact</a>
                 </div>
-                
-                <!-- Auth Buttons -->
-                <div class="hidden md:flex items-center space-x-4" id="authButtons">
-                    <a href="login.html" class="px-5 py-2 text-purple-600 font-semibold hover:bg-purple-50 rounded-lg transition-all">
+
+                <!-- CTA Buttons -->
+                <div class="flex items-center space-x-4">
+                    <a href="login.html" class="hidden sm:block text-gray-700 font-semibold hover:text-purple-600 transition">
                         Connexion
                     </a>
-                    <a href="login.html" class="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition-all">
-                        Commencer gratuitement
-                    </a>
-                </div>
-        
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
-            <div class="px-4 py-4 space-y-3">
-                <a href="#parcours" class="block py-2 text-gray-700 hover:text-purple-600 font-medium">Parcours</a>
-                <a href="#cours" class="block py-2 text-gray-700 hover:text-purple-600 font-medium">Catalogue</a>
-                <a href="#communaute" class="block py-2 text-gray-700 hover:text-purple-600 font-medium">Communauté</a>
-                <a href="#tarifs" class="block py-2 text-gray-700 hover:text-purple-600 font-medium">Tarifs</a>
-                <div class="pt-3 space-y-2">
-                    <button class="w-full px-4 py-2 text-purple-600 font-semibold border-2 border-purple-600 rounded-lg hover:bg-purple-50">
-                        Connexion
-                    </button>
-                    <button class="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg">
+                    <a href="register.html" class="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all transform hover:scale-105">
                         S'inscrire
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
     </nav>
-    
-    <!-- HERO SECTION -->
-    <section class="gradient-hero pt-32 pb-20 mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
                 <!-- Left Content -->
-                <div class="text-white space-y-8 fade-in" style="transform: translateY(20px);">
-                    <div class="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
-                        ✨ Plus de 10,000 étudiants nous font confiance
+                <div class="space-y-8">
+                    <div class="inline-flex items-center space-x-2 px-4 py-2 bg-purple-50 rounded-full border border-purple-200">
+                        <span class="w-2 h-2 bg-purple-600 rounded-full animate-pulse"></span>
+                        <span class="text-purple-700 font-semibold text-sm">Plateforme 100% gratuite</span>
                     </div>
-                    <h1 class="text-5xl lg:text-6xl font-bold leading-tight">
-                        Apprenez à votre rythme,<br>
-                        <span class="text-yellow-300">réussissez</span> ensemble
+                    
+                    <h1 class="text-5xl lg:text-6xl font-black text-gray-900 leading-tight">
+                        Apprenez à votre
+                        <span class="gradient-text block">rythme, brillez</span>
+                        à votre façon
                     </h1>
-                    <p class="text-xl text-purple-100">
-                        Une plateforme complète pour les collégiens, développeurs web et designers en herbe. Des cours interactifs, des projets réels et une communauté bienveillante.
+                    
+                    <p class="text-xl text-gray-600 leading-relaxed">
+                        Rejoignez des milliers d'étudiants, développeurs et designers qui transforment leur passion en compétences avec LearnHub.
                     </p>
-                    
-                    <!-- CTA Buttons -->
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <button class="px-8 py-4 bg-white text-purple-600 font-bold rounded-xl hover:shadow-2xl hover:scale-105 transition-all">
-                            Commencer maintenant
-                            <span class="ml-2">→</span>
-                        </button>
-                        <button class="px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-bold rounded-xl border-2 border-white/30 hover:bg-white/20 transition-all">
-                            Voir la démo
-                            <span class="ml-2">▶</span>
-                        </button>
-                    </div>
-                    
+
                     <!-- Stats -->
-                    <div class="grid grid-cols-3 gap-6 pt-8">
-                        <div class="fade-in stagger-1" style="transform: translateY(20px);">
-                            <div class="text-4xl font-bold" id="statsStudents">10K+</div>
-                            <div class="text-purple-200">Étudiants</div>
+                    <div class="grid grid-cols-3 gap-6 pt-4">
+                        <div>
+                            <div class="text-3xl font-bold text-gray-900">2000+</div>
+                            <div class="text-sm text-gray-600">Étudiants actifs</div>
                         </div>
-                        <div class="fade-in stagger-2" style="transform: translateY(20px);">
-                            <div class="text-4xl font-bold" id="statsCourses">150+</div>
-                            <div class="text-purple-200">Cours</div>
+                        <div>
+                            <div class="text-3xl font-bold text-gray-900">150+</div>
+                            <div class="text-sm text-gray-600">Cours disponibles</div>
                         </div>
-                        <div class="fade-in stagger-3" style="transform: translateY(20px);">
-                            <div class="text-4xl font-bold" id="statsProjects">2K+</div>
-                            <div class="text-purple-200">Projets</div>
+                        <div>
+                            <div class="text-3xl font-bold text-gray-900">95%</div>
+                            <div class="text-sm text-gray-600">Taux de satisfaction</div>
                         </div>
+                    </div>
+
+                    <!-- CTA -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                        <a href="register.html" class="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:shadow-xl transition-all transform hover:scale-105 text-center">
+                            Commencer gratuitement
+                        </a>
+                        <a href="#parcours" class="px-8 py-4 bg-white border-2 border-gray-200 text-gray-900 font-bold rounded-xl hover:border-purple-600 hover:text-purple-600 transition-all text-center">
+                            Découvrir les parcours
+                        </a>
                     </div>
                 </div>
-                
+
                 <!-- Right Illustration -->
-                <div class="relative hidden lg:block">
-                    <div class="floating">
-                        <div class="bg-white rounded-3xl shadow-2xl p-8">
-                            <div class="flex items-center space-x-4 mb-6">
-                                <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full"></div>
-                                <div class="flex-1">
-                                    <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                                    <div class="h-3 bg-gray-100 rounded w-1/2"></div>
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-purple-400 to-blue-400 rounded-3xl opacity-20 blur-3xl"></div>
+                    <div class="relative bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
+                        <!-- Mock Dashboard Preview -->
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl"></div>
+                                    <div>
+                                        <div class="h-3 w-24 bg-gray-200 rounded"></div>
+                                        <div class="h-2 w-16 bg-gray-100 rounded mt-2"></div>
+                                    </div>
+                                </div>
+                                <div class="px-4 py-2 bg-purple-100 rounded-lg">
+                                    <div class="h-3 w-12 bg-purple-400 rounded"></div>
                                 </div>
                             </div>
-                            <div class="space-y-3">
-                                <div class="h-32 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl"></div>
-                                <div class="h-3 bg-gray-200 rounded"></div>
-                                <div class="h-3 bg-gray-200 rounded w-5/6"></div>
+                            <div class="grid grid-cols-2 gap-4 mt-6">
+                                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 space-y-2">
+                                    <div class="w-8 h-8 bg-blue-500 rounded-lg"></div>
+                                    <div class="h-3 w-16 bg-blue-300 rounded"></div>
+                                    <div class="h-2 w-12 bg-blue-200 rounded"></div>
+                                </div>
+                                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 space-y-2">
+                                    <div class="w-8 h-8 bg-purple-500 rounded-lg"></div>
+                                    <div class="h-3 w-16 bg-purple-300 rounded"></div>
+                                    <div class="h-2 w-12 bg-purple-200 rounded"></div>
+                                </div>
+                            </div>
+                            <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 space-y-3 mt-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-green-500 rounded-full"></div>
+                                    <div class="flex-1 space-y-2">
+                                        <div class="h-2 bg-gray-300 rounded w-3/4"></div>
+                                        <div class="h-2 bg-gray-200 rounded w-1/2"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Floating Cards -->
-                    <div class="absolute top-10 -right-10 bg-white rounded-xl shadow-lg p-4 floating" style="animation-delay: 0.5s;">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white">✓</div>
-                            <div>
-                                <div class="text-sm font-semibold">Cours terminé!</div>
-                                <div class="text-xs text-gray-500">+50 XP</div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Floating Elements -->
+                    <div class="absolute -top-6 -right-6 w-20 h-20 bg-yellow-400 rounded-2xl animate-float"></div>
+                    <div class="absolute -bottom-6 -left-6 w-16 h-16 bg-pink-400 rounded-2xl animate-float" style="animation-delay: 1s;"></div>
                 </div>
             </div>
         </div>
     </section>
-    
-    <!-- PARCOURS SECTION -->
+
+    <!-- Parcours Section -->
     <section id="parcours" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-                    Choisissez votre <span class="text-purple-600">parcours</span>
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Trois parcours, <span class="gradient-text">une passion</span>
                 </h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Trois chemins pour atteindre vos objectifs, que ce soit exceller à l'école ou lancer votre carrière dans la tech
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Choisissez le parcours qui correspond à vos ambitions et démarrez votre apprentissage dès aujourd'hui
                 </p>
             </div>
-            
-            <div class="grid lg:grid-cols-3 gap-8">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
                 <!-- Parcours Élève -->
-                <div class="card-hover group bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border-2 border-green-100 hover:border-green-300 cursor-pointer">
-                    <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div class="card-hover bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 border-2 border-blue-100">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
-                            <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                         </svg>
                     </div>
-                    
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Parcours Collégien</h3>
-                    <p class="text-gray-600 mb-6">
-                        Soutien scolaire complet de la 6ème à la 3ème. Toutes les matières pour réussir ton brevet!
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">🎓 Élève</h3>
+                    <p class="text-gray-700 mb-6">
+                        Collégiens et lycéens, révisez vos cours, préparez vos examens et excellez dans toutes les matières.
                     </p>
-                    
-                    <div class="space-y-3 mb-8">
-                        <div class="flex items-center text-gray-700">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-blue-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
-                            Maths, Français, Sciences
-                        </div>
-                        <div class="flex items-center text-gray-700">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <span class="text-gray-700">Mathématiques, Sciences, Langues</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-blue-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
-                            Exercices interactifs corrigés
-                        </div>
-                        <div class="flex items-center text-gray-700">
-                            <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <span class="text-gray-700">Exercices interactifs & QCM</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-blue-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
-                            Suivi personnalisé
-                        </div>
-                    </div>
-                    
-                    <button class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:shadow-lg transition-all">
-                        Explorer →
-                    </button>
-                    
-                    <div class="mt-6 pt-6 border-t border-green-200">
-                        <div class="flex items-center justify-between text-sm">
-                            <span class="text-gray-600">120+ cours</span>
-                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full font-semibold">Gratuit</span>
-                        </div>
-                    </div>
+                            <span class="text-gray-700">Suivi de progression personnalisé</span>
+                        </li>
+                    </ul>
+                    <a href="register.html?parcours=eleve" class="block w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl text-center hover:shadow-lg transition-all">
+                        Commencer
+                    </a>
                 </div>
-                
-                <!-- Parcours Dev Web -->
-                <div class="card-hover group bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border-2 border-blue-100 hover:border-blue-300 cursor-pointer relative overflow-hidden">
-                    <div class="absolute top-4 right-4 px-3 py-1 bg-yellow-400 text-yellow-900 rounded-full text-xs font-bold">
+
+                <!-- Parcours Développeur -->
+                <div class="card-hover bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 border-2 border-green-100 relative">
+                    <div class="absolute -top-3 -right-3 px-4 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold rounded-full shadow-lg">
                         POPULAIRE
                     </div>
-                    
-                    <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
                         </svg>
                     </div>
-                    
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Développeur Web</h3>
-                    <p class="text-gray-600 mb-6">
-                        De zéro à développeur professionnel. HTML, CSS, JavaScript, React et bien plus!
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">💻 Développeur Web</h3>
+                    <p class="text-gray-700 mb-6">
+                        Apprenez le développement web de A à Z et créez vos propres applications web modernes.
                     </p>
-                    
-                    <div class="space-y-3 mb-8">
-                        <div class="flex items-center text-gray-700">
-                            <svg class="w-5 h-5 text-blue-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
-                            Support communautaire
-                        </div>
-                    </div>
-                    
-                    <button class="w-full py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-xl hover:shadow-lg transition-all">
-                        Explorer →
-                    </button>
-                    
-                    <div class="mt-6 pt-6 border-t border-blue-200">
-                        <div class="flex items-center justify-between text-sm">
-                            <span class="text-gray-600">85+ cours</span>
-                            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-semibold">29€/mois</span>
-                        </div>
-                    </div>
+                            <span class="text-gray-700">HTML, CSS, JavaScript, React</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Projets pratiques & Portfolio</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Certificat de compétences</span>
+                        </li>
+                    </ul>
+                    <a href="register.html?parcours=dev-web" class="block w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-xl text-center hover:shadow-lg transition-all">
+                        Commencer
+                    </a>
                 </div>
-                
+
                 <!-- Parcours Designer -->
-                <div class="card-hover group bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border-2 border-purple-100 hover:border-purple-300 cursor-pointer">
-                    <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div class="card-hover bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-8 border-2 border-purple-100">
+                    <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
                         </svg>
                     </div>
-                    
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Designer UI/UX</h3>
-                    <p class="text-gray-600 mb-6">
-                        Créez des interfaces magnifiques. Figma, principes UX, design systems et portfolio pro.
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">🎨 Designer</h3>
+                    <p class="text-gray-700 mb-6">
+                        Maîtrisez les outils de design et créez des interfaces utilisateur magnifiques et intuitives.
                     </p>
-                    
-                    <div class="space-y-3 mb-8">
-                        <div class="flex items-center text-gray-700">
-                            <svg class="w-5 h-5 text-purple-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-purple-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
-                            Portfolio professionnel
-                        </div>
-                        <div class="flex items-center text-gray-700">
-                            <svg class="w-5 h-5 text-purple-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <span class="text-gray-700">UI/UX, Figma, Adobe XD</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-purple-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
-                            Projets clients réels
-                        </div>
-                        <div class="flex items-center text-gray-700">
-                            <svg class="w-5 h-5 text-purple-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <span class="text-gray-700">Design System & Prototypage</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-purple-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
-                            Feedback d'experts
-                        </div>
-                    </div>
-                    
-                    <button class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold rounded-xl hover:shadow-lg transition-all">
-                        Explorer →
-                    </button>
-                    
-                    <div class="mt-6 pt-6 border-t border-purple-200">
-                        <div class="flex items-center justify-between text-sm">
-                            <span class="text-gray-600">60+ cours</span>
-                            <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full font-semibold">29€/mois</span>
-                        </div>
-                    </div>
+                            <span class="text-gray-700">Portfolio de projets créatifs</span>
+                        </li>
+                    </ul>
+                    <a href="register.html?parcours=designer" class="block w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl text-center hover:shadow-lg transition-all">
+                        Commencer
+                    </a>
                 </div>
+
             </div>
         </div>
     </section>
-    
-    <!-- COURS POPULAIRES -->
-    <section id="cours" class="py-20 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-12">
-                <div>
-                    <h2 class="text-4xl font-bold text-gray-900 mb-2">Cours populaires</h2>
-                    <p class="text-gray-600">Les formations les plus appréciées par nos étudiants</p>
-                </div>
-                <div class="mt-6 md:mt-0">
-                    <select class="px-6 py-3 bg-white border-2 border-gray-200 rounded-xl font-medium focus:outline-none focus:border-purple-500">
-                        <option>Tous les parcours</option>
-                        <option>Collégien</option>
-                        <option>Dev-Web</option>
-                        <option>Designer</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Cours Card 1 -->
-                <div class="card-hover bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100">
-                    <div class="relative h-48 bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
-                        <svg class="w-20 h-20 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                        </svg>
-                        <div class="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-semibold text-green-700">
-                            Gratuit
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex items-center gap-2 mb-3">
-                            <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Collégien</span>
-                            <span class="text-gray-500 text-sm">• 6ème - 3ème</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Mathématiques Complètes</h3>
-                        <p class="text-gray-600 text-sm mb-4">
-                            Tous les chapitres de maths du collège expliqués simplement avec des exercices corrigés.
-                        </p>
-                        
-                        <!-- Progress Bar -->
-                        <div class="mb-4">
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="text-gray-600">Progression</span>
-                                <span class="font-semibold text-purple-600">0%</span>
-                            </div>
-                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-green-500 to-emerald-600" style="width: 0%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-4 border-t">
-                            <div class="flex items-center text-sm text-gray-500">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                45h
-                            </div>
-                            <button class="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-all">
-                                Commencer
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Cours Card 2 -->
-                <div class="card-hover bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100">
-                    <div class="relative h-48 bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
-                        <svg class="w-20 h-20 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                        </svg>
-                        <div class="absolute top-4 left-4 flex items-center space-x-1">
-                            <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <span class="text-white font-semibold text-sm">4.9/5</span>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex items-center gap-2 mb-3">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Dev-Web</span>
-                            <span class="text-gray-500 text-sm">• Débutant</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">HTML & CSS Fondamentaux</h3>
-                        <p class="text-gray-600 text-sm mb-4">
-                            Créez votre premier site web en partant de zéro. Idéal pour débuter dans le dev web.
-                        </p>
-                        
-                        <div class="mb-4">
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="text-gray-600">Progression</span>
-                                <span class="font-semibold text-purple-600">0%</span>
-                            </div>
-                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-600" style="width: 0%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-4 border-t">
-                            <div class="flex items-center text-sm text-gray-500">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                12h
-                            </div>
-                            <button class="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-all">
-                                Commencer
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Cours Card 3 -->
-                <div class="card-hover bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100">
-                    <div class="relative h-48 bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center">
-                        <svg class="w-20 h-20 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-                        </svg>
-                        <div class="absolute top-4 right-4 px-3 py-1 bg-orange-500 text-white rounded-full text-xs font-bold">
-                            NOUVEAU
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex items-center gap-2 mb-3">
-                            <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">Designer</span>
-                            <span class="text-gray-500 text-sm">• Débutant</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Figma de A à Z</h3>
-                        <p class="text-gray-600 text-sm mb-4">
-                            Maîtrisez Figma et créez vos premières interfaces. Outil n°1 des designers.
-                        </p>
-                        
-                        <div class="mb-4">
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="text-gray-600">Progression</span>
-                                <span class="font-semibold text-purple-600">0%</span>
-                            </div>
-                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-purple-500 to-pink-600" style="width: 0%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-4 border-t">
-                            <div class="flex items-center text-sm text-gray-500">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                8h
-                            </div>
-                            <button class="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-all">
-                                Commencer
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="text-center mt-12">
-                <button class="px-8 py-4 border-2 border-purple-600 text-purple-600 font-bold rounded-xl hover:bg-purple-50 transition-all">
-                    Voir tous les cours →
-                </button>
-            </div>
-        </div>
-    </section>
-    
-    <!-- FEATURES SECTION -->
-    <section class="py-20 bg-white">
+
+    <!-- Features Section -->
+    <section id="fonctionnalites" class="py-20 bg-gradient-to-br from-slate-50 to-blue-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Pourquoi choisir LearnHub?</h2>
-                <p class="text-xl text-gray-600">Une expérience d'apprentissage unique</p>
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Une plateforme <span class="gradient-text">complète</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Tous les outils dont vous avez besoin pour apprendre efficacement
+                </p>
             </div>
-            
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="text-center p-6">
-                    <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Apprentissage interactif</h3>
-                    <p class="text-gray-600 text-sm">Des exercices pratiques et des quiz pour valider tes compétences</p>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Cours Vidéo HD</h3>
+                    <p class="text-gray-600 text-sm">Des vidéos de qualité professionnelle pour un apprentissage optimal</p>
                 </div>
-                
-                <div class="text-center p-6">
-                    <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Exercices Pratiques</h3>
+                    <p class="text-gray-600 text-sm">Des QCM et exercices pour valider vos connaissances</p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Suivi personnalisé</h3>
-                    <p class="text-gray-600 text-sm">Dashboard détaillé pour suivre ta progression en temps réel</p>
+                    <function_calls>
+<invoke name="artifacts">
+<parameter name="command">update</parameter>
+<parameter name="id">learnhub_homepage</parameter>
+<parameter name="old_str">                    <h3 class="text-lg font-bold text-gray-900 mb-2">Suivi de Progression</h3>
+<p class="text-gray-600 text-sm">Visualisez votre progression en temps réel</p>
+</div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition">
+                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                    </svg>
                 </div>
-                
-                <div class="text-center p-6">
-                    <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Communauté active</h3>
-                    <p class="text-gray-600 text-sm">Entraide, forums et mentorat pour ne jamais rester bloqué</p>
-                </div>
-                
-                <div class="text-center p-6">
-                    <div class="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Certificats reconnus</h3>
-                    <p class="text-gray-600 text-sm">Valide tes compétences avec des certificats professionnels</p>
-                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Badges & Récompenses</h3>
+                <p class="text-gray-600 text-sm">Gagnez des badges en atteignant vos objectifs</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section id="statistiques" class="py-20 gradient-hero">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-bold text-white mb-4">
+            Rejoignez notre communauté
+        </h2>
+        <p class="text-xl text-purple-100 mb-12 max-w-2xl mx-auto">
+            Des milliers d'étudiants nous font déjà confiance
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="glass-effect rounded-2xl p-8">
+                <div class="text-5xl font-black text-white mb-2">2K+</div>
+                <div class="text-purple-100">Étudiants actifs</div>
+            </div>
+            <div class="glass-effect rounded-2xl p-8">
+                <div class="text-5xl font-black text-white mb-2">150+</div>
+                <div class="text-purple-100">Cours disponibles</div>
+            </div>
+            <div class="glass-effect rounded-2xl p-8">
+                <div class="text-5xl font-black text-white mb-2">50+</div>
+                <div class="text-purple-100">Instructeurs</div>
+            </div>
+            <div class="glass-effect rounded-2xl p-8">
+                <div class="text-5xl font-black text-white mb-2">95%</div>
+                <div class="text-purple-100">Satisfaction</div>
             </div>
         </div>
-    </section>
-    
-    <!-- TESTIMONIALS -->
-    <section id="communaute" class="py-20 bg-gradient-to-br from-purple-50 to-indigo-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Ils ont réussi avec nous</h2>
-                <p class="text-xl text-gray-600">Rejoins des milliers d'étudiants satisfaits</p>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-bold text-gray-900 mb-4">
+            Prêt à commencer votre apprentissage ?
+        </h2>
+        <p class="text-xl text-gray-600 mb-8">
+            Inscrivez-vous gratuitement et accédez à tous nos cours dès maintenant
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="register.html" class="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:shadow-xl transition-all transform hover:scale-105">
+                Commencer gratuitement →
+            </a>
+            <a href="login.html" class="px-8 py-4 border-2 border-gray-300 text-gray-900 font-bold rounded-xl hover:border-purple-600 hover:text-purple-600 transition-all">
+                J'ai déjà un compte
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<parameter name="new_str">                    <h3 class="text-lg font-bold text-gray-900 mb-2">Suivi de Progression</h3>
+                    <p class="text-gray-600 text-sm">Visualisez votre progression en temps réel</p>
+                </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition">
+                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Badges & Récompenses</h3>
+                <p class="text-gray-600 text-sm">Gagnez des badges en atteignant vos objectifs</p>
             </div>
-            
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white rounded-2xl p-8 shadow-lg">
-                    <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full mr-4"></div>
-                        <div>
-                            <div class="font-bold text-gray-900">Sarah K.</div>
-                            <div class="text-sm text-gray-500">Élève 3ème</div>
-                        </div>
-                    </div>
-                    <div class="flex mb-3">
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    </div>
-                    <p class="text-gray-600 italic">"Grâce à LearnHub, j'ai augmenté ma moyenne en maths de 12 à 16. Les explications sont super claires!"</p>
-                </div>
-                
-                <div class="bg-white rounded-2xl p-8 shadow-lg">
-                    <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full mr-4"></div>
-                        <div>
-                            <div class="font-bold text-gray-900">Marc D.</div>
-                            <div class="text-sm text-gray-500">Développeur Junior</div>
-                        </div>
-                    </div>
-                    <div class="flex mb-3">
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    </div>
-                    <p class="text-gray-600 italic">"En 6 mois, j'ai décroché mon premier job de dev web. Les projets pratiques sont vraiment pros!"</p>
-                </div>
-                
-                <div class="bg-white rounded-2xl p-8 shadow-lg">
-                    <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full mr-4"></div>
-                        <div>
-                            <div class="font-bold text-gray-900">Léa M.</div>
-                            <div class="text-sm text-gray-500">UX Designer</div>
-                        </div>
-                    </div>
-                    <div class="flex mb-3">
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                    </div>
-                    <p class="text-gray-600 italic">"Portfolio complet en 3 mois! J'ai appris Figma et trouvé mon stage grâce à LearnHub."</p>
-                </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section id="statistiques" class="py-20 gradient-hero">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-bold text-white mb-4">
+            Rejoignez notre communauté
+        </h2>
+        <p class="text-xl text-purple-100 mb-12 max-w-2xl mx-auto">
+            Des milliers d'étudiants nous font déjà confiance
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="glass-effect rounded-2xl p-8">
+                <div class="text-5xl font-black text-white mb-2">2K+</div>
+                <div class="text-purple-100">Étudiants actifs</div>
+            </div>
+            <div class="glass-effect rounded-2xl p-8">
+                <div class="text-5xl font-black text-white mb-2">150+</div>
+                <div class="text-purple-100">Cours disponibles</div>
+            </div>
+            <div class="glass-effect rounded-2xl p-8">
+                <div class="text-5xl font-black text-white mb-2">50+</div>
+                <div class="text-purple-100">Instructeurs</div>
+            </div>
+            <div class="glass-effect rounded-2xl p-8">
+                <div class="text-5xl font-black text-white mb-2">95%</div>
+                <div class="text-purple-100">Satisfaction</div>
             </div>
         </div>
-    </section>
-    
-    <!-- CTA SECTION -->
-    <section class="py-20 bg-gradient-to-r from-purple-600 to-indigo-600">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-4xl lg:text-5xl font-bold text-white mb-6">
-                Prêt à commencer ton aventure?
-            </h2>
-            <p class="text-xl text-purple-100 mb-8">
-                Rejoins plus de 10,000 étudiants et lance-toi dès aujourd'hui. C'est gratuit pour commencer!
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button class="px-8 py-4 bg-white text-purple-600 font-bold rounded-xl hover:shadow-2xl hover:scale-105 transition-all">
-                    Créer mon compte gratuitement
-                </button>
-                <button class="px-8 py-4 bg-purple-700 text-white font-bold rounded-xl border-2 border-white/30 hover:bg-purple-800 transition-all">
-                    Découvrir les parcours
-                </button>
-            </div>
-            <p class="text-purple-200 text-sm mt-6">
-                ✓ Sans carte bancaire • ✓ Accès immédiat • ✓ Support 7j/7
-            </p>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl font-bold text-gray-900 mb-4">
+            Prêt à commencer votre apprentissage ?
+        </h2>
+        <p class="text-xl text-gray-600 mb-8">
+            Inscrivez-vous gratuitement et accédez à tous nos cours dès maintenant
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="register.html" class="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:shadow-xl transition-all transform hover:scale-105">
+                Commencer gratuitement →
+            </a>
+            <a href="login.html" class="px-8 py-4 border-2 border-gray-300 text-gray-900 font-bold rounded-xl hover:border-purple-600 hover:text-purple-600 transition-all">
+                J'ai déjà un compte
+            </a>
         </div>
-    </section>
-    
-    <!-- FOOTER -->
-    <footer class="bg-gray-900 text-white py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                <!-- Colonne 1 - Logo & Description -->
-                <div class="lg:col-span-1">
-                    <div class="flex items-center space-x-3 mb-4">
-                        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                            </svg>
-                        </div>
-                        <span class="text-2xl font-bold">LearnHub</span>
-                    </div>
-                    <p class="text-gray-400 mb-6">
-                        La plateforme d'apprentissage nouvelle génération pour réussir à l'école et dans la tech.
-                    </p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-all">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path>
-                            </svg>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-all">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path>
-                            </svg>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition-all">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path>
-                            </svg>
-                        </a>
-                    </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div>
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg"></div>
+                    <span class="text-xl font-bold">LearnHub</span>
                 </div>
-                
-                <!-- Colonne 2 - Parcours -->
-                <div>
-                    <h4 class="font-bold text-lg mb-4">Parcours</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Parcours Collégien</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Développeur Web</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Designer UI/UX</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Tous les cours</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Colonne 3 - Entreprise -->
-                <div>
-                    <h4 class="font-bold text-lg mb-4">Entreprise</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">À propos</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Notre équipe</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Blog</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Carrières</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Partenaires</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Colonne 4 - Support -->
-                <div>
-                    <h4 class="font-bold text-lg mb-4">Support</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Centre d'aide</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Nous contacter</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">FAQ</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Conditions d'utilisation</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Politique de confidentialité</a></li>
-                    </ul>
-                </div>
+                <p class="text-gray-400 text-sm">
+                    La plateforme d'apprentissage en ligne qui transforme votre passion en compétences.
+                </p>
             </div>
-            
-            <!-- Bottom Bar -->
-            <div class="pt-8 border-t border-gray-800">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <p class="text-gray-400 text-sm mb-4 md:mb-0">
-                        © 2025 LearnHub. Tous droits réservés.
-                    </p>
-                    <div class="flex items-center space-x-6">
-                        <a href="#" class="text-gray-400 hover:text-white text-sm transition">Mentions légales</a>
-                        <a href="#" class="text-gray-400 hover:text-white text-sm transition">CGV</a>
-                        <a href="#" class="text-gray-400 hover:text-white text-sm transition">Cookies</a>
-                    </div>
-                </div>
+            <div>
+                <h4 class="font-bold mb-4">Parcours</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-white">Élève</a></li>
+                    <li><a href="#" class="hover:text-white">Développeur Web</a></li>
+                    <li><a href="#" class="hover:text-white">Designer</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Ressources</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-white">Blog</a></li>
+                    <li><a href="#" class="hover:text-white">Documentation</a></li>
+                    <li><a href="#" class="hover:text-white">FAQ</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Contact</h4>
+                <ul class="space-y-2 text-gray-400 text-sm">
+                    <li><a href="#" class="hover:text-white">contact@learnhub.com</a></li>
+                    <li><a href="#" class="hover:text-white">+237 6XX XX XX XX</a></li>
+                    <li><a href="#" class="hover:text-white">Support</a></li>
+                </ul>
             </div>
         </div>
-    </footer>
-    
-    <!-- SCRIPTS -->
-    <script type="module">
-        // Import Supabase Helper
-        import { 
-            supabase, 
-            getCurrentUser, 
-            getUserProfile, 
-            signOut,
-            onAuthStateChange 
-        } from './js/supabase-helper.js'
-
-        // Vérifier l'authentification au chargement
-        async function checkAuth() {
-            const authButtons = document.getElementById('authButtons');
-            const userMenu = document.getElementById('userMenu');
-            
-            try {
-                const user = await getCurrentUser();
-                
-                if (user) {
-                    // Utilisateur connecté
-                    authButtons.style.display = 'none';
-                    userMenu.style.display = 'flex';
-                    
-                    // Charger le profil
-                    const profile = await getUserProfile(user.id);
-                    
-                    if (profile) {
-                        const prenom = profile.nom.split(' ')[0];
-                        document.getElementById('userNameNav').textContent = prenom;
-                        document.getElementById('dropdownUserName').textContent = profile.nom;
-                        document.getElementById('dropdownUserEmail').textContent = user.email;
-                        document.getElementById('userInitial').textContent = prenom.charAt(0).toUpperCase();
-                    } else {
-                        // Fallback si pas de profil
-                        const username = user.email.split('@')[0];
-                        document.getElementById('userNameNav').textContent = username;
-                        document.getElementById('dropdownUserName').textContent = username;
-                        document.getElementById('dropdownUserEmail').textContent = user.email;
-                        document.getElementById('userInitial').textContent = username.charAt(0).toUpperCase();
-                    }
-                } else {
-                    // Pas connecté
-                    authButtons.style.display = 'flex';
-                    userMenu.style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Erreur auth:', error);
-                authButtons.style.display = 'flex';
-                userMenu.style.display = 'none';
-            }
-        }
-
-        // Écouter les changements d'authentification
-        onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN') {
-                checkAuth();
-            } else if (event === 'SIGNED_OUT') {
-                document.getElementById('authButtons').style.display = 'flex';
-                document.getElementById('userMenu').style.display = 'none';
-            }
-        });
-
-        // Vérifier l'auth au chargement
-        checkAuth();
-
-        // Toggle dropdown
-        document.getElementById('userMenuButton')?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.getElementById('userDropdown').classList.toggle('hidden');
-        });
-
-        // Fermer dropdown si clic ailleurs
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('#userMenuButton') && !e.target.closest('#userDropdown')) {
-                document.getElementById('userDropdown')?.classList.add('hidden');
-            }
-        });
-
-        // Déconnexion
-        document.getElementById('logoutButton')?.addEventListener('click', async () => {
-            const result = await signOut();
-            if (result.success) {
-                window.location.reload();
-            } else {
-                alert('Erreur lors de la déconnexion');
-            }
-        });
-    </script>
-    
-    <script>
-        // Mobile Menu Toggle
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-        
-        // Smooth Scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                    mobileMenu.classList.add('hidden');
-                }
-            });
-        });
-        
-        // Intersection Observer for fade-in animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-        
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-        
-        // Counter Animation
-        function animateCounter(element, target, duration, suffix = '') {
-            let start = 0;
-            const increment = target / (duration / 16);
-            
-            const timer = setInterval(() => {
-                start += increment;
-                if (start >= target) {
-                    element.textContent = formatNumber(target) + suffix;
-                    clearInterval(timer);
-                } else {
-                    element.textContent = formatNumber(Math.floor(start)) + suffix;
-                }
-            }, 16);
-        }
-        
-        function formatNumber(num) {
-            if (num >= 1000) {
-                return (num / 1000).toFixed(0) + 'K';
-            }
-            return num;
-        }
-        
-        // Animate stats when visible
-        const statsObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCounter(document.getElementById('statsStudents'), 10000, 2000, '+');
-                    animateCounter(document.getElementById('statsCourses'), 150, 2000, '+');
-                    animateCounter(document.getElementById('statsProjects'), 2000, 2000, '+');
-                    statsObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
-        
-        const statsSection = document.querySelector('.gradient-hero');
-        if (statsSection) {
-            statsObserver.observe(statsSection);
-        }
-        
-        // Navbar scroll effect
-        let lastScroll = 0;
-        const navbar = document.querySelector('nav');
-        
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            
-            if (currentScroll <= 0) {
-                navbar.classList.remove('shadow-lg');
-            } else {
-                navbar.classList.add('shadow-lg');
-            }
-            
-            lastScroll = currentScroll;
-        });
-        
-        // Progress bar animation on course cards
-        document.querySelectorAll('.card-hover').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                const progressBar = this.querySelector('[style*="width"]');
-                if (progressBar && progressBar.style.width === '0%') {
-                    // Animation de démo au survol
-                    setTimeout(() => {
-                        progressBar.style.transition = 'width 1s ease-out';
-                        progressBar.style.width = '35%';
-                    }, 100);
-                }
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                const progressBar = this.querySelector('[style*="width"]');
-                if (progressBar) {
-                    progressBar.style.width = '0%';
-                }
-            });
-        });
-    </script>
+        <div class="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
+            <p>&copy; 2024 LearnHub. Tous droits réservés. Fait avec ❤️ au Cameroun</p>
+        </div>
+    </div>
+</footer>
 </body>
-</html>
-                        
+</html></parameter>

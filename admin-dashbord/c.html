@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - LearnHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .gradient-admin { background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%); }
+        .sidebar-active { background: rgba(59, 130, 246, 0.1); border-left: 4px solid #3b82f6; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 shadow-lg z-40">
+        <div class="gradient-admin p-6">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-white font-bold text-lg">LearnHub</h1>
+                    <p class="text-blue-100 text-xs">Admin Dashboard</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="p-4 space-y-1">
+            <a href="#" data-view="dashboard" class="nav-link sidebar-active flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span class="font-semibold">Tableau de bord</span>
+            </a>
+
+            <a href="#" data-view="matieres" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                <span class="font-semibold">Matières</span>
+            </a>
+
+            <a href="#" data-view="chapitres" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span class="font-semibold">Chapitres</span>
+            </a>
+
+            <a href="#" data-view="cours" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                <span class="font-semibold">Cours</span>
+            </a>
+
+            <a href="#" data-view="exercices" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                </svg>
+                <span class="font-semibold">Exercices QCM</span>
+            </a>
+
+            <div class="pt-4 mt-4 border-t border-gray-200">
+                <a href="#" data-view="utilisateurs" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    <span class="font-semibold">Utilisateurs</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-gray-50">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                    <span id="userInitials" class="text-white font-bold text-sm">AD</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p id="userName" class="text-sm font-semibold text-gray-900 truncate">Admin</p>
+                    <p class="text-xs text-gray-500">Administrateur</p>
+                </div>
+                <button id="logoutBtn" class="text-gray-400 hover:text-red-600 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-64 min-h-screen">
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
+            <div class="px-8 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 id="pageTitle" class="text-2xl font-bold text-gray-900">Tableau de bord</h2>
+                        <p id="pageSubtitle" class="text-sm text-gray-500 mt-1">Vue d'ensemble</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button id="addNewBtn" class="hidden px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all">
+                            + Ajouter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="contentArea" class="p-8">
+            <div class="text-center py-12">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p class="mt-4 text-gray-600">Chargement...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Chapitre -->
+    <div id="chapitreModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="gradient-admin p-6 text-white">
+                <h3 id="chapitreModalTitle" class="text-2xl font-bold">Nouveau Chapitre</h3>
+            </div>
+            <form id="chapitreForm" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Matière *</label>
+                    <select id="chapitreMatiere" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                        <option value="">Sélectionner une matière...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Titre du chapitre *</label>
+                    <input type="text" id="chapitreTitre" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="Ex: Les fonctions linéaires">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                    <textarea id="chapitreDescription" rows="3" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="Description du chapitre..."></textarea>
+                </div>
+
+                <!-- Upload PDF -->
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-blue-500 transition">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        📄 Document PDF (optionnel)
+                    </label>
+                    <div class="flex items-center justify-center">
+                        <label for="chapitrePDF" class="cursor-pointer">
+                            <div class="flex flex-col items-center space-y-2">
+                                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                <span class="text-sm text-gray-600">
+                                    <span class="text-blue-600 font-semibold">Cliquer pour uploader</span> ou glisser-déposer
+                                </span>
+                                <span class="text-xs text-gray-500">PDF jusqu'à 10 MB</span>
+                            </div>
+                            <input type="file" id="chapitrePDF" accept=".pdf" class="hidden">
+                        </label>
+                    </div>
+                    
+                    <!-- Affichage du fichier sélectionné -->
+                    <div id="pdfPreview" class="hidden mt-4">
+                        <div class="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path>
+                                </svg>
+                                <div>
+                                    <p id="pdfFileName" class="text-sm font-semibold text-gray-900"></p>
+                                    <p id="pdfFileSize" class="text-xs text-gray-500"></p>
+                                </div>
+                            </div>
+                            <button type="button" id="removePDF" class="text-red-600 hover:text-red-800">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PDF existant (en mode édition) -->
+                    <div id="existingPDF" class="hidden mt-4">
+                        <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-900">Document actuel</p>
+                                    <a id="existingPDFLink" href="#" target="_blank" class="text-xs text-blue-600 hover:underline">
+                                        Voir le PDF →
+                                    </a>
+                                </div>
+                            </div>
+                            <button type="button" id="deleteExistingPDF" class="text-red-600 hover:text-red-800">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Difficulté</label>
+                        <select id="chapitreDifficulte" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                            <option value="facile">Facile</option>
+                            <option value="moyen" selected>Moyen</option>
+                            <option value="difficile">Difficile</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Durée estimée (min)</label>
+                        <input type="number" id="chapitreDuree" min="5" step="5" value="30" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ordre d'affichage *</label>
+                    <input type="number" id="chapitreOrdre" min="1" value="1" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Objectifs (un par ligne)</label>
+                    <textarea id="chapitreObjectifs" rows="3" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="Comprendre les bases&#10;Maîtriser les applications&#10;Résoudre des problèmes complexes"></textarea>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="chapitreEstPublie" checked class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <span class="ml-2 text-sm font-semibold text-gray-700">Publié</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="chapitreEstPremium" class="w-5 h-5 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                        <span class="ml-2 text-sm font-semibold text-gray-700">Premium</span>
+                    </label>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" id="submitChapitreBtn" class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
+                        <span id="submitChapitreText">Enregistrer</span>
+                        <span id="submitChapitreLoader" class="hidden">
+                            <svg class="inline w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Upload en cours...
+                        </span>
+                    </button>
+                    <button type="button" id="cancelChapitreModal" class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all">
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Cours -->
+    <div id="coursModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="gradient-admin p-6 text-white">
+                <h3 id="coursModalTitle" class="text-2xl font-bold">Nouveau Cours</h3>
+            </div>
+            <form id="coursForm" class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Matière *</label>
+                        <select id="coursMatiere" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                            <option value="">Sélectionner une matière...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Chapitre *</label>
+                        <select id="coursChapitre" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                            <option value="">Sélectionner un chapitre...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Titre du cours *</label>
+                    <input type="text" id="coursTitre" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="Ex: Introduction aux variables">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Type de contenu *</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <label class="relative cursor-pointer">
+                            <input type="radio" name="typeContenu" value="texte" checked class="peer sr-only">
+                            <div class="p-4 border-2 border-gray-200 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 transition">
+                                <div class="text-center">
+                                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-600 peer-checked:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <p class="text-sm font-semibold">📝 Texte</p>
+                                </div>
+                            </div>
+                        </label>
+                        <label class="relative cursor-pointer">
+                            <input type="radio" name="typeContenu" value="video" class="peer sr-only">
+                            <div class="p-4 border-2 border-gray-200 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 transition">
+                                <div class="text-center">
+                                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <p class="text-sm font-semibold">🎥 Vidéo</p>
+                                </div>
+                            </div>
+                        </label>
+                        <label class="relative cursor-pointer">
+                            <input type="radio" name="typeContenu" value="mixte" class="peer sr-only">
+                            <div class="p-4 border-2 border-gray-200 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 transition">
+                                <div class="text-center">
+                                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                    <p class="text-sm font-semibold">📹 Mixte</p>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Section Vidéo -->
+                <div id="videoSection" class="hidden border-2 border-dashed border-purple-300 rounded-lg p-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">🎥 Vidéo du cours</label>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm text-gray-600 mb-2">Lien YouTube (optionnel)</label>
+                        <input type="url" id="coursVideoUrl" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="https://youtube.com/watch?v=...">
+                    </div>
+
+                    <div class="relative">
+                        <p class="text-sm text-gray-600 mb-2">Ou uploader une vidéo (MP4, max 100 MB)</p>
+                        <label for="coursVideoFile" class="cursor-pointer">
+                            <div class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 transition">
+                                <svg class="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                <span class="text-sm text-gray-600">Cliquer pour uploader une vidéo</span>
+                            </div>
+                            <input type="file" id="coursVideoFile" accept="video/mp4,video/webm" class="hidden">
+                        </label>
+                    </div>
+
+                    <!-- Preview vidéo -->
+                    <div id="videoPreview" class="hidden mt-4">
+                        <div class="flex items-center justify-between p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
+                                </svg>
+                                <div>
+                                    <p id="videoFileName" class="text-sm font-semibold text-gray-900"></p>
+                                    <p id="videoFileSize" class="text-xs text-gray-500"></p>
+                                </div>
+                            </div>
+                            <button type="button" id="removeVideo" class="text-red-600 hover:text-red-800">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Vidéo existante -->
+                    <div id="existingVideo" class="hidden mt-4">
+                        <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
+                                    </svg>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-900">Vidéo actuelle</p>
+                                        <a id="existingVideoLink" href="#" target="_blank" class="text-xs text-blue-600 hover:underline">Voir la vidéo →</a>
+                                    </div>
+                                </div>
+                                <button type="button" id="deleteExistingVideo" class="text-red-600 hover:text-red-800">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Éditeur de contenu -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Contenu du cours *</label>
+                    <textarea id="coursContenu" rows="10" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none font-mono text-sm" placeholder="Rédigez le contenu du cours ici...
+
+Vous pouvez utiliser du Markdown :
+# Titre principal
+## Sous-titre
+**Texte en gras**
+*Texte en italique*
+- Liste à puces
+1. Liste numérotée
+
+```code
+// Bloc de code
+```"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">💡 Supporte le Markdown pour la mise en forme</p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Durée (min)</label>
+                        <input type="number" id="coursDuree" min="1" value="15" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Points récompense</label>
+                        <input type="number" id="coursPoints" min="0" value="10" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Ordre</label>
+                        <input type="number" id="coursOrdre" min="1" value="1" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="coursEstGratuit" checked class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <span class="ml-2 text-sm font-semibold text-gray-700">Gratuit</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="coursEstPublie" checked class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                        <span class="ml-2 text-sm font-semibold text-gray-700">Publié</span>
+                    </label>
+                </div>
+
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" id="submitCoursBtn" class="flex-1 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
+                        <span id="submitCoursText">Enregistrer</span>
+                        <span id="submitCoursLoader" class="hidden">
+                            <svg class="inline w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Upload en cours...
+                        </span>
+                    </button>
+                    <button type="button" id="cancelCoursModal" class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all">
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Matière -->
+    <div id="matiereModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="gradient-admin p-6 text-white">
+                <h3 id="modalTitle" class="text-2xl font-bold">Nouvelle Matière</h3>
+            </div>
+            <form id="matiereForm" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nom de la matière *</label>
+                    <input type="text" id="matiereNom" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="Ex: Mathématiques">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                    <textarea id="matiereDescription" rows="3" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" placeholder="Description..."></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Type de parcours *</label>
+                        <select id="matiereTypeParcours" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                            <option value="">Sélectionner...</option>
+                            <option value="eleve">Élève</option>
+                            <option value="dev-web">Développeur Web</option>
+                            <option value="designer">Designer</option>
+                            <option value="commun">Commun</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Couleur</label>
+                        <input type="color" id="matiereCouleur" value="#3b82f6" class="w-full h-12 px-2 py-1 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ordre d'affichage</label>
+                    <input type="number" id="matiereOrdre" min="1" value="1" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
+                        Enregistrer
+                    </button>
+                    <button type="button" id="cancelModal" class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all">
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Configuration Supabase
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A';
+
+        const { createClient } = supabase;
+        const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true,
+                storage: window.localStorage
+            }
+        });
+
+        let currentView = 'dashboard';
+        let currentEditId = null;
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchView(e.currentTarget.dataset.view);
+            });
+        });
+
+        function switchView(view) {
+            currentView = view;
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('sidebar-active'));
+            document.querySelector(`[data-view="${view}"]`).classList.add('sidebar-active');
+            
+            const titles = {
+                'dashboard': ['Tableau de bord', 'Vue d\'ensemble'],
+                'matieres': ['Matières', 'Gestion des matières'],
+                'chapitres': ['Chapitres', 'Gestion des chapitres'],
+                'cours': ['Cours', 'Gestion des cours'],
+                'exercices': ['Exercices QCM', 'Gestion des exercices'],
+                'utilisateurs': ['Utilisateurs', 'Gestion des utilisateurs']
+            };
+            
+            document.getElementById('pageTitle').textContent = titles[view][0];
+            document.getElementById('pageSubtitle').textContent = titles[view][1];
+            
+            const addBtn = document.getElementById('addNewBtn');
+            addBtn.classList.toggle('hidden', !['matieres', 'chapitres', 'cours'].includes(view));
+            
+            loadView(view);
+        }
+
+        async function loadView(view) {
+            const content = document.getElementById('contentArea');
+            
+            if (view === 'dashboard') {
+                content.innerHTML = `
+                    <!-- Cards principales -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition cursor-pointer" onclick="switchView('matieres')">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            </div>
+                            <h3 class="text-3xl font-bold text-gray-900 mb-1" id="statMatieres">
+                                <div class="animate-pulse bg-gray-200 h-8 w-16 rounded"></div>
+                            </h3>
+                            <p class="text-sm text-gray-500">Matières</p>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition cursor-pointer" onclick="switchView('chapitres')">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </div>
+                            <h3 class="text-3xl font-bold text-gray-900 mb-1" id="statChapitres">
+                                <div class="animate-pulse bg-gray-200 h-8 w-16 rounded"></div>
+                            </h3>
+                            <p class="text-sm text-gray-500">Chapitres</p>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition cursor-pointer" onclick="switchView('cours')">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <h3 class="text-3xl font-bold text-gray-900 mb-1" id="statCours">
+                                <div class="animate-pulse bg-gray-200 h-8 w-16 rounded"></div>
+                            </h3>
+                            <p class="text-sm text-gray-500">Cours</p>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition cursor-pointer" onclick="switchView('utilisateurs')">
+                            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                                <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                            </div>
+                            <h3 class="text-3xl font-bold text-gray-900 mb-1" id="statUtilisateurs">
+                                <div class="animate-pulse bg-gray-200 h-8 w-16 rounded"></div>
+                            </h3>
+                            <p class="text-sm text-gray-500">Utilisateurs</p>
+                        </div>
+                    </div>
+
+                    <!-- Section détails -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <!-- Liste des matières récentes -->
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                    Matières récentes
+                                </h3>
+                                <button onclick="switchView('matieres')" class="text-sm text-blue-600 hover:text-blue-800 font-semibold">
+                                    Voir tout →
+                                </button>
+                            </div>
+                            <div id="recentMatieres" class="space-y-3">
+                                <div class="animate-pulse bg-gray-200 h-16 rounded-lg"></div>
+                                <div class="animate-pulse bg-gray-200 h-16 rounded-lg"></div>
+                                <div class="animate-pulse bg-gray-200 h-16 rounded-lg"></div>
+                            </div>
+                        </div>
+
+                        <!-- Répartition par parcours -->
+                        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                                Répartition par parcours
+                            </h3>
+                            <div id="statsParParcours" class="space-y-3">
+                                <div class="animate-pulse bg-gray-200 h-16 rounded-lg"></div>
+                                <div class="animate-pulse bg-gray-200 h-16 rounded-lg"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chapitres récents -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-gray-900 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Derniers chapitres créés
+                            </h3>
+                            <button onclick="switchView('chapitres')" class="text-sm text-blue-600 hover:text-blue-800 font-semibold">
+                                Voir tout →
+                            </button>
+                        </div>
+                        <div id="recentChapitres" class="space-y-3">
+                            <div class="animate-pulse bg-gray-200 h-20 rounded-lg"></div>
+                            <div class="animate-pulse bg-gray-200 h-20 rounded-lg"></div>
+                            <div class="animate-pulse bg-gray-200 h-20 rounded-lg"></div>
+                        </div>
+                    </div>
+
+                    <!-- Statistiques utilisateurs -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            Utilisateurs par type de parcours
+                        </h3>
+                        <div id="statsUtilisateurs" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="animate-pulse bg-gray-200 h-24 rounded-lg"></div>
+                            <div class="animate-pulse bg-gray-200 h-24 rounded-lg"></div>
+                            <div class="animate-pulse bg-gray-200 h-24 rounded-lg"></div>
+                        </div>
+                    </div>
+
+                    <!-- Statistiques exercices -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            Statistiques des exercices
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="statsExercices">
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <p class="text-sm text-gray-500 mb-1">Total exercices</p>
+                                <p class="text-2xl font-bold text-gray-900" id="statExercicesTotal">-</p>
+                            </div>
+                            <div class="p-4 bg-green-50 rounded-lg">
+                                <p class="text-sm text-gray-500 mb-1">Exercices publiés</p>
+                                <p class="text-2xl font-bold text-green-600" id="statExercicesPublies">-</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <p class="text-sm text-gray-500 mb-1">Brouillons</p>
+                                <p class="text-2xl font-bold text-gray-600" id="statExercicesBrouillons">-</p>
+                            </div>
+                            <div class="p-4 bg-blue-50 rounded-lg">
+                                <p class="text-sm text-gray-500 mb-1">Questions</p>
+                                <p class="text-2xl font-bold text-blue-600" id="statQuestions">-</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                loadDashboardDetails();
+            } else if (view === 'matieres') {
+                loadMatieres();
+            } else if (view === 'chapitres') {
+                loadChapitres();
+            } else if (view === 'cours') {
+                loadCours();
+            } else if (view === 'utilisateurs') {
+                loadUtilisateurs();
+            } else {
+                content.innerHTML = '<div class="bg-white rounded-xl p-12 text-center"><p class="text-gray-500">Section en développement</p></div>';
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const [m, c, co, u] = await Promise.all([
+                    sb.from('matieres').select('*', { count: 'exact', head: true }),
+                    sb.from('chapitres').select('*', { count: 'exact', head: true }),
+                    sb.from('cours').select('*', { count: 'exact', head: true }),
+                    sb.from('profiles').select('*', { count: 'exact', head: true })
+                ]);
+                
+                document.getElementById('statMatieres').textContent = m.count || 0;
+                document.getElementById('statChapitres').textContent = c.count || 0;
+                document.getElementById('statCours').textContent = co.count || 0;
+                document.getElementById('statUtilisateurs').textContent = u.count || 0;
+            } catch (error) {
+                console.error('Erreur stats:', error);
+                document.getElementById('statMatieres').textContent = '0';
+                document.getElementById('statChapitres').textContent = '0';
+                document.getElementById('statCours').textContent = '0';
+                document.getElementById('statUtilisateurs').textContent = '0';
+            }
+        }
+
+        async function loadDashboardDetails() {
+            // Charger d'abord les stats principales
+            await loadStats();
+
+            try {
+                // 1. Matières récentes avec compteurs de chapitres
+                const { data: matieres } = await sb
+                    .from('matieres')
+                    .select('*, chapitres(count)')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (matieres && matieres.length > 0) {
+                    document.getElementById('recentMatieres').innerHTML = matieres.map(m => `
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition cursor-pointer" onclick="switchView('matieres')">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: ${m.couleur}20;">
+                                    <div class="w-5 h-5 rounded" style="background-color: ${m.couleur};"></div>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-900">${m.nom}</p>
+                                    <p class="text-xs text-gray-500">${m.type_parcours}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-bold text-gray-900">${m.chapitres?.length || 0}</p>
+                                <p class="text-xs text-gray-500">chapitres</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('recentMatieres').innerHTML = '<p class="text-gray-500 text-sm text-center py-4">Aucune matière pour le moment</p>';
+                }
+
+                // 2. Répartition par parcours
+                const { data: allMatieres } = await sb.from('matieres').select('type_parcours');
+                if (allMatieres) {
+                    const parcours = {};
+                    allMatieres.forEach(m => {
+                        parcours[m.type_parcours] = (parcours[m.type_parcours] || 0) + 1;
+                    });
+
+                    const colors = {
+                        'eleve': { bg: 'bg-blue-100', text: 'text-blue-800', bar: 'bg-blue-500' },
+                        'dev-web': { bg: 'bg-green-100', text: 'text-green-800', bar: 'bg-green-500' },
+                        'designer': { bg: 'bg-purple-100', text: 'text-purple-800', bar: 'bg-purple-500' },
+                        'commun': { bg: 'bg-gray-100', text: 'text-gray-800', bar: 'bg-gray-500' }
+                    };
+
+                    const labels = {
+                        'eleve': 'Élève',
+                        'dev-web': 'Développeur Web',
+                        'designer': 'Designer',
+                        'commun': 'Commun'
+                    };
+
+                    const total = Object.values(parcours).reduce((a, b) => a + b, 0);
+
+                    document.getElementById('statsParParcours').innerHTML = Object.entries(parcours).map(([type, count]) => {
+                        const percentage = ((count / total) * 100).toFixed(0);
+                        const color = colors[type] || colors['commun'];
+                        return `
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-3 py-1 ${color.bg} ${color.text} rounded-full text-sm font-semibold">
+                                        ${labels[type] || type}
+                                    </span>
+                                    <span class="text-xl font-bold text-gray-900">${count}</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="${color.bar} h-2 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // 3. Chapitres récents
+                const { data: chapitres } = await sb
+                    .from('chapitres')
+                    .select('*, matieres(nom, couleur)')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (chapitres && chapitres.length > 0) {
+                    document.getElementById('recentChapitres').innerHTML = chapitres.map(c => `
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition cursor-pointer" onclick="switchView('chapitres')">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span class="px-2 py-1 text-xs font-semibold rounded" style="background-color: ${c.matieres?.couleur}20; color: ${c.matieres?.couleur};">
+                                        ${c.matieres?.nom || 'N/A'}
+                                    </span>
+                                    ${c.est_publie ? '<span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Publié</span>' : '<span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">Brouillon</span>'}
+                                </div>
+                                <p class="font-semibold text-gray-900">${c.titre}</p>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    📊 ${c.difficulte} • ⏱️ ${c.duree_estimee || 0} min
+                                </p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('recentChapitres').innerHTML = '<p class="text-gray-500 text-sm text-center py-4">Aucun chapitre pour le moment</p>';
+                }
+
+                // 4. Statistiques utilisateurs par parcours
+                const { data: users } = await sb.from('profiles').select('type_parcours');
+                if (users) {
+                    const usersByType = {};
+                    users.forEach(u => {
+                        if (u.type_parcours) {
+                            usersByType[u.type_parcours] = (usersByType[u.type_parcours] || 0) + 1;
+                        }
+                    });
+
+                    const userColors = {
+                        'eleve': { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-600' },
+                        'dev-web': { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-600' },
+                        'designer': { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-600' }
+                    };
+
+                    const userLabels = {
+                        'eleve': '🎓 Élèves',
+                        'dev-web': '💻 Développeurs',
+                        'designer': '🎨 Designers'
+                    };
+
+                    document.getElementById('statsUtilisateurs').innerHTML = Object.entries(usersByType).map(([type, count]) => {
+                        const color = userColors[type] || { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-600' };
+                        return `
+                            <div class="p-6 ${color.bg} border-2 ${color.border} rounded-lg">
+                                <p class="text-sm text-gray-600 mb-2">${userLabels[type] || type}</p>
+                                <p class="text-3xl font-bold ${color.text}">${count}</p>
+                            </div>
+                        `;
+                    }).join('');
+
+                    if (Object.keys(usersByType).length === 0) {
+                        document.getElementById('statsUtilisateurs').innerHTML = '<p class="text-gray-500 text-sm text-center py-4 col-span-3">Aucun utilisateur pour le moment</p>';
+                    }
+                }
+
+                // 5. Statistiques exercices et questions
+                const [exercicesResult, questionsResult] = await Promise.all([
+                    sb.from('exercices').select('est_publie'),
+                    sb.from('questions').select('id', { count: 'exact', head: true })
+                ]);
+
+                if (exercicesResult.data) {
+                    const total = exercicesResult.data.length;
+                    const publies = exercicesResult.data.filter(e => e.est_publie).length;
+                    const brouillons = total - publies;
+
+                    document.getElementById('statExercicesTotal').textContent = total;
+                    document.getElementById('statExercicesPublies').textContent = publies;
+                    document.getElementById('statExercicesBrouillons').textContent = brouillons;
+                }
+
+                if (questionsResult.count !== null) {
+                    document.getElementById('statQuestions').textContent = questionsResult.count;
+                }
+
+            } catch (error) {
+                console.error('Erreur chargement détails dashboard:', error);
+            }
+        }
+
+        async function loadMatieres() {
+            const content = document.getElementById('contentArea');
+            content.innerHTML = '<div class="text-center py-12"><div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>';
+            
+            try {
+                const { data, error } = await sb.from('matieres').select('*').order('ordre');
+                if (error) throw error;
+                
+                content.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${data.map(m => `
+                            <div class="bg-white rounded-xl shadow-sm p-6 border-2 border-gray-100 hover:border-blue-300 transition">
+                                <div class="flex justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background-color: ${m.couleur}20;">
+                                        <div class="w-6 h-6 rounded" style="background-color: ${m.couleur};"></div>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button onclick="editMatiere('${m.id}')" class="text-blue-600 hover:text-blue-800">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        </button>
+                                        <button onclick="deleteMatiere('${m.id}')" class="text-red-600 hover:text-red-800">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <h3 class="text-lg font-bold text-gray-900 mb-2">${m.nom}</h3>
+                                <p class="text-sm text-gray-500 mb-3 line-clamp-2">${m.description || ''}</p>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded">${m.type_parcours}</span>
+                                    <span class="text-gray-500">Ordre: ${m.ordre}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                content.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">Erreur: ${error.message}</div>`;
+            }
+        }
+
+        async function loadChapitres() {
+            const content = document.getElementById('contentArea');
+            content.innerHTML = '<div class="text-center py-12"><div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>';
+            
+            try {
+                const { data, error } = await sb.from('chapitres').select('*, matieres(nom, couleur)').order('ordre');
+                if (error) throw error;
+                
+                content.innerHTML = `
+                    <div class="space-y-4">
+                        ${data.map(c => {
+                            let pdfLink = '';
+                            if (c.pdf_url) {
+                                const { data: urlData } = sb.storage.from('chapitres-pdfs').getPublicUrl(c.pdf_url);
+                                pdfLink = `
+                                    <a href="${urlData.publicUrl}" target="_blank" class="inline-flex items-center px-3 py-1 bg-red-50 text-red-700 text-xs font-semibold rounded hover:bg-red-100 transition">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path>
+                                        </svg>
+                                        PDF
+                                    </a>
+                                `;
+                            }
+                            
+                            return `
+                                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:border-blue-300 transition">
+                                    <div class="flex justify-between">
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-3 mb-2">
+                                                <span class="px-3 py-1 text-xs font-semibold rounded-full" style="background-color: ${c.matieres?.couleur}20; color: ${c.matieres?.couleur};">
+                                                    ${c.matieres?.nom || 'N/A'}
+                                                </span>
+                                                ${c.est_premium ? '<span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-semibold rounded">Premium</span>' : ''}
+                                                ${c.est_publie ? '<span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">Publié</span>' : '<span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-semibold rounded">Brouillon</span>'}
+                                                ${pdfLink}
+                                            </div>
+                                            <h3 class="text-lg font-bold text-gray-900 mb-2">${c.titre}</h3>
+                                            <p class="text-sm text-gray-600 mb-3">${c.description || ''}</p>
+                                            <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                                <span>📊 ${c.difficulte}</span>
+                                                <span>⏱️ ${c.duree_estimee || 0} min</span>
+                                                <span>🔢 Ordre: ${c.ordre}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2 ml-4">
+                                            <button onclick="editChapitre(${c.id})" class="text-blue-600 hover:text-blue-800">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            </button>
+                                            <button onclick="deleteChapitre(${c.id})" class="text-red-600 hover:text-red-800">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                content.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">Erreur: ${error.message}</div>`;
+            }
+        }
+
+        // Modals
+        document.getElementById('addNewBtn').addEventListener('click', () => {
+            if (currentView === 'matieres') openMatiereModal();
+            else if (currentView === 'chapitres') openChapitreModal();
+            else if (currentView === 'cours') openCoursModal();
+        });
+
+        // Gestion du type de contenu pour les cours
+        document.querySelectorAll('input[name="typeContenu"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const videoSection = document.getElementById('videoSection');
+                if (e.target.value === 'video' || e.target.value === 'mixte') {
+                    videoSection.classList.remove('hidden');
+                } else {
+                    videoSection.classList.add('hidden');
+                }
+            });
+        });
+
+        // Gestion vidéo upload
+        let selectedVideo = null;
+        let currentVideoUrl = null;
+
+        document.getElementById('coursVideoFile').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (!file.type.startsWith('video/')) {
+                    alert('Veuillez sélectionner un fichier vidéo');
+                    e.target.value = '';
+                    return;
+                }
+                
+                if (file.size > 100 * 1024 * 1024) {
+                    alert('Le fichier est trop volumineux (max 100 MB)');
+                    e.target.value = '';
+                    return;
+                }
+
+                selectedVideo = file;
+                document.getElementById('videoFileName').textContent = file.name;
+                document.getElementById('videoFileSize').textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+                document.getElementById('videoPreview').classList.remove('hidden');
+                document.getElementById('existingVideo').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('removeVideo').addEventListener('click', () => {
+            selectedVideo = null;
+            document.getElementById('coursVideoFile').value = '';
+            document.getElementById('videoPreview').classList.add('hidden');
+            if (currentVideoUrl) {
+                document.getElementById('existingVideo').classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('deleteExistingVideo').addEventListener('click', () => {
+            if (confirm('Supprimer cette vidéo ?')) {
+                currentVideoUrl = null;
+                document.getElementById('existingVideo').classList.add('hidden');
+            }
+        });
+
+        // Gestion du changement de matière pour charger les chapitres
+        document.getElementById('coursMatiere').addEventListener('change', async (e) => {
+            const matiereId = e.target.value;
+            const chapitreSelect = document.getElementById('coursChapitre');
+            
+            if (!matiereId) {
+                chapitreSelect.innerHTML = '<option value="">Sélectionner un chapitre...</option>';
+                return;
+            }
+
+            const { data: chapitres } = await sb
+                .from('chapitres')
+                .select('*')
+                .eq('matiere_id', matiereId)
+                .order('ordre');
+            
+            chapitreSelect.innerHTML = '<option value="">Sélectionner un chapitre...</option>' +
+                (chapitres || []).map(c => `<option value="${c.id}">${c.titre}</option>`).join('');
+        });
+
+        // Gestion du PDF upload
+        let selectedPDF = null;
+        let currentPDFUrl = null;
+
+        document.getElementById('chapitrePDF').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.type !== 'application/pdf') {
+                    alert('Veuillez sélectionner un fichier PDF');
+                    e.target.value = '';
+                    return;
+                }
+                
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('Le fichier est trop volumineux (max 10 MB)');
+                    e.target.value = '';
+                    return;
+                }
+
+                selectedPDF = file;
+                document.getElementById('pdfFileName').textContent = file.name;
+                document.getElementById('pdfFileSize').textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+                document.getElementById('pdfPreview').classList.remove('hidden');
+                document.getElementById('existingPDF').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('removePDF').addEventListener('click', () => {
+            selectedPDF = null;
+            document.getElementById('chapitrePDF').value = '';
+            document.getElementById('pdfPreview').classList.add('hidden');
+            if (currentPDFUrl) {
+                document.getElementById('existingPDF').classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('deleteExistingPDF').addEventListener('click', async () => {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce PDF ?')) {
+                // On marquera le PDF pour suppression
+                currentPDFUrl = null;
+                document.getElementById('existingPDF').classList.add('hidden');
+            }
+        });
+
+        async function loadCours() {
+            const content = document.getElementById('contentArea');
+            content.innerHTML = '<div class="text-center py-12"><div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>';
+            
+            try {
+                const { data, error } = await sb
+                    .from('cours')
+                    .select('*, chapitres(titre, matieres(nom, couleur))')
+                    .order('ordre');
+                
+                if (error) throw error;
+                
+                if (!data || data.length === 0) {
+                    content.innerHTML = `
+                        <div class="bg-white rounded-xl shadow-sm p-12 text-center">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            <p class="text-gray-500 mb-4">Aucun cours pour le moment</p>
+                            <button onclick="openCoursModal()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                Créer le premier cours
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                content.innerHTML = `
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        ${data.map(c => {
+                            const typeIcon = {
+                                'texte': '📝',
+                                'video': '🎥',
+                                'mixte': '📹'
+                            };
+                            
+                            return `
+                                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:border-green-300 transition">
+                                    <div class="flex items-start justify-between mb-4">
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2 mb-2">
+                                                <span class="px-2 py-1 text-xs font-semibold rounded" style="background-color: ${c.chapitres?.matieres?.couleur}20; color: ${c.chapitres?.matieres?.couleur};">
+                                                    ${c.chapitres?.matieres?.nom || 'N/A'}
+                                                </span>
+                                                <span class="text-xs text-gray-500">• ${c.chapitres?.titre || 'N/A'}</span>
+                                            </div>
+                                            <h3 class="text-lg font-bold text-gray-900 mb-2 flex items-center">
+                                                <span class="mr-2">${typeIcon[c.type_contenu] || '📄'}</span>
+                                                ${c.titre}
+                                            </h3>
+                                            <div class="flex items-center space-x-4 text-xs text-gray-500 mb-3">
+                                                <span>⏱️ ${c.duree_lecture || 0} min</span>
+                                                <span>🏆 ${c.points_recompense || 0} pts</span>
+                                                <span>👁️ ${c.vues_total || 0} vues</span>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                ${c.est_gratuit ? '<span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">Gratuit</span>' : '<span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded">Premium</span>'}
+                                                ${c.est_publie ? '<span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Publié</span>' : '<span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">Brouillon</span>'}
+                                                ${c.video_url ? '<span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">📹 Vidéo</span>' : ''}
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2 ml-4">
+                                            <button onclick="editCours(${c.id})" class="text-blue-600 hover:text-blue-800">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
+                                            </button>
+                                            <button onclick="deleteCours(${c.id})" class="text-red-600 hover:text-red-800">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                content.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">Erreur: ${error.message}</div>`;
+            }
+        }
+
+        async function openCoursModal(id = null) {
+            currentEditId = id;
+            selectedVideo = null;
+            currentVideoUrl = null;
+            
+            const modal = document.getElementById('coursModal');
+            const form = document.getElementById('coursForm');
+            
+            document.getElementById('coursModalTitle').textContent = id ? 'Modifier le Cours' : 'Nouveau Cours';
+            form.reset();
+            
+            // Réinitialiser
+            document.getElementById('videoSection').classList.add('hidden');
+            document.getElementById('videoPreview').classList.add('hidden');
+            document.getElementById('existingVideo').classList.add('hidden');
+            document.getElementById('coursVideoFile').value = '';
+            
+            // Charger les matières
+            const { data: matieres } = await sb.from('matieres').select('*').order('nom');
+            document.getElementById('coursMatiere').innerHTML = '<option value="">Sélectionner une matière...</option>' +
+                (matieres || []).map(m => `<option value="${m.id}">${m.nom}</option>`).join('');
+            
+            if (id) {
+                const { data } = await sb.from('cours').select('*').eq('id', id).single();
+                if (data) {
+                    // Charger les chapitres de la matière
+                    const { data: chapitres } = await sb
+                        .from('chapitres')
+                        .select('*, matiere_id')
+                        .eq('id', data.chapitre_id)
+                        .single();
+                    
+                    if (chapitres) {
+                        document.getElementById('coursMatiere').value = chapitres.matiere_id;
+                        
+                        // Charger tous les chapitres de cette matière
+                        const { data: allChapitres } = await sb
+                            .from('chapitres')
+                            .select('*')
+                            .eq('matiere_id', chapitres.matiere_id)
+                            .order('ordre');
+                        
+                        document.getElementById('coursChapitre').innerHTML = '<option value="">Sélectionner un chapitre...</option>' +
+                            (allChapitres || []).map(c => `<option value="${c.id}">${c.titre}</option>`).join('');
+                        
+                        document.getElementById('coursChapitre').value = data.chapitre_id;
+                    }
+                    
+                    document.getElementById('coursTitre').value = data.titre;
+                    document.getElementById('coursContenu').value = data.contenu;
+                    document.querySelector(`input[name="typeContenu"][value="${data.type_contenu}"]`).checked = true;
+                    document.getElementById('coursDuree').value = data.duree_lecture;
+                    document.getElementById('coursPoints').value = data.points_recompense;
+                    document.getElementById('coursOrdre').value = data.ordre;
+                    document.getElementById('coursEstGratuit').checked = data.est_gratuit;
+                    document.getElementById('coursEstPublie').checked = data.est_publie;
+                    
+                    // Afficher section vidéo si nécessaire
+                    if (data.type_contenu === 'video' || data.type_contenu === 'mixte') {
+                        document.getElementById('videoSection').classList.remove('hidden');
+                        
+                        if (data.video_url) {
+                            currentVideoUrl = data.video_url;
+                            
+                            // Vérifier si c'est un lien YouTube ou un fichier uploadé
+                            if (data.video_url.includes('youtube.com') || data.video_url.includes('youtu.be')) {
+                                document.getElementById('coursVideoUrl').value = data.video_url;
+                            } else {
+                                const { data: urlData } = sb.storage.from('cours-videos').getPublicUrl(data.video_url);
+                                document.getElementById('existingVideoLink').href = urlData.publicUrl;
+                                document.getElementById('existingVideo').classList.remove('hidden');
+                            }
+                        }
+                    }
+                }
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        async function loadUtilisateurs() {
+            const content = document.getElementById('contentArea');
+            content.innerHTML = '<div class="text-center py-12"><div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>';
+            
+            try {
+                const { data: users, error } = await sb
+                    .from('profiles')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                if (!users || users.length === 0) {
+                    content.innerHTML = `
+                        <div class="bg-white rounded-xl shadow-sm p-12 text-center">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <p class="text-gray-500">Aucun utilisateur inscrit</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Statistiques rapides
+                const stats = {
+                    total: users.length,
+                    eleves: users.filter(u => u.type_parcours === 'eleve').length,
+                    devs: users.filter(u => u.type_parcours === 'dev-web').length,
+                    designers: users.filter(u => u.type_parcours === 'designer').length,
+                    actifs: users.filter(u => {
+                        const lastLogin = new Date(u.derniere_connexion);
+                        const daysSince = (Date.now() - lastLogin) / (1000 * 60 * 60 * 24);
+                        return daysSince <= 7;
+                    }).length
+                };
+                
+                content.innerHTML = `
+                    <!-- Stats rapides -->
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white">
+                            <p class="text-sm opacity-90 mb-1">Total</p>
+                            <p class="text-3xl font-bold">${stats.total}</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white">
+                            <p class="text-sm opacity-90 mb-1">🎓 Élèves</p>
+                            <p class="text-3xl font-bold">${stats.eleves}</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white">
+                            <p class="text-sm opacity-90 mb-1">💻 Devs</p>
+                            <p class="text-3xl font-bold">${stats.devs}</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl p-6 text-white">
+                            <p class="text-sm opacity-90 mb-1">🎨 Designers</p>
+                            <p class="text-3xl font-bold">${stats.designers}</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white">
+                            <p class="text-sm opacity-90 mb-1">Actifs (7j)</p>
+                            <p class="text-3xl font-bold">${stats.actifs}</p>
+                        </div>
+                    </div>
+
+                    <!-- Filtres -->
+                    <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+                        <div class="flex flex-wrap gap-3 items-center">
+                            <div class="flex-1 min-w-[300px]">
+                                <input type="text" id="searchUsers" placeholder="🔍 Rechercher par nom ou email..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                            </div>
+                            <select id="filterParcours" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                                <option value="">Tous les parcours</option>
+                                <option value="eleve">🎓 Élèves</option>
+                                <option value="dev-web">💻 Développeurs</option>
+                                <option value="designer">🎨 Designers</option>
+                            </select>
+                            <select id="filterActivite" class="px-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none">
+                                <option value="">Toute activité</option>
+                                <option value="actif">Actifs (7j)</option>
+                                <option value="inactif">Inactifs (+7j)</option>
+                            </select>
+                            <button onclick="exportUsers()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                                Exporter CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Table des utilisateurs -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Utilisateur</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Parcours</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Points</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Streak</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Inscription</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Dernière connexion</th>
+                                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody" class="divide-y divide-gray-200">
+                                    ${users.map(user => {
+                                        const parcoursColors = {
+                                            'eleve': 'bg-blue-100 text-blue-800',
+                                            'dev-web': 'bg-green-100 text-green-800',
+                                            'designer': 'bg-purple-100 text-purple-800'
+                                        };
+                                        
+                                        const parcoursIcons = {
+                                            'eleve': '🎓',
+                                            'dev-web': '💻',
+                                            'designer': '🎨'
+                                        };
+                                        
+                                        const lastLogin = user.derniere_connexion ? new Date(user.derniere_connexion) : null;
+                                        const daysSinceLogin = lastLogin ? Math.floor((Date.now() - lastLogin) / (1000 * 60 * 60 * 24)) : null;
+                                        
+                                        let activityBadge = '';
+                                        if (daysSinceLogin !== null) {
+                                            if (daysSinceLogin === 0) {
+                                                activityBadge = '<span class="text-xs text-green-600">Aujourd\'hui</span>';
+                                            } else if (daysSinceLogin <= 7) {
+                                                activityBadge = `<span class="text-xs text-green-600">Il y a ${daysSinceLogin}j</span>`;
+                                            } else if (daysSinceLogin <= 30) {
+                                                activityBadge = `<span class="text-xs text-orange-600">Il y a ${daysSinceLogin}j</span>`;
+                                            } else {
+                                                activityBadge = '<span class="text-xs text-red-600">Inactif</span>';
+                                            }
+                                        }
+                                        
+                                        const initials = user.nom ? user.nom.split(' ').map(n => n[0]).join('').toUpperCase() : 'U';
+                                        
+                                        return `
+                                            <tr class="hover:bg-gray-50 transition user-row" data-nom="${user.nom?.toLowerCase()}" data-email="${user.email?.toLowerCase()}" data-parcours="${user.type_parcours}" data-activite="${daysSinceLogin <= 7 ? 'actif' : 'inactif'}">
+                                                <td class="px-6 py-4">
+                                                    <div class="flex items-center">
+                                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold mr-3">
+                                                            ${initials}
+                                                        </div>
+                                                        <div>
+                                                            <p class="font-semibold text-gray-900">${user.nom || 'Sans nom'}</p>
+                                                            <p class="text-sm text-gray-500">${user.email}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="px-3 py-1 text-xs font-semibold rounded-full ${parcoursColors[user.type_parcours] || 'bg-gray-100 text-gray-800'}">
+                                                        ${parcoursIcons[user.type_parcours] || '📚'} ${user.type_parcours || 'Non défini'}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="font-bold text-blue-600">${user.points_total || 0}</span>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="flex items-center">
+                                                        <span class="text-orange-500 mr-1">🔥</span>
+                                                        <span class="font-semibold">${user.streak_jours || 0}</span>
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">
+                                                    ${user.date_inscription ? new Date(user.date_inscription).toLocaleDateString('fr-FR') : new Date(user.created_at).toLocaleDateString('fr-FR')}
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <div class="flex flex-col">
+                                                        ${activityBadge || '<span class="text-xs text-gray-400">Jamais connecté</span>'}
+                                                        ${lastLogin ? `<span class="text-xs text-gray-400">${lastLogin.toLocaleDateString('fr-FR')}</span>` : ''}
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 text-right">
+                                                    <div class="flex justify-end space-x-2">
+                                                        <button onclick="viewUserDetails('${user.id}')" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Voir détails">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                            </svg>
+                                                        </button>
+                                                        <button onclick="deleteUser('${user.id}', '${(user.nom || 'utilisateur').replace(/'/g, "\\'")}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Supprimer">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                
+                // Ajouter les event listeners pour les filtres
+                setupUserFilters();
+                
+            } catch (error) {
+                content.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">Erreur: ${error.message}</div>`;
+            }
+        }
+
+        function setupUserFilters() {
+            const searchInput = document.getElementById('searchUsers');
+            const parcoursFilter = document.getElementById('filterParcours');
+            const activiteFilter = document.getElementById('filterActivite');
+            
+            if (!searchInput) return;
+            
+            const filterUsers = () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const parcours = parcoursFilter.value;
+                const activite = activiteFilter.value;
+                
+                document.querySelectorAll('.user-row').forEach(row => {
+                    const nom = row.dataset.nom || '';
+                    const email = row.dataset.email || '';
+                    const userParcours = row.dataset.parcours;
+                    const userActivite = row.dataset.activite;
+                    
+                    const matchSearch = !searchTerm || nom.includes(searchTerm) || email.includes(searchTerm);
+                    const matchParcours = !parcours || userParcours === parcours;
+                    const matchActivite = !activite || userActivite === activite;
+                    
+                    if (matchSearch && matchParcours && matchActivite) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            };
+            
+            searchInput.addEventListener('input', filterUsers);
+            parcoursFilter.addEventListener('change', filterUsers);
+            activiteFilter.addEventListener('change', filterUsers);
+        }
+
+        // Fonctions globales pour les utilisateurs
+        async function viewUserDetails(userId) {
+            try {
+                const { data: user, error: userError } = await sb.from('profiles').select('*').eq('id', userId).single();
+                if (userError) throw userError;
+
+                const { data: progressions } = await sb.from('progressions_cours').select('*, cours(titre)').eq('user_id', userId);
+                const { data: exercices } = await sb.from('soumissions_exercices').select('*').eq('user_id', userId);
+                
+                const coursTermines = progressions?.filter(p => p.est_termine).length || 0;
+                const exercicesReussis = exercices?.filter(e => e.est_reussi).length || 0;
+                const tauxReussite = exercices?.length > 0 ? ((exercicesReussis / exercices.length) * 100).toFixed(1) : 0;
+                
+                const detailsHTML = `
+                    <div style="font-family: monospace; white-space: pre-wrap; line-height: 1.6;">
+📊 Détails de ${user.nom || 'Utilisateur'}
+
+📚 Cours terminés: ${coursTermines}
+✅ Exercices réussis: ${exercicesReussis}/${exercices?.length || 0}
+📈 Taux de réussite: ${tauxReussite}%
+🏆 Points totaux: ${user.points_total || 0}
+🔥 Streak: ${user.streak_jours || 0} jours
+📧 Email: ${user.email}
+📅 Inscrit le: ${new Date(user.date_inscription || user.created_at).toLocaleDateString('fr-FR')}
+🎯 Parcours: ${user.type_parcours || 'Non défini'}
+${user.bio ? `\n📝 Bio: ${user.bio}` : ''}
+${user.derniere_connexion ? `\n🕐 Dernière connexion: ${new Date(user.derniere_connexion).toLocaleString('fr-FR')}` : '\n🕐 Dernière connexion: Jamais'}
+                    </div>
+                `;
+                
+                alert(detailsHTML);
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors du chargement des détails: ' + error.message);
+            }
+        }
+
+        async function deleteUser(userId, userName) {
+            if (!confirm(`⚠️ Supprimer l'utilisateur "${userName}" ?\n\nCette action est irréversible et supprimera :\n- Toutes ses progressions\n- Tous ses exercices\n- Toutes ses données`)) {
+                return;
+            }
+            
+            try {
+                const { error } = await sb.from('profiles').delete().eq('id', userId);
+                if (error) throw error;
+                
+                alert('✅ Utilisateur supprimé avec succès');
+                loadUtilisateurs();
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur: ' + error.message);
+            }
+        }
+
+        function exportUsers() {
+            try {
+                const rows = Array.from(document.querySelectorAll('.user-row')).filter(row => {
+                    return row.style.display !== 'none';
+                });
+                
+                if (rows.length === 0) {
+                    alert('Aucun utilisateur à exporter');
+                    return;
+                }
+                
+                let csv = 'Nom,Email,Parcours,Points,Streak,Inscription,Derniere Connexion\n';
+                
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    const nom = cells[0].querySelector('p.font-semibold')?.textContent || 'N/A';
+                    const email = cells[0].querySelectorAll('p')[1]?.textContent || 'N/A';
+                    const parcours = cells[1]?.textContent.trim() || 'N/A';
+                    const points = cells[2]?.textContent.trim() || '0';
+                    const streak = cells[3]?.querySelector('span.font-semibold')?.textContent || '0';
+                    const inscription = cells[4]?.textContent.trim() || 'N/A';
+                    const derniereConnexion = cells[5]?.textContent.trim() || 'Jamais';
+                    
+                    csv += `"${nom}","${email}","${parcours}","${points}","${streak}","${inscription}","${derniereConnexion}"\n`;
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `utilisateurs_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                alert(`✅ ${rows.length} utilisateur(s) exporté(s)`);
+            } catch (error) {
+                console.error('Erreur export:', error);
+                alert('❌ Erreur lors de l\'export: ' + error.message);
+            }
+        }
+
+        function openMatiereModal(id = null) {
+            currentEditId = id;
+            const modal = document.getElementById('matiereModal');
+            const form = document.getElementById('matiereForm');
+            document.getElementById('modalTitle').textContent = id ? 'Modifier la Matière' : 'Nouvelle Matière';
+            form.reset();
+            
+            if (id) {
+                sb.from('matieres').select('*').eq('id', id).single().then(({ data }) => {
+                    if (data) {
+                        document.getElementById('matiereNom').value = data.nom;
+                        document.getElementById('matiereDescription').value = data.description || '';
+                        document.getElementById('matiereTypeParcours').value = data.type_parcours;
+                        document.getElementById('matiereCouleur').value = data.couleur;
+                        document.getElementById('matiereOrdre').value = data.ordre;
+                    }
+                });
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        async function openChapitreModal(id = null) {
+            currentEditId = id;
+            selectedPDF = null;
+            currentPDFUrl = null;
+            
+            const modal = document.getElementById('chapitreModal');
+            const form = document.getElementById('chapitreForm');
+            const select = document.getElementById('chapitreMatiere');
+            
+            document.getElementById('chapitreModalTitle').textContent = id ? 'Modifier le Chapitre' : 'Nouveau Chapitre';
+            form.reset();
+            
+            // Réinitialiser les affichages PDF
+            document.getElementById('pdfPreview').classList.add('hidden');
+            document.getElementById('existingPDF').classList.add('hidden');
+            document.getElementById('chapitrePDF').value = '';
+            
+            const { data: matieres } = await sb.from('matieres').select('*').order('nom');
+            select.innerHTML = '<option value="">Sélectionner une matière...</option>' +
+                matieres.map(m => `<option value="${m.id}">${m.nom}</option>`).join('');
+            
+            if (id) {
+                const { data } = await sb.from('chapitres').select('*').eq('id', id).single();
+                if (data) {
+                    document.getElementById('chapitreMatiere').value = data.matiere_id;
+                    document.getElementById('chapitreTitre').value = data.titre;
+                    document.getElementById('chapitreDescription').value = data.description || '';
+                    document.getElementById('chapitreDifficulte').value = data.difficulte;
+                    document.getElementById('chapitreDuree').value = data.duree_estimee;
+                    document.getElementById('chapitreOrdre').value = data.ordre;
+                    document.getElementById('chapitreObjectifs').value = data.objectifs?.join('\n') || '';
+                    document.getElementById('chapitreEstPublie').checked = data.est_publie;
+                    document.getElementById('chapitreEstPremium').checked = data.est_premium;
+                    
+                    // Afficher le PDF existant s'il y en a un
+                    if (data.pdf_url) {
+                        currentPDFUrl = data.pdf_url;
+                        const { data: urlData } = sb.storage.from('chapitres-pdfs').getPublicUrl(data.pdf_url);
+                        document.getElementById('existingPDFLink').href = urlData.publicUrl;
+                        document.getElementById('existingPDF').classList.remove('hidden');
+                    }
+                }
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        // Form submissions
+        document.getElementById('matiereForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                nom: document.getElementById('matiereNom').value,
+                slug: document.getElementById('matiereNom').value.toLowerCase().replace(/\s+/g, '-'),
+                description: document.getElementById('matiereDescription').value,
+                type_parcours: document.getElementById('matiereTypeParcours').value,
+                couleur: document.getElementById('matiereCouleur').value,
+                ordre: parseInt(document.getElementById('matiereOrdre').value)
+            };
+            
+            try {
+                if (currentEditId) {
+                    await sb.from('matieres').update(data).eq('id', currentEditId);
+                } else {
+                    await sb.from('matieres').insert([data]);
+                }
+                document.getElementById('matiereModal').classList.add('hidden');
+                loadMatieres();
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+            }
+        });
+
+        document.getElementById('coursForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitCoursBtn');
+            const submitText = document.getElementById('submitCoursText');
+            const submitLoader = document.getElementById('submitCoursLoader');
+            
+            submitBtn.disabled = true;
+            submitText.classList.add('hidden');
+            submitLoader.classList.remove('hidden');
+            
+            try {
+                const typeContenu = document.querySelector('input[name="typeContenu"]:checked').value;
+                let videoUrl = document.getElementById('coursVideoUrl').value || currentVideoUrl;
+                
+                // Upload vidéo si fichier sélectionné
+                if (selectedVideo) {
+                    const fileName = `${Date.now()}-${selectedVideo.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+                    const { data: uploadData, error: uploadError } = await sb.storage
+                        .from('cours-videos')
+                        .upload(fileName, selectedVideo, {
+                            cacheControl: '3600',
+                            upsert: false
+                        });
+                    
+                    if (uploadError) throw new Error(`Erreur upload: ${uploadError.message}`);
+                    
+                    videoUrl = uploadData.path;
+                    
+                    // Supprimer ancienne vidéo
+                    if (currentVideoUrl && currentEditId && !currentVideoUrl.includes('youtube')) {
+                        await sb.storage.from('cours-videos').remove([currentVideoUrl]);
+                    }
+                }
+                
+                const data = {
+                    chapitre_id: document.getElementById('coursChapitre').value,
+                    titre: document.getElementById('coursTitre').value,
+                    slug: document.getElementById('coursTitre').value.toLowerCase().replace(/\s+/g, '-'),
+                    contenu: document.getElementById('coursContenu').value,
+                    type_contenu: typeContenu,
+                    video_url: videoUrl,
+                    duree_lecture: parseInt(document.getElementById('coursDuree').value),
+                    points_recompense: parseInt(document.getElementById('coursPoints').value),
+                    ordre: parseInt(document.getElementById('coursOrdre').value),
+                    est_gratuit: document.getElementById('coursEstGratuit').checked,
+                    est_publie: document.getElementById('coursEstPublie').checked
+                };
+                
+                if (currentEditId) {
+                    await sb.from('cours').update(data).eq('id', currentEditId);
+                } else {
+                    await sb.from('cours').insert([data]);
+                }
+                
+                document.getElementById('coursModal').classList.add('hidden');
+                loadCours();
+                selectedVideo = null;
+                currentVideoUrl = null;
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitText.classList.remove('hidden');
+                submitLoader.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('chapitreForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitChapitreBtn');
+            const submitText = document.getElementById('submitChapitreText');
+            const submitLoader = document.getElementById('submitChapitreLoader');
+            
+            // Désactiver le bouton et afficher le loader
+            submitBtn.disabled = true;
+            submitText.classList.add('hidden');
+            submitLoader.classList.remove('hidden');
+            
+            try {
+                const objectifs = document.getElementById('chapitreObjectifs').value
+                    .split('\n').map(o => o.trim()).filter(o => o);
+                
+                let pdfUrl = currentPDFUrl;
+                
+                // Upload du PDF si un nouveau fichier est sélectionné
+                if (selectedPDF) {
+                    const fileName = `${Date.now()}-${selectedPDF.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+                    const { data: uploadData, error: uploadError } = await sb.storage
+                        .from('chapitres-pdfs')
+                        .upload(fileName, selectedPDF, {
+                            cacheControl: '3600',
+                            upsert: false
+                        });
+                    
+                    if (uploadError) {
+                        throw new Error(`Erreur upload PDF: ${uploadError.message}`);
+                    }
+                    
+                    pdfUrl = uploadData.path;
+                    
+                    // Supprimer l'ancien PDF si on en remplace un
+                    if (currentPDFUrl && currentEditId) {
+                        await sb.storage.from('chapitres-pdfs').remove([currentPDFUrl]);
+                    }
+                }
+                
+                // Supprimer le PDF si demandé
+                if (!currentPDFUrl && currentEditId) {
+                    const { data: oldData } = await sb.from('chapitres').select('pdf_url').eq('id', currentEditId).single();
+                    if (oldData?.pdf_url) {
+                        await sb.storage.from('chapitres-pdfs').remove([oldData.pdf_url]);
+                        pdfUrl = null;
+                    }
+                }
+                
+                const data = {
+                    matiere_id: document.getElementById('chapitreMatiere').value,
+                    titre: document.getElementById('chapitreTitre').value,
+                    slug: document.getElementById('chapitreTitre').value.toLowerCase().replace(/\s+/g, '-'),
+                    description: document.getElementById('chapitreDescription').value,
+                    difficulte: document.getElementById('chapitreDifficulte').value,
+                    duree_estimee: parseInt(document.getElementById('chapitreDuree').value),
+                    ordre: parseInt(document.getElementById('chapitreOrdre').value),
+                    objectifs: objectifs,
+                    est_publie: document.getElementById('chapitreEstPublie').checked,
+                    est_premium: document.getElementById('chapitreEstPremium').checked,
+                    pdf_url: pdfUrl
+                };
+                
+                if (currentEditId) {
+                    const { error } = await sb.from('chapitres').update(data).eq('id', currentEditId);
+                    if (error) throw error;
+                } else {
+                    const { error } = await sb.from('chapitres').insert([data]);
+                    if (error) throw error;
+                }
+                
+                document.getElementById('chapitreModal').classList.add('hidden');
+                loadChapitres();
+                
+                // Réinitialiser
+                selectedPDF = null;
+                currentPDFUrl = null;
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur: ' + error.message);
+            } finally {
+                // Réactiver le bouton
+                submitBtn.disabled = false;
+                submitText.classList.remove('hidden');
+                submitLoader.classList.add('hidden');
+            }
+        });
+
+        // Cancel buttons
+        document.getElementById('cancelModal').addEventListener('click', () => {
+            document.getElementById('matiereModal').classList.add('hidden');
+        });
+
+        document.getElementById('cancelChapitreModal').addEventListener('click', () => {
+            document.getElementById('chapitreModal').classList.add('hidden');
+        });
+
+        document.getElementById('cancelCoursModal').addEventListener('click', () => {
+            document.getElementById('coursModal').classList.add('hidden');
+        });
+
+        // Global functions
+        window.editMatiere = (id) => openMatiereModal(id);
+        window.editChapitre = (id) => openChapitreModal(id);
+        window.editCours = (id) => openCoursModal(id);
+        window.viewUserDetails = (id) => viewUserDetails(id);
+        window.deleteUser = (id, name) => deleteUser(id, name);
+        window.exportUsers = () => exportUsers();
+        
+        window.deleteMatiere = async (id) => {
+            if (confirm('Supprimer cette matière ?')) {
+                await sb.from('matieres').delete().eq('id', id);
+                loadMatieres();
+            }
+        };
+        
+        window.deleteChapitre = async (id) => {
+            if (confirm('Supprimer ce chapitre ?')) {
+                await sb.from('chapitres').delete().eq('id', id);
+                loadChapitres();
+            }
+        };
+
+        window.deleteCours = async (id) => {
+            if (confirm('Supprimer ce cours ?')) {
+                // Supprimer aussi la vidéo si elle existe
+                const { data } = await sb.from('cours').select('video_url').eq('id', id).single();
+                if (data?.video_url && !data.video_url.includes('youtube')) {
+                    await sb.storage.from('cours-videos').remove([data.video_url]);
+                }
+                await sb.from('cours').delete().eq('id', id);
+                loadCours();
+            }
+        };
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await sb.auth.signOut();
+            window.location.href = '/login.html';
+        });
+
+        // Init
+        switchView('dashboard');
+    </script>
+</body>
+</html>

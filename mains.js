@@ -7,11 +7,36 @@ import Navigation from './navigation.js';
 import Matieres from './views/matieres.js';
 import Chapitres from './views/chapitres.js';
 
-// Exposer globalement pour les événements onclick dans le HTML
+// Exposer globalement pour onclick dans le HTML
 window.Matieres = Matieres;
 window.Chapitres = Chapitres;
 
-// Event Handlers
+// Gestion formulaire Matière
+document.getElementById('matiereForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = {
+        nom: document.getElementById('matiereNom').value.trim(),
+        slug: document.getElementById('matiereNom').value.trim().toLowerCase().replace(/\s+/g, '-'),
+        description: document.getElementById('matiereDescription').value.trim(),
+        type_parcours: document.getElementById('matiereTypeParcours').value,
+        couleur: document.getElementById('matiereCouleur').value,
+        ordre: parseInt(document.getElementById('matiereOrdre').value)
+    };
+    
+    const success = await Matieres.save(formData);
+    
+    if (success) {
+        document.getElementById('matiereModal').classList.add('hidden');
+        Matieres.load();
+    }
+});
+
+document.getElementById('cancelModal').addEventListener('click', () => {
+    document.getElementById('matiereModal').classList.add('hidden');
+});
+
+// Gestion formulaire Chapitre
 document.getElementById('chapitreForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -39,29 +64,7 @@ document.getElementById('cancelChapitreModal').addEventListener('click', () => {
     document.getElementById('chapitreModal').classList.add('hidden');
 });
 
-document.getElementById('matiereForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = {
-        nom: document.getElementById('matiereNom').value.trim(),
-        description: document.getElementById('matiereDescription').value.trim(),
-        type_parcours: document.getElementById('matiereTypeParcours').value,
-        couleur: document.getElementById('matiereCouleur').value,
-        ordre: parseInt(document.getElementById('matiereOrdre').value)
-    };
-    
-    const success = await Matieres.save(formData);
-    
-    if (success) {
-        document.getElementById('matiereModal').classList.add('hidden');
-        Matieres.load();
-    }
-});
-
-document.getElementById('cancelModal').addEventListener('click', () => {
-    document.getElementById('matiereModal').classList.add('hidden');
-});
-
+// Déconnexion
 document.getElementById('logoutBtn').addEventListener('click', () => {
     Auth.logout();
 });

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - LearnHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl shadow-lg mb-4 cursor-pointer" onclick="window.location.href='index.html'">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900">Créer un compte</h2>
+                <p class="mt-2 text-sm text-gray-600">Rejoins la communauté LearnHub</p>
+            </div>
+
+            <div id="messageContainer" class="hidden rounded-lg p-4"></div>
+
+            <form id="registerForm" class="mt-8 space-y-6 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nom complet *</label>
+                        <input 
+                            id="nom" 
+                            type="text" 
+                            required 
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none"
+                            placeholder="Jean Dupont">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                        <input 
+                            id="email" 
+                            type="email" 
+                            required 
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none"
+                            placeholder="jean.dupont@exemple.com">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Mot de passe *</label>
+                        <input 
+                            id="password" 
+                            type="password" 
+                            required 
+                            minlength="6"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none"
+                            placeholder="••••••••">
+                        <p class="text-xs text-gray-500 mt-1">Minimum 6 caractères</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Choisis ton parcours *</label>
+                        <select 
+                            id="parcours" 
+                            required 
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
+                            <option value="">Sélectionner...</option>
+                            <option value="eleve">🎓 Élève (Collège/Lycée)</option>
+                            <option value="dev-web">💻 Développeur Web</option>
+                            <option value="designer">🎨 Designer UI/UX</option>
+                        </select>
+                    </div>
+
+                    <div id="niveauContainer" class="hidden">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Niveau *</label>
+                        <select 
+                            id="niveau" 
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
+                            <option value="">Sélectionner...</option>
+                            <option value="6eme">6ème</option>
+                            <option value="5eme">5ème</option>
+                            <option value="4eme">4ème</option>
+                            <option value="3eme">3ème</option>
+                            <option value="seconde">Seconde</option>
+                            <option value="premiere">Première</option>
+                            <option value="terminale">Terminale</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="terms" type="checkbox" required class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                    <label for="terms" class="ml-2 text-sm text-gray-600">
+                        J'accepte les <a href="#" class="text-purple-600 hover:text-purple-700">conditions d'utilisation</a>
+                    </label>
+                </div>
+
+                <button 
+                    type="submit" 
+                    id="registerBtn"
+                    class="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg transition-all">
+                    Créer mon compte
+                </button>
+
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">
+                        Déjà un compte ? 
+                        <a href="login.html" class="text-purple-600 hover:text-purple-700 font-semibold">Se connecter</a>
+                    </p>
+                </div>
+            </form>
+
+            <div class="text-center">
+                <a href="index.html" class="text-gray-600 hover:text-gray-900 font-medium">← Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        // Afficher le champ niveau si élève
+        document.getElementById('parcours').addEventListener('change', (e) => {
+            const niveauContainer = document.getElementById('niveauContainer')
+            const niveauSelect = document.getElementById('niveau')
+            
+            if (e.target.value === 'eleve') {
+                niveauContainer.classList.remove('hidden')
+                niveauSelect.required = true
+            } else {
+                niveauContainer.classList.add('hidden')
+                niveauSelect.required = false
+                niveauSelect.value = ''
+            }
+        })
+
+        // Pré-remplir le parcours depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search)
+        const parcoursParam = urlParams.get('parcours')
+        if (parcoursParam) {
+            document.getElementById('parcours').value = parcoursParam
+            document.getElementById('parcours').dispatchEvent(new Event('change'))
+        }
+
+        function showMessage(message, type = 'info') {
+            const container = document.getElementById('messageContainer')
+            container.className = `rounded-lg p-4 ${
+                type === 'error' ? 'bg-red-100 text-red-700 border border-red-200' :
+                type === 'success' ? 'bg-green-100 text-green-700 border border-green-200' :
+                'bg-blue-100 text-blue-700 border border-blue-200'
+            }`
+            container.textContent = message
+            container.classList.remove('hidden')
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault()
+            
+            const nom = document.getElementById('nom').value.trim()
+            const email = document.getElementById('email').value.trim()
+            const password = document.getElementById('password').value
+            const parcours = document.getElementById('parcours').value
+            const niveau = document.getElementById('niveau').value
+            const btn = document.getElementById('registerBtn')
+            
+            if (!nom || !email || !password || !parcours) {
+                showMessage('Veuillez remplir tous les champs obligatoires', 'error')
+                return
+            }
+
+            if (parcours === 'eleve' && !niveau) {
+                showMessage('Veuillez sélectionner votre niveau', 'error')
+                return
+            }
+
+            btn.disabled = true
+            btn.textContent = 'Création du compte...'
+
+            try {
+                console.log('📝 Inscription:', email, parcours)
+
+                // 1. Créer l'utilisateur avec metadata
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            nom: nom,
+                            type_parcours: parcours,
+                            niveau_actuel: niveau || null
+                        }
+                    }
+                })
+
+                if (authError) throw authError
+
+                if (!authData.user) {
+                    throw new Error('Erreur lors de la création du compte')
+                }
+
+                console.log('✅ Utilisateur créé:', authData.user.id)
+
+                // 2. Attendre que le trigger crée le profil (si existe)
+                await new Promise(resolve => setTimeout(resolve, 1000))
+
+                // 3. Vérifier/créer le profil (méthode upsert pour éviter les conflits)
+                const { data: profileData, error: profileError } = await supabase
+                    .from('profiles')
+                    .upsert({
+                        id: authData.user.id,
+                        nom: nom,
+                        email: email,
+                        type_parcours: parcours,
+                        niveau_actuel: niveau || null,
+                        points_total: 0,
+                        streak_jours: 0,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    }, {
+                        onConflict: 'id'
+                    })
+                    .select()
+                    .single()
+
+                if (profileError) {
+                    console.warn('⚠️ Avertissement profil:', profileError)
+                    // Ne pas bloquer si c'est juste un avertissement
+                } else {
+                    console.log('✅ Profil synchronisé:', profileData)
+                }
+
+                showMessage('Compte créé avec succès ! Redirection...', 'success')
+
+                // 4. Redirection immédiate selon le parcours
+                const dashboards = {
+                    'eleve': 'dashboard-eleve.html',
+                    'dev-web': 'dashboard-dev.html',
+                    'designer': 'dashboard-designer.html'
+                }
+
+                setTimeout(() => {
+                    window.location.href = dashboards[parcours] || 'index.html'
+                }, 1000)
+
+            } catch (error) {
+                console.error('❌ Erreur inscription:', error)
+                
+                let errorMessage = 'Erreur lors de l\'inscription'
+                
+                if (error.message.includes('already registered') || error.message.includes('already been registered')) {
+                    errorMessage = 'Cet email est déjà utilisé'
+                } else if (error.message.includes('Password')) {
+                    errorMessage = 'Le mot de passe doit contenir au moins 6 caractères'
+                } else if (error.message.includes('duplicate key')) {
+                    errorMessage = 'Ce compte existe déjà, veuillez vous connecter'
+                } else {
+                    errorMessage = error.message
+                }
+                
+                showMessage(errorMessage, 'error')
+                btn.disabled = false
+                btn.textContent = 'Créer mon compte'
+            }
+        })
+
+        // Vérifier si déjà connecté
+        async function checkExistingSession() {
+            const { data: { user } } = await supabase.auth.getUser()
+            
+            if (user) {
+                console.log('✅ Déjà connecté, redirection...')
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('type_parcours')
+                    .eq('id', user.id)
+                    .single()
+
+                if (profile) {
+                    const dashboards = {
+                        'eleve': 'dashboard-eleve.html',
+                        'dev-web': 'dashboard-dev.html',
+                        'designer': 'dashboard-designer.html'
+                    }
+                    window.location.href = dashboards[profile.type_parcours] || 'index.html'
+                }
+            }
+        }
+
+        checkExistingSession()
+    </script>
+</body>
+</html>

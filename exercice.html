@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercice - LearnHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <button onclick="history.back()" class="text-gray-600 hover:text-gray-900">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </button>
+                    <div>
+                        <h1 id="exerciceTitle" class="text-lg font-bold text-gray-900">Chargement...</h1>
+                        <p id="exerciceMeta" class="text-xs text-gray-500"></p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="text-sm">
+                        <span class="font-semibold text-purple-600" id="pointsDisplay">0 points</span>
+                    </div>
+                    <div id="timerDisplay" class="hidden px-4 py-2 bg-orange-100 text-orange-700 rounded-lg font-semibold">
+                        ⏱️ <span id="timer">00:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Instructions -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+            <div class="flex items-start space-x-3">
+                <svg class="w-6 h-6 text-blue-600 mt-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+                <div class="flex-1">
+                    <h3 class="font-bold text-blue-900 mb-2">Instructions</h3>
+                    <p id="consigneText" class="text-blue-800 text-sm">Chargement...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questionnaire -->
+        <div id="questionContainer" class="space-y-6">
+            <!-- Loading -->
+            <div class="animate-pulse space-y-6">
+                <div class="bg-white rounded-xl p-6 h-48"></div>
+                <div class="bg-white rounded-xl p-6 h-48"></div>
+            </div>
+        </div>
+
+        <!-- Bouton de soumission -->
+        <div class="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <button id="submitBtn" onclick="submitExercice()" 
+                    class="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg transition">
+                Soumettre mes réponses
+            </button>
+        </div>
+
+        <!-- Résultats -->
+        <div id="resultsContainer" class="hidden mt-8">
+            <!-- Affichage dynamique des résultats -->
+        </div>
+    </div>
+
+    <script type="module">
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        let exerciceId = null
+        let currentUser = null
+        let exerciceData = null
+        let questions = []
+        let reponses = {}
+        let startTime = null
+        let timerInterval = null
+
+        async function init() {
+            // Vérifier authentification
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) {
+                window.location.href = 'login.html'
+                return
+            }
+            currentUser = user
+
+            // Récupérer l'ID de l'exercice
+            const urlParams = new URLSearchParams(window.location.search)
+            exerciceId = urlParams.get('id')
+
+            if (!exerciceId) {
+                history.back()
+                return
+            }
+
+            await loadExercice()
+            await loadQuestions()
+            startTimer()
+        }
+
+        async function loadExercice() {
+            try {
+                const { data: exercice, error } = await supabase
+                    .from('exercices')
+                    .select(`
+                        *,
+                        chapitres:chapitres(
+                            titre,
+                            matieres:matieres(nom)
+                        )
+                    `)
+                    .eq('id', exerciceId)
+                    .single()
+
+                if (error) throw error
+                exerciceData = exercice
+
+                document.getElementById('exerciceTitle').textContent = exercice.titre
+                document.getElementById('exerciceMeta').textContent = 
+                    `${exercice.chapitres.matieres.nom} • ${exercice.chapitres.titre}`
+                document.getElementById('pointsDisplay').textContent = `${exercice.points} points`
+                document.getElementById('consigneText').textContent = exercice.consigne
+                document.title = `${exercice.titre} - LearnHub`
+
+                // Afficher le timer si temps limite
+                if (exercice.temps_limite) {
+                    document.getElementById('timerDisplay').classList.remove('hidden')
+                }
+            } catch (error) {
+                console.error('Erreur chargement exercice:', error)
+            }
+        }
+
+        async function loadQuestions() {
+            try {
+                const { data: questionsData, error } = await supabase
+                    .from('questions')
+                    .select(`
+                        *,
+                        reponses:reponses(*)
+                    `)
+                    .eq('exercice_id', exerciceId)
+                    .order('ordre')
+
+                if (error) throw error
+                questions = questionsData
+
+                displayQuestions()
+            } catch (error) {
+                console.error('Erreur chargement questions:', error)
+            }
+        }
+
+        function displayQuestions() {
+            const container = document.getElementById('questionContainer')
+
+            if (!questions || questions.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-xl p-12 text-center">
+                        <div class="text-6xl mb-4">❓</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Aucune question disponible</h3>
+                        <p class="text-gray-600">Cet exercice n'a pas encore de questions.</p>
+                    </div>
+                `
+                return
+            }
+
+            container.innerHTML = questions.map((q, index) => {
+                const typeQuestion = q.type_question || 'choix_unique'
+                
+                return `
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-start space-x-3 mb-4">
+                            <div class="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">
+                                ${index + 1}
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-bold text-gray-900 mb-2">${q.question_texte}</h3>
+                                <p class="text-xs text-gray-500">
+                                    ${q.points || 1} point${(q.points || 1) > 1 ? 's' : ''} • 
+                                    ${typeQuestion === 'choix_multiple' ? 'Plusieurs réponses possibles' : 'Une seule réponse'}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 ml-11">
+                            ${q.reponses.sort((a, b) => a.ordre - b.ordre).map(r => `
+                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition">
+                                    <input type="${typeQuestion === 'choix_multiple' ? 'checkbox' : 'radio'}" 
+                                           name="question_${q.id}" 
+                                           value="${r.id}"
+                                           onchange="handleReponseChange(${q.id}, ${r.id}, '${typeQuestion}')"
+                                           class="w-4 h-4 text-purple-600">
+                                    <span class="ml-3 text-gray-900">${r.texte_reponse}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+
+                        ${q.explication ? `
+                            <div id="explication_${q.id}" class="hidden mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                <h4 class="font-semibold text-blue-900 mb-1">💡 Explication</h4>
+                                <p class="text-blue-800 text-sm">${q.explication}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `
+            }).join('')
+        }
+
+        window.handleReponseChange = function(questionId, reponseId, type) {
+            if (type === 'choix_multiple') {
+                if (!reponses[questionId]) {
+                    reponses[questionId] = []
+                }
+                const index = reponses[questionId].indexOf(reponseId)
+                if (index > -1) {
+                    reponses[questionId].splice(index, 1)
+                } else {
+                    reponses[questionId].push(reponseId)
+                }
+            } else {
+                reponses[questionId] = [reponseId]
+            }
+        }
+
+        function startTimer() {
+            if (!exerciceData?.temps_limite) return
+
+            startTime = Date.now()
+            const tempsLimiteMs = exerciceData.temps_limite * 60 * 1000
+
+            timerInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime
+                const remaining = Math.max(0, tempsLimiteMs - elapsed)
+
+                if (remaining === 0) {
+                    clearInterval(timerInterval)
+                    alert('⏰ Temps écoulé ! Soumission automatique...')
+                    submitExercice()
+                    return
+                }
+
+                const minutes = Math.floor(remaining / 60000)
+                const seconds = Math.floor((remaining % 60000) / 1000)
+                document.getElementById('timer').textContent = 
+                    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+            }, 1000)
+        }
+
+        window.submitExercice = async function() {
+            const btn = document.getElementById('submitBtn')
+            btn.disabled = true
+            btn.textContent = '⏳ Correction en cours...'
+
+            if (timerInterval) clearInterval(timerInterval)
+
+            try {
+                // Calculer le score
+                let score = 0
+                let scoreMax = 0
+                const reponsesCorrectes = {}
+
+                questions.forEach(q => {
+                    const pointsQuestion = q.points || 1
+                    scoreMax += pointsQuestion
+
+                    const bonnesReponses = q.reponses.filter(r => r.est_correcte).map(r => r.id)
+                    const reponsesUtilisateur = reponses[q.id] || []
+
+                    // Vérifier si toutes les bonnes réponses sont sélectionnées
+                    const estCorrect = bonnesReponses.length === reponsesUtilisateur.length &&
+                                     bonnesReponses.every(r => reponsesUtilisateur.includes(r))
+
+                    reponsesCorrectes[q.id] = {
+                        bonnes: bonnesReponses,
+                        utilisateur: reponsesUtilisateur,
+                        correct: estCorrect
+                    }
+
+                    if (estCorrect) {
+                        score += pointsQuestion
+                    }
+                })
+
+                const pourcentage = Math.round((score / scoreMax) * 100)
+                const estReussi = pourcentage >= 50
+
+                // Enregistrer la soumission
+                const tempsPris = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0
+
+                const { error } = await supabase
+                    .from('soumissions_exercices')
+                    .insert({
+                        user_id: currentUser.id,
+                        exercice_id: exerciceId,
+                        reponses: reponses,
+                        score: score,
+                        score_max: scoreMax,
+                        est_reussi: estReussi,
+                        temps_pris: tempsPris,
+                        created_at: new Date().toISOString()
+                    })
+
+                if (error) throw error
+
+                // Ajouter les points si réussi
+                if (estReussi) {
+                    await supabase.rpc('increment_points', {
+                        user_id: currentUser.id,
+                        points: exerciceData.points
+                    })
+                }
+
+                // Afficher les résultats
+                displayResults(score, scoreMax, pourcentage, estReussi, reponsesCorrectes)
+
+            } catch (error) {
+                console.error('Erreur soumission:', error)
+                alert('Erreur lors de la soumission')
+                btn.disabled = false
+                btn.textContent = 'Soumettre mes réponses'
+            }
+        }
+
+        function displayResults(score, scoreMax, pourcentage, estReussi, reponsesCorrectes) {
+            // Cacher le bouton de soumission
+            document.getElementById('submitBtn').parentElement.classList.add('hidden')
+
+            // Afficher les résultats
+            const resultsContainer = document.getElementById('resultsContainer')
+            resultsContainer.classList.remove('hidden')
+
+            resultsContainer.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg border-2 ${estReussi ? 'border-green-500' : 'border-red-500'} p-8 text-center">
+                    <div class="text-6xl mb-4">${estReussi ? '🎉' : '😔'}</div>
+                    <h2 class="text-3xl font-bold ${estReussi ? 'text-green-600' : 'text-red-600'} mb-2">
+                        ${estReussi ? 'Bravo !' : 'Pas encore...'}
+                    </h2>
+                    <p class="text-xl text-gray-700 mb-6">
+                        Score : <span class="font-bold">${score}/${scoreMax}</span> (${pourcentage}%)
+                    </p>
+                    ${estReussi ? `
+                        <p class="text-green-700 font-semibold mb-4">
+                            ✨ Vous avez gagné ${exerciceData.points} points !
+                        </p>
+                    ` : `
+                        <p class="text-gray-600 mb-4">
+                            Il faut au moins 50% pour réussir. Réessayez !
+                        </p>
+                    `}
+                    <div class="flex gap-4 justify-center">
+                        <button onclick="history.back()" 
+                                class="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300">
+                            Retour au chapitre
+                        </button>
+                        ${!estReussi ? `
+                            <button onclick="location.reload()" 
+                                    class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700">
+                                Réessayer
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `
+
+            // Afficher les corrections
+            questions.forEach(q => {
+                const correction = reponsesCorrectes[q.id]
+                q.reponses.forEach(r => {
+                    const input = document.querySelector(`input[value="${r.id}"]`)
+                    const label = input?.parentElement
+
+                    if (label) {
+                        if (r.est_correcte) {
+                            label.classList.add('bg-green-50', 'border-green-500')
+                            label.innerHTML += ' <span class="text-green-600 font-bold">✓</span>'
+                        } else if (correction.utilisateur.includes(r.id)) {
+                            label.classList.add('bg-red-50', 'border-red-500')
+                            label.innerHTML += ' <span class="text-red-600 font-bold">✗</span>'
+                        }
+                        input.disabled = true
+                    }
+                })
+
+                // Afficher l'explication si disponible
+                const explication = document.getElementById(`explication_${q.id}`)
+                if (explication) {
+                    explication.classList.remove('hidden')
+                }
+            })
+        }
+
+        init()
+    </script>
+</body>
+</html>
