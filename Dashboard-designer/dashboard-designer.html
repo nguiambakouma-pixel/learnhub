@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Designer - LearnHub</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
+        * {
+            font-family: 'Inter', sans-serif;
+        }
     </style>
 </head>
+
 <body class="bg-gray-50">
 
     <!-- Navbar -->
@@ -18,29 +23,37 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01">
+                            </path>
                         </svg>
                     </div>
                     <span class="text-xl font-bold text-gray-900">LearnHub</span>
-                    <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">Designer</span>
+                    <span
+                        class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">Designer</span>
                 </div>
-                
+
                 <div class="flex items-center space-x-4">
                     <button class="p-2 hover:bg-gray-100 rounded-lg">
                         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                            </path>
                         </svg>
                     </button>
                     <div class="flex items-center space-x-3">
-                        <img id="userAvatar" class="w-10 h-10 rounded-full border-2 border-purple-200" src="https://ui-avatars.com/api/?name=Designer" alt="Avatar">
+                        <img id="userAvatar" class="w-10 h-10 rounded-full border-2 border-purple-200"
+                            src="https://ui-avatars.com/api/?name=Designer" alt="Avatar">
                         <div>
                             <p id="userName" class="text-sm font-semibold text-gray-900">Chargement...</p>
                             <p class="text-xs text-gray-500">UI/UX Designer</p>
                         </div>
                     </div>
-                    <button onclick="logout()" class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition">
+                    <button onclick="logout()"
+                        class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition">
                         Déconnexion
                     </button>
                 </div>
@@ -50,7 +63,7 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+
         <!-- Welcome Section -->
         <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 text-white mb-8">
             <h1 class="text-3xl font-bold mb-2">Créativité & Design, <span id="welcomeName">Designer</span> ! 🎨</h1>
@@ -64,7 +77,9 @@
                     <span class="text-gray-600 text-sm">Points Creative</span>
                     <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                         <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                            </path>
                         </svg>
                     </div>
                 </div>
@@ -76,7 +91,9 @@
                     <span class="text-gray-600 text-sm">Projets Design</span>
                     <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
                         <svg class="w-5 h-5 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
+                            <path fill-rule="evenodd"
+                                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                clip-rule="evenodd"></path>
                         </svg>
                     </div>
                 </div>
@@ -89,7 +106,9 @@
                     <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                         <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            <path fill-rule="evenodd"
+                                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd"></path>
                         </svg>
                     </div>
                 </div>
@@ -101,7 +120,9 @@
                     <span class="text-gray-600 text-sm">Streak</span>
                     <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
                         <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path>
+                            <path fill-rule="evenodd"
+                                d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
+                                clip-rule="evenodd"></path>
                         </svg>
                     </div>
                 </div>
@@ -111,10 +132,10 @@
 
         <!-- Main Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
+
             <!-- Left Column -->
             <div class="lg:col-span-2 space-y-6">
-                
+
                 <!-- Parcours Design -->
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <h2 class="text-xl font-bold text-gray-900 mb-4">🎨 Parcours Design</h2>
@@ -122,7 +143,8 @@
                         <div class="border-2 border-purple-200 rounded-xl p-4 bg-purple-50">
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="font-bold text-gray-900">Bases du Design UI</h3>
-                                <span class="px-3 py-1 bg-purple-200 text-purple-800 text-xs font-semibold rounded-full">Débutant</span>
+                                <span
+                                    class="px-3 py-1 bg-purple-200 text-purple-800 text-xs font-semibold rounded-full">Débutant</span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
                                 <div class="bg-purple-600 h-2 rounded-full" style="width: 0%"></div>
@@ -133,7 +155,8 @@
                         <div class="border-2 border-gray-200 rounded-xl p-4 opacity-50">
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="font-bold text-gray-900">UX Design & Prototypage</h3>
-                                <span class="px-3 py-1 bg-pink-200 text-pink-800 text-xs font-semibold rounded-full">Intermédiaire</span>
+                                <span
+                                    class="px-3 py-1 bg-pink-200 text-pink-800 text-xs font-semibold rounded-full">Intermédiaire</span>
                             </div>
                             <p class="text-sm text-gray-600">🔒 Débloque en complétant Bases du Design</p>
                         </div>
@@ -141,7 +164,8 @@
                         <div class="border-2 border-gray-200 rounded-xl p-4 opacity-50">
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="font-bold text-gray-900">Design System Avancé</h3>
-                                <span class="px-3 py-1 bg-red-200 text-red-800 text-xs font-semibold rounded-full">Avancé</span>
+                                <span
+                                    class="px-3 py-1 bg-red-200 text-red-800 text-xs font-semibold rounded-full">Avancé</span>
                             </div>
                             <p class="text-sm text-gray-600">🔒 Débloque en complétant UX Design</p>
                         </div>
@@ -152,15 +176,19 @@
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-xl font-bold text-gray-900">🖼️ Mon Portfolio</h2>
-                        <button class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-semibold rounded-lg hover:shadow-lg transition">
+                        <button
+                            class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-semibold rounded-lg hover:shadow-lg transition">
                             + Nouveau projet
                         </button>
                     </div>
                     <div id="portfolioGrid" class="grid grid-cols-2 gap-4">
-                        <div class="aspect-video bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center border-2 border-dashed border-purple-300">
+                        <div
+                            class="aspect-video bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center border-2 border-dashed border-purple-300">
                             <div class="text-center">
-                                <svg class="w-12 h-12 text-purple-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                <svg class="w-12 h-12 text-purple-400 mx-auto mb-2" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4"></path>
                                 </svg>
                                 <p class="text-sm text-purple-600 font-medium">Ajoute ton premier design</p>
                             </div>
@@ -171,7 +199,7 @@
 
             <!-- Right Column -->
             <div class="space-y-6">
-                
+
                 <!-- Design Challenge -->
                 <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border-2 border-purple-100">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">🎯 Design Challenge</h3>
@@ -181,7 +209,8 @@
                             <span class="font-semibold text-purple-600">0/1 défi</span>
                         </div>
                         <div class="w-full bg-white rounded-full h-3">
-                            <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full" style="width: 0%"></div>
+                            <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full"
+                                style="width: 0%"></div>
                         </div>
                         <p class="text-xs text-gray-600 mt-2">Complète 1 exercice de design aujourd'hui</p>
                     </div>
@@ -222,7 +251,9 @@
                 <!-- Inspiration du jour -->
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">💡 Inspiration</h3>
-                    <div class="aspect-video bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-lg mb-3"></div>
+                    <div
+                        class="aspect-video bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-lg mb-3">
+                    </div>
                     <p class="text-sm text-gray-600">Explore les tendances design du moment</p>
                 </div>
 
@@ -263,9 +294,9 @@
 
         async function init() {
             const { data: { user } } = await supabase.auth.getUser()
-            
+
             if (!user) {
-                window.location.href = 'login.html'
+                window.location.href = '../login.html'
                 return
             }
 
@@ -300,19 +331,20 @@
 
         function redirectToDashboard(parcours) {
             const dashboards = {
-                'dev-web': 'dashboard-dev.html',
+                'dev-web': '../Dashboard-Dev/dashboard-dev.html',
                 'designer': 'dashboard-designer.html',
-                'eleve': 'dashboard-eleve.html'
+                'eleve': '../Dashboard-eleves/dashboard-eleve.html'
             }
-            window.location.href = dashboards[parcours] || 'index.html'
+            window.location.href = dashboards[parcours] || '../index.html'
         }
 
-        window.logout = async function() {
+        window.logout = async function () {
             await supabase.auth.signOut()
-            window.location.href = 'index.html'
+            window.location.href = '../index.html'
         }
 
         init()
     </script>
 </body>
+
 </html>

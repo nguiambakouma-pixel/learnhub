@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercices - LearnHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Animations pour les modales */
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-100px) scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .modal-animate {
+            animation: slideInDown 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .success-badge {
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        .points-badge {
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        /* Radio/Checkbox personnalisés */
+        .choice-item {
+            transition: all 0.3s ease;
+        }
+
+        .choice-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .choice-item.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .choice-item.correct {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-color: #10b981;
+        }
+
+        .choice-item.incorrect {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <button onclick="window.history.back()" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </button>
+                    <div>
+                        <span class="text-xl font-bold text-gray-900">Exercices QCM</span>
+                        <p id="coursName" class="text-xs text-gray-500">Chargement...</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-sm font-semibold text-blue-600" id="scoreDisplay">0/0</p>
+                        <p class="text-xs text-gray-500">Score</p>
+                    </div>
+                    <img id="userAvatar" class="w-10 h-10 rounded-full border-2 border-blue-200"
+                        src="https://ui-avatars.com/api/?name=User" alt="Avatar">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 text-white mb-8">
+            <h1 class="text-3xl font-bold mb-2">🎯 Teste tes connaissances !</h1>
+            <p class="text-purple-100">Réponds aux questions pour valider ta compréhension du cours</p>
+        </div>
+
+        <!-- Zone d'exercices -->
+        <div id="exercicesContainer">
+            <!-- Skeleton loading -->
+            <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-200 mb-6">
+                <div class="animate-pulse">
+                    <div class="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                    <div class="h-4 bg-gray-200 rounded w-1/2 mb-6"></div>
+                    <div class="space-y-3">
+                        <div class="h-12 bg-gray-200 rounded"></div>
+                        <div class="h-12 bg-gray-200 rounded"></div>
+                        <div class="h-12 bg-gray-200 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton de validation final -->
+        <div id="finalValidation" class="hidden">
+            <button onclick="submitAllAnswers()"
+                class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-lg font-bold rounded-xl hover:shadow-2xl transition transform hover:scale-105">
+                ✅ Valider mes réponses
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Success -->
+    <div id="successModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center modal-animate">
+            <div class="success-badge mb-6">
+                <div
+                    class="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full mx-auto flex items-center justify-center">
+                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">🎉 Bravo !</h2>
+            <p class="text-gray-600 mb-6" id="successMessage">Bonne réponse !</p>
+
+            <div class="points-badge bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl p-4 mb-6">
+                <p class="text-white text-sm font-semibold mb-1">Points gagnés</p>
+                <p class="text-white text-4xl font-bold" id="pointsEarned">+10</p>
+            </div>
+
+            <button onclick="closeSuccessModal()"
+                class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:shadow-lg transition">
+                Continuer 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Error -->
+    <div id="errorModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center modal-animate">
+            <div class="mb-6">
+                <div
+                    class="w-24 h-24 bg-gradient-to-br from-red-400 to-pink-500 rounded-full mx-auto flex items-center justify-center">
+                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">😔 Pas tout à fait...</h2>
+            <p class="text-gray-600 mb-4" id="errorMessage">Ce n'est pas la bonne réponse</p>
+
+            <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 mb-6 text-left">
+                <p class="text-sm font-semibold text-blue-900 mb-2">💡 Explication :</p>
+                <p class="text-sm text-blue-800" id="explanationText">La bonne réponse est...</p>
+            </div>
+
+            <button onclick="closeErrorModal()"
+                class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:shadow-lg transition">
+                J'ai compris !
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Final Score -->
+    <div id="finalScoreModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-8 text-center modal-animate">
+            <div class="success-badge mb-6">
+                <div
+                    class="w-32 h-32 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full mx-auto flex items-center justify-center">
+                    <span class="text-6xl">🏆</span>
+                </div>
+            </div>
+
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Exercices terminés !</h2>
+
+            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 mb-6">
+                <p class="text-gray-600 mb-2">Ton score final :</p>
+                <p class="text-6xl font-bold text-purple-600 mb-4" id="finalScore">0/0</p>
+                <p class="text-2xl font-bold text-gray-900" id="finalPercentage">0%</p>
+            </div>
+
+            <div class="points-badge bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl p-6 mb-6">
+                <p class="text-white text-lg font-semibold mb-2">🎯 Points totaux gagnés</p>
+                <p class="text-white text-5xl font-bold" id="totalPointsEarned">+0</p>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="retryExercises()"
+                    class="flex-1 py-3 border-2 border-purple-600 text-purple-600 font-bold rounded-xl hover:bg-purple-50 transition">
+                    🔄 Réessayer
+                </button>
+                <button onclick="goBackToCourse()"
+                    class="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl hover:shadow-lg transition">
+                    Retour au cours
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        let currentUser = null
+        let coursId = null
+        let exercices = []
+        let userAnswers = {}
+        let correctCount = 0
+        let totalPoints = 0
+
+        async function init() {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) {
+                window.location.href = '../login.html'
+                return
+            }
+            currentUser = user
+
+            const urlParams = new URLSearchParams(window.location.search)
+            coursId = urlParams.get('id')
+
+            if (!coursId) {
+                showNotification('❌ Cours non trouvé', 'error')
+                setTimeout(() => window.history.back(), 2000)
+                return
+            }
+
+            await loadCourseInfo()
+            await loadExercices()
+        }
+
+        async function loadCourseInfo() {
+            try {
+                const { data: cours } = await supabase
+                    .from('cours')
+                    .select('titre')
+                    .eq('id', coursId)
+                    .single()
+
+                if (cours) {
+                    document.getElementById('coursName').textContent = cours.titre
+                }
+
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('nom')
+                    .eq('id', currentUser.id)
+                    .single()
+
+                if (profile) {
+                    document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.nom)}&background=667eea&color=fff`
+                }
+            } catch (error) {
+                console.error('Erreur chargement cours:', error)
+            }
+        }
+
+        async function loadExercices() {
+            try {
+                const { data, error } = await supabase
+                    .from('exercices')
+                    .select('*')
+                    .eq('cours_id', coursId)
+                    .eq('est_actif', true)
+                    .order('created_at')
+
+                if (error) throw error
+
+                if (!data || data.length === 0) {
+                    document.getElementById('exercicesContainer').innerHTML = `
+                        <div class="bg-white rounded-xl p-12 text-center border border-gray-200">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucun exercice disponible</h3>
+                            <p class="text-gray-500 mb-4">Les exercices seront ajoutés bientôt.</p>
+                            <button onclick="window.history.back()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                Retour au cours
+                            </button>
+                        </div>
+                    `
+                    return
+                }
+
+                exercices = data
+                renderExercices()
+                document.getElementById('scoreDisplay').textContent = `0/${exercices.length}`
+                document.getElementById('finalValidation').classList.remove('hidden')
+
+            } catch (error) {
+                console.error('Erreur chargement exercices:', error)
+                document.getElementById('exercicesContainer').innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                        <p class="text-red-700">Erreur: ${error.message}</p>
+                    </div>
+                `
+            }
+        }
+
+        function renderExercices() {
+            const container = document.getElementById('exercicesContainer')
+
+            container.innerHTML = exercices.map((ex, index) => {
+                const difficultyColors = {
+                    'facile': 'bg-green-100 text-green-800',
+                    'moyen': 'bg-yellow-100 text-yellow-800',
+                    'difficile': 'bg-red-100 text-red-800'
+                }
+
+                return `
+                    <div class="bg-white rounded-xl p-8 shadow-sm border-2 border-gray-200 mb-6" id="exercice-${ex.id}">
+                        <div class="flex items-start justify-between mb-6">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center text-white font-bold">
+                                        ${index + 1}
+                                    </div>
+                                    <div>
+                                        <span class="px-3 py-1 ${difficultyColors[ex.difficulte] || 'bg-gray-100 text-gray-800'} text-xs font-semibold rounded-full">
+                                            ${ex.difficulte}
+                                        </span>
+                                    </div>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">${ex.question}</h3>
+                            </div>
+                            <div class="ml-4 text-right">
+                                <div class="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-bold rounded-full">
+                                    ${ex.points} pts
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3" id="choices-${ex.id}">
+                            ${renderChoices(ex)}
+                        </div>
+                    </div>
+                `
+            }).join('')
+        }
+
+        function renderChoices(exercice) {
+            const isMultiple = exercice.type_question === 'qcm_multiple'
+            const inputType = isMultiple ? 'checkbox' : 'radio'
+            const inputName = `question-${exercice.id}`
+
+            return exercice.choix.map((choix, idx) => `
+                <div class="choice-item border-2 border-gray-300 rounded-xl p-4 cursor-pointer hover:border-purple-400 transition" 
+                     onclick="selectChoice(${exercice.id}, ${idx}, '${inputType}')">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="${inputType}" 
+                               name="${inputName}" 
+                               value="${idx}"
+                               class="w-5 h-5 text-purple-600 border-gray-300 focus:ring-purple-500"
+                               onchange="updateAnswer(${exercice.id}, ${idx}, ${isMultiple})">
+                        <span class="ml-3 text-gray-900 font-medium flex-1">${choix.texte}</span>
+                    </label>
+                </div>
+            `).join('')
+        }
+
+        window.selectChoice = function (exerciceId, choiceIdx, inputType) {
+            const input = document.querySelector(`input[name="question-${exerciceId}"][value="${choiceIdx}"]`)
+            if (input) {
+                input.checked = !input.checked
+                input.dispatchEvent(new Event('change'))
+            }
+        }
+
+        window.updateAnswer = function (exerciceId, choiceIdx, isMultiple) {
+            if (!userAnswers[exerciceId]) {
+                userAnswers[exerciceId] = []
+            }
+
+            if (isMultiple) {
+                const index = userAnswers[exerciceId].indexOf(choiceIdx)
+                if (index > -1) {
+                    userAnswers[exerciceId].splice(index, 1)
+                } else {
+                    userAnswers[exerciceId].push(choiceIdx)
+                }
+            } else {
+                userAnswers[exerciceId] = [choiceIdx]
+            }
+
+            // Update visual feedback
+            const container = document.getElementById(`choices-${exerciceId}`)
+            const choices = container.querySelectorAll('.choice-item')
+            choices.forEach((choice, idx) => {
+                if (userAnswers[exerciceId].includes(idx)) {
+                    choice.classList.add('selected')
+                } else {
+                    choice.classList.remove('selected')
+                }
+            })
+        }
+
+        window.submitAllAnswers = async function () {
+            if (Object.keys(userAnswers).length < exercices.length) {
+                showNotification('⚠️ Réponds à toutes les questions avant de valider', 'warning')
+                return
+            }
+
+            correctCount = 0
+            totalPoints = 0
+
+            // Vérifier chaque réponse
+            exercices.forEach(ex => {
+                const userAnswer = userAnswers[ex.id] || []
+                const correctAnswers = ex.choix
+                    .map((c, idx) => c.est_correct ? idx : -1)
+                    .filter(idx => idx !== -1)
+
+                const isCorrect = arraysEqual(userAnswer.sort(), correctAnswers.sort())
+
+                if (isCorrect) {
+                    correctCount++
+                    totalPoints += ex.points
+                }
+
+                // Visual feedback
+                const container = document.getElementById(`choices-${ex.id}`)
+                const choices = container.querySelectorAll('.choice-item')
+
+                choices.forEach((choice, idx) => {
+                    choice.classList.remove('selected')
+                    if (correctAnswers.includes(idx)) {
+                        choice.classList.add('correct')
+                    } else if (userAnswer.includes(idx)) {
+                        choice.classList.add('incorrect')
+                    }
+                })
+            })
+
+            // Sauvegarder dans la base
+            await saveResults()
+
+            // Afficher le score final avec confettis
+            setTimeout(() => {
+                showFinalScore()
+            }, 1000)
+        }
+
+        async function saveResults() {
+            try {
+                for (const ex of exercices) {
+                    const userAnswer = userAnswers[ex.id] || []
+                    const correctAnswers = ex.choix
+                        .map((c, idx) => c.est_correct ? idx : -1)
+                        .filter(idx => idx !== -1)
+
+                    const isCorrect = arraysEqual(userAnswer.sort(), correctAnswers.sort())
+
+                    await supabase.from('soumissions_exercices').insert({
+                        user_id: currentUser.id,
+                        exercice_id: ex.id,
+                        reponse_donnee: userAnswer,
+                        est_reussi: isCorrect,
+                        points_obtenus: isCorrect ? ex.points : 0,
+                        soumis_le: new Date().toISOString()
+                    })
+                }
+
+                // Ajouter les points au profil
+                if (totalPoints > 0) {
+                    await supabase.rpc('increment_user_points', {
+                        user_id: currentUser.id,
+                        points: totalPoints
+                    })
+                }
+
+            } catch (error) {
+                console.error('Erreur sauvegarde:', error)
+            }
+        }
+
+        function showFinalScore() {
+            const percentage = Math.round((correctCount / exercices.length) * 100)
+
+            document.getElementById('finalScore').textContent = `${correctCount}/${exercices.length}`
+            document.getElementById('finalPercentage').textContent = `${percentage}%`
+            document.getElementById('totalPointsEarned').textContent = `+${totalPoints}`
+            document.getElementById('finalScoreModal').classList.remove('hidden')
+
+            // Feux d'artifice !
+            if (percentage >= 80) {
+                launchFireworks()
+            } else if (percentage >= 50) {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                })
+            }
+        }
+
+        function launchFireworks() {
+            const duration = 3000
+            const animationEnd = Date.now() + duration
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min
+            }
+
+            const interval = setInterval(function () {
+                const timeLeft = animationEnd - Date.now()
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval)
+                }
+
+                const particleCount = 50 * (timeLeft / duration)
+
+                confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+                })
+                confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+                })
+            }, 250)
+        }
+
+        window.closeSuccessModal = function () {
+            document.getElementById('successModal').classList.add('hidden')
+        }
+
+        window.closeErrorModal = function () {
+            document.getElementById('errorModal').classList.add('hidden')
+        }
+
+        window.retryExercises = function () {
+            window.location.reload()
+        }
+
+        window.goBackToCourse = function () {
+            window.location.href = `cours.html?id=${coursId}`
+        }
+
+        function arraysEqual(a, b) {
+            return a.length === b.length && a.every((val, index) => val === b[index])
+        }
+
+        function showNotification(message, type = 'info') {
+            const colors = {
+                success: 'from-green-500 to-emerald-500',
+                error: 'from-red-500 to-pink-500',
+                warning: 'from-yellow-500 to-orange-500',
+                info: 'from-blue-500 to-indigo-500'
+            }
+
+            const notification = document.createElement('div')
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-4 bg-gradient-to-r ${colors[type]} text-white rounded-xl shadow-2xl transform transition-all duration-300`
+            notification.style.animation = 'slideInDown 0.3s ease-out'
+            notification.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <span class="text-lg font-bold">${message}</span>
+                </div>
+            `
+
+            document.body.appendChild(notification)
+
+            setTimeout(() => {
+                notification.style.opacity = '0'
+                notification.style.transform = 'translateX(100%)'
+                setTimeout(() => notification.remove(), 300)
+            }, 3000)
+        }
+
+        init()
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitre - LearnHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <button onclick="window.history.back()" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </button>
+                    <div>
+                        <span class="text-xl font-bold text-gray-900">LearnHub</span>
+                        <p id="chapitreSubtitle" class="text-xs text-gray-500">Chargement...</p>
+                    </div>
+                </div>
+
+                <img id="userAvatar" class="w-10 h-10 rounded-full border-2 border-blue-200"
+                    src="https://ui-avatars.com/api/?name=User" alt="Avatar">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Header du chapitre -->
+        <div id="chapitreHeader" class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-white mb-8">
+            <h1 id="chapitreTitle" class="text-3xl font-bold mb-3">Chargement...</h1>
+            <p id="chapitreDescription" class="text-indigo-100 mb-6">Chargement...</p>
+
+            <div class="flex items-center space-x-6 text-sm">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z">
+                        </path>
+                    </svg>
+                    <span id="coursCount">0 cours</span>
+                </div>
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <span id="totalDuration">0 min</span>
+                </div>
+                <div id="pdfButton" class="hidden">
+                    <a href="#" target="_blank"
+                        class="flex items-center px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg transition">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z">
+                            </path>
+                        </svg>
+                        Télécharger le PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des cours -->
+        <div class="space-y-4" id="coursList">
+            <!-- Skeleton Loading -->
+            <div class="animate-pulse bg-white rounded-xl p-6 border border-gray-200">
+                <div class="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+            <div class="animate-pulse bg-white rounded-xl p-6 border border-gray-200">
+                <div class="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        let currentUser = null
+        let chapitreId = null
+        let matiereId = null
+
+        async function init() {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) {
+                window.location.href = 'login.html'
+                return
+            }
+            currentUser = user
+
+            const urlParams = new URLSearchParams(window.location.search)
+            chapitreId = urlParams.get('id')
+            matiereId = urlParams.get('matiere')
+
+            if (!chapitreId) {
+                alert('Chapitre non trouvé')
+                window.history.back()
+                return
+            }
+
+            await loadChapitre()
+            await loadCours()
+        }
+
+        async function loadChapitre() {
+            try {
+                const { data: chapitre, error } = await supabase
+                    .from('chapitres')
+                    .select('*, matieres(nom, couleur)')
+                    .eq('id', chapitreId)
+                    .single()
+
+                if (error) throw error
+
+                document.getElementById('chapitreSubtitle').textContent = chapitre.matieres.nom
+                document.getElementById('chapitreTitle').textContent = chapitre.titre
+                document.getElementById('chapitreDescription').textContent = chapitre.description || 'Découvre tous les cours de ce chapitre'
+
+                // PDF si disponible
+                if (chapitre.pdf_url) {
+                    const pdfBtn = document.getElementById('pdfButton')
+                    pdfBtn.classList.remove('hidden')
+                    pdfBtn.querySelector('a').href = chapitre.pdf_url
+                }
+
+                // Avatar
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('nom')
+                    .eq('id', currentUser.id)
+                    .single()
+
+                if (profile) {
+                    document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.nom)}&background=667eea&color=fff`
+                }
+            } catch (error) {
+                console.error('Erreur chargement chapitre:', error)
+            }
+        }
+
+        async function loadCours() {
+            try {
+                const { data: cours, error } = await supabase
+                    .from('cours')
+                    .select('*')
+                    .eq('chapitre_id', chapitreId)
+                    .eq('est_publie', true)
+                    .order('ordre')
+
+                if (error) throw error
+
+                const container = document.getElementById('coursList')
+
+                if (!cours || cours.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-white rounded-xl p-12 text-center border border-gray-200">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucun cours disponible</h3>
+                            <p class="text-gray-500">Les cours seront ajoutés bientôt.</p>
+                        </div>
+                    `
+                    return
+                }
+
+                // Stats
+                const totalDuration = cours.reduce((sum, c) => sum + (c.duree_lecture || 0), 0)
+                document.getElementById('coursCount').textContent = `${cours.length} cours`
+                document.getElementById('totalDuration').textContent = `${totalDuration} min`
+
+                // Vérifier les progressions de l'utilisateur
+                const { data: progressions } = await supabase
+                    .from('progressions_cours')
+                    .select('cours_id, progression_pourcentage, est_termine')
+                    .eq('user_id', currentUser.id)
+                    .in('cours_id', cours.map(c => c.id))
+
+                const progressMap = {}
+                if (progressions) {
+                    progressions.forEach(p => {
+                        progressMap[p.cours_id] = {
+                            pourcentage: p.progression_pourcentage || 0,
+                            termine: p.est_termine
+                        }
+                    })
+                }
+
+                // Afficher les cours
+                container.innerHTML = cours.map((c, index) => {
+                    const progress = progressMap[c.id] || { pourcentage: 0, termine: false }
+
+                    const typeIcons = {
+                        'texte': '📝',
+                        'video': '🎥',
+                        'mixte': '🎬'
+                    }
+
+                    return `
+                        <div onclick="startCours(${c.id})" 
+                             class="bg-white rounded-xl p-6 border-2 ${progress.termine ? 'border-green-200 bg-green-50' : 'border-gray-200'} hover:border-blue-400 hover:shadow-lg transition cursor-pointer group">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-3">
+                                        <div class="w-10 h-10 ${progress.termine ? 'bg-green-500' : 'bg-gradient-to-br from-blue-500 to-indigo-500'} rounded-lg flex items-center justify-center text-white font-bold">
+                                            ${progress.termine ? '✓' : index + 1}
+                                        </div>
+                                        <div class="flex-1">
+                                            <h3 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition flex items-center">
+                                                <span class="mr-2">${typeIcons[c.type_contenu] || '📄'}</span>
+                                                ${c.titre}
+                                            </h3>
+                                            ${progress.termine ? '<p class="text-sm text-green-600 font-semibold">✓ Terminé</p>' :
+                            progress.pourcentage > 0 ? `<p class="text-sm text-blue-600 font-semibold">${progress.pourcentage}% complété</p>` : ''}
+                                        </div>
+                                    </div>
+
+                                    ${progress.pourcentage > 0 && !progress.termine ? `
+                                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                                            <div class="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full transition-all" style="width: ${progress.pourcentage}%"></div>
+                                        </div>
+                                    ` : ''}
+
+                                    <div class="flex items-center flex-wrap gap-3 text-sm">
+                                        <span class="flex items-center text-gray-600">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            ${c.duree_lecture || 0} min
+                                        </span>
+                                        <span class="flex items-center text-gray-600">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                            </svg>
+                                            +${c.points_recompense || 0} pts
+                                        </span>
+                                        ${!c.est_gratuit ? '<span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-semibold rounded">Premium</span>' : ''}
+                                        ${c.video_url ? '<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded">🎥 Vidéo</span>' : ''}
+                                    </div>
+                                </div>
+
+                                <div class="ml-4">
+                                    ${progress.termine ?
+                            '<div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center"><svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></div>' :
+                            '<svg class="w-6 h-6 text-gray-400 group-hover:text-blue-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>'
+                        }
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }).join('')
+
+            } catch (error) {
+                console.error('Erreur chargement cours:', error)
+                document.getElementById('coursList').innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                        <p class="text-red-700">Erreur de chargement: ${error.message}</p>
+                    </div>
+                `
+            }
+        }
+
+        window.startCours = function (coursId) {
+            window.location.href = `cours.html?id=${coursId}`
+        }
+
+        init()
+    </script>
+</body>
+
+</html>

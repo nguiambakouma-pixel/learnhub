@@ -16,10 +16,10 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 async function checkAuth(requiredType) {
     try {
         console.log('🔐 Vérification de l\'authentification...')
-        
+
         // 1. Vérifier si utilisateur connecté
         const { data: { user }, error: userError } = await supabase.auth.getUser()
-        
+
         if (userError || !user) {
             console.log('❌ Non authentifié, redirection vers login')
             window.location.href = 'login.html'
@@ -68,11 +68,11 @@ async function checkAuth(requiredType) {
  */
 function redirectToCorrectDashboard(typeParcours) {
     const dashboards = {
-        'eleve': 'dashboard-eleve.html',
-        'dev-web': 'dashboard-dev.html',
-        'designer': 'dashboard-designer.html'
+        'eleve': 'Dashboard-eleves/dashboard-eleve.html',
+        'dev-web': 'Dashboard-Dev/dashboard-dev.html',
+        'designer': 'Dashboard-designer/dashboard-designer.html'
     }
-    
+
     const dashboard = dashboards[typeParcours] || 'index.html'
     window.location.href = dashboard
 }

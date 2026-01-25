@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matière - LearnHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <button onclick="window.history.back()" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </button>
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold text-gray-900">LearnHub</span>
+                        <p id="matiereName" class="text-xs text-gray-500">Chargement...</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <img id="userAvatar" class="w-10 h-10 rounded-full border-2 border-blue-200"
+                        src="https://ui-avatars.com/api/?name=User" alt="Avatar">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Header Section -->
+        <div id="matiereHeader" class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white mb-8">
+            <div class="flex items-center space-x-4 mb-4">
+                <div class="text-5xl">📚</div>
+                <div>
+                    <h1 id="matiereTitle" class="text-3xl font-bold mb-2">Chargement...</h1>
+                    <p id="matiereDescription" class="text-blue-100">Chargement de la description...</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-6 text-sm">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z">
+                        </path>
+                    </svg>
+                    <span id="chapitresCount">0 chapitres</span>
+                </div>
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <span id="totalDuration">0 min</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapitres List -->
+        <div class="space-y-4" id="chapitresList">
+            <!-- Skeleton Loading -->
+            <div class="animate-pulse bg-white rounded-xl p-6 border border-gray-200">
+                <div class="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+            <div class="animate-pulse bg-white rounded-xl p-6 border border-gray-200">
+                <div class="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        let currentUser = null
+        let matiereId = null
+        let matiereName = ''
+
+        async function init() {
+            // Vérifier authentification
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) {
+                window.location.href = 'login.html'
+                return
+            }
+            currentUser = user
+
+            // Récupérer l'ID de la matière depuis l'URL
+            const urlParams = new URLSearchParams(window.location.search)
+            matiereId = urlParams.get('id')
+            matiereName = decodeURIComponent(urlParams.get('nom') || '')
+
+            if (!matiereId) {
+                alert('Matière non trouvée')
+                window.history.back()
+                return
+            }
+
+            await loadMatiere()
+            await loadChapitres()
+        }
+
+        async function loadMatiere() {
+            try {
+                const { data: matiere, error } = await supabase
+                    .from('matieres')
+                    .select('*')
+                    .eq('id', matiereId)
+                    .single()
+
+                if (error) throw error
+
+                // Mettre à jour l'interface
+                document.getElementById('matiereName').textContent = matiere.nom
+                document.getElementById('matiereTitle').textContent = matiere.nom
+                document.getElementById('matiereDescription').textContent = matiere.description || 'Découvre tous les chapitres de cette matière'
+
+                // Changer la couleur du header
+                const header = document.getElementById('matiereHeader')
+                header.style.background = `linear-gradient(135deg, ${matiere.couleur} 0%, ${matiere.couleur}dd 100%)`
+
+                // Avatar
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('nom')
+                    .eq('id', currentUser.id)
+                    .single()
+
+                if (profile) {
+                    document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.nom)}&background=667eea&color=fff`
+                }
+            } catch (error) {
+                console.error('Erreur chargement matière:', error)
+            }
+        }
+
+        async function loadChapitres() {
+            try {
+                const { data: chapitres, error } = await supabase
+                    .from('chapitres')
+                    .select(`
+                        *,
+                        cours:cours(count)
+                    `)
+                    .eq('matiere_id', matiereId)
+                    .eq('est_publie', true)
+                    .order('ordre')
+
+                if (error) throw error
+
+                const container = document.getElementById('chapitresList')
+
+                if (!chapitres || chapitres.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-white rounded-xl p-12 text-center border border-gray-200">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucun chapitre disponible</h3>
+                            <p class="text-gray-500">Les chapitres seront ajoutés bientôt.</p>
+                        </div>
+                    `
+                    return
+                }
+
+                // Mettre à jour les stats
+                const totalDuration = chapitres.reduce((sum, c) => sum + (c.duree_estimee || 0), 0)
+                document.getElementById('chapitresCount').textContent = `${chapitres.length} chapitre${chapitres.length > 1 ? 's' : ''}`
+                document.getElementById('totalDuration').textContent = `${totalDuration} min`
+
+                // Afficher les chapitres
+                container.innerHTML = chapitres.map((chapitre, index) => {
+                    const coursCount = chapitre.cours?.[0]?.count || 0
+                    const difficulteIcons = {
+                        'facile': '⭐',
+                        'moyen': '⭐⭐',
+                        'difficile': '⭐⭐⭐'
+                    }
+
+                    return `
+                        <div onclick="openChapitre(${chapitre.id}, '${chapitre.titre.replace(/'/g, "\\'")}')" 
+                             class="bg-white rounded-xl p-6 border-2 border-gray-200 hover:border-blue-400 hover:shadow-lg transition cursor-pointer group">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-3">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white font-bold">
+                                            ${index + 1}
+                                        </div>
+                                        <div class="flex-1">
+                                            <h3 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition">
+                                                ${chapitre.titre}
+                                            </h3>
+                                            <p class="text-sm text-gray-600">${chapitre.description || ''}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center flex-wrap gap-3 text-sm">
+                                        <span class="flex items-center text-gray-600">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"></path>
+                                            </svg>
+                                            ${coursCount} cours
+                                        </span>
+                                        <span class="flex items-center text-gray-600">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            ${chapitre.duree_estimee || 0} min
+                                        </span>
+                                        <span class="flex items-center text-gray-600">
+                                            ${difficulteIcons[chapitre.difficulte] || '⭐'} ${chapitre.difficulte}
+                                        </span>
+                                        ${chapitre.est_premium ? '<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded">Premium</span>' : ''}
+                                        ${chapitre.pdf_url ? '<span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg>PDF</span>' : ''}
+                                    </div>
+                                </div>
+
+                                <div class="ml-4">
+                                    <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }).join('')
+
+            } catch (error) {
+                console.error('Erreur chargement chapitres:', error)
+                document.getElementById('chapitresList').innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                        <p class="text-red-700">Erreur de chargement: ${error.message}</p>
+                    </div>
+                `
+            }
+        }
+
+        window.openChapitre = function (chapitreId, chapitreTitre) {
+            window.location.href = `chapitre.html?id=${chapitreId}&matiere=${matiereId}&nom=${encodeURIComponent(chapitreTitre)}`
+        }
+
+        init()
+    </script>
+</body>
+
+</html>

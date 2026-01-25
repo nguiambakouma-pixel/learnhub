@@ -17,12 +17,17 @@ export class MatieresView {
 
     try {
       const matieres = await api.getMatieres();
-      
+
       if (!matieres || matieres.length === 0) {
         ui.showEmpty(container, 'Aucune matière pour le moment', `
           <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
           </svg>
+          <div class="mt-4">
+            <button onclick="matieresView.openModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+              + Créer une matière
+            </button>
+          </div>
         `);
         return;
       }
@@ -41,11 +46,7 @@ export class MatieresView {
       </div>
     `;
 
-    // Add event listeners
-    matieres.forEach(m => {
-      document.getElementById(`edit-${m.id}`).addEventListener('click', () => this.openModal(m.id));
-      document.getElementById(`delete-${m.id}`).addEventListener('click', () => this.delete(m.id, m.nom));
-    });
+    // Event listeners are handled via onclick
   }
 
   renderCard(matiere) {
@@ -59,12 +60,12 @@ export class MatieresView {
             <div class="w-6 h-6 rounded" style="background-color: ${matiere.couleur};"></div>
           </div>
           <div class="flex space-x-2">
-            <button id="edit-${matiere.id}" class="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-lg transition">
+            <button onclick="matieresView.openModal('${matiere.id}')" class="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-lg transition">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
               </svg>
             </button>
-            <button id="delete-${matiere.id}" class="text-red-600 hover:text-red-800 p-2 hover:bg-red-50 rounded-lg transition">
+            <button onclick="matieresView.delete('${matiere.id}', '${matiere.nom.replace(/'/g, "\\'")}')" class="text-red-600 hover:text-red-800 p-2 hover:bg-red-50 rounded-lg transition">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
               </svg>

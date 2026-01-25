@@ -262,12 +262,12 @@
                     <textarea id="chapitreDescription" rows="3"
                         class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"></textarea>
                 </div>
-                <!-- 
-    SECTION PDF AVEC UPLOAD AUTOMATIQUE - VERSION CORRIGÉE
-    Remplace la section PDF dans le modal Chapitre de index.html
-    
-    IMPORTANT : Supprimez les 2 sections PDF existantes et ne gardez que celle-ci !
--->
+                <!-- Section PDF removed (duplicate) -->
+
+                <!-- ========================================== -->
+                <!-- SECTION PDF UPLOAD - VERSION CORRIGÉE -->
+                <!-- À placer dans le formulaire chapitreForm -->
+                <!-- ========================================== -->
 
                 <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6">
                     <div class="flex items-start space-x-3 mb-4">
@@ -278,7 +278,7 @@
                         </svg>
                         <div class="flex-1">
                             <h4 class="font-bold text-blue-900 mb-1">📄 PDF du chapitre (optionnel)</h4>
-                            <p class="text-sm text-blue-800">Uploadez un PDF qui sera accessible aux élèves</p>
+                            <p class="text-sm text-blue-800">Uploadez un PDF accessible aux élèves (Max 10 MB)</p>
                         </div>
                     </div>
 
@@ -312,7 +312,7 @@
                     <!-- Fichier uploadé avec succès -->
                     <div id="pdfUploadSuccess" class="hidden mt-4 bg-green-50 border-2 border-green-200 rounded-xl p-4">
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
+                            <div class="flex items-center space-x-3 flex-1 min-w-0">
                                 <div
                                     class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -322,13 +322,13 @@
                                     </svg>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="font-semibold text-green-900 truncate" id="pdfUploadedName">fichier.pdf
-                                    </p>
+                                    <p class="font-semibold text-green-900 truncate" id="pdfUploadedName">
+                                        fichier.pdf</p>
                                     <p class="text-sm text-green-700" id="pdfUploadedSize">2.5 MB</p>
                                 </div>
                             </div>
                             <button type="button" onclick="removePdfUpload()"
-                                class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition">
+                                class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition ml-2 flex-shrink-0">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
@@ -352,7 +352,7 @@
                     <!-- PDF existant (en mode édition) -->
                     <div id="pdfExisting" class="hidden mt-4 bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
+                            <div class="flex items-center space-x-3 flex-1">
                                 <div
                                     class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
@@ -370,7 +370,7 @@
                                 </div>
                             </div>
                             <button type="button" onclick="removeExistingPdfUpload()"
-                                class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition">
+                                class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition flex-shrink-0">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
@@ -380,392 +380,12 @@
                         </div>
                     </div>
 
-                    <!-- ========================================== -->
-<!-- SECTION PDF UPLOAD - VERSION CORRIGÉE -->
-<!-- À placer dans le formulaire chapitreForm -->
-<!-- ========================================== -->
-
-<div class="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6">
-    <div class="flex items-start space-x-3 mb-4">
-        <svg class="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"></path>
-        </svg>
-        <div class="flex-1">
-            <h4 class="font-bold text-blue-900 mb-1">📄 PDF du chapitre (optionnel)</h4>
-            <p class="text-sm text-blue-800">Uploadez un PDF accessible aux élèves (Max 10 MB)</p>
-        </div>
-    </div>
-
-    <!-- Zone de drop / Upload -->
-    <div id="pdfUploadZone" class="border-2 border-dashed border-blue-300 rounded-xl p-8 text-center hover:border-blue-500 hover:bg-blue-50 transition cursor-pointer">
-        <input type="file" id="chapitrePdfFile" accept=".pdf" class="hidden">
-        
-        <label for="chapitrePdfFile" class="cursor-pointer block">
-            <div class="text-5xl mb-3">📄</div>
-            <p class="text-lg font-semibold text-gray-700 mb-1">Cliquez pour sélectionner un PDF</p>
-            <p class="text-sm text-gray-500">ou glissez-déposez le fichier ici</p>
-            <p class="text-xs text-gray-400 mt-2">Max 10 MB • Format PDF uniquement</p>
-        </label>
-    </div>
-
-    <!-- Progress bar -->
-    <div id="pdfUploadProgress" class="hidden mt-4">
-        <div class="flex items-center justify-between mb-2">
-            <span class="text-sm font-semibold text-gray-700">Upload en cours...</span>
-            <span id="pdfUploadPercent" class="text-sm font-semibold text-blue-600">0%</span>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-            <div id="pdfProgressBar" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
-        </div>
-        <p id="pdfUploadStatus" class="text-sm text-gray-600 mt-2">Préparation...</p>
-    </div>
-
-    <!-- Fichier uploadé avec succès -->
-    <div id="pdfUploadSuccess" class="hidden mt-4 bg-green-50 border-2 border-green-200 rounded-xl p-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3 flex-1 min-w-0">
-                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
+                    <!-- Input hidden pour stocker l'URL finale -->
+                    <input type="hidden" id="chapitrePdfUrlHidden">
                 </div>
-                <div class="flex-1 min-w-0">
-                    <p class="font-semibold text-green-900 truncate" id="pdfUploadedName">fichier.pdf</p>
-                    <p class="text-sm text-green-700" id="pdfUploadedSize">2.5 MB</p>
-                </div>
-            </div>
-            <button type="button" onclick="removePdfUpload()" class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition ml-2 flex-shrink-0">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                </svg>
-            </button>
-        </div>
-        <a id="pdfPreviewLink" href="#" target="_blank" class="inline-flex items-center mt-3 text-sm text-blue-600 hover:text-blue-700 font-semibold">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-            </svg>
-            Prévisualiser le PDF
-        </a>
-    </div>
 
-    <!-- PDF existant (en mode édition) -->
-    <div id="pdfExisting" class="hidden mt-4 bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3 flex-1">
-                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"></path>
-                    </svg>
-                </div>
-                <div>
-                    <p class="font-semibold text-blue-900">PDF actuel</p>
-                    <a id="pdfExistingLink" href="#" target="_blank" class="text-sm text-blue-600 hover:text-blue-700 font-semibold">
-                        Voir le PDF →
-                    </a>
-                </div>
-            </div>
-            <button type="button" onclick="removeExistingPdfUpload()" class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition flex-shrink-0">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                </svg>
-            </button>
-        </div>
-    </div>
 
-    <!-- Input hidden pour stocker l'URL finale -->
-    <input type="hidden" id="chapitrePdfUrlHidden">
-</div>
 
-<script>
-// ==========================================
-// PDF UPLOADER - VERSION CORRIGÉE
-// ==========================================
-
-let supabaseClient = null;
-let currentPdfFile = null;
-let currentPdfUrl = null;
-let isUploadingPdf = false;
-
-// Initialisation Supabase
-function initPdfUploader() {
-    if (window.supabase && typeof window.supabase.createClient === 'function') {
-        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A';
-        
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            auth: {
-                persistSession: true,
-                autoRefreshToken: true
-            }
-        });
-        
-        console.log('✅ Supabase PDF Uploader initialisé');
-    } else {
-        console.error('❌ Supabase non disponible');
-    }
-}
-
-// Handler upload
-async function handlePdfFileUpload(event) {
-    const file = event.target.files[0];
-    if (!file || isUploadingPdf) return;
-
-    // Validations
-    if (file.type !== 'application/pdf') {
-        alert('❌ Seuls les fichiers PDF sont acceptés');
-        event.target.value = '';
-        return;
-    }
-
-    const maxSize = 10 * 1024 * 1024; // 10 MB
-    if (file.size > maxSize) {
-        const confirmUpload = confirm(
-            `⚠️ Le fichier est volumineux (${(file.size / 1024 / 1024).toFixed(2)} MB).\n\n` +
-            `Le téléchargement pourrait être lent pour les élèves.\n\nContinuer ?`
-        );
-        if (!confirmUpload) {
-            event.target.value = '';
-            return;
-        }
-    }
-
-    if (!supabaseClient) {
-        alert('❌ Erreur : Supabase non initialisé. Veuillez recharger la page.');
-        return;
-    }
-
-    isUploadingPdf = true;
-    currentPdfFile = file;
-
-    // UI
-    document.getElementById('pdfUploadZone').classList.add('hidden');
-    document.getElementById('pdfExisting').classList.add('hidden');
-    document.getElementById('pdfUploadProgress').classList.remove('hidden');
-
-    try {
-        // Vérifier l'authentification
-        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-        
-        if (userError || !user) {
-            throw new Error('❌ Vous devez être connecté pour uploader un PDF');
-        }
-
-        console.log('✅ Utilisateur authentifié:', user.id);
-
-        // Générer nom de fichier unique
-        const timestamp = Date.now();
-        const randomStr = Math.random().toString(36).substring(2, 8);
-        const sanitizedName = file.name
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-zA-Z0-9.-]/g, '-')
-            .toLowerCase();
-        const fileName = `${timestamp}-${randomStr}-${sanitizedName}`;
-
-        updatePdfUploadProgress(10, 'Préparation du fichier...');
-        await sleep(300);
-
-        updatePdfUploadProgress(30, 'Upload en cours...');
-
-        // Upload vers Supabase Storage
-        const { data, error } = await supabaseClient.storage
-            .from('pdfs-cours')
-            .upload(fileName, file, {
-                cacheControl: '3600',
-                upsert: false,
-                contentType: 'application/pdf'
-            });
-
-        if (error) {
-            console.error('❌ Erreur upload Supabase:', error);
-            throw new Error(`Erreur upload: ${error.message}`);
-        }
-
-        console.log('✅ Upload réussi:', data);
-
-        updatePdfUploadProgress(80, 'Finalisation...');
-
-        // Récupérer l'URL publique
-        const { data: urlData } = supabaseClient.storage
-            .from('pdfs-cours')
-            .getPublicUrl(fileName);
-
-        currentPdfUrl = urlData.publicUrl;
-        document.getElementById('chapitrePdfUrlHidden').value = currentPdfUrl;
-
-        updatePdfUploadProgress(100, '✅ Upload terminé !');
-
-        await sleep(500);
-
-        // Afficher succès
-        document.getElementById('pdfUploadProgress').classList.add('hidden');
-        showPdfUploadSuccess(file.name, file.size, currentPdfUrl);
-
-        console.log('✅ PDF uploadé:', currentPdfUrl);
-
-    } catch (error) {
-        console.error('❌ Erreur upload PDF:', error);
-        alert('❌ ' + error.message);
-
-        // Reset
-        document.getElementById('pdfUploadProgress').classList.add('hidden');
-        document.getElementById('pdfUploadZone').classList.remove('hidden');
-        event.target.value = '';
-        currentPdfFile = null;
-    } finally {
-        isUploadingPdf = false;
-    }
-}
-
-// Mettre à jour progress bar
-function updatePdfUploadProgress(percent, message) {
-    document.getElementById('pdfProgressBar').style.width = percent + '%';
-    document.getElementById('pdfUploadPercent').textContent = percent + '%';
-    document.getElementById('pdfUploadStatus').textContent = message;
-}
-
-// Afficher succès
-function showPdfUploadSuccess(fileName, fileSize, url) {
-    document.getElementById('pdfUploadedName').textContent = fileName;
-    document.getElementById('pdfUploadedSize').textContent = formatFileSize(fileSize);
-    document.getElementById('pdfPreviewLink').href = url;
-    document.getElementById('pdfUploadSuccess').classList.remove('hidden');
-}
-
-// Supprimer PDF uploadé
-function removePdfUpload() {
-    if (!confirm('Voulez-vous vraiment supprimer ce PDF ?')) return;
-
-    currentPdfFile = null;
-    currentPdfUrl = null;
-    document.getElementById('chapitrePdfUrlHidden').value = '';
-    document.getElementById('chapitrePdfFile').value = '';
-    document.getElementById('pdfUploadSuccess').classList.add('hidden');
-    document.getElementById('pdfUploadZone').classList.remove('hidden');
-}
-
-// Supprimer PDF existant
-function removeExistingPdfUpload() {
-    if (!confirm('Voulez-vous vraiment supprimer le PDF existant ?')) return;
-
-    currentPdfUrl = null;
-    document.getElementById('chapitrePdfUrlHidden').value = '';
-    document.getElementById('pdfExisting').classList.add('hidden');
-    document.getElementById('pdfUploadZone').classList.remove('hidden');
-}
-
-// Formater taille
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-}
-
-// Utilitaire sleep
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// Reset interface
-function resetPdfInterface() {
-    currentPdfFile = null;
-    currentPdfUrl = null;
-    isUploadingPdf = false;
-
-    const pdfInput = document.getElementById('chapitrePdfFile');
-    const pdfUrlHidden = document.getElementById('chapitrePdfUrlHidden');
-
-    if (pdfInput) pdfInput.value = '';
-    if (pdfUrlHidden) pdfUrlHidden.value = '';
-
-    document.getElementById('pdfUploadZone')?.classList.remove('hidden');
-    document.getElementById('pdfUploadProgress')?.classList.add('hidden');
-    document.getElementById('pdfUploadSuccess')?.classList.add('hidden');
-    document.getElementById('pdfExisting')?.classList.add('hidden');
-}
-
-// Event listeners
-document.addEventListener('DOMContentLoaded', function() {
-    initPdfUploader();
-    
-    const pdfInput = document.getElementById('chapitrePdfFile');
-    if (pdfInput) {
-        pdfInput.addEventListener('change', handlePdfFileUpload);
-    }
-
-    // Drag & Drop
-    const dropZone = document.getElementById('pdfUploadZone');
-    if (dropZone) {
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, e => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        });
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => {
-                dropZone.classList.add('border-blue-500', 'bg-blue-50');
-            });
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => {
-                dropZone.classList.remove('border-blue-500', 'bg-blue-50');
-            });
-        });
-
-        dropZone.addEventListener('drop', e => {
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                const pdfInput = document.getElementById('chapitrePdfFile');
-                pdfInput.files = files;
-                handlePdfFileUpload({ target: { files } });
-            }
-        });
-    }
-});
-
-// Exposer globalement
-window.removePdfUpload = removePdfUpload;
-window.removeExistingPdfUpload = removeExistingPdfUpload;
-window.resetPdfInterface = resetPdfInterface;
-</script>
-
-<style>
-@keyframes slideInPdf {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-#pdfUploadSuccess,
-#pdfUploadProgress {
-    animation: slideInPdf 0.3s ease-out;
-}
-</style>
-                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4">
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">📄 PDF</label>
-                    <input type="file" id="chapitrePDF" accept=".pdf" class="w-full">
-                    <div id="pdfPreview" class="hidden mt-2">
-                        <p id="pdfFileName" data-file-name class="text-sm"></p>
-                        <p id="pdfFileSize" data-file-size class="text-xs text-gray-500"></p>
-                        <button type="button" id="removePDF" class="text-red-600 text-sm">Supprimer</button>
-                    </div>
-                    <div id="existingPDF" class="hidden mt-2">
-                        <a id="existingPDFLink" href="#" target="_blank" class="text-blue-600 text-sm">Voir PDF</a>
-                        <button type="button" id="deleteExistingPDF"
-                            class="text-red-600 text-sm ml-2">Supprimer</button>
-                    </div>
-                </div>
                 <div class="grid grid-cols-3 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Difficulté</label>

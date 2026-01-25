@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cours - LearnHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .markdown-content h1 {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 1em 0 0.5em;
+        }
+
+        .markdown-content h2 {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 1em 0 0.5em;
+        }
+
+        .markdown-content h3 {
+            font-size: 1.25em;
+            font-weight: bold;
+            margin: 1em 0 0.5em;
+        }
+
+        .markdown-content p {
+            margin: 1em 0;
+            line-height: 1.6;
+        }
+
+        .markdown-content code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .markdown-content pre {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 1em;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1em 0;
+        }
+
+        .markdown-content pre code {
+            background: transparent;
+            padding: 0;
+        }
+
+        .markdown-content ul,
+        .markdown-content ol {
+            margin: 1em 0;
+            padding-left: 2em;
+        }
+
+        .markdown-content li {
+            margin: 0.5em 0;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid #3b82f6;
+            padding-left: 1em;
+            margin: 1em 0;
+            color: #6b7280;
+        }
+
+        .markdown-content strong {
+            font-weight: bold;
+        }
+
+        .markdown-content em {
+            font-style: italic;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Animations pour modales */
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-100px) scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .modal-animate {
+            animation: slideInDown 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .success-badge {
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        .points-badge {
+            animation: pulse 1s ease-in-out infinite;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <!-- Navbar fixe -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <button onclick="window.history.back()" class="p-2 hover:bg-gray-100 rounded-lg">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </button>
+                    <div>
+                        <span class="text-lg font-bold text-gray-900" id="coursTitle">Chargement...</span>
+                        <p class="text-xs text-gray-500" id="coursSubtitle">Chargement...</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-sm font-semibold text-blue-600" id="progressText">0%</p>
+                        <p class="text-xs text-gray-500">Progression</p>
+                    </div>
+                    <img id="userAvatar" class="w-10 h-10 rounded-full border-2 border-blue-200"
+                        src="https://ui-avatars.com/api/?name=User" alt="Avatar">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal avec padding-top pour la navbar -->
+    <div class="pt-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Vidéo si présente -->
+            <div id="videoSection" class="hidden mb-8">
+                <div class="video-container bg-gray-900">
+                    <iframe id="videoPlayer" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Contenu du cours -->
+            <div class="bg-white rounded-xl shadow-sm p-8 mb-6">
+                <div id="courseContent" class="markdown-content">
+                    <div class="text-center py-12">
+                        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                        <p class="mt-4 text-gray-600">Chargement du cours...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bouton de validation -->
+            <div class="bg-white rounded-xl shadow-sm p-6 flex items-center justify-between mb-6">
+                <div>
+                    <p class="font-semibold text-gray-900">As-tu terminé ce cours ?</p>
+                    <p class="text-sm text-gray-500">Marque comme terminé pour gagner des points</p>
+                </div>
+                <button onclick="markAsCompleted()" id="completeBtn"
+                    class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold rounded-lg hover:shadow-lg transition flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Terminer le cours
+                </button>
+            </div>
+
+            <!-- Bouton exercices -->
+            <div id="exercicesButton"
+                class="hidden bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl shadow-sm p-6 flex items-center justify-between mb-6">
+                <div class="text-white">
+                    <p class="font-bold text-lg mb-1">🎯 Prêt pour les exercices ?</p>
+                    <p class="text-purple-100 text-sm">Teste tes connaissances avec des QCM</p>
+                </div>
+                <button onclick="goToExercises()"
+                    class="px-6 py-3 bg-white text-purple-600 font-bold rounded-lg hover:shadow-lg transition flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                        </path>
+                    </svg>
+                    Faire les exercices
+                </button>
+            </div>
+
+            <!-- Navigation suivant/précédent -->
+            <div class="flex items-center justify-between mt-6">
+                <button id="prevBtn" onclick="gotoPrevCours()"
+                    class="hidden px-4 py-2 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                        </path>
+                    </svg>
+                    Cours précédent
+                </button>
+                <div id="prevSpacer"></div>
+                <button id="nextBtn" onclick="gotoNextCours()"
+                    class="hidden px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition flex items-center">
+                    Cours suivant
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Success avec confettis -->
+    <div id="successModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center modal-animate">
+            <div class="success-badge mb-6">
+                <div
+                    class="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full mx-auto flex items-center justify-center">
+                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">🎉 Bravo !</h2>
+            <p class="text-gray-600 mb-6">Tu as terminé ce cours avec succès !</p>
+
+            <div class="points-badge bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl p-4 mb-6">
+                <p class="text-white text-sm font-semibold mb-1">Points gagnés</p>
+                <p class="text-white text-4xl font-bold" id="pointsEarned">+0</p>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="goToExercisesFromModal()" id="exercisesModalBtn"
+                    class="hidden w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl hover:shadow-lg transition">
+                    🎯 Faire les exercices
+                </button>
+                <button onclick="gotoNextCoursFromModal()" id="nextModalBtn"
+                    class="hidden w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:shadow-lg transition">
+                    Cours suivant →
+                </button>
+                <button onclick="closeSuccessModal()"
+                    class="w-full py-3 border-2 border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        let currentUser = null
+        let coursId = null
+        let coursData = null
+        let startTime = null
+        let nextCoursId = null
+        let prevCoursId = null
+        let hasExercises = false
+
+        async function init() {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) {
+                window.location.href = 'login.html'
+                return
+            }
+            currentUser = user
+
+            const urlParams = new URLSearchParams(window.location.search)
+            coursId = urlParams.get('id')
+
+            if (!coursId) {
+                alert('Cours non trouvé')
+                window.history.back()
+                return
+            }
+
+            startTime = Date.now()
+            await loadCours()
+            await loadNavigation()
+            await checkExercises()
+            updateProgress()
+
+            // Sauvegarder la progression toutes les 30 secondes
+            setInterval(() => {
+                saveProgress(false)
+            }, 30000)
+        }
+
+        async function loadCours() {
+            try {
+                const { data: cours, error } = await supabase
+                    .from('cours')
+                    .select(`
+                        *,
+                        chapitres(
+                            titre,
+                            matieres(nom, couleur)
+                        )
+                    `)
+                    .eq('id', coursId)
+                    .single()
+
+                if (error) throw error
+                coursData = cours
+
+                // Mettre à jour l'interface
+                document.getElementById('coursTitle').textContent = cours.titre
+                document.getElementById('coursSubtitle').textContent = `${cours.chapitres.matieres.nom} • ${cours.chapitres.titre}`
+
+                // Afficher le contenu avec Markdown
+                const contentDiv = document.getElementById('courseContent')
+                if (window.marked) {
+                    contentDiv.innerHTML = marked.parse(cours.contenu || '')
+                } else {
+                    contentDiv.innerHTML = `<div class="whitespace-pre-wrap">${cours.contenu || 'Aucun contenu disponible'}</div>`
+                }
+
+                // Afficher la vidéo si présente
+                if (cours.video_url) {
+                    const videoSection = document.getElementById('videoSection')
+                    const videoPlayer = document.getElementById('videoPlayer')
+
+                    // Vérifier si c'est YouTube
+                    if (cours.video_url.includes('youtube.com') || cours.video_url.includes('youtu.be')) {
+                        let videoId = ''
+                        if (cours.video_url.includes('youtube.com/watch')) {
+                            videoId = new URL(cours.video_url).searchParams.get('v')
+                        } else if (cours.video_url.includes('youtu.be')) {
+                            videoId = cours.video_url.split('/').pop()
+                        }
+
+                        if (videoId) {
+                            videoPlayer.src = `https://www.youtube.com/embed/${videoId}`
+                            videoSection.classList.remove('hidden')
+                        }
+                    } else {
+                        // Vidéo uploadée
+                        videoPlayer.src = cours.video_url
+                        videoSection.classList.remove('hidden')
+                    }
+                }
+
+                // Avatar
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('nom')
+                    .eq('id', currentUser.id)
+                    .single()
+
+                if (profile) {
+                    document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.nom)}&background=667eea&color=fff`
+                }
+
+                // Vérifier si déjà terminé
+                const { data: progression } = await supabase
+                    .from('progressions_cours')
+                    .select('est_termine')
+                    .eq('user_id', currentUser.id)
+                    .eq('cours_id', coursId)
+                    .single()
+
+                if (progression?.est_termine) {
+                    const btn = document.getElementById('completeBtn')
+                    btn.innerHTML = `
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Terminé ✓
+                    `
+                    btn.classList.remove('from-green-500', 'to-emerald-500')
+                    btn.classList.add('bg-gray-300', 'cursor-not-allowed')
+                    btn.disabled = true
+                }
+
+            } catch (error) {
+                console.error('Erreur chargement cours:', error)
+                document.getElementById('courseContent').innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                        <p class="text-red-700">Erreur de chargement: ${error.message}</p>
+                    </div>
+                `
+            }
+        }
+
+        async function loadNavigation() {
+            try {
+                // Récupérer tous les cours du même chapitre
+                const { data: cours } = await supabase
+                    .from('cours')
+                    .select('id, ordre, titre')
+                    .eq('chapitre_id', coursData.chapitre_id)
+                    .eq('est_publie', true)
+                    .order('ordre')
+
+                if (!cours) return
+
+                const currentIndex = cours.findIndex(c => c.id === parseInt(coursId))
+
+                if (currentIndex > 0) {
+                    prevCoursId = cours[currentIndex - 1].id
+                    document.getElementById('prevBtn').classList.remove('hidden')
+                }
+
+                if (currentIndex < cours.length - 1) {
+                    nextCoursId = cours[currentIndex + 1].id
+                    document.getElementById('nextBtn').classList.remove('hidden')
+                } else {
+                    document.getElementById('prevSpacer').style.flex = '1'
+                }
+
+            } catch (error) {
+                console.error('Erreur navigation:', error)
+            }
+        }
+
+        async function checkExercises() {
+            try {
+                const { data: exercises, error } = await supabase
+                    .from('exercices')
+                    .select('id')
+                    .eq('cours_id', coursId)
+                    .eq('est_actif', true)
+
+                if (exercises && exercises.length > 0) {
+                    hasExercises = true
+                    document.getElementById('exercicesButton').classList.remove('hidden')
+                }
+            } catch (error) {
+                console.error('Erreur check exercices:', error)
+            }
+        }
+
+        async function saveProgress(completed = false) {
+            try {
+                const tempsPass = Math.floor((Date.now() - startTime) / 1000)
+
+                const { data: existing } = await supabase
+                    .from('progressions_cours')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .eq('cours_id', coursId)
+                    .single()
+
+                const progressData = {
+                    user_id: currentUser.id,
+                    cours_id: coursId,
+                    progression_pourcentage: completed ? 100 : (existing?.progression_pourcentage || 50),
+                    temps_passe: (existing?.temps_passe || 0) + tempsPass,
+                    est_termine: completed,
+                    derniere_position: 0,
+                    date_fin: completed ? new Date().toISOString() : null
+                }
+
+                if (existing) {
+                    await supabase
+                        .from('progressions_cours')
+                        .update(progressData)
+                        .eq('id', existing.id)
+                } else {
+                    await supabase
+                        .from('progressions_cours')
+                        .insert([progressData])
+                }
+
+                // Récompenser l'utilisateur si terminé
+                if (completed && coursData) {
+                    await supabase.rpc('increment_user_points', {
+                        user_id: currentUser.id,
+                        points: coursData.points_recompense || 10
+                    })
+                }
+
+            } catch (error) {
+                console.error('Erreur sauvegarde progression:', error)
+            }
+        }
+
+        async function updateProgress() {
+            try {
+                const { data } = await supabase
+                    .from('progressions_cours')
+                    .select('progression_pourcentage')
+                    .eq('user_id', currentUser.id)
+                    .eq('cours_id', coursId)
+                    .single()
+
+                if (data) {
+                    document.getElementById('progressText').textContent = `${data.progression_pourcentage}%`
+                }
+            } catch (error) {
+                // Pas de progression existante
+            }
+        }
+
+        window.markAsCompleted = async function () {
+            await saveProgress(true)
+
+            const btn = document.getElementById('completeBtn')
+            btn.innerHTML = `
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Terminé ✓
+            `
+            btn.classList.remove('from-green-500', 'to-emerald-500')
+            btn.classList.add('bg-gray-300', 'cursor-not-allowed')
+            btn.disabled = true
+
+            document.getElementById('progressText').textContent = '100%'
+
+            // Afficher la modal avec confettis
+            showSuccessModal()
+        }
+
+        function showSuccessModal() {
+            document.getElementById('pointsEarned').textContent = `+${coursData.points_recompense || 10}`
+
+            // Afficher les boutons appropriés
+            if (hasExercises) {
+                document.getElementById('exercisesModalBtn').classList.remove('hidden')
+            }
+            if (nextCoursId) {
+                document.getElementById('nextModalBtn').classList.remove('hidden')
+            }
+
+            document.getElementById('successModal').classList.remove('hidden')
+
+            // Lancer les confettis 🎉
+            launchConfetti()
+        }
+
+        function launchConfetti() {
+            const duration = 3000
+            const animationEnd = Date.now() + duration
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 }
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min
+            }
+
+            const interval = setInterval(function () {
+                const timeLeft = animationEnd - Date.now()
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval)
+                }
+
+                const particleCount = 50 * (timeLeft / duration)
+
+                confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+                })
+                confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+                })
+            }, 250)
+        }
+
+        window.closeSuccessModal = function () {
+            document.getElementById('successModal').classList.add('hidden')
+        }
+
+        window.goToExercises = function () {
+            window.location.href = `exercises.html?id=${coursId}`
+        }
+
+        window.goToExercisesFromModal = function () {
+            window.location.href = `exercises.html?id=${coursId}`
+        }
+
+        window.gotoNextCoursFromModal = function () {
+            if (nextCoursId) {
+                window.location.href = `cours.html?id=${nextCoursId}`
+            }
+        }
+
+        window.gotoNextCours = function () {
+            if (nextCoursId) {
+                window.location.href = `cours.html?id=${nextCoursId}`
+            }
+        }
+
+        window.gotoPrevCours = function () {
+            if (prevCoursId) {
+                window.location.href = `cours.html?id=${prevCoursId}`
+            }
+        }
+
+        // Sauvegarder avant de quitter
+        window.addEventListener('beforeunload', () => {
+            saveProgress(false)
+        })
+
+        init()
+    </script>
+</body>
+
+</html>

@@ -97,6 +97,8 @@ export class CoursView {
 
   async openModal(id = null) {
     try {
+      console.log('🎬 Opening cours modal, id:', id);
+
       this.currentEditId = id;
       this.selectedVideo = null;
       this.currentVideoUrl = null;
@@ -105,40 +107,74 @@ export class CoursView {
       const form = document.getElementById('coursForm');
 
       if (!modal || !form) {
-        throw new Error('Éléments du formulaire introuvables');
+        console.error('❌ Elements missing: modal:', !!modal, 'form:', !!form);
+        throw new Error('Éléments du formulaire introuvables (coursModal ou coursForm)');
       }
 
-      document.getElementById('coursModalTitle').textContent = id ? 'Modifier le Cours' : 'Nouveau Cours';
+      const modalTitle = document.getElementById('coursModalTitle');
+      if (modalTitle) modalTitle.textContent = id ? 'Modifier le Cours' : 'Nouveau Cours';
+
       ui.resetForm('coursForm');
 
       // Reset video section
-      document.getElementById('videoSection').classList.add('hidden');
-      document.getElementById('videoPreview').classList.add('hidden');
-      document.getElementById('existingVideo').classList.add('hidden');
-      document.getElementById('coursVideoFile').value = '';
-      document.getElementById('coursVideoUrl').value = '';
+      const videoSection = document.getElementById('videoSection');
+      const videoPreview = document.getElementById('videoPreview');
+      const existingVideo = document.getElementById('existingVideo');
+      const coursVideoFile = document.getElementById('coursVideoFile');
+      const coursVideoUrl = document.getElementById('coursVideoUrl');
+
+      if (videoSection) videoSection.classList.add('hidden');
+      if (videoPreview) videoPreview.classList.add('hidden');
+      if (existingVideo) existingVideo.classList.add('hidden');
+      if (coursVideoFile) coursVideoFile.value = '';
+      if (coursVideoUrl) coursVideoUrl.value = '';
 
       // Load matieres
+      console.log('🔄 Loading matieres...');
       const matieres = await api.getMatieres();
       const matiereSelect = document.getElementById('coursMatiere');
+
+      if (!matiereSelect) {
+        throw new Error('Select matiere introuvable');
+      }
+
       matiereSelect.innerHTML = '<option value="">Sélectionner une matière...</option>' +
         matieres.map(m => `<option value="${m.id}">${m.nom}</option>`).join('');
 
       if (id) {
         try {
+          console.log('🔄 Loading cours details for edit...');
           const cours = await api.getCoursById(id);
+          console.log('📚 Loaded cours:', cours);
 
           // Get chapitre info to load correct matiere
-          const { data: chapitre } = await api.client
+          // NOTE: We do this separately because we need the matiere_id which might not be directly in the cours object if not joined
+          // But getCoursById selects *, so we check if we need to fetch chapter details
+          let matiereId = null;
+
+          // Try to get matiere_id from joined data if available or fetch it
+          const { data: chapitre, error: chapError } = await api.client
             .from('chapitres')
             .select('matiere_id')
             .eq('id', cours.chapitre_id)
             .single();
 
+          if (chapError) {
+            console.warn('⚠️ Error fetching chapitre details:', chapError);
+          }
+
           if (chapitre) {
-            matiereSelect.value = chapitre.matiere_id;
-            await this.loadChapitres(chapitre.matiere_id);
-            document.getElementById('coursChapitre').value = cours.chapitre_id;
+            matiereId = chapitre.matiere_id;
+            matiereSelect.value = matiereId;
+            console.log('📍 Set matiere to:', matiereId);
+
+            await this.loadChapitres(matiereId);
+
+            const chapitreSelect = document.getElementById('coursChapitre');
+            if (chapitreSelect) {
+              chapitreSelect.value = cours.chapitre_id;
+              console.log('📍 Set chapitre to:', cours.chapitre_id);
+            }
           }
 
           document.getElementById('coursTitre').value = cours.titre;
@@ -162,7 +198,6 @@ export class CoursView {
               if (cours.video_url.includes('youtube.com') || cours.video_url.includes('youtu.be')) {
                 document.getElementById('coursVideoUrl').value = cours.video_url;
               } else {
-                // Check if api.getPublicUrl exists or use client directly for safety
                 const publicUrl = api.getPublicUrl ?
                   api.getPublicUrl(STORAGE_BUCKETS.videos, cours.video_url) :
                   api.client.storage.from(STORAGE_BUCKETS.videos).getPublicUrl(cours.video_url).data.publicUrl;
@@ -184,6 +219,9 @@ export class CoursView {
       this.setupHandlers();
 
       ui.openModal('coursModal');
+
+      console.log('✅ Modal opened successfully');
+
     } catch (error) {
       console.error('Erreur ouverture modal cours:', error);
       ui.showNotification('Impossible d\'ouvrir le formulaire: ' + error.message, 'error');
@@ -191,62 +229,87 @@ export class CoursView {
   }
 
   setupHandlers() {
-    // Matiere change handler
-    const matiereSelect = document.getElementById('coursMatiere');
-    matiereSelect.onchange = (e) => this.loadChapitres(e.target.value);
+    console.log('🔧 Setting up cours handlers');
 
-    // Type contenu change handler
-    document.querySelectorAll('input[name="typeContenu"]').forEach(radio => {
-      radio.onchange = (e) => {
-        const videoSection = document.getElementById('videoSection');
-        if (e.target.value === 'video' || e.target.value === 'mixte') {
-          videoSection.classList.remove('hidden');
-        } else {
-          videoSection.classList.add('hidden');
-        }
+    // Matiere change handler - Utiliser une fonction nommée pour éviter les doublons
+    const matiereSelect = document.getElementById('coursMatiere');
+    if (matiereSelect) {
+      // Supprimer l'ancien handler
+      matiereSelect.onchange = null;
+      // Ajouter le nouveau
+      matiereSelect.onchange = (e) => {
+        console.log('Matiere changed:', e.target.value);
+        this.loadChapitres(e.target.value);
       };
-    });
+    }
+
+    // Type contenu change handler - Cloner les radios pour supprimer les anciens listeners
+    const radioContainer = document.querySelector('input[name="typeContenu"]')?.closest('form');
+    if (radioContainer) {
+      document.querySelectorAll('input[name="typeContenu"]').forEach(radio => {
+        radio.onchange = (e) => {
+          console.log('Type contenu changed:', e.target.value);
+          const videoSection = document.getElementById('videoSection');
+          if (e.target.value === 'video' || e.target.value === 'mixte') {
+            videoSection.classList.remove('hidden');
+          } else {
+            videoSection.classList.add('hidden');
+          }
+        };
+      });
+    }
 
     // Video file upload handler
     const videoInput = document.getElementById('coursVideoFile');
-    videoInput.onchange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+    if (videoInput) {
+      videoInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-      if (!file.type.startsWith('video/')) {
-        ui.showNotification('Veuillez sélectionner un fichier vidéo', 'error');
-        e.target.value = '';
-        return;
-      }
+        if (!file.type.startsWith('video/')) {
+          ui.showNotification('Veuillez sélectionner un fichier vidéo', 'error');
+          e.target.value = '';
+          return;
+        }
 
-      if (file.size > FILE_LIMITS.video) {
-        ui.showNotification('Le fichier est trop volumineux (max 100 MB)', 'error');
-        e.target.value = '';
-        return;
-      }
+        if (file.size > FILE_LIMITS.video) {
+          ui.showNotification('Le fichier est trop volumineux (max 100 MB)', 'error');
+          e.target.value = '';
+          return;
+        }
 
-      this.selectedVideo = file;
-      document.getElementById('videoFileName').textContent = file.name;
-      document.getElementById('videoFileSize').textContent = ui.formatFileSize(file.size);
-      document.getElementById('videoPreview').classList.remove('hidden');
-      document.getElementById('existingVideo').classList.add('hidden');
-    };
+        this.selectedVideo = file;
+        document.getElementById('videoFileName').textContent = file.name;
+        document.getElementById('videoFileSize').textContent = ui.formatFileSize(file.size);
+        document.getElementById('videoPreview').classList.remove('hidden');
+        document.getElementById('existingVideo').classList.add('hidden');
+      };
+    }
 
     // Remove video
-    document.getElementById('removeVideo').onclick = () => {
-      this.selectedVideo = null;
-      videoInput.value = '';
-      document.getElementById('videoPreview').classList.add('hidden');
-      if (this.currentVideoUrl) {
-        document.getElementById('existingVideo').classList.remove('hidden');
-      }
-    };
+    const removeVideoBtn = document.getElementById('removeVideo');
+    if (removeVideoBtn) {
+      removeVideoBtn.onclick = () => {
+        this.selectedVideo = null;
+        const videoInput = document.getElementById('coursVideoFile');
+        if (videoInput) videoInput.value = '';
+        document.getElementById('videoPreview').classList.add('hidden');
+        if (this.currentVideoUrl) {
+          document.getElementById('existingVideo').classList.remove('hidden');
+        }
+      };
+    }
 
     // Delete existing video
-    document.getElementById('deleteExistingVideo').onclick = () => {
-      this.currentVideoUrl = null;
-      document.getElementById('existingVideo').classList.add('hidden');
-    };
+    const deleteExistingBtn = document.getElementById('deleteExistingVideo');
+    if (deleteExistingBtn) {
+      deleteExistingBtn.onclick = () => {
+        this.currentVideoUrl = null;
+        document.getElementById('existingVideo').classList.add('hidden');
+      };
+    }
+
+    console.log('✅ Cours handlers setup complete');
   }
 
   async loadChapitres(matiereId) {
@@ -264,18 +327,26 @@ export class CoursView {
 
   async save(e) {
     e.preventDefault();
+    console.log('💾 Save cours triggered');
+
     ui.setFormLoading('coursForm', true);
 
     try {
       const typeContenu = document.querySelector('input[name="typeContenu"]:checked').value;
+      console.log('Type contenu:', typeContenu);
+
       let videoUrl = document.getElementById('coursVideoUrl').value || this.currentVideoUrl;
+      console.log('Video URL initial:', videoUrl);
 
       // Upload video if file selected
       if (this.selectedVideo) {
+        console.log('📤 Uploading video file:', this.selectedVideo.name);
         videoUrl = await api.uploadFile(STORAGE_BUCKETS.videos, this.selectedVideo);
+        console.log('✅ Video uploaded:', videoUrl);
 
         // Delete old video if editing
         if (this.currentVideoUrl && this.currentEditId && !this.currentVideoUrl.includes('youtube')) {
+          console.log('🗑️ Deleting old video:', this.currentVideoUrl);
           await api.deleteFile(STORAGE_BUCKETS.videos, this.currentVideoUrl);
         }
       }
@@ -295,10 +366,14 @@ export class CoursView {
         est_publie: document.getElementById('coursEstPublie').checked
       };
 
+      console.log('📦 Data to save:', data);
+
       if (this.currentEditId) {
+        console.log('🔄 Updating cours:', this.currentEditId);
         await api.updateCours(this.currentEditId, data);
         ui.showNotification('Cours modifié avec succès');
       } else {
+        console.log('✨ Creating new cours');
         await api.createCours(data);
         ui.showNotification('Cours créé avec succès');
       }
@@ -310,7 +385,10 @@ export class CoursView {
       this.selectedVideo = null;
       this.currentVideoUrl = null;
 
+      console.log('✅ Save complete');
+
     } catch (error) {
+      console.error('❌ Save error:', error);
       ui.showNotification('Erreur: ' + error.message, 'error');
     } finally {
       ui.setFormLoading('coursForm', false);
