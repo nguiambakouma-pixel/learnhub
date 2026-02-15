@@ -5,6 +5,7 @@ import { chapitresView } from './views/chapitres.js';
 import { coursView } from './views/cours.js';
 import { exercicesView } from './views/exercices.js';
 import { utilisateursView } from './views/utilisateurs.js';
+import { exercicesCodeView } from './views/exercices-code.js';
 
 export class Router {
   constructor() {
@@ -15,16 +16,16 @@ export class Router {
       chapitres: chapitresView,
       cours: coursView,
       exercices: exercicesView,
+      'exercices-code': exercicesCodeView, // NOUVEAU
       utilisateurs: utilisateursView
     };
   }
-
   async navigate(viewName) {
     // Update active nav link
     document.querySelectorAll('.nav-link').forEach(link => {
       link.classList.remove('sidebar-active');
     });
-    
+
     const activeLink = document.querySelector(`[data-view="${viewName}"]`);
     if (activeLink) {
       activeLink.classList.add('sidebar-active');

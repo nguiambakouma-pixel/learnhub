@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exercices - LearnHub</title>
+    <title>Exercices - KMERSCHOOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -15,7 +15,6 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Animations pour les modales */
         @keyframes slideInDown {
             from {
                 opacity: 0;
@@ -64,7 +63,6 @@
             animation: pulse 1s ease-in-out infinite;
         }
 
-        /* Radio/Checkbox personnalisés */
         .choice-item {
             transition: all 0.3s ease;
         }
@@ -95,7 +93,6 @@
 </head>
 
 <body class="bg-gray-50">
-
     <!-- Navbar -->
     <nav class="bg-white shadow-sm border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -107,8 +104,9 @@
                                 d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
                     </button>
+                    <img src="../assets/logo/LOGO.png" alt="KMERSCHOOL"
+                        class="h-20 w-auto object-contain bg-white rounded-lg p-1">
                     <div>
-                        <span class="text-xl font-bold text-gray-900">Exercices QCM</span>
                         <p id="coursName" class="text-xs text-gray-500">Chargement...</p>
                     </div>
                 </div>
@@ -313,28 +311,46 @@
 
         async function loadExercices() {
             try {
+                // 🔧 CORRECTION : Charger les exercices avec leurs questions ET réponses
                 const { data, error } = await supabase
                     .from('exercices')
-                    .select('*')
+                    .select(`
+                    *,
+                    questions (
+                        id,
+                        question_texte,
+                        type_question,
+                        points,
+                        ordre,
+                        reponses (
+                            id,
+                            texte_reponse,
+                            est_correcte,
+                            ordre
+                        )
+                    )
+                `)
                     .eq('cours_id', coursId)
-                    .eq('est_actif', true)
+                    .eq('est_publie', true)
                     .order('created_at')
 
                 if (error) throw error
 
+                console.log('📚 Exercices chargés:', data)
+
                 if (!data || data.length === 0) {
                     document.getElementById('exercicesContainer').innerHTML = `
-                        <div class="bg-white rounded-xl p-12 text-center border border-gray-200">
-                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                            </svg>
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucun exercice disponible</h3>
-                            <p class="text-gray-500 mb-4">Les exercices seront ajoutés bientôt.</p>
-                            <button onclick="window.history.back()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                Retour au cours
-                            </button>
-                        </div>
-                    `
+                    <div class="bg-white rounded-xl p-12 text-center border border-gray-200">
+                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucun exercice disponible</h3>
+                        <p class="text-gray-500 mb-4">Les exercices seront ajoutés bientôt.</p>
+                        <button onclick="window.history.back()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Retour au cours
+                        </button>
+                    </div>
+                `
                     return
                 }
 
@@ -346,10 +362,10 @@
             } catch (error) {
                 console.error('Erreur chargement exercices:', error)
                 document.getElementById('exercicesContainer').innerHTML = `
-                    <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-                        <p class="text-red-700">Erreur: ${error.message}</p>
-                    </div>
-                `
+                <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                    <p class="text-red-700">Erreur: ${error.message}</p>
+                </div>
+            `
             }
         }
 
@@ -363,86 +379,102 @@
                     'difficile': 'bg-red-100 text-red-800'
                 }
 
-                return `
-                    <div class="bg-white rounded-xl p-8 shadow-sm border-2 border-gray-200 mb-6" id="exercice-${ex.id}">
-                        <div class="flex items-start justify-between mb-6">
-                            <div class="flex-1">
-                                <div class="flex items-center space-x-3 mb-3">
-                                    <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center text-white font-bold">
-                                        ${index + 1}
-                                    </div>
-                                    <div>
-                                        <span class="px-3 py-1 ${difficultyColors[ex.difficulte] || 'bg-gray-100 text-gray-800'} text-xs font-semibold rounded-full">
-                                            ${ex.difficulte}
-                                        </span>
-                                    </div>
-                                </div>
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">${ex.question}</h3>
-                            </div>
-                            <div class="ml-4 text-right">
-                                <div class="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-bold rounded-full">
-                                    ${ex.points} pts
-                                </div>
-                            </div>
-                        </div>
+                // Prendre la première question (chaque exercice a une question)
+                const question = ex.questions && ex.questions.length > 0 ? ex.questions[0] : null
 
-                        <div class="space-y-3" id="choices-${ex.id}">
-                            ${renderChoices(ex)}
+                if (!question) {
+                    console.warn('⚠️ Exercice sans question:', ex.id)
+                    return ''
+                }
+
+                return `
+                <div class="bg-white rounded-xl p-8 shadow-sm border-2 border-gray-200 mb-6" id="exercice-${ex.id}">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center text-white font-bold">
+                                    ${index + 1}
+                                </div>
+                                <div>
+                                    <span class="px-3 py-1 ${difficultyColors[ex.difficulte] || 'bg-gray-100 text-gray-800'} text-xs font-semibold rounded-full">
+                                        ${ex.difficulte}
+                                    </span>
+                                </div>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">${question.question_texte}</h3>
+                        </div>
+                        <div class="ml-4 text-right">
+                            <div class="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-bold rounded-full">
+                                ${ex.points} pts
+                            </div>
                         </div>
                     </div>
-                `
+
+                    <div class="space-y-3" id="choices-${ex.id}">
+                        ${renderChoices(ex.id, question)}
+                    </div>
+                </div>
+            `
             }).join('')
         }
 
-        function renderChoices(exercice) {
-            const isMultiple = exercice.type_question === 'qcm_multiple'
-            const inputType = isMultiple ? 'checkbox' : 'radio'
-            const inputName = `question-${exercice.id}`
+        function renderChoices(exerciceId, question) {
+            if (!question || !question.reponses || question.reponses.length === 0) {
+                return '<p class="text-gray-500">Aucune réponse disponible</p>'
+            }
 
-            return exercice.choix.map((choix, idx) => `
-                <div class="choice-item border-2 border-gray-300 rounded-xl p-4 cursor-pointer hover:border-purple-400 transition" 
-                     onclick="selectChoice(${exercice.id}, ${idx}, '${inputType}')">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="${inputType}" 
-                               name="${inputName}" 
-                               value="${idx}"
-                               class="w-5 h-5 text-purple-600 border-gray-300 focus:ring-purple-500"
-                               onchange="updateAnswer(${exercice.id}, ${idx}, ${isMultiple})">
-                        <span class="ml-3 text-gray-900 font-medium flex-1">${choix.texte}</span>
-                    </label>
-                </div>
-            `).join('')
+            const isMultiple = question.type_question === 'choix_multiples'
+            const inputType = isMultiple ? 'checkbox' : 'radio'
+            const inputName = `question-${exerciceId}`
+
+            // Trier les réponses par ordre
+            const sortedReponses = [...question.reponses].sort((a, b) => a.ordre - b.ordre)
+
+            return sortedReponses.map((reponse, idx) => `
+            <div class="choice-item border-2 border-gray-300 rounded-xl p-4 cursor-pointer hover:border-purple-400 transition" 
+                 onclick="selectChoice(${exerciceId}, ${reponse.id}, '${inputType}')">
+                <label class="flex items-center cursor-pointer">
+                    <input type="${inputType}" 
+                           name="${inputName}" 
+                           value="${reponse.id}"
+                           class="w-5 h-5 text-purple-600 border-gray-300 focus:ring-purple-500"
+                           onchange="updateAnswer(${exerciceId}, ${reponse.id}, ${isMultiple})">
+                    <span class="ml-3 text-gray-900 font-medium flex-1">${reponse.texte_reponse}</span>
+                </label>
+            </div>
+        `).join('')
         }
 
-        window.selectChoice = function (exerciceId, choiceIdx, inputType) {
-            const input = document.querySelector(`input[name="question-${exerciceId}"][value="${choiceIdx}"]`)
+        window.selectChoice = function (exerciceId, reponseId, inputType) {
+            const input = document.querySelector(`input[name="question-${exerciceId}"][value="${reponseId}"]`)
             if (input) {
                 input.checked = !input.checked
                 input.dispatchEvent(new Event('change'))
             }
         }
 
-        window.updateAnswer = function (exerciceId, choiceIdx, isMultiple) {
+        window.updateAnswer = function (exerciceId, reponseId, isMultiple) {
             if (!userAnswers[exerciceId]) {
                 userAnswers[exerciceId] = []
             }
 
             if (isMultiple) {
-                const index = userAnswers[exerciceId].indexOf(choiceIdx)
+                const index = userAnswers[exerciceId].indexOf(reponseId)
                 if (index > -1) {
                     userAnswers[exerciceId].splice(index, 1)
                 } else {
-                    userAnswers[exerciceId].push(choiceIdx)
+                    userAnswers[exerciceId].push(reponseId)
                 }
             } else {
-                userAnswers[exerciceId] = [choiceIdx]
+                userAnswers[exerciceId] = [reponseId]
             }
 
             // Update visual feedback
             const container = document.getElementById(`choices-${exerciceId}`)
             const choices = container.querySelectorAll('.choice-item')
-            choices.forEach((choice, idx) => {
-                if (userAnswers[exerciceId].includes(idx)) {
+            choices.forEach(choice => {
+                const input = choice.querySelector('input')
+                if (input.checked) {
                     choice.classList.add('selected')
                 } else {
                     choice.classList.remove('selected')
@@ -461,12 +493,15 @@
 
             // Vérifier chaque réponse
             exercices.forEach(ex => {
+                const question = ex.questions[0]
                 const userAnswer = userAnswers[ex.id] || []
-                const correctAnswers = ex.choix
-                    .map((c, idx) => c.est_correct ? idx : -1)
-                    .filter(idx => idx !== -1)
 
-                const isCorrect = arraysEqual(userAnswer.sort(), correctAnswers.sort())
+                // Trouver les IDs des réponses correctes
+                const correctAnswerIds = question.reponses
+                    .filter(r => r.est_correcte)
+                    .map(r => r.id)
+
+                const isCorrect = arraysEqual(userAnswer.sort(), correctAnswerIds.sort())
 
                 if (isCorrect) {
                     correctCount++
@@ -477,11 +512,15 @@
                 const container = document.getElementById(`choices-${ex.id}`)
                 const choices = container.querySelectorAll('.choice-item')
 
-                choices.forEach((choice, idx) => {
+                choices.forEach(choice => {
+                    const input = choice.querySelector('input')
+                    const reponseId = parseInt(input.value)
+
                     choice.classList.remove('selected')
-                    if (correctAnswers.includes(idx)) {
+
+                    if (correctAnswerIds.includes(reponseId)) {
                         choice.classList.add('correct')
-                    } else if (userAnswer.includes(idx)) {
+                    } else if (userAnswer.includes(reponseId)) {
                         choice.classList.add('incorrect')
                     }
                 })
@@ -499,12 +538,13 @@
         async function saveResults() {
             try {
                 for (const ex of exercices) {
+                    const question = ex.questions[0]
                     const userAnswer = userAnswers[ex.id] || []
-                    const correctAnswers = ex.choix
-                        .map((c, idx) => c.est_correct ? idx : -1)
-                        .filter(idx => idx !== -1)
+                    const correctAnswerIds = question.reponses
+                        .filter(r => r.est_correcte)
+                        .map(r => r.id)
 
-                    const isCorrect = arraysEqual(userAnswer.sort(), correctAnswers.sort())
+                    const isCorrect = arraysEqual(userAnswer.sort(), correctAnswerIds.sort())
 
                     await supabase.from('soumissions_exercices').insert({
                         user_id: currentUser.id,
@@ -518,10 +558,16 @@
 
                 // Ajouter les points au profil
                 if (totalPoints > 0) {
-                    await supabase.rpc('increment_user_points', {
-                        user_id: currentUser.id,
-                        points: totalPoints
-                    })
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('points_total')
+                        .eq('id', currentUser.id)
+                        .single()
+
+                    await supabase
+                        .from('profiles')
+                        .update({ points_total: (profile.points_total || 0) + totalPoints })
+                        .eq('id', currentUser.id)
                 }
 
             } catch (error) {
@@ -612,10 +658,10 @@
             notification.className = `fixed top-4 right-4 z-50 px-6 py-4 bg-gradient-to-r ${colors[type]} text-white rounded-xl shadow-2xl transform transition-all duration-300`
             notification.style.animation = 'slideInDown 0.3s ease-out'
             notification.innerHTML = `
-                <div class="flex items-center space-x-3">
-                    <span class="text-lg font-bold">${message}</span>
-                </div>
-            `
+            <div class="flex items-center space-x-3">
+                <span class="text-lg font-bold">${message}</span>
+            </div>
+        `
 
             document.body.appendChild(notification)
 
@@ -631,3 +677,4 @@
 </body>
 
 </html>
+</artifact>

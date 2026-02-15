@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chapitre - LearnHub</title>
+    <title>Chapitre - KMERSCHOOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -29,8 +29,9 @@
                                 d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
                     </button>
+                    <img src="../assets/logo/LOGO.png" alt="KMERSCHOOL"
+                        class="h-20 w-auto object-contain bg-white rounded-lg p-1">
                     <div>
-                        <span class="text-xl font-bold text-gray-900">LearnHub</span>
                         <p id="chapitreSubtitle" class="text-xs text-gray-500">Chargement...</p>
                     </div>
                 </div>
@@ -99,11 +100,40 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
+        // ⭐ NOUVEAU: Vérifier que l'onboarding est fait
+        async function verifierOnboarding() {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                window.location.href = '../login.html';
+                return false;
+            }
+
+            // Vérifier si l'élève a complété l'onboarding
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('sous_systeme_id, niveau_scolaire_id, type_parcours')
+                .eq('id', user.id)
+                .single();
+
+            // Si pas de section/classe ET que c'est un élève, rediriger
+            if (profile.type_parcours === 'eleve' && (!profile.sous_systeme_id || !profile.niveau_scolaire_id)) {
+                window.location.href = 'onboarding_cameroun.html';
+                return false;
+            }
+
+            return true;
+        }
+
         let currentUser = null
         let chapitreId = null
         let matiereId = null
 
         async function init() {
+            // Vérifier l'onboarding avant tout
+            const onboardingOK = await verifierOnboarding();
+            if (!onboardingOK) return;
+
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) {
                 window.location.href = 'login.html'
@@ -163,12 +193,35 @@
 
         async function loadCours() {
             try {
-                const { data: cours, error } = await supabase
+                // 1. Récupérer le profil de l'élève avec section/niveau/série
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select(`
+                        sous_systeme_id,
+                        niveau_scolaire_id,
+                        serie_id
+                    `)
+                    .eq('id', currentUser.id)
+                    .single();
+
+                // 2. Charger les cours filtrés
+                let query = supabase
                     .from('cours')
                     .select('*')
                     .eq('chapitre_id', chapitreId)
-                    .eq('est_publie', true)
-                    .order('ordre')
+                    .eq('est_publie', true);
+
+                // Filtrer par sous-système si l'info existe
+                if (profile?.sous_systeme_id) {
+                    query = query.eq('sous_systeme_id', profile.sous_systeme_id);
+                }
+
+                // Filtrer par série: cours généraux OU cours de sa série
+                if (profile?.serie_id) {
+                    query = query.or(`serie_id.is.null,serie_id.eq.${profile.serie_id}`);
+                }
+
+                const { data: cours, error } = await query.order('ordre');
 
                 if (error) throw error
 

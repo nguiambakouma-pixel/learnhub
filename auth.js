@@ -1,4 +1,4 @@
-// auth.js - Fichier utilitaire pour l'authentification LearnHub
+// auth.js - Fichier utilitaire pour l'authentification KMERSCHOOL
 
 // Configuration Supabase
 const SUPABASE_CONFIG = {
@@ -45,7 +45,7 @@ async function getUserProfile(userId) {
  */
 async function redirectToDashboard(userId) {
     const profile = await getUserProfile(userId)
-    
+
     if (!profile) {
         console.error('Profil non trouvé')
         window.location.href = 'login.html'
@@ -53,13 +53,13 @@ async function redirectToDashboard(userId) {
     }
 
     const dashboardUrls = {
-        'eleve': 'dashboard-eleve.html',
-        'dev-web': 'dashboard-dev.html',
-        'designer': 'dashboard-designer.html'
+        'eleve': 'Dashboard-eleves/dashboard-eleve.html',
+        'dev-web': 'Dashboard-Dev/dashboard-dev.html',
+        'designer': 'Dashboard-designer/dashboard-designer.html'
     }
 
     const dashboardUrl = dashboardUrls[profile.type_parcours]
-    
+
     if (dashboardUrl) {
         window.location.href = dashboardUrl
     } else {
@@ -74,7 +74,7 @@ async function redirectToDashboard(userId) {
  */
 async function protectPage(requiredParcours = null) {
     const user = await getCurrentUser()
-    
+
     if (!user) {
         console.log('❌ Non connecté - redirection vers login')
         window.location.href = 'login.html'
@@ -83,7 +83,7 @@ async function protectPage(requiredParcours = null) {
 
     if (requiredParcours) {
         const profile = await getUserProfile(user.id)
-        
+
         if (!profile || profile.type_parcours !== requiredParcours) {
             console.log('⚠️ Mauvais parcours - redirection')
             await redirectToDashboard(user.id)
@@ -216,7 +216,7 @@ async function getUserStats(userId) {
     try {
         // Récupérer le profil
         const profile = await getUserProfile(userId)
-        
+
         // Récupérer les cours complétés
         const { data: coursCompleted } = await supabaseClient
             .from('progressions_cours')
@@ -249,7 +249,7 @@ async function getUserStats(userId) {
 }
 
 // Exporter pour utilisation globale
-window.LearnHubAuth = {
+window.KMERSCHOOLAuth = {
     supabase: supabaseClient,
     getCurrentUser,
     getUserProfile,

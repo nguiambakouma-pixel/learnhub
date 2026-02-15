@@ -1,183 +1,196 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - LearnHub</title>
+    <title>Connexion - KMERSCHOOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        * {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .animated-gradient {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .input-group:focus-within label {
+            color: #7c3aed;
+        }
+
+        .input-group:focus-within input {
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+        }
     </style>
 </head>
-<body class="bg-gray-50">
 
-    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            
-            <!-- Logo & Title -->
-            <div class="text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl shadow-lg mb-4">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                    </svg>
-                </div>
-                <h2 class="text-3xl font-bold text-gray-900">Connexion</h2>
-                <p class="mt-2 text-sm text-gray-600">Bienvenue sur LearnHub</p>
+<body class="animated-gradient min-h-screen flex items-center justify-center relative overflow-hidden">
+
+    <!-- Absolute Top-Left Logo -->
+    <a href="index.html" class="absolute top-6 left-6 z-50 hover:opacity-80 transition-opacity">
+        <img src="assets/logo/LOGO.png" alt="KMERSCHOOL" class="h-24 w-auto object-contain drop-shadow-lg">
+    </a>
+
+    <!-- Main Container -->
+    <div class="relative z-10 w-full max-w-md px-4">
+
+        <div class="glass-panel p-10 rounded-3xl shadow-2xl transform hover:scale-[1.01] transition-all duration-300">
+
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-extrabold text-gray-900 tracking-tight">Bienvenue sur KMERSCHOOL</h2>
+                <p class="mt-3 text-gray-600">Connectez-vous pour continuer votre apprentissage</p>
             </div>
 
-            <!-- Message d'erreur/succÃ¨s -->
-            <div id="messageContainer" class="hidden rounded-lg p-4"></div>
+            <!-- Message Container -->
+            <div id="messageContainer" class="hidden mb-6 p-4 rounded-xl text-sm font-medium animate-pulse"></div>
 
-            <!-- Formulaire -->
-            <form id="loginForm" class="mt-8 space-y-6 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-                
-                <div class="space-y-4">
-                    <div>
-                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                        <input 
-                            id="email" 
-                            name="email" 
-                            type="email" 
-                            required 
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition"
-                            placeholder="votre.email@exemple.com">
-                    </div>
-
-                    <div>
-                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Mot de passe</label>
-                        <input 
-                            id="password" 
-                            name="password" 
-                            type="password" 
-                            required 
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition"
-                            placeholder="••••••••">
-                    </div>
+            <form id="loginForm" class="space-y-6">
+                <!-- Email -->
+                <div class="input-group">
+                    <label for="email" class="block text-sm font-bold text-gray-700 mb-2 ml-1">Email
+                        professionnel</label>
+                    <input id="email" name="email" type="email" required
+                        class="w-full px-5 py-4 bg-gray-50 border-2 border-gray-100 rounded-xl text-gray-900 font-medium placeholder-gray-400 focus:outline-none focus:bg-white transition-all duration-200"
+                        placeholder="nom@exemple.com">
                 </div>
 
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input id="remember" type="checkbox" class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
-                        <label for="remember" class="ml-2 text-sm text-gray-600">Se souvenir de moi</label>
+                <!-- Password -->
+                <div class="input-group">
+                    <div class="flex justify-between items-center mb-2 ml-1">
+                        <label for="password" class="block text-sm font-bold text-gray-700">Mot de passe</label>
+                        <a href="#"
+                            class="text-sm font-semibold text-purple-600 hover:text-purple-800 transition-colors">Oublié
+                            ?</a>
                     </div>
-                    <a href="#" class="text-sm text-purple-600 hover:text-purple-700 font-semibold">Mot de passe oublié ?</a>
+                    <input id="password" name="password" type="password" required
+                        class="w-full px-5 py-4 bg-gray-50 border-2 border-gray-100 rounded-xl text-gray-900 font-medium placeholder-gray-400 focus:outline-none focus:bg-white transition-all duration-200"
+                        placeholder="••••••••">
                 </div>
 
-                <button 
-                    type="submit" 
-                    id="loginBtn"
-                    class="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:shadow-lg transition-all transform hover:scale-105">
+                <!-- Remember Me -->
+                <div class="flex items-center ml-1">
+                    <input id="remember" type="checkbox"
+                        class="w-5 h-5 text-purple-600 border-2 border-gray-300 rounded focus:ring-purple-500 cursor-pointer">
+                    <label for="remember" class="ml-3 text-sm font-medium text-gray-600 cursor-pointer select-none">Se
+                        souvenir de moi</label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="loginBtn"
+                    class="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:shadow-purple-500/30 hover:-translate-y-1 transition-all duration-200 text-lg tracking-wide">
                     Se connecter
                 </button>
-
-                <div class="text-center">
-                    <p class="text-sm text-gray-600">
-                        Pas encore de compte ? 
-                        <a href="register.html" class="text-purple-600 hover:text-purple-700 font-semibold">S'inscrire</a>
-                    </p>
-                </div>
             </form>
 
-            <!-- Retour accueil -->
-            <div class="text-center">
-                <a href="index.html" class="text-gray-600 hover:text-gray-900 font-medium">Retour à l'accueil</a>
+            <div class="mt-8 text-center">
+                <p class="text-gray-600 font-medium">
+                    Pas encore de compte ?
+                    <a href="register.html"
+                        class="text-purple-600 hover:text-purple-800 font-bold ml-1 hover:underline decoration-2 underline-offset-4 transition-all">
+                        Créer un compte
+                    </a>
+                </p>
             </div>
         </div>
+
+        <p class="text-center text-white/80 mt-8 text-sm font-medium">
+            &copy; 2024 KMERSCHOOL. Tous droits réservés.
+        </p>
     </div>
 
+    <!-- Script Logic (Preserved but integrated) -->
     <script type="module">
-        // Configuration Supabase
         const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-        // VÃ©rifier si dÃ©jÃ  connectÃ©
         async function checkExistingSession() {
             const { data: { user } } = await supabase.auth.getUser()
-            
             if (user) {
-                console.log(' Utilisateur déja  connecté, redirection...')
                 await redirectToDashboard(user.id)
             }
         }
 
-        // Fonction de redirection intelligente
         async function redirectToDashboard(userId) {
             try {
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select('type_parcours, nom')
+                    .select('type_parcours')
                     .eq('id', userId)
                     .single()
 
                 if (!profile) {
-                    showMessage('Profil introuvable. Veuillez vous réinscrire.', 'error')
                     await supabase.auth.signOut()
-                    return
+                    return // Silent fail/refresh
                 }
 
-                console.log('type de Profil:', profile.type_parcours)
-
-                // Redirection selon le type de parcours
-                switch(profile.type_parcours) {
-                    case 'eleve':
-                        window.location.href = 'dashboard-eleve.html'
-                        break
-                    case 'dev-web':
-                        window.location.href = 'dashboard-dev.html'
-                        break
-                    case 'designer':
-                        window.location.href = 'dashboard-designer.html'
-                        break
-                    default:
-                        showMessage('Type de parcours inconnu', 'error')
+                switch (profile.type_parcours) {
+                    case 'eleve': window.location.href = 'Dashboard-eleves/dashboard-eleve.html'; break;
+                    case 'dev-web': window.location.href = 'Dashboard-Dev/dashboard-dev.html'; break;
+                    case 'designer': window.location.href = 'Dashboard-designer/dashboard-designer.html'; break;
+                    default: window.location.href = 'index.html';
                 }
             } catch (error) {
-                console.error('Erreur redirection:', error)
-                showMessage('Erreur lors de la redirection', 'error')
+                console.error('Error redirecting:', error)
             }
         }
 
-        // Afficher un message
         function showMessage(message, type = 'info') {
             const container = document.getElementById('messageContainer')
-            container.className = `rounded-lg p-4 ${
-                type === 'error' ? 'bg-red-100 text-red-700 border border-red-200' :
-                type === 'success' ? 'bg-green-100 text-green-700 border border-green-200' :
-                'bg-blue-100 text-blue-700 border border-blue-200'
-            }`
+            // Reset classes
+            container.className = `mb-6 p-4 rounded-xl text-sm font-bold text-center animate-pulse ${type === 'error' ? 'bg-red-50 text-red-600 border border-red-100' :
+                type === 'success' ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-blue-50 text-blue-600'
+                }`
             container.textContent = message
             container.classList.remove('hidden')
-            
+
             if (type === 'success') {
                 setTimeout(() => container.classList.add('hidden'), 3000)
             }
         }
 
-        // GÃ©rer la connexion
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault()
-            
             const email = document.getElementById('email').value.trim()
             const password = document.getElementById('password').value
             const btn = document.getElementById('loginBtn')
-            
-            // Validation
+
             if (!email || !password) {
                 showMessage('Veuillez remplir tous les champs', 'error')
                 return
             }
 
             btn.disabled = true
-            btn.textContent = 'Connexion en cours...'
+            btn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Connexion...'
 
             try {
-                console.log('ðŸ” Tentative de connexion:', email)
-
-                // Connexion Supabase
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email,
                     password
@@ -185,35 +198,23 @@
 
                 if (error) throw error
 
-                console.log('âœ… Connexion rÃ©ussie!')
-                showMessage('Connexion rÃ©ussie ! Redirection...', 'success')
-
-                // Redirection aprÃ¨s 1 seconde
+                showMessage('Connexion réussie !', 'success')
                 setTimeout(() => {
                     redirectToDashboard(data.user.id)
-                }, 1000)
+                }, 800)
 
             } catch (error) {
-                console.error('âŒ Erreur:', error)
-                
-                let errorMessage = 'Erreur de connexion'
-                
-                if (error.message.includes('Invalid login credentials')) {
-                    errorMessage = 'Email ou mot de passe incorrect'
-                } else if (error.message.includes('Email not confirmed')) {
-                    errorMessage = 'Veuillez confirmer votre email'
-                } else {
-                    errorMessage = error.message
-                }
-                
-                showMessage(errorMessage, 'error')
+                let msg = 'Erreur de connexion'
+                if (error.message.includes('Invalid login credentials')) msg = 'Identifiants incorrects'
+                showMessage(msg, 'error')
                 btn.disabled = false
                 btn.textContent = 'Se connecter'
             }
         })
 
-        // VÃ©rifier session au chargement
+        // Init
         checkExistingSession()
     </script>
 </body>
+
 </html>

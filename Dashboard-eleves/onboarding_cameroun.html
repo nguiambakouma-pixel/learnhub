@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Élève - LearnHub Cameroun</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .onboarding-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.3s ease;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .step-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .section-choice {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .choice-card {
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .choice-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .choice-card.selected {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .choice-card .flag {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .choice-card .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .choice-card .subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .choice-card .checkmark {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 28px;
+            height: 28px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .choice-card.selected .checkmark {
+            display: flex;
+        }
+
+        .select-group {
+            margin-bottom: 25px;
+        }
+
+        .select-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .select-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .select-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .info-box .icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        .info-box .text {
+            font-size: 14px;
+            color: #1976D2;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .summary-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .summary-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .success-icon {
+            text-align: center;
+            font-size: 72px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-20px);
+            }
+
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .section-choice {
+                grid-template-columns: 1fr;
+            }
+
+            .choice-card .flag {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="onboarding-container">
+        <div class="header">
+            <h1>🎓 Bienvenue sur LearnHub</h1>
+            <p>Configurons votre parcours d'apprentissage</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 25%"></div>
+        </div>
+
+        <div class="content">
+            <!-- ÉTAPE 1: Choix de la section -->
+            <div class="step active" id="step1">
+                <h2 class="step-title">Choisissez votre section</h2>
+                <p class="step-subtitle">Le système éducatif camerounais propose deux sections</p>
+
+                <div class="section-choice">
+                    <div class="choice-card" data-section="francophone" onclick="selectSection('francophone')">
+                        <div class="checkmark">✓</div>
+                        <div class="flag">🇫🇷</div>
+                        <div class="title">Francophone</div>
+                        <div class="subtitle">Système français<br>6ème → Terminale<br>BEPC & Baccalauréat</div>
+                    </div>
+
+                    <div class="choice-card" data-section="anglophone" onclick="selectSection('anglophone')">
+                        <div class="checkmark">✓</div>
+                        <div class="flag">🇬🇧</div>
+                        <div class="title">Anglophone</div>
+                        <div class="subtitle">British/Cambridge<br>Form 1 → Upper Sixth<br>GCE O & A-Level</div>
+                    </div>
+                </div>
+
+                <div class="info-box" id="sectionInfo" style="display: none;">
+                    <span class="icon">ℹ️</span>
+                    <span class="text" id="sectionInfoText"></span>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn btn-primary" id="btn-step1" onclick="nextStep(1)" disabled>
+                        Continuer →
+                    </button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 2: Choix de la classe -->
+            <div class="step" id="step2">
+                <h2 class="step-title">Sélectionnez votre classe</h2>
+                <p class="step-subtitle">Dans quelle classe êtes-vous actuellement ?</p>
+
+                <div class="select-group">
+                    <label for="classeSelect">Classe actuelle</label>
+                    <select id="classeSelect" onchange="selectClasse()">
+                        <option value="">-- Choisir une classe --</option>
+                    </select>
+                </div>
+
+                <div class="info-box" id="classeInfo" style="display: none;">
+                    <span class="icon">📚</span>
+                    <span class="text" id="classeInfoText"></span>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn btn-secondary" onclick="prevStep(2)">← Retour</button>
+                    <button class="btn btn-primary" id="btn-step2" onclick="nextStep(2)" disabled>Continuer →</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 3: Choix de la spécialité (si applicable) -->
+            <div class="step" id="step3">
+                <h2 class="step-title">Choisissez votre spécialité</h2>
+                <p class="step-subtitle">Quelle est votre série/spécialité ?</p>
+
+                <div class="select-group">
+                    <label for="specialiteSelect">Série / Spécialité</label>
+                    <select id="specialiteSelect" onchange="selectSpecialite()">
+                        <option value="">-- Choisir une spécialité --</option>
+                    </select>
+                </div>
+
+                <div class="info-box" id="specialiteInfo" style="display: none;">
+                    <span class="icon">🎯</span>
+                    <span class="text" id="specialiteInfoText"></span>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn btn-secondary" onclick="prevStep(3)">← Retour</button>
+                    <button class="btn btn-primary" id="btn-step3" onclick="nextStep(3)" disabled>Continuer →</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 4: Récapitulatif et confirmation -->
+            <div class="step" id="step4">
+                <h2 class="step-title">Récapitulatif de votre profil</h2>
+                <p class="step-subtitle">Vérifiez vos informations avant de finaliser</p>
+
+                <div class="summary-card">
+                    <div class="summary-row">
+                        <span class="summary-label">📍 Section</span>
+                        <span class="summary-value" id="summary-section">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">📚 Classe</span>
+                        <span class="summary-value" id="summary-classe">-</span>
+                    </div>
+                    <div class="summary-row" id="summary-specialite-row" style="display: none;">
+                        <span class="summary-label">🎯 Spécialité</span>
+                        <span class="summary-value" id="summary-specialite">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">📅 Année scolaire</span>
+                        <span class="summary-value" id="summary-annee">2024-2025</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <span class="icon">✨</span>
+                    <span class="text">Votre dashboard sera personnalisé selon votre profil avec les cours et exercices
+                        adaptés à votre niveau.</span>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn btn-secondary" onclick="prevStep(4)">← Retour</button>
+                    <button class="btn btn-primary" onclick="finaliser()">Finaliser mon profil ✓</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 5: Confirmation -->
+            <div class="step" id="step5">
+                <div class="success-icon">🎉</div>
+                <h2 class="step-title" style="text-align: center;">Profil créé avec succès !</h2>
+                <p class="step-subtitle" style="text-align: center;">Votre espace d'apprentissage est prêt</p>
+
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="goToDashboard()">Accéder à mon Dashboard →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration Supabase
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // État global
+        let currentStep = 1;
+        let userData = {
+            section: null,
+            sectionId: null,
+            classe: null,
+            classeId: null,
+            specialite: null,
+            specialiteId: null
+        };
+
+        // Données statiques (seront chargées depuis la BDD en production)
+        const niveauxFrancophone = [
+            { code: 'fr_6eme', nom: '6ème', examen: false },
+            { code: 'fr_5eme', nom: '5ème', examen: false },
+            { code: 'fr_4eme', nom: '4ème', examen: false },
+            { code: 'fr_3eme', nom: '3ème', examen: true, info: 'Année du BEPC' },
+            { code: 'fr_seconde', nom: 'Seconde', examen: false },
+            { code: 'fr_premiere', nom: 'Première', examen: true, info: 'Année du Probatoire', hasSpecialite: true },
+            { code: 'fr_terminale', nom: 'Terminale', examen: true, info: 'Année du Baccalauréat', hasSpecialite: true }
+        ];
+
+        const niveauxAnglophone = [
+            { code: 'en_form1', nom: 'Form 1', examen: false },
+            { code: 'en_form2', nom: 'Form 2', examen: false },
+            { code: 'en_form3', nom: 'Form 3', examen: false },
+            { code: 'en_form4', nom: 'Form 4', examen: false },
+            { code: 'en_form5', nom: 'Form 5', examen: true, info: 'GCE O-Level year' },
+            { code: 'en_lower_sixth', nom: 'Lower Sixth', examen: false },
+            { code: 'en_upper_sixth', nom: 'Upper Sixth', examen: true, info: 'GCE A-Level year', hasSpecialite: true }
+        ];
+
+        const specialitesFrancophone = {
+            fr_premiere: [
+                { code: 'fr_p_a1', nom: 'A1 - Lettres (Latin & Grec)', categorie: 'Littéraire' },
+                { code: 'fr_p_a2', nom: 'A2 - Lettres (Latin & LV2)', categorie: 'Littéraire' },
+                { code: 'fr_p_a3', nom: 'A3 - Lettres (Latin)', categorie: 'Littéraire' },
+                { code: 'fr_p_a4', nom: 'A4 - Lettres (LV2)', categorie: 'Littéraire' },
+                { code: 'fr_p_a5', nom: 'A5 - Lettres (LV2 & LV3)', categorie: 'Littéraire' },
+                { code: 'fr_p_c', nom: 'C - Maths & Physique-Chimie', categorie: 'Scientifique' },
+                { code: 'fr_p_d', nom: 'D - Sciences de la Vie', categorie: 'Scientifique' },
+                { code: 'fr_p_ti', nom: 'TI - Technologies de l\'Information', categorie: 'Technique' },
+                { code: 'fr_p_e', nom: 'E - Génie Mécanique', categorie: 'Technique' }
+            ],
+            fr_terminale: [
+                { code: 'fr_t_a1', nom: 'A1 - Lettres (Latin & Grec)', categorie: 'Littéraire' },
+                { code: 'fr_t_a2', nom: 'A2 - Lettres (Latin & LV2)', categorie: 'Littéraire' },
+                { code: 'fr_t_a3', nom: 'A3 - Lettres (Latin)', categorie: 'Littéraire' },
+                { code: 'fr_t_a4', nom: 'A4 - Lettres (LV2)', categorie: 'Littéraire' },
+                { code: 'fr_t_a5', nom: 'A5 - Lettres (LV2 & LV3)', categorie: 'Littéraire' },
+                { code: 'fr_t_c', nom: 'C - Maths & Physique-Chimie', categorie: 'Scientifique' },
+                { code: 'fr_t_d', nom: 'D - Sciences de la Vie', categorie: 'Scientifique' },
+                { code: 'fr_t_ti', nom: 'TI - Technologies de l\'Information', categorie: 'Technique' },
+                { code: 'fr_t_e', nom: 'E - Génie Mécanique', categorie: 'Technique' },
+                { code: 'fr_t_esf', nom: 'ESF - Économie Sociale', categorie: 'Technique' },
+                { code: 'fr_t_ac', nom: 'AC - Arts Cinématographiques', categorie: 'Arts' }
+            ]
+        };
+
+        const specialitesAnglophone = {
+            en_upper_sixth: [
+                { code: 'en_arts', nom: 'Arts - Literature, History, Geography', categorie: 'Arts' },
+                { code: 'en_science', nom: 'Science - Biology, Chemistry, Physics', categorie: 'Science' },
+                { code: 'en_commercial', nom: 'Commerce - Economics, Accounting', categorie: 'Commerce' },
+                { code: 'en_technical', nom: 'Technical - Applied Sciences', categorie: 'Technical' }
+            ]
+        };
+
+        // Sélection de la section
+        function selectSection(section) {
+            // Désélectionner toutes les cartes
+            document.querySelectorAll('.choice-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Sélectionner la carte cliquée
+            document.querySelector(`[data-section="${section}"]`).classList.add('selected');
+
+            userData.section = section;
+            userData.sectionId = section; // En prod, récupérer l'ID depuis Supabase
+
+            // Afficher l'info
+            const infoBox = document.getElementById('sectionInfo');
+            const infoText = document.getElementById('sectionInfoText');
+
+            if (section === 'francophone') {
+                infoText.textContent = 'Système basé sur le modèle français avec cours du collège (6ème-3ème) au lycée (2nde-Terminale), préparation au BEPC et au Baccalauréat.';
+            } else {
+                infoText.textContent = 'British/Cambridge system from Form 1 to Upper Sixth, preparing for GCE O-Level and A-Level examinations.';
+            }
+            infoBox.style.display = 'flex';
+
+            // Activer le bouton
+            document.getElementById('btn-step1').disabled = false;
+        }
+
+        // Sélection de la classe
+        function selectClasse() {
+            const select = document.getElementById('classeSelect');
+            const selectedOption = select.options[select.selectedIndex];
+
+            if (!selectedOption.value) {
+                document.getElementById('btn-step2').disabled = true;
+                return;
+            }
+
+            userData.classe = selectedOption.value;
+            userData.classeId = selectedOption.value;
+
+            // Afficher info si classe d'examen
+            const niveaux = userData.section === 'francophone' ? niveauxFrancophone : niveauxAnglophone;
+            const niveau = niveaux.find(n => n.code === userData.classe);
+
+            const infoBox = document.getElementById('classeInfo');
+            const infoText = document.getElementById('classeInfoText');
+
+            if (niveau && niveau.examen) {
+                infoText.textContent = niveau.info || 'Classe d\'examen - Préparation intensive';
+                infoBox.style.display = 'flex';
+            } else {
+                infoBox.style.display = 'none';
+            }
+
+            document.getElementById('btn-step2').disabled = false;
+        }
+
+        // Sélection de la spécialité
+        function selectSpecialite() {
+            const select = document.getElementById('specialiteSelect');
+            const selectedOption = select.options[select.selectedIndex];
+
+            if (!selectedOption.value) {
+                document.getElementById('btn-step3').disabled = true;
+                return;
+            }
+
+            userData.specialite = selectedOption.dataset.nom;
+            userData.specialiteId = selectedOption.value;
+
+            // Afficher info spécialité
+            const infoBox = document.getElementById('specialiteInfo');
+            const infoText = document.getElementById('specialiteInfoText');
+            infoText.textContent = `Série ${selectedOption.dataset.categorie} - Contenu adapté à votre parcours`;
+            infoBox.style.display = 'flex';
+
+            document.getElementById('btn-step3').disabled = false;
+        }
+
+        // Navigation entre les étapes
+        function nextStep(step) {
+            // Validation et logique selon l'étape
+            if (step === 1) {
+                loadClasses();
+            } else if (step === 2) {
+                const niveaux = userData.section === 'francophone' ? niveauxFrancophone : niveauxAnglophone;
+                const niveau = niveaux.find(n => n.code === userData.classe);
+
+                if (niveau && niveau.hasSpecialite) {
+                    loadSpecialites();
+                    goToStep(3);
+                } else {
+                    // Pas de spécialité, aller directement au récap
+                    userData.specialite = null;
+                    userData.specialiteId = null;
+                    updateSummary();
+                    goToStep(4);
+                }
+                return;
+            } else if (step === 3) {
+                updateSummary();
+            }
+
+            goToStep(step + 1);
+        }
+
+        function prevStep(step) {
+            // Si on revient de l'étape 4 et qu'il n'y a pas de spécialité, sauter l'étape 3
+            if (step === 4 && !userData.specialite) {
+                goToStep(2);
+                return;
+            }
+            goToStep(step - 1);
+        }
+
+        function goToStep(stepNumber) {
+            // Cacher toutes les étapes
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            // Afficher l'étape demandée
+            document.getElementById(`step${stepNumber}`).classList.add('active');
+            currentStep = stepNumber;
+
+            // Mettre à jour la barre de progression
+            const progress = (stepNumber / 5) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Charger les classes selon la section
+        function loadClasses() {
+            const select = document.getElementById('classeSelect');
+            select.innerHTML = '<option value="">-- Choisir une classe --</option>';
+
+            const niveaux = userData.section === 'francophone' ? niveauxFrancophone : niveauxAnglophone;
+
+            niveaux.forEach(niveau => {
+                const option = document.createElement('option');
+                option.value = niveau.code;
+                option.textContent = niveau.nom + (niveau.examen ? ' ⭐' : '');
+                select.appendChild(option);
+            });
+        }
+
+        // Charger les spécialités selon la classe
+        function loadSpecialites() {
+            const select = document.getElementById('specialiteSelect');
+            select.innerHTML = '<option value="">-- Choisir une spécialité --</option>';
+
+            const specialites = userData.section === 'francophone'
+                ? specialitesFrancophone[userData.classe]
+                : specialitesAnglophone[userData.classe];
+
+            if (specialites) {
+                let currentCategorie = '';
+                specialites.forEach(spec => {
+                    if (spec.categorie !== currentCategorie) {
+                        const optgroup = document.createElement('optgroup');
+                        optgroup.label = spec.categorie;
+                        select.appendChild(optgroup);
+                        currentCategorie = spec.categorie;
+                    }
+
+                    const option = document.createElement('option');
+                    option.value = spec.code;
+                    option.textContent = spec.nom;
+                    option.dataset.nom = spec.nom;
+                    option.dataset.categorie = spec.categorie;
+                    select.lastChild.appendChild(option);
+                });
+            }
+        }
+
+        // Mettre à jour le récapitulatif
+        function updateSummary() {
+            document.getElementById('summary-section').textContent =
+                userData.section === 'francophone' ? 'Francophone 🇫🇷' : 'Anglophone 🇬🇧';
+
+            const niveaux = userData.section === 'francophone' ? niveauxFrancophone : niveauxAnglophone;
+            const niveau = niveaux.find(n => n.code === userData.classe);
+            document.getElementById('summary-classe').textContent = niveau ? niveau.nom : '-';
+
+            if (userData.specialite) {
+                document.getElementById('summary-specialite').textContent = userData.specialite;
+                document.getElementById('summary-specialite-row').style.display = 'flex';
+            } else {
+                document.getElementById('summary-specialite-row').style.display = 'none';
+            }
+        }
+
+        // Finaliser et sauvegarder dans Supabase
+        async function finaliser() {
+            try {
+                // Récupérer l'utilisateur actuel
+                const { data: { user } } = await supabase.auth.getUser();
+
+                if (!user) {
+                    alert('Erreur: Utilisateur non connecté');
+                    return;
+                }
+
+                // Mise à jour du profil
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({
+                        sous_systeme_id: userData.sectionId,
+                        niveau_scolaire_id: userData.classeId,
+                        serie_id: userData.specialiteId,
+                        annee_scolaire: '2024-2025',
+                        updated_at: new Date()
+                    })
+                    .eq('id', user.id);
+
+                if (error) throw error;
+
+                // Succès !
+                goToStep(5);
+
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde:', error);
+                alert('Erreur lors de la sauvegarde du profil. Veuillez réessayer.');
+            }
+        }
+
+        // Rediriger vers le dashboard
+        function goToDashboard() {
+            window.location.href = '/dashboard-eleve.html';
+        }
+    </script>
+</body>
+
+</html>

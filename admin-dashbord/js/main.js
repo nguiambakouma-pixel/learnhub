@@ -1,241 +1,170 @@
-// js/main.js
-import { api } from './api.js';
+import { router } from './router.js';
 import { ui } from './ui.js';
-import { Router } from './router.js';
 import { matieresView } from './views/matieres.js';
 import { chapitresView } from './views/chapitres.js';
 import { coursView } from './views/cours.js';
 import { exercicesView } from './views/exercices.js';
+import { exercicesCodeView } from './views/exercices-code.js';
+import { utilisateursView } from './views/utilisateurs.js';
 
-class AdminApp {
-  constructor() {
-    this.router = new Router();
-    this.currentUser = null;
-    this.listenersAttached = false; // 🔧 Flag pour éviter les doublons
-  }
-
-  async init() {
-    try {
-      console.log('🚀 Initializing AdminApp...');
-
-      // Check authentication
-      await this.checkAuth();
-
-      // Setup navigation
-      this.setupNavigation();
-
-      // Setup global events
-      this.setupGlobalEvents();
-
-      // 🔧 CORRECTION : Attacher les listeners de formulaires dès l'initialisation
-      this.attachFormListeners();
-
-      // Load initial view
-      await this.router.navigate('dashboard');
-
-      console.log('✅ AdminApp initialized');
-
-    } catch (error) {
-      console.error('❌ Erreur initialisation:', error);
-      this.redirectToLogin();
-    }
-  }
-
-  async checkAuth() {
-    try {
-      this.currentUser = await api.getCurrentUser();
-      if (!this.currentUser) {
-        throw new Error('Non authentifié');
-      }
-      this.updateUserInfo();
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  updateUserInfo() {
-    const email = this.currentUser.email || 'Admin';
-    const initials = email.substring(0, 2).toUpperCase();
-
-    const userInitialsEl = document.getElementById('userInitials');
-    const userNameEl = document.getElementById('userName');
-
-    if (userInitialsEl) userInitialsEl.textContent = initials;
-    if (userNameEl) userNameEl.textContent = email.split('@')[0];
-  }
-
-  setupNavigation() {
-    // Nav links
+// Fonction pour configurer les événements globaux
+function setupGlobalEvents() {
+    // Navigation Sidebar
     document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const view = e.currentTarget.dataset.view;
-        await this.router.navigate(view);
-      });
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const viewName = link.getAttribute('data-view');
+            if (viewName) {
+                router.navigate(viewName);
+            }
+        });
     });
 
-    // Add button
-    const addBtn = document.getElementById('addNewBtn');
-    if (addBtn) {
-      addBtn.addEventListener('click', () => {
-        console.log('➕ Add button clicked');
-        const currentView = this.router.getCurrentView();
-
-        if (currentView === 'matieres') {
-          matieresView.openModal();
-        } else if (currentView === 'chapitres') {
-          chapitresView.openModal();
-        } else if (currentView === 'cours') {
-          coursView.openModal();
-        } else if (currentView === 'exercices') {
-          exercicesView.openModal();
-        }
-      });
-    }
-  }
-
-  setupGlobalEvents() {
     // Logout
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', async () => {
-        const confirmed = await ui.confirm(
-          'Êtes-vous sûr de vouloir vous déconnecter ?',
-          'Déconnexion'
-        );
-
-        if (confirmed) {
-          await this.logout();
-        }
-      });
+        logoutBtn.addEventListener('click', () => {
+            // TODO: Implémenter la déconnexion réelle
+            console.log('Déconnexion...');
+            window.location.href = '../index.html';
+        });
     }
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-      // ESC to close modals
-      if (e.key === 'Escape') {
-        ui.closeCurrentModal();
-      }
-    });
-
-    // Modal backdrop clicks
-    document.querySelectorAll('[id$="Modal"]').forEach(modal => {
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          ui.closeModal(modal.id);
-        }
-      });
-    });
-  }
-
-  // 🔧 CORRECTION CRITIQUE : Attacher les listeners UNE SEULE FOIS
-  attachFormListeners() {
-    console.log('🔗 Attaching form listeners...');
-
-    // Marquer qu'on a déjà attaché les listeners
-    if (this.listenersAttached) {
-      console.log('⚠️ Listeners already attached, skipping');
-      return;
+    // Gestion du bouton global "+ Ajouter"
+    const addNewBtn = document.getElementById('addNewBtn');
+    if (addNewBtn) {
+        addNewBtn.addEventListener('click', () => {
+            const currentViewName = router.getCurrentView();
+            const view = router.views[currentViewName];
+            if (view && typeof view.openModal === 'function') {
+                view.openModal();
+            } else {
+                console.warn(`La vue ${currentViewName} n'a pas de méthode openModal`);
+            }
+        });
     }
 
-    // Matière Form - Cloner pour éviter les doublons
+    // Gestion des modales (Boutons Annuler)
+
+    // Modal Matière
+    const cancelModal = document.getElementById('cancelModal');
+    if (cancelModal) {
+        cancelModal.onclick = () => ui.closeModal('matiereModal');
+    }
+
+    // Modal Chapitre
+    const cancelChapitreModal = document.getElementById('cancelChapitreModal');
+    if (cancelChapitreModal) {
+        cancelChapitreModal.onclick = () => ui.closeModal('chapitreModal');
+    }
+
+    // Modal Cours
+    const cancelCoursModal = document.getElementById('cancelCoursModal');
+    if (cancelCoursModal) {
+        cancelCoursModal.onclick = () => ui.closeModal('coursModal');
+    }
+
+    // Modal Exercice QCM
+    const cancelExerciceModal = document.getElementById('cancelExerciceModal');
+    if (cancelExerciceModal) {
+        cancelExerciceModal.onclick = () => ui.closeModal('exerciceModal');
+    }
+
+    // Modal Exercice Code (Nouveau)
+    const cancelExerciceCodeModal = document.getElementById('cancelExerciceCodeModal');
+    if (cancelExerciceCodeModal) {
+        cancelExerciceCodeModal.onclick = () => ui.closeModal('exerciceCodeModal');
+    }
+}
+
+// Fonction pour attacher les écouteurs sur les formulaires
+function attachFormListeners() {
+    // Formulaire Matière
     const matiereForm = document.getElementById('matiereForm');
     if (matiereForm) {
-      const newMatiereForm = matiereForm.cloneNode(true);
-      matiereForm.parentNode.replaceChild(newMatiereForm, matiereForm);
-      newMatiereForm.addEventListener('submit', (e) => {
-        console.log('📝 Matiere form submit');
-        matieresView.save(e);
-      });
+        const newForm = matiereForm.cloneNode(true);
+        matiereForm.parentNode.replaceChild(newForm, matiereForm);
+        newForm.addEventListener('submit', (e) => matieresView.save(e));
+
+        // Réattacher le bouton annuler car le clone perd les événements
+        const cancelBtn = document.getElementById('cancelModal');
+        if (cancelBtn) cancelBtn.onclick = () => ui.closeModal('matiereModal');
     }
 
-    // Chapitre Form
+    // Formulaire Chapitre
     const chapitreForm = document.getElementById('chapitreForm');
     if (chapitreForm) {
-      const newChapitreForm = chapitreForm.cloneNode(true);
-      chapitreForm.parentNode.replaceChild(newChapitreForm, chapitreForm);
-      newChapitreForm.addEventListener('submit', (e) => {
-        console.log('📝 Chapitre form submit');
-        chapitresView.save(e);
-      });
+        const newForm = chapitreForm.cloneNode(true);
+        chapitreForm.parentNode.replaceChild(newForm, chapitreForm);
+        newForm.addEventListener('submit', (e) => chapitresView.save(e));
+
+        // Réattacher events des boutons dans le form si nécessaire (upload pdf etc)
+        // Note: Si des events étaient attachés aux éléments INTERNES, ils sont perdus avec cloneNode(true).
+        // Cependant, l'upload PDF semble géré via onclick inline ou par une logique séparée.
+        // Vérifions si le PDF upload a besoin d'être ré-initié.
+        const cancelBtn = document.getElementById('cancelChapitreModal');
+        if (cancelBtn) cancelBtn.onclick = () => ui.closeModal('chapitreModal');
     }
 
-    // Cours Form
+    // Formulaire Cours
     const coursForm = document.getElementById('coursForm');
     if (coursForm) {
-      const newCoursForm = coursForm.cloneNode(true);
-      coursForm.parentNode.replaceChild(newCoursForm, coursForm);
-      newCoursForm.addEventListener('submit', (e) => {
-        console.log('📝 Cours form submit');
-        coursView.save(e);
-      });
+        const newForm = coursForm.cloneNode(true);
+        coursForm.parentNode.replaceChild(newForm, coursForm);
+        newForm.addEventListener('submit', (e) => coursView.save(e));
+
+        const cancelBtn = document.getElementById('cancelCoursModal');
+        if (cancelBtn) cancelBtn.onclick = () => ui.closeModal('coursModal');
     }
 
-    // Exercice Form
+    // Formulaire Exercice QCM
     const exerciceForm = document.getElementById('exerciceForm');
     if (exerciceForm) {
-      const newExerciceForm = exerciceForm.cloneNode(true);
-      exerciceForm.parentNode.replaceChild(newExerciceForm, exerciceForm);
-      newExerciceForm.addEventListener('submit', (e) => {
-        console.log('📝 Exercice form submit');
-        exercicesView.save(e);
-      });
+        const newForm = exerciceForm.cloneNode(true);
+        exerciceForm.parentNode.replaceChild(newForm, exerciceForm);
+        newForm.addEventListener('submit', (e) => exercicesView.save(e));
+
+        const cancelBtn = document.getElementById('cancelExerciceModal');
+        if (cancelBtn) cancelBtn.onclick = () => ui.closeModal('exerciceModal');
     }
 
-    // Cancel buttons
-    const cancelMatiere = document.getElementById('cancelModal');
-    if (cancelMatiere) {
-      cancelMatiere.onclick = () => ui.closeModal('matiereModal');
+    // Formulaire Exercice Code (Nouveau)
+    const exerciceCodeForm = document.getElementById('exerciceCodeForm');
+    if (exerciceCodeForm) {
+        const newExerciceCodeForm = exerciceCodeForm.cloneNode(true);
+        exerciceCodeForm.parentNode.replaceChild(newExerciceCodeForm, exerciceCodeForm);
+        newExerciceCodeForm.addEventListener('submit', (e) => {
+            console.log('📝 Exercice Code form submit');
+            exercicesCodeView.save(e);
+        });
+
+        const cancelBtn = document.getElementById('cancelExerciceCodeModal');
+        if (cancelBtn) cancelBtn.onclick = () => ui.closeModal('exerciceCodeModal');
     }
-
-    const cancelChapitre = document.getElementById('cancelChapitreModal');
-    if (cancelChapitre) {
-      cancelChapitre.onclick = () => ui.closeModal('chapitreModal');
-    }
-
-    const cancelCours = document.getElementById('cancelCoursModal');
-    if (cancelCours) {
-      cancelCours.onclick = () => ui.closeModal('coursModal');
-    }
-
-    const cancelExercice = document.getElementById('cancelExerciceModal');
-    if (cancelExercice) {
-      cancelExercice.onclick = () => ui.closeModal('exerciceModal');
-    }
-
-    this.listenersAttached = true;
-    console.log('✅ Form listeners attached');
-  }
-
-  async logout() {
-    try {
-      await api.signOut();
-      this.redirectToLogin();
-    } catch (error) {
-      ui.showNotification('Erreur lors de la déconnexion', 'error');
-    }
-  }
-
-  redirectToLogin() {
-    window.location.href = './admin-login.html';
-  }
 }
 
-// Exposer les vues globalement pour onclick
-window.exercicesView = exercicesView;
-window.coursView = coursView;
+
+// Initialisation au chargement
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Admin Dashboard Initialized');
+
+    setupGlobalEvents();
+    attachFormListeners();
+
+    // Route par défaut
+    router.navigate('dashboard');
+});
+
+// Exposer les vues et le router globalement
+window.app = {
+    router: router,
+    ui: ui
+};
+
 window.matieresView = matieresView;
 window.chapitresView = chapitresView;
-
-// Initialize app when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log('📄 DOM Content Loaded');
-    window.app = new AdminApp();
-    window.app.init();
-  });
-} else {
-  console.log('📄 DOM Already Loaded');
-  window.app = new AdminApp();
-  window.app.init();
-}
+window.coursView = coursView;
+window.exercicesView = exercicesView;
+window.exercicesCodeView = exercicesCodeView;
+window.utilisateursView = utilisateursView;
+window.ui = ui;

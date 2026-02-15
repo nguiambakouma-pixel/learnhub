@@ -1,0 +1,416 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.admins (
+  id uuid NOT NULL,
+  nom character varying NOT NULL,
+  email character varying NOT NULL UNIQUE,
+  role character varying DEFAULT 'admin'::character varying CHECK (role::text = ANY (ARRAY['admin'::character varying, 'super_admin'::character varying, 'moderator'::character varying]::text[])),
+  avatar_url text,
+  permissions jsonb DEFAULT '{"manage_users": true, "manage_content": true, "manage_courses": true}'::jsonb,
+  est_actif boolean DEFAULT true,
+  derniere_connexion timestamp without time zone,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT admins_pkey PRIMARY KEY (id),
+  CONSTRAINT admins_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.badges (
+  id integer NOT NULL DEFAULT nextval('badges_id_seq'::regclass),
+  nom character varying NOT NULL,
+  description text,
+  icone_url text,
+  type_badge character varying,
+  condition_obtention jsonb,
+  points_bonus integer DEFAULT 0,
+  rarete character varying DEFAULT 'commun'::character varying,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT badges_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.chapitres (
+  id integer NOT NULL DEFAULT nextval('chapitres_id_seq'::regclass),
+  matiere_id integer,
+  classe_id integer,
+  titre character varying NOT NULL,
+  slug character varying NOT NULL,
+  description text,
+  ordre integer NOT NULL,
+  duree_estimee integer,
+  difficulte character varying CHECK (difficulte::text = ANY (ARRAY['facile'::character varying, 'moyen'::character varying, 'difficile'::character varying]::text[])),
+  objectifs ARRAY,
+  prerequis ARRAY,
+  est_premium boolean DEFAULT false,
+  est_publie boolean DEFAULT true,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  pdf_url text CHECK (pdf_url IS NULL OR pdf_url ~~ 'http://%'::text OR pdf_url ~~ 'https://%'::text),
+  CONSTRAINT chapitres_pkey PRIMARY KEY (id),
+  CONSTRAINT chapitres_matiere_id_fkey FOREIGN KEY (matiere_id) REFERENCES public.matieres(id),
+  CONSTRAINT chapitres_classe_id_fkey FOREIGN KEY (classe_id) REFERENCES public.classes(id)
+);
+CREATE TABLE public.classes (
+  id integer NOT NULL DEFAULT nextval('classes_id_seq'::regclass),
+  nom character varying NOT NULL,
+  niveau character varying NOT NULL,
+  description text,
+  ordre integer NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT classes_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.classes_matieres (
+  id integer NOT NULL DEFAULT nextval('classes_matieres_id_seq'::regclass),
+  classe_id integer,
+  matiere_id integer,
+  coefficient integer DEFAULT 1,
+  heures_annuelles integer,
+  CONSTRAINT classes_matieres_pkey PRIMARY KEY (id),
+  CONSTRAINT classes_matieres_classe_id_fkey FOREIGN KEY (classe_id) REFERENCES public.classes(id),
+  CONSTRAINT classes_matieres_matiere_id_fkey FOREIGN KEY (matiere_id) REFERENCES public.matieres(id)
+);
+CREATE TABLE public.code_challenges (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid,
+  challenge_id character varying NOT NULL,
+  code text NOT NULL,
+  est_termine boolean DEFAULT false,
+  points_gagnes integer DEFAULT 50,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT code_challenges_pkey PRIMARY KEY (id),
+  CONSTRAINT code_challenges_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.code_executions (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid,
+  language character varying NOT NULL,
+  code text NOT NULL,
+  status character varying NOT NULL,
+  error_message text,
+  execution_time timestamp without time zone DEFAULT now(),
+  CONSTRAINT code_executions_pkey PRIMARY KEY (id),
+  CONSTRAINT code_executions_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.commentaires (
+  id integer NOT NULL DEFAULT nextval('commentaires_id_seq'::regclass),
+  user_id uuid,
+  cours_id integer,
+  parent_id integer,
+  contenu text NOT NULL,
+  likes_count integer DEFAULT 0,
+  est_epingle boolean DEFAULT false,
+  est_modere boolean DEFAULT false,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT commentaires_pkey PRIMARY KEY (id),
+  CONSTRAINT commentaires_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id),
+  CONSTRAINT commentaires_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id),
+  CONSTRAINT commentaires_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.commentaires(id)
+);
+CREATE TABLE public.commentaires_likes (
+  id integer NOT NULL DEFAULT nextval('commentaires_likes_id_seq'::regclass),
+  user_id uuid,
+  commentaire_id integer,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT commentaires_likes_pkey PRIMARY KEY (id),
+  CONSTRAINT commentaires_likes_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id),
+  CONSTRAINT commentaires_likes_commentaire_id_fkey FOREIGN KEY (commentaire_id) REFERENCES public.commentaires(id)
+);
+CREATE TABLE public.cours (
+  id integer NOT NULL DEFAULT nextval('cours_id_seq'::regclass),
+  chapitre_id integer,
+  titre character varying NOT NULL,
+  slug character varying NOT NULL,
+  contenu text NOT NULL,
+  type_contenu character varying DEFAULT 'texte'::character varying,
+  video_url text CHECK (video_url IS NULL OR video_url ~~ 'http://%'::text OR video_url ~~ 'https://%'::text),
+  duree_lecture integer,
+  ordre integer NOT NULL,
+  points_recompense integer DEFAULT 10,
+  est_gratuit boolean DEFAULT true,
+  est_publie boolean DEFAULT true,
+  vues_total integer DEFAULT 0,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT cours_pkey PRIMARY KEY (id),
+  CONSTRAINT cours_chapitre_id_fkey FOREIGN KEY (chapitre_id) REFERENCES public.chapitres(id)
+);
+CREATE TABLE public.design_projects (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid,
+  title character varying NOT NULL,
+  description text,
+  canvas_data text,
+  tools_used character varying,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT design_projects_pkey PRIMARY KEY (id),
+  CONSTRAINT design_projects_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.exercices (
+  id integer NOT NULL DEFAULT nextval('exercices_id_seq'::regclass),
+  chapitre_id integer,
+  cours_id integer,
+  titre character varying,
+  consigne text,
+  type_exercice character varying CHECK (type_exercice::text = ANY (ARRAY['qcm'::character varying, 'code'::character varying, 'texte'::character varying, 'projet'::character varying]::text[])),
+  difficulte character varying CHECK (difficulte::text = ANY (ARRAY['facile'::character varying, 'moyen'::character varying, 'difficile'::character varying]::text[])),
+  points integer DEFAULT 10,
+  temps_limite integer,
+  ordre integer,
+  est_publie boolean DEFAULT true,
+  created_at timestamp without time zone DEFAULT now(),
+  choix jsonb,
+  type_question character varying,
+  question text,
+  explication text,
+  est_actif boolean DEFAULT true,
+  CONSTRAINT exercices_pkey PRIMARY KEY (id),
+  CONSTRAINT exercices_chapitre_id_fkey FOREIGN KEY (chapitre_id) REFERENCES public.chapitres(id),
+  CONSTRAINT exercices_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id)
+);
+CREATE TABLE public.exercices_code (
+  id bigint NOT NULL DEFAULT nextval('exercices_code_id_seq'::regclass),
+  cours_id bigint,
+  titre text NOT NULL,
+  description text,
+  difficulte text CHECK (difficulte = ANY (ARRAY['facile'::text, 'moyen'::text, 'difficile'::text])),
+  langage text NOT NULL CHECK (langage = ANY (ARRAY['javascript'::text, 'python'::text, 'html'::text, 'css'::text, 'sql'::text])),
+  code_initial text,
+  code_solution text NOT NULL,
+  tests_unitaires jsonb,
+  points_recompense integer DEFAULT 20,
+  ordre integer DEFAULT 1,
+  est_actif boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT exercices_code_pkey PRIMARY KEY (id),
+  CONSTRAINT exercices_code_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id)
+);
+CREATE TABLE public.favoris (
+  id integer NOT NULL DEFAULT nextval('favoris_id_seq'::regclass),
+  user_id uuid,
+  cours_id integer,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT favoris_pkey PRIMARY KEY (id),
+  CONSTRAINT favoris_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id),
+  CONSTRAINT favoris_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id)
+);
+CREATE TABLE public.inscriptions_parcours (
+  id integer NOT NULL DEFAULT nextval('inscriptions_parcours_id_seq'::regclass),
+  user_id uuid,
+  parcours_id integer,
+  progression_pourcentage integer DEFAULT 0,
+  date_inscription timestamp without time zone DEFAULT now(),
+  date_completion timestamp without time zone,
+  CONSTRAINT inscriptions_parcours_pkey PRIMARY KEY (id),
+  CONSTRAINT inscriptions_parcours_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id),
+  CONSTRAINT inscriptions_parcours_parcours_id_fkey FOREIGN KEY (parcours_id) REFERENCES public.parcours_personnalises(id)
+);
+CREATE TABLE public.matieres (
+  id integer NOT NULL DEFAULT nextval('matieres_id_seq'::regclass),
+  nom character varying NOT NULL,
+  slug character varying NOT NULL UNIQUE,
+  description text,
+  icone_url text,
+  couleur character varying,
+  type_parcours character varying CHECK (type_parcours::text = ANY (ARRAY['eleve'::character varying, 'dev-web'::character varying, 'designer'::character varying, 'commun'::character varying]::text[])),
+  ordre integer,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT matieres_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.notes_personnelles (
+  id integer NOT NULL DEFAULT nextval('notes_personnelles_id_seq'::regclass),
+  user_id uuid,
+  cours_id integer,
+  contenu text NOT NULL,
+  position_dans_cours integer,
+  couleur character varying,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT notes_personnelles_pkey PRIMARY KEY (id),
+  CONSTRAINT notes_personnelles_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id),
+  CONSTRAINT notes_personnelles_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id)
+);
+CREATE TABLE public.notifications (
+  id integer NOT NULL DEFAULT nextval('notifications_id_seq'::regclass),
+  user_id uuid,
+  titre character varying NOT NULL,
+  message text NOT NULL,
+  type_notification character varying,
+  lien text,
+  est_lue boolean DEFAULT false,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT notifications_pkey PRIMARY KEY (id),
+  CONSTRAINT notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.parcours_cours (
+  id integer NOT NULL DEFAULT nextval('parcours_cours_id_seq'::regclass),
+  parcours_id integer,
+  cours_id integer,
+  ordre integer NOT NULL,
+  est_obligatoire boolean DEFAULT true,
+  CONSTRAINT parcours_cours_pkey PRIMARY KEY (id),
+  CONSTRAINT parcours_cours_parcours_id_fkey FOREIGN KEY (parcours_id) REFERENCES public.parcours_personnalises(id),
+  CONSTRAINT parcours_cours_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id)
+);
+CREATE TABLE public.parcours_personnalises (
+  id integer NOT NULL DEFAULT nextval('parcours_personnalises_id_seq'::regclass),
+  nom character varying NOT NULL,
+  description text,
+  type_parcours character varying,
+  duree_estimee integer,
+  est_officiel boolean DEFAULT false,
+  createur_id uuid,
+  nombre_inscrits integer DEFAULT 0,
+  note_moyenne numeric,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT parcours_personnalises_pkey PRIMARY KEY (id),
+  CONSTRAINT parcours_personnalises_createur_id_fkey FOREIGN KEY (createur_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.profiles (
+  id uuid NOT NULL,
+  nom character varying NOT NULL,
+  email character varying NOT NULL UNIQUE,
+  avatar_url text,
+  type_parcours character varying CHECK (type_parcours::text = ANY (ARRAY['eleve'::character varying, 'dev-web'::character varying, 'designer'::character varying]::text[])),
+  niveau_actuel character varying,
+  classe_id integer,
+  date_inscription timestamp without time zone DEFAULT now(),
+  derniere_connexion timestamp without time zone,
+  points_total integer DEFAULT 0,
+  streak_jours integer DEFAULT 0,
+  bio text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT profiles_pkey PRIMARY KEY (id),
+  CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.progressions_cours (
+  id integer NOT NULL DEFAULT nextval('progressions_cours_id_seq'::regclass),
+  user_id uuid,
+  cours_id integer,
+  est_termine boolean DEFAULT false,
+  progression_pourcentage integer DEFAULT 0,
+  temps_passe integer DEFAULT 0,
+  derniere_position integer,
+  date_debut timestamp without time zone DEFAULT now(),
+  date_fin timestamp without time zone,
+  CONSTRAINT progressions_cours_pkey PRIMARY KEY (id),
+  CONSTRAINT progressions_cours_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id),
+  CONSTRAINT progressions_cours_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id)
+);
+CREATE TABLE public.projets (
+  id integer NOT NULL DEFAULT nextval('projets_id_seq'::regclass),
+  exercice_id integer,
+  titre character varying NOT NULL,
+  description text NOT NULL,
+  objectifs ARRAY,
+  technologies ARRAY,
+  fichiers_starter text,
+  solution_exemple text,
+  criteres_evaluation jsonb,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT projets_pkey PRIMARY KEY (id),
+  CONSTRAINT projets_exercice_id_fkey FOREIGN KEY (exercice_id) REFERENCES public.exercices(id)
+);
+CREATE TABLE public.questions (
+  id integer NOT NULL DEFAULT nextval('questions_id_seq'::regclass),
+  exercice_id integer,
+  question_texte text NOT NULL,
+  type_question character varying DEFAULT 'choix_unique'::character varying,
+  points integer DEFAULT 1,
+  explication text,
+  ordre integer,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT questions_pkey PRIMARY KEY (id),
+  CONSTRAINT questions_exercice_id_fkey FOREIGN KEY (exercice_id) REFERENCES public.exercices(id)
+);
+CREATE TABLE public.reponses (
+  id integer NOT NULL DEFAULT nextval('reponses_id_seq'::regclass),
+  question_id integer,
+  texte_reponse text NOT NULL,
+  est_correcte boolean DEFAULT false,
+  ordre integer,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT reponses_pkey PRIMARY KEY (id),
+  CONSTRAINT reponses_question_id_fkey FOREIGN KEY (question_id) REFERENCES public.questions(id)
+);
+CREATE TABLE public.ressources (
+  id integer NOT NULL DEFAULT nextval('ressources_id_seq'::regclass),
+  cours_id integer,
+  titre character varying NOT NULL,
+  type_fichier character varying,
+  url_fichier text NOT NULL CHECK (url_fichier IS NULL OR url_fichier ~~ 'http://%'::text OR url_fichier ~~ 'https://%'::text),
+  taille_fichier integer,
+  nombre_telechargements integer DEFAULT 0,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT ressources_pkey PRIMARY KEY (id),
+  CONSTRAINT ressources_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id)
+);
+CREATE TABLE public.soumissions_code (
+  id bigint NOT NULL DEFAULT nextval('soumissions_code_id_seq'::regclass),
+  user_id uuid,
+  exercice_id bigint,
+  code_soumis text NOT NULL,
+  est_reussi boolean DEFAULT false,
+  tests_passes integer DEFAULT 0,
+  tests_total integer DEFAULT 0,
+  points_obtenus integer DEFAULT 0,
+  temps_execution real,
+  erreur text,
+  soumis_le timestamp with time zone DEFAULT now(),
+  CONSTRAINT soumissions_code_pkey PRIMARY KEY (id),
+  CONSTRAINT soumissions_code_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id),
+  CONSTRAINT soumissions_code_exercice_id_fkey FOREIGN KEY (exercice_id) REFERENCES public.exercices_code(id)
+);
+CREATE TABLE public.soumissions_exercices (
+  id integer NOT NULL DEFAULT nextval('soumissions_exercices_id_seq'::regclass),
+  user_id uuid,
+  exercice_id integer,
+  reponses jsonb,
+  score integer,
+  score_max integer,
+  est_reussi boolean DEFAULT false,
+  temps_pris integer,
+  tentative_numero integer DEFAULT 1,
+  feedback text,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT soumissions_exercices_pkey PRIMARY KEY (id),
+  CONSTRAINT soumissions_exercices_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id),
+  CONSTRAINT soumissions_exercices_exercice_id_fkey FOREIGN KEY (exercice_id) REFERENCES public.exercices(id)
+);
+CREATE TABLE public.soumissions_projets (
+  id integer NOT NULL DEFAULT nextval('soumissions_projets_id_seq'::regclass),
+  user_id uuid,
+  projet_id integer,
+  url_rendu text,
+  fichiers_soumis ARRAY,
+  commentaire_etudiant text,
+  statut character varying DEFAULT 'en_attente'::character varying,
+  note integer,
+  commentaire_correcteur text,
+  date_soumission timestamp without time zone DEFAULT now(),
+  date_correction timestamp without time zone,
+  CONSTRAINT soumissions_projets_pkey PRIMARY KEY (id),
+  CONSTRAINT soumissions_projets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id),
+  CONSTRAINT soumissions_projets_projet_id_fkey FOREIGN KEY (projet_id) REFERENCES public.projets(id)
+);
+CREATE TABLE public.statistiques_journalieres (
+  id integer NOT NULL DEFAULT nextval('statistiques_journalieres_id_seq'::regclass),
+  user_id uuid,
+  date date NOT NULL,
+  temps_apprentissage integer DEFAULT 0,
+  cours_completes integer DEFAULT 0,
+  exercices_reussis integer DEFAULT 0,
+  points_gagnes integer DEFAULT 0,
+  CONSTRAINT statistiques_journalieres_pkey PRIMARY KEY (id),
+  CONSTRAINT statistiques_journalieres_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.user_badges (
+  id integer NOT NULL DEFAULT nextval('user_badges_id_seq'::regclass),
+  user_id uuid,
+  badge_id integer,
+  date_obtention timestamp without time zone DEFAULT now(),
+  CONSTRAINT user_badges_pkey PRIMARY KEY (id),
+  CONSTRAINT user_badges_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id),
+  CONSTRAINT user_badges_badge_id_fkey FOREIGN KEY (badge_id) REFERENCES public.badges(id)
+);

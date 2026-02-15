@@ -4,56 +4,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Designer - LearnHub</title>
+    <title>Dashboard Designer - KMERSCHOOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <style>
         * {
             font-family: 'Inter', sans-serif;
         }
+
+        .gradient-designer {
+            background: linear-gradient(135deg, #9333ea 0%, #db2777 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .animate-slide-in-right {
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .animate-scale-in {
+            animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .design-pattern {
+            background-image:
+                radial-gradient(#db2777 0.5px, transparent 0.5px),
+                radial-gradient(#9333ea 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.05;
+        }
+
+        /* Onglets */
+        .tab-btn {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: transparent;
+            transition: background 0.3s ease;
+        }
+
+        .tab-btn.active::after {
+            background: linear-gradient(135deg, #9333ea 0%, #db2777 100%);
+        }
+
+        .tool-btn.active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(147, 51, 234, 0.3);
+        }
+
+        #designCanvas {
+            touch-action: none;
+        }
     </style>
 </head>
 
 <body class="bg-gray-50">
+    <div class="fixed inset-0 design-pattern pointer-events-none z-0"></div>
 
     <!-- Navbar -->
-    <nav class="bg-white shadow-sm border-b border-gray-200">
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-3">
-                    <div
-                        class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01">
-                            </path>
-                        </svg>
-                    </div>
-                    <span class="text-xl font-bold text-gray-900">LearnHub</span>
-                    <span
-                        class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">Designer</span>
+                    <img src="../assets/logo/LOGO.png" alt="KMERSCHOOL"
+                        class="h-20 w-auto object-contain bg-white rounded-lg p-1">
+                    <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">🎨
+                        Designer</span>
                 </div>
 
                 <div class="flex items-center space-x-4">
-                    <button class="p-2 hover:bg-gray-100 rounded-lg">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg relative" onclick="toggleNotifications()">
                         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
                             </path>
                         </svg>
+                        <span id="notifBadge"
+                            class="hidden absolute top-0 right-0 w-2 h-2 bg-pink-500 rounded-full"></span>
                     </button>
                     <div class="flex items-center space-x-3">
-                        <img id="userAvatar" class="w-10 h-10 rounded-full border-2 border-purple-200"
-                            src="https://ui-avatars.com/api/?name=Designer" alt="Avatar">
-                        <div>
+                        <img id="userAvatar" class="w-10 h-10 rounded-full border-2 border-purple-200" src=""
+                            alt="Avatar">
+                        <div class="hidden md:block">
                             <p id="userName" class="text-sm font-semibold text-gray-900">Chargement...</p>
-                            <p class="text-xs text-gray-500">UI/UX Designer</p>
+                            <p id="userLevel" class="text-xs text-gray-500">Niveau</p>
                         </div>
                     </div>
                     <button onclick="logout()"
-                        class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition">
+                        class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition whitespace-nowrap">
                         Déconnexion
                     </button>
                 </div>
@@ -62,19 +150,33 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
 
         <!-- Welcome Section -->
-        <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 text-white mb-8">
-            <h1 class="text-3xl font-bold mb-2">Créativité & Design, <span id="welcomeName">Designer</span> ! 🎨</h1>
-            <p class="text-purple-100">Crée des designs magnifiques et inspire le monde</p>
+        <div class="gradient-designer rounded-2xl p-8 text-white mb-8 animate-slide-in">
+            <h1 class="text-3xl font-bold mb-2">Hello <span id="welcomeName">Designer</span> ! 🎨</h1>
+            <p class="text-purple-100">Exprime ta créativité et conçois des expériences uniques</p>
+            <div class="mt-4 flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                        </path>
+                    </svg>
+                    <span id="totalPointsHeader">0 XP</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-orange-300">🔥</span>
+                    <span id="streakHeader">0 jours de suite</span>
+                </div>
+            </div>
         </div>
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-gray-600 text-sm">Points Creative</span>
+                    <span class="text-gray-600 text-sm">Points XP</span>
                     <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                         <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
                             <path
@@ -83,24 +185,28 @@
                         </svg>
                     </div>
                 </div>
-                <p id="totalPoints" class="text-2xl font-bold text-gray-900">0 CP</p>
+                <p id="totalPoints" class="text-2xl font-bold text-gray-900">0</p>
+                <p id="pointsToNextLevel" class="text-xs text-gray-500 mt-1">50 pour le prochain niveau</p>
             </div>
 
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
+                style="animation-delay: 0.1s">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-gray-600 text-sm">Projets Design</span>
-                    <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                    <span class="text-gray-600 text-sm">Série de jours</span>
+                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
-                                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
                                 clip-rule="evenodd"></path>
                         </svg>
                     </div>
                 </div>
-                <p id="projectsCount" class="text-2xl font-bold text-gray-900">0</p>
+                <p id="streakDays" class="text-2xl font-bold text-gray-900">0 jours</p>
+                <p class="text-xs text-gray-500 mt-1">Record: <span id="streakRecord">0</span> jours</p>
             </div>
 
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
+                style="animation-delay: 0.2s">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-gray-600 text-sm">Cours complétés</span>
                     <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -113,175 +219,319 @@
                     </div>
                 </div>
                 <p id="coursCompleted" class="text-2xl font-bold text-gray-900">0</p>
+                <p id="coursTotal" class="text-xs text-gray-500 mt-1">sur 0 disponibles</p>
             </div>
 
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
+                style="animation-delay: 0.3s">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-gray-600 text-sm">Streak</span>
-                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                    <span class="text-gray-600 text-sm">Projets Design</span>
+                    <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
-                                d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
+                                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
                                 clip-rule="evenodd"></path>
                         </svg>
                     </div>
                 </div>
-                <p id="streakDays" class="text-2xl font-bold text-gray-900">0 jours</p>
+                <p id="projectsCount" class="text-2xl font-bold text-gray-900">0</p>
+                <p class="text-xs text-gray-500 mt-1">En cours</p>
             </div>
         </div>
 
         <!-- Main Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <!-- Left Column -->
+            <!-- Left Column (2/3) -->
             <div class="lg:col-span-2 space-y-6">
-
-                <!-- Parcours Design -->
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4">🎨 Parcours Design</h2>
-                    <div class="space-y-3">
-                        <div class="border-2 border-purple-200 rounded-xl p-4 bg-purple-50">
-                            <div class="flex items-center justify-between mb-2">
-                                <h3 class="font-bold text-gray-900">Bases du Design UI</h3>
-                                <span
-                                    class="px-3 py-1 bg-purple-200 text-purple-800 text-xs font-semibold rounded-full">Débutant</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-                                <div class="bg-purple-600 h-2 rounded-full" style="width: 0%"></div>
-                            </div>
-                            <p class="text-sm text-gray-600">0% complété • 12 cours</p>
-                        </div>
-
-                        <div class="border-2 border-gray-200 rounded-xl p-4 opacity-50">
-                            <div class="flex items-center justify-between mb-2">
-                                <h3 class="font-bold text-gray-900">UX Design & Prototypage</h3>
-                                <span
-                                    class="px-3 py-1 bg-pink-200 text-pink-800 text-xs font-semibold rounded-full">Intermédiaire</span>
-                            </div>
-                            <p class="text-sm text-gray-600">🔒 Débloque en complétant Bases du Design</p>
-                        </div>
-
-                        <div class="border-2 border-gray-200 rounded-xl p-4 opacity-50">
-                            <div class="flex items-center justify-between mb-2">
-                                <h3 class="font-bold text-gray-900">Design System Avancé</h3>
-                                <span
-                                    class="px-3 py-1 bg-red-200 text-red-800 text-xs font-semibold rounded-full">Avancé</span>
-                            </div>
-                            <p class="text-sm text-gray-600">🔒 Débloque en complétant UX Design</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Portfolio de projets -->
+                <!-- Technologies / Matières -->
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xl font-bold text-gray-900">🖼️ Mon Portfolio</h2>
-                        <button
-                            class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-semibold rounded-lg hover:shadow-lg transition">
-                            + Nouveau projet
+                        <h2 class="text-xl font-bold text-gray-900">🎨 Design & Outils</h2>
+                        <button onclick="refreshMatieres()" class="text-sm text-purple-600 hover:text-purple-800">
+                            🔄 Actualiser
                         </button>
                     </div>
-                    <div id="portfolioGrid" class="grid grid-cols-2 gap-4">
-                        <div
-                            class="aspect-video bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center border-2 border-dashed border-purple-300">
-                            <div class="text-center">
-                                <svg class="w-12 h-12 text-purple-400 mx-auto mb-2" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4"></path>
-                                </svg>
-                                <p class="text-sm text-purple-600 font-medium">Ajoute ton premier design</p>
+                    <div id="matieresGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
+                        <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
+                        <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
+                    </div>
+                </div>
+
+                <!-- Portfolio & Design Tools -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-gray-900">🛠️ Studio de Design</h2>
+                        <div class="flex space-x-3">
+                            <button onclick="toggleDesignTools()"
+                                class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-semibold rounded-lg hover:shadow-lg transition">
+                                ✏️ Outils de Design
+                            </button>
+                            <button onclick="saveDesignProject()"
+                                class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:shadow-lg transition">
+                                💾 Sauvegarder
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Onglets -->
+                    <div class="flex space-x-2 mb-6 border-b border-gray-200">
+                        <button onclick="switchTab('projects')"
+                            class="tab-btn px-4 py-2 font-medium border-b-2 border-purple-600 text-purple-600 active">
+                            Mes Projets
+                        </button>
+                        <button onclick="switchTab('figma')"
+                            class="tab-btn px-4 py-2 font-medium text-gray-500 hover:text-gray-700">
+                            📐 Figma Intégré
+                        </button>
+                        <button onclick="switchTab('canvas')"
+                            class="tab-btn px-4 py-2 font-medium text-gray-500 hover:text-gray-700">
+                            🎨 Canvas Créatif
+                        </button>
+                        <button onclick="switchTab('templates')"
+                            class="tab-btn px-4 py-2 font-medium text-gray-500 hover:text-gray-700">
+                            📁 Templates
+                        </button>
+                    </div>
+
+                    <!-- Contenu des Onglets -->
+                    <div id="projectsTab" class="tab-content">
+                        <div id="projectsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Projets existants seront chargés ici -->
+                        </div>
+                    </div>
+
+                    <div id="figmaTab" class="tab-content hidden">
+                        <div class="border-2 border-gray-200 rounded-xl overflow-hidden">
+                            <div class="bg-gray-50 p-4 flex justify-between items-center">
+                                <div>
+                                    <h3 class="font-bold text-gray-900">Éditeur Figma</h3>
+                                    <p class="text-sm text-gray-600">Colle l'URL d'un fichier Figma pour l'éditer</p>
+                                </div>
+                                <button onclick="refreshFigma()"
+                                    class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm">
+                                    🔄 Actualiser
+                                </button>
+                            </div>
+                            <div id="figmaContainer" class="h-[500px] flex items-center justify-center bg-gray-100">
+                                <div class="text-center p-8">
+                                    <div class="text-5xl mb-4">📐</div>
+                                    <h4 class="text-lg font-bold mb-2">Intégration Figma</h4>
+                                    <p class="text-gray-600 mb-4">Colle une URL Figma pour l'afficher</p>
+                                    <div class="max-w-md mx-auto">
+                                        <input type="text" id="figmaUrl" placeholder="https://www.figma.com/file/..."
+                                            class="w-full px-4 py-2 border rounded-lg mb-3">
+                                        <button onclick="loadFigmaFile()"
+                                            class="w-full px-4 py-2 bg-black text-white rounded-lg">
+                                            Charger le fichier
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="canvasTab" class="tab-content hidden">
+                        <div class="border-2 border-gray-200 rounded-xl overflow-hidden">
+                            <div class="bg-gray-50 p-4 flex justify-between items-center">
+                                <h3 class="font-bold text-gray-900">Canvas Créatif</h3>
+                                <div class="flex space-x-2">
+                                    <button onclick="clearCanvas()"
+                                        class="px-3 py-1 bg-red-100 text-red-700 rounded text-sm">
+                                        🗑️ Effacer
+                                    </button>
+                                    <button onclick="showExportModal()"
+                                        class="px-3 py-1 bg-green-100 text-green-700 rounded text-sm">
+                                        📤 Exporter
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <!-- Outils Canvas -->
+                                <div class="flex flex-wrap gap-3 mb-4 p-3 bg-gray-50 rounded-lg">
+                                    <button onclick="setTool('brush')"
+                                        class="tool-btn active px-4 py-2 bg-purple-600 text-white rounded-lg">
+                                        ✏️ Pinceau
+                                    </button>
+                                    <button onclick="setTool('rectangle')"
+                                        class="tool-btn px-4 py-2 bg-white border rounded-lg">
+                                        ▢ Rectangle
+                                    </button>
+                                    <button onclick="setTool('circle')"
+                                        class="tool-btn px-4 py-2 bg-white border rounded-lg">
+                                        ⭕ Cercle
+                                    </button>
+                                    <button onclick="setTool('text')"
+                                        class="tool-btn px-4 py-2 bg-white border rounded-lg">
+                                        🔤 Texte
+                                    </button>
+                                    <input type="color" id="colorPicker" value="#9333ea"
+                                        class="w-12 h-10 border rounded">
+                                    <input type="range" id="brushSize" min="1" max="50" value="5" class="w-32">
+                                    <span id="brushSizeValue" class="text-sm font-medium">5px</span>
+                                </div>
+
+                                <!-- Zone Canvas -->
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
+                                    <canvas id="designCanvas" width="800" height="500"
+                                        class="w-full bg-white cursor-crosshair">
+                                        Votre navigateur ne supporte pas Canvas
+                                    </canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="templatesTab" class="tab-content hidden">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div onclick="loadTemplate('landing')"
+                                class="border-2 border-gray-200 rounded-xl p-4 hover:border-purple-300 cursor-pointer hover:shadow-md transition">
+                                <div
+                                    class="aspect-video bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg mb-3 flex items-center justify-center">
+                                    <span class="text-3xl">📱</span>
+                                </div>
+                                <h4 class="font-bold text-gray-900">Landing Page</h4>
+                                <p class="text-sm text-gray-600">UI Moderne</p>
+                            </div>
+                            <div onclick="loadTemplate('dashboard')"
+                                class="border-2 border-gray-200 rounded-xl p-4 hover:border-purple-300 cursor-pointer hover:shadow-md transition">
+                                <div
+                                    class="aspect-video bg-gradient-to-br from-green-100 to-emerald-100 rounded-lg mb-3 flex items-center justify-center">
+                                    <span class="text-3xl">📊</span>
+                                </div>
+                                <h4 class="font-bold text-gray-900">Dashboard</h4>
+                                <p class="text-sm text-gray-600">Tableau de bord</p>
+                            </div>
+                            <div onclick="loadTemplate('mobile')"
+                                class="border-2 border-gray-200 rounded-xl p-4 hover:border-purple-300 cursor-pointer hover:shadow-md transition">
+                                <div
+                                    class="aspect-video bg-gradient-to-br from-pink-100 to-rose-100 rounded-lg mb-3 flex items-center justify-center">
+                                    <span class="text-3xl">📲</span>
+                                </div>
+                                <h4 class="font-bold text-gray-900">App Mobile</h4>
+                                <p class="text-sm text-gray-600">UI/UX Mobile</p>
+                            </div>
+                            <div onclick="loadTemplate('logo')"
+                                class="border-2 border-gray-200 rounded-xl p-4 hover:border-purple-300 cursor-pointer hover:shadow-md transition">
+                                <div
+                                    class="aspect-video bg-gradient-to-br from-purple-100 to-violet-100 rounded-lg mb-3 flex items-center justify-center">
+                                    <span class="text-3xl">🎨</span>
+                                </div>
+                                <h4 class="font-bold text-gray-900">Logo</h4>
+                                <p class="text-sm text-gray-600">Identité visuelle</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Progression récente -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">📖 Continuer l'apprentissage</h2>
+                    <div id="progressionList" class="space-y-3">
+                        <p class="text-gray-500 text-center py-8">Commence un cours de design !</p>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Right Column -->
+            <!-- Right Column (1/3) -->
             <div class="space-y-6">
-
                 <!-- Design Challenge -->
                 <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border-2 border-purple-100">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">🎯 Design Challenge</h3>
                     <div class="space-y-3">
                         <div class="flex justify-between text-sm mb-1">
-                            <span class="text-gray-700">Progression</span>
-                            <span class="font-semibold text-purple-600">0/1 défi</span>
+                            <span class="text-gray-700">Progression du jour</span>
+                            <span class="font-semibold text-purple-600" id="dailyProgress">0/2 cours</span>
                         </div>
                         <div class="w-full bg-white rounded-full h-3">
-                            <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full"
+                            <div id="dailyProgressBar"
+                                class="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500"
                                 style="width: 0%"></div>
                         </div>
-                        <p class="text-xs text-gray-600 mt-2">Complète 1 exercice de design aujourd'hui</p>
+                        <p class="text-xs text-gray-600 mt-2">Complète 2 cours de design aujourd'hui ! 🚀</p>
                     </div>
                 </div>
 
-                <!-- Outils maîtrisés -->
+                <!-- Stack Technique -->
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">🛠️ Outils</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 bg-purple-100 rounded flex items-center justify-center">
-                                    <span class="text-sm font-bold text-purple-600">Fi</span>
-                                </div>
-                                <span class="text-sm font-medium">Figma</span>
-                            </div>
-                            <span class="text-xs text-gray-500">0%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-1.5">
-                            <div class="bg-purple-600 h-1.5 rounded-full" style="width: 0%"></div>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-                                    <span class="text-sm font-bold text-blue-600">Xd</span>
-                                </div>
-                                <span class="text-sm font-medium">Adobe XD</span>
-                            </div>
-                            <span class="text-xs text-gray-500">0%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-1.5">
-                            <div class="bg-blue-600 h-1.5 rounded-full" style="width: 0%"></div>
-                        </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">⚡ Mes Outils</h3>
+                    <div id="techStackContainer" class="flex flex-wrap gap-2">
+                        <span
+                            class="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">Figma</span>
+                        <span class="px-3 py-1 bg-pink-100 text-pink-700 text-xs font-semibold rounded-full">Adobe
+                            XD</span>
+                        <span
+                            class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Photoshop</span>
+                        <span class="px-3 py-1 bg-gray-100 text-gray-500 text-xs font-semibold rounded-full">Illustrator
+                            🔒</span>
                     </div>
                 </div>
 
-                <!-- Inspiration du jour -->
+                <!-- Badges Dev -->
                 <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">💡 Inspiration</h3>
-                    <div
-                        class="aspect-video bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-lg mb-3">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">🏆 Badges Designer</h3>
+                    <div id="badgesList" class="grid grid-cols-3 gap-3">
+                        <!-- Dynamic content -->
                     </div>
-                    <p class="text-sm text-gray-600">Explore les tendances design du moment</p>
+                    <button onclick="showAllBadges()"
+                        class="w-full mt-4 text-sm text-purple-600 hover:text-purple-800 font-semibold">
+                        Voir tous les badges →
+                    </button>
                 </div>
 
-                <!-- Achievements -->
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">🏆 Badges Design</h3>
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="text-center">
-                            <div class="w-12 h-12 bg-gray-100 rounded-full mx-auto flex items-center justify-center">
-                                <span class="text-2xl">🔒</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">First Design</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="w-12 h-12 bg-gray-100 rounded-full mx-auto flex items-center justify-center">
-                                <span class="text-2xl">🔒</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">UI Master</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="w-12 h-12 bg-gray-100 rounded-full mx-auto flex items-center justify-center">
-                                <span class="text-2xl">🔒</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Creative</p>
-                        </div>
-                    </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+    <!-- Modal Célébration -->
+    <div id="celebrationModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center animate-scale-in">
+            <div class="text-6xl mb-6 animate-bounce">🎉</div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Félicitations !</h2>
+            <p class="text-gray-600 mb-6 text-lg">Tu as terminé le cours avec succès !</p>
+            <div class="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 rounded-2xl p-6 mb-8">
+                <p class="text-sm text-gray-500 mb-1">Points gagnés</p>
+                <div class="flex justify-center items-baseline space-x-2">
+                    <span
+                        class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600"
+                        id="celebrationPoints">+50</span>
+                    <span class="text-xl text-purple-600">XP</span>
                 </div>
             </div>
+            <button onclick="closeCelebrationModal()"
+                class="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg">
+                Continuer à apprendre 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Export -->
+    <div id="exportModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full animate-scale-in">
+            <h3 class="text-xl font-bold mb-4">Exporter le design</h3>
+            <div class="space-y-3">
+                <button onclick="exportAsPNG()"
+                    class="w-full p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition">
+                    📸 Exporter en PNG
+                </button>
+                <button onclick="exportAsSVG()"
+                    class="w-full p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition">
+                    🎨 Exporter en SVG
+                </button>
+                <button onclick="saveToProfile()"
+                    class="w-full p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition">
+                    💾 Sauvegarder dans mon portfolio
+                </button>
+            </div>
+            <button onclick="closeExportModal()"
+                class="w-full mt-4 p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                Annuler
+            </button>
         </div>
     </div>
 
@@ -292,41 +542,956 @@
 
         let currentUser = null
 
-        async function init() {
-            const { data: { user } } = await supabase.auth.getUser()
+        // ==========================================
+        // VARIABLES OUTILS DE DESIGN
+        // ==========================================
+        let canvas, ctx
+        let currentTool = 'brush'
+        let isDrawing = false
+        let lastX = 0
+        let lastY = 0
+        let drawingsHistory = []
+        let historyIndex = -1
 
+        // ==========================================
+        // INITIALISATION
+        // ==========================================
+        async function init() {
+            console.log('🚀 Initialisation dashboard designer...')
+
+            const { data: { user } } = await supabase.auth.getUser()
             if (!user) {
+                console.log('❌ Non connecté')
                 window.location.href = '../login.html'
                 return
             }
 
             currentUser = user
+            console.log('✅ Connecté:', user.id)
+
             await loadUserProfile()
+            await loadMatieres()
+            await loadProgressions()
+            await loadStats()
+            await loadBadges()
+            await checkDailyStreak()
+
+            // Initialiser les outils de design
+            setTimeout(() => {
+                if (document.getElementById('designCanvas')) {
+                    initDesignTools()
+                }
+                loadUserProjects()
+            }, 500)
         }
 
+        // ==========================================
+        // PROFIL UTILISATEUR
+        // ==========================================
         async function loadUserProfile() {
             try {
-                const { data: profile } = await supabase
+                const { data: profile, error } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', currentUser.id)
                     .single()
 
+                if (error) throw error
                 if (!profile) return
 
+                console.log('✅ Profil chargé:', profile)
+
+                // Vérifier parcours
                 if (profile.type_parcours !== 'designer') {
                     redirectToDashboard(profile.type_parcours)
                     return
                 }
 
+                // Affichage
                 document.getElementById('userName').textContent = profile.nom
                 document.getElementById('welcomeName').textContent = profile.nom
-                document.getElementById('totalPoints').textContent = `${profile.points_total || 0} CP`
-                document.getElementById('streakDays').textContent = `${profile.streak_jours || 0} jours`
-                document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.nom)}&background=9333ea&color=fff`
+                document.getElementById('userLevel').textContent = profile.niveau_actuel || 'Niveau 1'
+
+                const points = profile.points_total || 0
+                document.getElementById('totalPoints').textContent = points
+                document.getElementById('totalPointsHeader').textContent = `${points} XP`
+
+                const streak = profile.streak_jours || 0
+                document.getElementById('streakDays').textContent = `${streak} jours`
+                document.getElementById('streakHeader').textContent = `${streak} jours de suite`
+
+                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.nom)}&background=9333ea&color=fff&size=128`
+                document.getElementById('userAvatar').src = avatarUrl
+
             } catch (error) {
-                console.error('Erreur chargement profil:', error)
+                console.error('❌ Erreur profil:', error)
+                showToast('Erreur de chargement du profil', 'error')
             }
+        }
+
+        // ==========================================
+        // MATIÈRES (Technologies)
+        // ==========================================
+        async function loadMatieres() {
+            console.log('💻 Chargement technologies...')
+
+            try {
+                const { data: matieres, error } = await supabase
+                    .from('matieres')
+                    .select('id, nom, description, icone_url, couleur, type_parcours, ordre')
+                    .in('type_parcours', ['designer', 'commun'])
+                    .order('ordre')
+
+                if (error) throw error
+                console.log('✅ Technologies chargées:', matieres?.length || 0)
+
+                const grid = document.getElementById('matieresGrid')
+
+                if (!matieres || matieres.length === 0) {
+                    grid.innerHTML = '<p class="col-span-3 text-center text-gray-500 py-8">Aucun module disponible</p>'
+                    return
+                }
+
+                // Compter chapitres
+                const matieresAvecChapitres = await Promise.all(matieres.map(async (matiere) => {
+                    const { count } = await supabase
+                        .from('chapitres')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('matiere_id', matiere.id)
+                        .eq('est_publie', true)
+                    return { ...matiere, chapitres_count: count || 0 }
+                }))
+
+                grid.innerHTML = matieresAvecChapitres.map(matiere => {
+                    const couleur = matiere.couleur || '#9333ea'
+                    const icone = matiere.icone_url || '🎨'
+
+                    return `
+                    <div onclick="openMatiere(${matiere.id}, '${matiere.nom.replace(/'/g, "\\'")}')" 
+                         class="bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 border-2 hover:shadow-lg transition cursor-pointer transform hover:scale-105 duration-200"
+                         style="border-color: ${couleur}30;">
+                        <div class="text-3xl mb-2">${icone}</div>
+                        <h3 class="font-bold text-gray-900 mb-1">${matiere.nom}</h3>
+                        <p class="text-xs text-gray-600">${matiere.chapitres_count} cours</p>
+                        <div class="mt-2 flex items-center text-xs" style="color: ${couleur};">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                            Apprendre
+                        </div>
+                    </div>
+                `
+                }).join('')
+
+            } catch (error) {
+                console.error('❌ Erreur technologies:', error)
+                const grid = document.getElementById('matieresGrid')
+                grid.innerHTML = `
+                <div class="col-span-3 text-center py-8">
+                    <p class="text-red-500 mb-2">Erreur de chargement</p>
+                    <button onclick="loadMatieres()" class="px-4 py-2 bg-purple-600 text-white rounded-lg">Réessayer</button>
+                </div>
+            `
+            }
+        }
+
+        // ==========================================
+        // PROGRESSIONS
+        // ==========================================
+        async function loadProgressions() {
+            try {
+                const { data: progressions, error } = await supabase
+                    .from('progressions_cours')
+                    .select(`
+                    *,
+                    cours:cours(
+                        id, titre, duree_lecture, points_recompense,
+                        chapitres:chapitres(titre, matieres:matieres(nom, icone_url, couleur))
+                    )
+                `)
+                    .eq('user_id', currentUser.id)
+                    .eq('est_termine', false)
+                    .order('updated_at', { ascending: false })
+                    .limit(5)
+
+                if (error) throw error
+
+                const list = document.getElementById('progressionList')
+
+                if (!progressions || progressions.length === 0) {
+                    list.innerHTML = '<p class="text-gray-500 text-center py-8">Commence un cours de design !</p>'
+                    return
+                }
+
+                list.innerHTML = progressions.map(prog => {
+                    const cours = prog.cours
+                    const matiere = cours?.chapitres?.matieres
+                    const progression = prog.progression_pourcentage || 0
+
+                    return `
+                    <div onclick="window.location.href='../Dashboard-eleves/cours.html?id=${cours.id}'" 
+                         class="bg-white border-2 border-gray-100 rounded-xl p-4 hover:shadow-md transition cursor-pointer hover:border-purple-300">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-2xl">${matiere?.icone_url || '🎨'}</span>
+                                <div>
+                                    <h4 class="font-bold text-gray-900">${cours.titre}</h4>
+                                    <p class="text-xs text-gray-500">${matiere?.nom || 'Design'} • ${cours.chapitres?.titre || 'Cours'}</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-semibold text-purple-600">${progression}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style="width: ${progression}%"></div>
+                        </div>
+                    </div>
+                `
+                }).join('')
+            } catch (error) {
+                console.error('❌ Erreur progressions:', error)
+            }
+        }
+
+        // ==========================================
+        // STATISTIQUES
+        // ==========================================
+        async function loadStats() {
+            try {
+                const { data: progressions } = await supabase
+                    .from('progressions_cours')
+                    .select('temps_passe, est_termine')
+                    .eq('user_id', currentUser.id)
+
+                const coursCompletes = progressions?.filter(p => p.est_termine).length || 0
+                document.getElementById('coursCompleted').textContent = coursCompletes
+
+                const { count: totalCours } = await supabase
+                    .from('cours')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('est_publie', true)
+
+                document.getElementById('coursTotal').textContent = `sur ${totalCours || 0} disponibles`
+
+                // Stats du jour
+                const today = new Date().toISOString().split('T')[0]
+                const { data: dailyStats } = await supabase
+                    .from('statistiques_journalieres')
+                    .select('cours_completes')
+                    .eq('user_id', currentUser.id)
+                    .eq('date', today)
+                    .single()
+
+                const coursToday = dailyStats?.cours_completes || 0
+                const dailyGoal = 2
+                const dailyPercent = Math.min((coursToday / dailyGoal) * 100, 100)
+
+                document.getElementById('dailyProgress').textContent = `${coursToday}/${dailyGoal} cours`
+                document.getElementById('dailyProgressBar').style.width = `${dailyPercent}%`
+
+                // Compter projets design
+                const { count: projectsCount } = await supabase
+                    .from('design_projects')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', currentUser.id)
+
+                document.getElementById('projectsCount').textContent = projectsCount || 0
+
+            } catch (error) {
+                console.error('❌ Erreur stats:', error)
+            }
+        }
+
+        // ==========================================
+        // BADGES
+        // ==========================================
+        async function loadBadges() {
+            try {
+                const { data: userBadges } = await supabase
+                    .from('user_badges')
+                    .select(`*, badges:badges(nom, icone_url, description)`)
+                    .eq('user_id', currentUser.id)
+                    .limit(6)
+
+                const badgesList = document.getElementById('badgesList')
+
+                if (!userBadges || userBadges.length === 0) {
+                    badgesList.innerHTML = Array(6).fill(0).map(() => `
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full mx-auto flex items-center justify-center">
+                            <span class="text-2xl">🔒</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">À débloquer</p>
+                    </div>
+                `).join('')
+                    return
+                }
+
+                badgesList.innerHTML = userBadges.map(ub => `
+                <div class="text-center" title="${ub.badges.description}">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full mx-auto flex items-center justify-center animate-bounce">
+                        <span class="text-2xl">${ub.badges.icone_url || '🏆'}</span>
+                    </div>
+                    <p class="text-xs text-gray-700 mt-1 font-medium">${ub.badges.nom}</p>
+                </div>
+            `).join('')
+
+            } catch (error) {
+                console.error('❌ Erreur badges:', error)
+            }
+        }
+
+        // ==========================================
+        // STREAK
+        // ==========================================
+        async function checkDailyStreak() {
+            try {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('derniere_connexion, streak_jours, streak_record')
+                    .eq('id', currentUser.id)
+                    .single()
+
+                const now = new Date()
+                const lastConnection = profile.derniere_connexion ? new Date(profile.derniere_connexion) : null
+
+                let newStreak = profile.streak_jours || 0
+                let streakRecord = profile.streak_record || 0
+
+                if (lastConnection) {
+                    const daysDiff = Math.floor((now - lastConnection) / (1000 * 60 * 60 * 24))
+
+                    if (daysDiff === 1) {
+                        newStreak++
+                        if (newStreak > streakRecord) {
+                            streakRecord = newStreak
+                            showToast(`🎉 Nouveau record : ${newStreak} jours !`, 'success')
+                        } else {
+                            showToast(`🔥 Série de ${newStreak} jours ! Keep designing!`, 'success')
+                        }
+                    } else if (daysDiff > 1) {
+                        if (newStreak > 0) {
+                            showToast(`😢 Série de ${newStreak} jours interrompue`, 'warning')
+                        }
+                        newStreak = 1
+                    }
+                } else {
+                    newStreak = 1
+                }
+
+                await supabase
+                    .from('profiles')
+                    .update({
+                        derniere_connexion: now.toISOString(),
+                        streak_jours: newStreak,
+                        streak_record: streakRecord
+                    })
+                    .eq('id', currentUser.id)
+
+                document.getElementById('streakDays').textContent = `${newStreak} jours`
+                document.getElementById('streakHeader').textContent = `${newStreak} jours de suite`
+                document.getElementById('streakRecord').textContent = streakRecord
+
+            } catch (error) {
+                console.error('❌ Erreur streak:', error)
+            }
+        }
+
+        // ==========================================
+        // OUTILS DE DESIGN - CANVAS
+        // ==========================================
+        function initDesignTools() {
+            canvas = document.getElementById('designCanvas')
+            ctx = canvas.getContext('2d')
+
+            // Événements canvas
+            canvas.addEventListener('mousedown', startDrawing)
+            canvas.addEventListener('mousemove', draw)
+            canvas.addEventListener('mouseup', stopDrawing)
+            canvas.addEventListener('mouseout', stopDrawing)
+
+            // Événements tactiles
+            canvas.addEventListener('touchstart', handleTouchStart)
+            canvas.addEventListener('touchmove', handleTouchMove)
+            canvas.addEventListener('touchend', stopDrawing)
+
+            // Initialisation
+            ctx.lineWidth = document.getElementById('brushSize').value
+            ctx.lineCap = 'round'
+            ctx.lineJoin = 'round'
+            ctx.strokeStyle = document.getElementById('colorPicker').value
+
+            // Brush size display
+            document.getElementById('brushSize').addEventListener('input', function () {
+                ctx.lineWidth = this.value
+                document.getElementById('brushSizeValue').textContent = this.value + 'px'
+            })
+
+            // Color picker
+            document.getElementById('colorPicker').addEventListener('input', function () {
+                ctx.strokeStyle = this.value
+            })
+
+            // Sauvegarder l'état initial
+            saveCanvasState()
+        }
+
+        function startDrawing(e) {
+            isDrawing = true
+                ;[lastX, lastY] = getMousePos(canvas, e)
+
+            if (currentTool === 'text') {
+                const text = prompt('Entrez votre texte:', 'Mon texte')
+                if (text) {
+                    ctx.font = `${ctx.lineWidth * 5}px Arial`
+                    ctx.fillStyle = ctx.strokeStyle
+                    ctx.fillText(text, lastX, lastY)
+                    saveCanvasState()
+                }
+                isDrawing = false
+                return
+            }
+
+            ctx.beginPath()
+            ctx.moveTo(lastX, lastY)
+        }
+
+        function draw(e) {
+            if (!isDrawing || currentTool === 'text') return
+
+            const [x, y] = getMousePos(canvas, e)
+
+            switch (currentTool) {
+                case 'brush':
+                    ctx.lineTo(x, y)
+                    ctx.stroke()
+                    break
+
+                case 'rectangle':
+                    // Redessine le canvas pour montrer le rectangle en temps réel
+                    restoreCanvasState()
+                    ctx.strokeRect(lastX, lastY, x - lastX, y - lastY)
+                    break
+
+                case 'circle':
+                    restoreCanvasState()
+                    const radius = Math.sqrt(Math.pow(x - lastX, 2) + Math.pow(y - lastY, 2))
+                    ctx.beginPath()
+                    ctx.arc(lastX, lastY, radius, 0, Math.PI * 2)
+                    ctx.stroke()
+                    break
+            }
+
+            if (currentTool === 'brush') {
+                ;[lastX, lastY] = [x, y]
+            }
+        }
+
+        function stopDrawing() {
+            if (!isDrawing) return
+
+            isDrawing = false
+            ctx.closePath()
+
+            // Sauvegarder l'état après avoir dessiné
+            if (currentTool !== 'text') {
+                saveCanvasState()
+            }
+        }
+
+        function getMousePos(canvas, evt) {
+            const rect = canvas.getBoundingClientRect()
+            let clientX, clientY
+
+            if (evt.type.includes('touch')) {
+                clientX = evt.touches[0].clientX
+                clientY = evt.touches[0].clientY
+            } else {
+                clientX = evt.clientX
+                clientY = evt.clientY
+            }
+
+            return [
+                clientX - rect.left,
+                clientY - rect.top
+            ]
+        }
+
+        function handleTouchStart(e) {
+            e.preventDefault()
+            startDrawing(e.touches[0])
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault()
+            if (e.touches.length === 1) {
+                draw(e.touches[0])
+            }
+        }
+
+        function saveCanvasState() {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+            drawingsHistory = drawingsHistory.slice(0, historyIndex + 1)
+            drawingsHistory.push(imageData)
+            historyIndex++
+        }
+
+        function restoreCanvasState() {
+            if (historyIndex >= 0 && drawingsHistory[historyIndex]) {
+                ctx.putImageData(drawingsHistory[historyIndex], 0, 0)
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+            }
+        }
+
+        function undoDrawing() {
+            if (historyIndex > 0) {
+                historyIndex--
+                restoreCanvasState()
+            }
+        }
+
+        function redoDrawing() {
+            if (historyIndex < drawingsHistory.length - 1) {
+                historyIndex++
+                restoreCanvasState()
+            }
+        }
+
+        // ==========================================
+        // GESTION DES PROJETS DESIGN
+        // ==========================================
+        async function loadUserProjects() {
+            try {
+                const { data: projects, error } = await supabase
+                    .from('design_projects')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+
+                if (error) throw error
+
+                const projectsContainer = document.getElementById('projectsContainer')
+
+                if (!projects || projects.length === 0) {
+                    projectsContainer.innerHTML = `
+                        <div class="col-span-3 text-center py-12">
+                            <div class="text-6xl mb-4">🎨</div>
+                            <h3 class="text-xl font-bold mb-2">Aucun projet</h3>
+                            <p class="text-gray-600 mb-6">Commence par créer ton premier design !</p>
+                            <button onclick="switchTab('canvas')" 
+                                    class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition">
+                                Créer un projet
+                            </button>
+                        </div>
+                    `
+                    return
+                }
+
+                projectsContainer.innerHTML = projects.map(project => `
+                    <div class="border-2 border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition group">
+                        <div class="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                            <img src="${project.canvas_data}" alt="${project.title}" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-bold text-gray-900 mb-1 truncate">${project.title}</h4>
+                            <p class="text-sm text-gray-600 mb-3 truncate">${project.description || 'Aucune description'}</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-500">
+                                    ${new Date(project.created_at).toLocaleDateString('fr-FR')}
+                                </span>
+                                <div class="flex space-x-2">
+                                    <button onclick="editProject('${project.id}')" 
+                                            class="px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition">
+                                        Éditer
+                                    </button>
+                                    <button onclick="deleteProject('${project.id}')" 
+                                            class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition">
+                                        Supprimer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')
+
+            } catch (error) {
+                console.error('❌ Erreur chargement projets:', error)
+                showToast('Erreur de chargement des projets', 'error')
+            }
+        }
+
+        async function saveDesignProject() {
+            try {
+                // Capture du canvas
+                const canvasData = canvas.toDataURL('image/png')
+
+                // Données du projet
+                const projectTitle = prompt('Nom du projet:', 'Mon nouveau design')
+                if (!projectTitle) {
+                    showToast('Annulé', 'warning')
+                    return
+                }
+
+                const projectDescription = prompt('Description:', '')
+
+                const projectData = {
+                    user_id: currentUser.id,
+                    title: projectTitle,
+                    description: projectDescription,
+                    canvas_data: canvasData,
+                    tools_used: currentTool,
+                    created_at: new Date().toISOString()
+                }
+
+                // Sauvegarde dans Supabase
+                const { error } = await supabase
+                    .from('design_projects')
+                    .insert([projectData])
+
+                if (error) throw error
+
+                showToast('Projet sauvegardé !', 'success')
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                })
+
+                // Mettre à jour l'affichage
+                loadUserProjects()
+                loadStats()
+
+            } catch (error) {
+                console.error('❌ Erreur sauvegarde:', error)
+                showToast('Erreur de sauvegarde', 'error')
+            }
+        }
+
+        async function editProject(projectId) {
+            try {
+                const { data: project, error } = await supabase
+                    .from('design_projects')
+                    .select('*')
+                    .eq('id', projectId)
+                    .single()
+
+                if (error) throw error
+
+                if (project) {
+                    const img = new Image()
+                    img.onload = function () {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height)
+                        ctx.drawImage(img, 0, 0)
+                        saveCanvasState()
+                        switchTab('canvas')
+                        showToast('Projet chargé pour édition', 'success')
+                    }
+                    img.src = project.canvas_data
+
+                    // Mettre à jour les données du projet pour édition
+                    window.currentEditingProject = projectId
+                }
+            } catch (error) {
+                console.error('❌ Erreur chargement projet:', error)
+                showToast('Erreur de chargement du projet', 'error')
+            }
+        }
+
+        async function deleteProject(projectId) {
+            if (confirm('Supprimer ce projet définitivement ?')) {
+                try {
+                    const { error } = await supabase
+                        .from('design_projects')
+                        .delete()
+                        .eq('id', projectId)
+
+                    if (error) throw error
+
+                    showToast('Projet supprimé', 'success')
+                    loadUserProjects()
+                    loadStats()
+
+                } catch (error) {
+                    console.error('❌ Erreur suppression:', error)
+                    showToast('Erreur de suppression', 'error')
+                }
+            }
+        }
+
+        // ==========================================
+        // FIGMA INTEGRATION
+        // ==========================================
+        function loadFigmaFile() {
+            const url = document.getElementById('figmaUrl').value.trim()
+
+            if (!url) {
+                showToast('Veuillez entrer une URL Figma', 'error')
+                return
+            }
+
+            // Extraire l'ID du fichier Figma
+            const fileId = extractFigmaFileId(url)
+
+            if (!fileId) {
+                showToast('URL Figma invalide', 'error')
+                return
+            }
+
+            // Construire l'URL d'embed
+            const embedUrl = `https://www.figma.com/embed?embed_host=kmerschool&url=https://www.figma.com/file/${fileId}`
+
+            const container = document.getElementById('figmaContainer')
+            container.innerHTML = `
+                <iframe 
+                    src="${embedUrl}" 
+                    class="w-full h-full border-0"
+                    allowfullscreen
+                    title="Figma Design">
+                </iframe>
+            `
+
+            showToast('Fichier Figma chargé !', 'success')
+        }
+
+        function extractFigmaFileId(url) {
+            const match = url.match(/figma\.com\/file\/([a-zA-Z0-9]+)/)
+            return match ? match[1] : null
+        }
+
+        function refreshFigma() {
+            const iframe = document.querySelector('#figmaContainer iframe')
+            if (iframe) {
+                iframe.src = iframe.src
+                showToast('Figma actualisé', 'info')
+            }
+        }
+
+        // ==========================================
+        // GESTION DES ONGLETS
+        // ==========================================
+        function switchTab(tabName) {
+            // Cacher tous les onglets
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden')
+            })
+
+            // Désactiver tous les boutons d'onglets
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-purple-600', 'text-purple-600', 'active')
+                btn.classList.add('text-gray-500')
+            })
+
+            // Activer l'onglet sélectionné
+            document.getElementById(tabName + 'Tab').classList.remove('hidden')
+            event.target.classList.add('border-purple-600', 'text-purple-600', 'active')
+            event.target.classList.remove('text-gray-500')
+
+            // Initialiser les outils si on passe sur canvas
+            if (tabName === 'canvas' && canvas) {
+                setTimeout(() => {
+                    canvas.width = canvas.offsetWidth
+                    canvas.height = canvas.offsetHeight
+                }, 100)
+            }
+        }
+
+        // ==========================================
+        // TEMPLATES
+        // ==========================================
+        function loadTemplate(templateType) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            saveCanvasState()
+
+            switch (templateType) {
+                case 'landing':
+                    drawLandingTemplate()
+                    break
+                case 'dashboard':
+                    drawDashboardTemplate()
+                    break
+                case 'mobile':
+                    drawMobileTemplate()
+                    break
+                case 'logo':
+                    drawLogoTemplate()
+                    break
+            }
+
+            switchTab('canvas')
+            showToast('Template chargé ! Personnalise-le maintenant', 'success')
+        }
+
+        function drawLandingTemplate() {
+            // Header
+            ctx.fillStyle = '#9333ea'
+            ctx.fillRect(0, 0, canvas.width, 80)
+
+            // Hero section
+            ctx.fillStyle = '#f3e8ff'
+            ctx.fillRect(0, 80, canvas.width, 300)
+
+            // Features
+            ctx.fillStyle = '#a855f7'
+            ctx.fillRect(50, 400, 200, 150)
+            ctx.fillRect(275, 400, 200, 150)
+            ctx.fillRect(500, 400, 200, 150)
+
+            // Footer
+            ctx.fillStyle = '#6b21a8'
+            ctx.fillRect(0, 580, canvas.width, 100)
+        }
+
+        function drawDashboardTemplate() {
+            // Sidebar
+            ctx.fillStyle = '#1e293b'
+            ctx.fillRect(0, 0, 250, canvas.height)
+
+            // Main content
+            ctx.fillStyle = '#f8fafc'
+            ctx.fillRect(250, 0, canvas.width - 250, canvas.height)
+
+            // Cards
+            ctx.fillStyle = '#3b82f6'
+            ctx.fillRect(270, 20, 200, 120)
+            ctx.fillStyle = '#10b981'
+            ctx.fillRect(490, 20, 200, 120)
+            ctx.fillStyle = '#8b5cf6'
+            ctx.fillRect(710, 20, 200, 120)
+
+            // Chart area
+            ctx.fillStyle = '#ffffff'
+            ctx.fillRect(270, 160, 640, 300)
+        }
+
+        function drawMobileTemplate() {
+            // Phone frame
+            ctx.fillStyle = '#000000'
+            ctx.fillRect(200, 50, 400, 600)
+            ctx.fillStyle = '#ffffff'
+            ctx.fillRect(210, 60, 380, 580)
+
+            // Status bar
+            ctx.fillStyle = '#3b82f6'
+            ctx.fillRect(210, 60, 380, 30)
+
+            // App icons
+            const colors = ['#ef4444', '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b']
+            for (let i = 0; i < 5; i++) {
+                ctx.fillStyle = colors[i]
+                ctx.fillRect(250 + i * 70, 120, 50, 50)
+            }
+        }
+
+        function drawLogoTemplate() {
+            ctx.fillStyle = '#9333ea'
+            ctx.beginPath()
+            ctx.arc(canvas.width / 2, canvas.height / 2, 100, 0, Math.PI * 2)
+            ctx.fill()
+
+            ctx.fillStyle = '#ffffff'
+            ctx.font = 'bold 80px Arial'
+            ctx.textAlign = 'center'
+            ctx.textBaseline = 'middle'
+            ctx.fillText('L', canvas.width / 2, canvas.height / 2)
+        }
+
+        // ==========================================
+        // FONCTIONS D'OUTILS
+        // ==========================================
+        function setTool(tool) {
+            currentTool = tool
+
+            // Mettre à jour les boutons
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-purple-600', 'text-white')
+                btn.classList.add('bg-white', 'border')
+            })
+
+            event.target.classList.add('active', 'bg-purple-600', 'text-white')
+            event.target.classList.remove('bg-white', 'border')
+        }
+
+        function clearCanvas() {
+            if (confirm('Effacer tout le canvas ?')) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+                drawingsHistory = []
+                historyIndex = -1
+                saveCanvasState()
+                showToast('Canvas effacé', 'info')
+            }
+        }
+
+        // ==========================================
+        // FONCTIONS D'EXPORT
+        // ==========================================
+        function showExportModal() {
+            document.getElementById('exportModal').classList.remove('hidden')
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').classList.add('hidden')
+        }
+
+        function exportAsPNG() {
+            const link = document.createElement('a')
+            link.download = `design-${Date.now()}.png`
+            link.href = canvas.toDataURL('image/png')
+            link.click()
+            showToast('Export PNG réussi !', 'success')
+            closeExportModal()
+        }
+
+        function exportAsSVG() {
+            // Conversion simple du canvas en SVG (version basique)
+            const svgData = `
+                <svg width="${canvas.width}" height="${canvas.height}" xmlns="http://www.w3.org/2000/svg">
+                    <foreignObject width="100%" height="100%">
+                        <div xmlns="http://www.w3.org/1999/xhtml">
+                            <img src="${canvas.toDataURL('image/png')}" width="${canvas.width}" height="${canvas.height}"/>
+                        </div>
+                    </foreignObject>
+                </svg>
+            `
+
+            const blob = new Blob([svgData], { type: 'image/svg+xml' })
+            const link = document.createElement('a')
+            link.download = `design-${Date.now()}.svg`
+            link.href = URL.createObjectURL(blob)
+            link.click()
+            showToast('Export SVG réussi !', 'success')
+            closeExportModal()
+        }
+
+        async function saveToProfile() {
+            await saveDesignProject()
+            closeExportModal()
+        }
+
+        // ==========================================
+        // UTILITAIRES
+        // ==========================================
+        function showToast(message, type = 'info') {
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-purple-500'
+            }
+
+            const toast = document.createElement('div')
+            toast.className = `${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in-right`
+            toast.textContent = message
+
+            document.getElementById('toastContainer').appendChild(toast)
+            setTimeout(() => toast.remove(), 4000)
+        }
+
+        function closeCelebrationModal() {
+            document.getElementById('celebrationModal').classList.add('hidden')
+            loadUserProfile()
+            loadProgressions()
+            loadStats()
         }
 
         function redirectToDashboard(parcours) {
@@ -338,11 +1503,43 @@
             window.location.href = dashboards[parcours] || '../index.html'
         }
 
-        window.logout = async function () {
-            await supabase.auth.signOut()
-            window.location.href = '../index.html'
+        // ==========================================
+        // FONCTIONS GLOBALES
+        // ==========================================
+        window.openMatiere = function (matiereId, matiereNom) {
+            window.location.href = `../Dashboard-eleves/matiere.html?id=${matiereId}&nom=${encodeURIComponent(matiereNom)}`
         }
 
+        window.refreshMatieres = async function () {
+            showToast('Actualisation...', 'info')
+            await loadMatieres()
+        }
+
+        window.showAllBadges = function () {
+            showToast('Fonctionnalité en développement', 'info')
+        }
+
+        window.toggleNotifications = function () {
+            showToast('Aucune notification', 'info')
+        }
+
+        window.toggleDesignTools = function () {
+            const container = document.getElementById('canvasTab')
+            if (container.classList.contains('hidden')) {
+                switchTab('canvas')
+            } else {
+                switchTab('projects')
+            }
+        }
+
+        window.logout = async function () {
+            if (confirm('Veux-tu vraiment te déconnecter ?')) {
+                await supabase.auth.signOut()
+                window.location.href = '../index.html'
+            }
+        }
+
+        // INIT
         init()
     </script>
 </body>

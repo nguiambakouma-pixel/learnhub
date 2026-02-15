@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matière - LearnHub</title>
+    <title>Matière - KMERSCHOOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -29,16 +29,9 @@
                                 d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
                     </button>
-                    <div
-                        class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
-                            </path>
-                        </svg>
-                    </div>
+                    <img src="../assets/logo/LOGO.png" alt="KMERSCHOOL"
+                        class="h-20 w-auto object-contain bg-white rounded-lg p-1">
                     <div>
-                        <span class="text-xl font-bold text-gray-900">LearnHub</span>
                         <p id="matiereName" class="text-xs text-gray-500">Chargement...</p>
                     </div>
                 </div>
@@ -102,11 +95,40 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
+        // ⭐ NOUVEAU: Vérifier que l'onboarding est fait
+        async function verifierOnboarding() {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                window.location.href = '../login.html';
+                return false;
+            }
+
+            // Vérifier si l'élève a complété l'onboarding
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('sous_systeme_id, niveau_scolaire_id, type_parcours')
+                .eq('id', user.id)
+                .single();
+
+            // Si pas de section/classe ET que c'est un élève, rediriger
+            if (profile.type_parcours === 'eleve' && (!profile.sous_systeme_id || !profile.niveau_scolaire_id)) {
+                window.location.href = 'onboarding_cameroun.html';
+                return false;
+            }
+
+            return true;
+        }
+
         let currentUser = null
         let matiereId = null
         let matiereName = ''
 
         async function init() {
+            // Vérifier l'onboarding avant tout
+            const onboardingOK = await verifierOnboarding();
+            if (!onboardingOK) return;
+
             // Vérifier authentification
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) {

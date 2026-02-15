@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Développeur - LearnHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Ajout de CodeMirror -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/sql/sql.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .gradient-dev {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .animate-scale-in {
+            animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .code-pattern {
+            background-image:
+                linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px),
+                linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Styles pour l'éditeur */
+        .CodeMirror {
+            height: 400px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+        }
+
+        .console-output {
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .console-error {
+            color: #ef4444;
+        }
+
+        .console-warning {
+            color: #f59e0b;
+        }
+
+        .console-success {
+            color: #10b981;
+        }
+
+        .console-info {
+            color: #3b82f6;
+        }
+
+        .test-case {
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .test-case.passed {
+            border-left-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+
+        .test-case.failed {
+            border-left-color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .hint-box {
+            background: linear-gradient(135deg, #f3f4f6 0%, #f9fafb 100%);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .hint-box.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .hint-box.success {
+            border-left-color: #10b981;
+        }
+
+        .code-challenge {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .editor-tab {
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .editor-tab.active {
+            border-bottom-color: #10b981;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .terminal-cursor {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 code-pattern">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">LearnHub</span>
+                    <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">💻 Dev</span>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg relative" onclick="toggleNotifications()">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                            </path>
+                        </svg>
+                        <span id="notifBadge"
+                            class="hidden absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <img id="userAvatar" class="w-10 h-10 rounded-full border-2 border-green-200" src=""
+                            alt="Avatar">
+                        <div>
+                            <p id="userName" class="text-sm font-semibold text-gray-900">Chargement...</p>
+                            <p id="userLevel" class="text-xs text-gray-500">Niveau</p>
+                        </div>
+                    </div>
+                    <button onclick="logout()"
+                        class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition">
+                        Déconnexion
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Welcome Section -->
+        <div class="gradient-dev rounded-2xl p-8 text-white mb-8 animate-slide-in">
+            <h1 class="text-3xl font-bold mb-2">Hello <span id="welcomeName">Developer</span> ! 💻</h1>
+            <p class="text-green-100">Continue de coder et construis des projets incroyables</p>
+            <div class="mt-4 flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                        </path>
+                    </svg>
+                    <span id="totalPointsHeader">0 XP</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-orange-300">🔥</span>
+                    <span id="streakHeader">0 jours de suite</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-600 text-sm">Points XP</span>
+                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+                <p id="totalPoints" class="text-2xl font-bold text-gray-900">0</p>
+                <p id="pointsToNextLevel" class="text-xs text-gray-500 mt-1">50 pour le prochain niveau</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
+                style="animation-delay: 0.1s">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-600 text-sm">Série de jours</span>
+                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p id="streakDays" class="text-2xl font-bold text-gray-900">0 jours</p>
+                <p class="text-xs text-gray-500 mt-1">Record: <span id="streakRecord">0</span> jours</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
+                style="animation-delay: 0.2s">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-600 text-sm">Cours complétés</span>
+                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                            <path fill-rule="evenodd"
+                                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p id="coursCompleted" class="text-2xl font-bold text-gray-900">0</p>
+                <p id="coursTotal" class="text-xs text-gray-500 mt-1">sur 0 disponibles</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
+                style="animation-delay: 0.3s">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-600 text-sm">Challenges Résolus</span>
+                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </div>
+                <p id="challengesSolved" class="text-2xl font-bold text-gray-900">0</p>
+                <p class="text-xs text-gray-500 mt-1">Total réussi</p>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Left Column (2/3) -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- Technologies / Matières -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">💻 Technologies & Langages</h2>
+                        <button onclick="refreshMatieres()" class="text-sm text-green-600 hover:text-green-800">
+                            🔄 Actualiser
+                        </button>
+                    </div>
+                    <div id="matieresGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
+                        <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
+                        <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
+                    </div>
+                </div>
+
+                <!-- Éditeur de Code Interactif -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="border-b border-gray-200">
+                        <div class="flex items-center justify-between p-4">
+                            <h2 class="text-xl font-bold text-gray-900">🚀 Code Playground</h2>
+                            <div class="flex space-x-2">
+                                <button onclick="runCode()"
+                                    class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition">
+                                    ▶ Exécuter
+                                </button>
+                                <button onclick="resetCode()"
+                                    class="px-4 py-2 bg-gray-200 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-300 transition">
+                                    🔄 Réinitialiser
+                                </button>
+                                <button onclick="showHint()"
+                                    class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition">
+                                    💡 Indice
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Onglets de langage -->
+                        <div class="flex border-b border-gray-200">
+                            <button onclick="switchLanguage('javascript')"
+                                class="editor-tab px-4 py-2 text-sm font-medium active" id="js-tab">
+                                JavaScript
+                            </button>
+                            <button onclick="switchLanguage('html')"
+                                class="editor-tab px-4 py-2 text-sm font-medium text-gray-500" id="html-tab">
+                                HTML/CSS
+                            </button>
+                            <button onclick="switchLanguage('python')"
+                                class="editor-tab px-4 py-2 text-sm font-medium text-gray-500" id="python-tab">
+                                Python
+                            </button>
+                            <button onclick="switchLanguage('sql')"
+                                class="editor-tab px-4 py-2 text-sm font-medium text-gray-500" id="sql-tab">
+                                SQL
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
+                        <!-- Zone éditeur -->
+                        <div>
+                            <div class="mb-2 flex justify-between items-center">
+                                <h3 class="font-semibold text-gray-700">Éditeur</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs text-gray-500" id="currentChallenge">Challenge #1</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full"
+                                        id="difficulty">Débutant</span>
+                                </div>
+                            </div>
+                            <div class="border border-gray-300 rounded-lg overflow-hidden">
+                                <textarea id="codeEditor"></textarea>
+                            </div>
+
+                            <!-- Description du challenge -->
+                            <div class="mt-4 hint-box rounded-lg p-4">
+                                <h4 class="font-bold text-gray-900 mb-2 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    Objectif
+                                </h4>
+                                <p id="challengeDescription" class="text-sm text-gray-700">
+                                    Écris une fonction qui calcule la somme de deux nombres. La fonction doit retourner
+                                    le résultat.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Zone sortie et tests -->
+                        <div class="space-y-4">
+                            <!-- Sortie console -->
+                            <div>
+                                <h3 class="font-semibold text-gray-700 mb-2">Sortie Console</h3>
+                                <div id="consoleOutput"
+                                    class="console-output bg-gray-900 text-green-400 rounded-lg p-4 h-48 overflow-y-auto font-mono text-sm">
+                                    <div class="mb-2">⚡ Console LearnHub v1.0</div>
+                                    <div class="mb-1">🚀 Prêt à exécuter du code...</div>
+                                    <div class="text-gray-500">Tape "runCode()" ou clique sur ▶ Exécuter</div>
+                                    <div id="terminalCursor" class="terminal-cursor">▋</div>
+                                </div>
+                            </div>
+
+                            <!-- Tests unitaires -->
+                            <div>
+                                <h3 class="font-semibold text-gray-700 mb-2">Tests Unitaires</h3>
+                                <div id="testResults" class="space-y-2">
+                                    <div class="test-case p-3 rounded-lg">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <div class="w-4 h-4 rounded-full border-2 border-gray-300 mr-2"></div>
+                                                <span class="text-sm">Test 1: Addition simple</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">En attente...</span>
+                                        </div>
+                                    </div>
+                                    <div class="test-case p-3 rounded-lg">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <div class="w-4 h-4 rounded-full border-2 border-gray-300 mr-2"></div>
+                                                <span class="text-sm">Test 2: Nombres négatifs</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">En attente...</span>
+                                        </div>
+                                    </div>
+                                    <div class="test-case p-3 rounded-lg">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <div class="w-4 h-4 rounded-full border-2 border-gray-300 mr-2"></div>
+                                                <span class="text-sm">Test 3: Nombres décimaux</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">En attente...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progression récente -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">📖 Continuer l'apprentissage</h2>
+                    <div id="progressionList" class="space-y-3">
+                        <p class="text-gray-500 text-center py-8">Aucune progression en cours</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column (1/3) -->
+            <div class="space-y-6">
+
+                <!-- Code Challenge du Jour -->
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-100">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">🎯 Challenge du Jour</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-700">Progression</span>
+                            <span class="font-semibold text-green-600" id="dailyProgress">0/1 défi</span>
+                        </div>
+                        <div class="w-full bg-white rounded-full h-3">
+                            <div id="dailyProgressBar"
+                                class="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full transition-all duration-500"
+                                style="width: 0%"></div>
+                        </div>
+                        <div class="mt-4">
+                            <h4 class="font-bold text-gray-800 mb-2">Défi: Palindrome Checker</h4>
+                            <p class="text-sm text-gray-600 mb-3">
+                                Écris une fonction qui vérifie si une chaîne est un palindrome.
+                            </p>
+                            <button onclick="loadChallenge('palindrome')"
+                                class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm">
+                                👨‍💻 Tenter le défi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stack Technique -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">⚡ Ta Stack</h3>
+                    <div id="techStackContainer" class="flex flex-wrap gap-2">
+                        <span
+                            class="px-3 py-1 bg-orange-100 text-orange-700 text-xs font-semibold rounded-full">HTML5</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">CSS3</span>
+                        <span
+                            class="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">JavaScript</span>
+                        <span class="px-3 py-1 bg-gray-100 text-gray-500 text-xs font-semibold rounded-full">React
+                            🔒</span>
+                        <span class="px-3 py-1 bg-gray-100 text-gray-500 text-xs font-semibold rounded-full">Node.js
+                            🔒</span>
+                    </div>
+                </div>
+
+                <!-- Dernières Corrections -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">🔧 Corrections Récentes</h3>
+                    <div id="recentFixes" class="space-y-3">
+                        <div onclick="loadChallenge('debug-loop')"
+                            class="flex items-start space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <span class="text-green-600 text-sm">✓</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Bug: boucle infinie</p>
+                                <p class="text-xs text-gray-500">Clique pour résoudre</p>
+                            </div>
+                        </div>
+                        <div onclick="loadChallenge('optimize-algo')"
+                            class="flex items-start space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span class="text-blue-600 text-sm">?</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">Optimisation: algorithme</p>
+                                <p class="text-xs text-gray-500">Clique pour optimiser</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="viewAllFixes()"
+                        class="w-full mt-4 text-sm text-green-600 hover:text-green-800 font-semibold">
+                        Voir toutes les corrections →
+                    </button>
+                </div>
+
+                <!-- Badges Dev -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">🏆 Badges Dev</h3>
+                    <div id="badgesList" class="grid grid-cols-3 gap-3">
+                        <!-- Dynamic content -->
+                    </div>
+                    <button onclick="showAllBadges()"
+                        class="w-full mt-4 text-sm text-green-600 hover:text-green-800 font-semibold">
+                        Voir tous les badges →
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+    <!-- Modal Célébration -->
+    <div id="celebrationModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center animate-scale-in">
+            <div class="text-6xl mb-6 animate-bounce">🎉</div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Challenge Réussi !</h2>
+            <p class="text-gray-600 mb-6 text-lg">Excellent travail ! Code parfaitement exécuté.</p>
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100 rounded-2xl p-6 mb-8">
+                <p class="text-sm text-gray-500 mb-1">Points gagnés</p>
+                <div class="flex justify-center items-baseline space-x-2">
+                    <span
+                        class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-emerald-600"
+                        id="celebrationPoints">+50</span>
+                    <span class="text-xl text-green-600">XP</span>
+                </div>
+            </div>
+            <button onclick="closeCelebrationModal()"
+                class="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 text-lg">
+                Nouveau challenge 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Indice -->
+    <div id="hintModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full animate-scale-in">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold">💡 Indice</h3>
+                <button onclick="closeHintModal()" class="text-gray-500 hover:text-gray-700">
+                    ✕
+                </button>
+            </div>
+            <div id="hintContent" class="space-y-3">
+                <p class="text-gray-700">Pense à vérifier les cas limites :</p>
+                <ul class="text-sm text-gray-600 space-y-1 ml-4">
+                    <li>• Chaînes vides</li>
+                    <li>• Majuscules/minuscules</li>
+                    <li>• Caractères spéciaux</li>
+                </ul>
+                <div class="bg-gray-50 rounded-lg p-3 mt-4">
+                    <p class="text-xs text-gray-500 mb-1">Code d'exemple :</p>
+                    <pre class="text-sm font-mono bg-gray-900 text-green-400 p-2 rounded"><code>function isPalindrome(str) {
+    // Nettoyer la chaîne
+    const cleaned = str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    // Comparer avec son inverse
+    return cleaned === cleaned.split('').reverse().join('');
+}</code></pre>
+                </div>
+            </div>
+            <button onclick="closeHintModal()"
+                class="w-full mt-4 p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                Compris, merci !
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+        // ==========================================
+        // VARIABLES GLOBALES
+        // ==========================================
+        let currentUser = null
+        let currentLanguage = 'javascript'
+        let currentChallenge = null
+        let codeEditor = null
+
+        // ==========================================
+        // INITIALISATION
+        // ==========================================
+        async function init() {
+            console.log('🚀 Initialisation dashboard dev...')
+
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) {
+                console.log('❌ Non connecté')
+                window.location.href = '../login.html'
+                return
+            }
+
+            currentUser = user
+            console.log('✅ Connecté:', user.id)
+
+            await loadUserProfile()
+            await loadMatieres()
+            await loadProgressions()
+            await loadStats()
+            await loadBadges()
+            await checkDailyStreak()
+
+            // Initialiser l'éditeur de code
+            setTimeout(() => {
+                initCodeEditor()
+                if (codeEditor) {
+                    loadChallenge('addition')
+                }
+            }, 500)
+        }
+
+        // ==========================================
+        // PROFIL UTILISATEUR
+        // ==========================================
+        async function loadUserProfile() {
+            try {
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single()
+
+                if (error) throw error
+                if (!profile) return
+
+                console.log('✅ Profil chargé:', profile)
+
+                // Vérifier parcours
+                if (profile.type_parcours !== 'dev-web') {
+                    redirectToDashboard(profile.type_parcours)
+                    return
+                }
+
+                // Affichage
+                document.getElementById('userName').textContent = profile.nom
+                document.getElementById('welcomeName').textContent = profile.nom
+                document.getElementById('userLevel').textContent = profile.niveau_actuel || 'Niveau 1'
+
+                const points = profile.points_total || 0
+                document.getElementById('totalPoints').textContent = points
+                document.getElementById('totalPointsHeader').textContent = `${points} XP`
+
+                const streak = profile.streak_jours || 0
+                document.getElementById('streakDays').textContent = `${streak} jours`
+                document.getElementById('streakHeader').textContent = `${streak} jours de suite`
+
+                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.nom)}&background=10b981&color=fff&size=128`
+                document.getElementById('userAvatar').src = avatarUrl
+
+            } catch (error) {
+                console.error('❌ Erreur profil:', error)
+                showToast('Erreur de chargement du profil', 'error')
+            }
+        }
+
+        // ==========================================
+        // MATIÈRES (Technologies)
+        // ==========================================
+        async function loadMatieres() {
+            console.log('💻 Chargement technologies...')
+
+            try {
+                const { data: matieres, error } = await supabase
+                    .from('matieres')
+                    .select('id, nom, description, icone_url, couleur, type_parcours, ordre')
+                    .in('type_parcours', ['dev-web', 'commun'])
+                    .order('ordre')
+
+                if (error) throw error
+                console.log('✅ Technologies chargées:', matieres?.length || 0)
+
+                const grid = document.getElementById('matieresGrid')
+
+                if (!matieres || matieres.length === 0) {
+                    grid.innerHTML = '<p class="col-span-3 text-center text-gray-500 py-8">Aucune technologie disponible</p>'
+                    return
+                }
+
+                // Compter chapitres
+                const matieresAvecChapitres = await Promise.all(matieres.map(async (matiere) => {
+                    const { count } = await supabase
+                        .from('chapitres')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('matiere_id', matiere.id)
+                        .eq('est_publie', true)
+                    return { ...matiere, chapitres_count: count || 0 }
+                }))
+
+                grid.innerHTML = matieresAvecChapitres.map(matiere => {
+                    const couleur = matiere.couleur || '#10b981'
+                    const icone = matiere.icone_url || '💻'
+
+                    return `
+                    <div onclick="openMatiere(${matiere.id}, '${matiere.nom.replace(/'/g, "\\'")}')" 
+                         class="bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 border-2 hover:shadow-lg transition cursor-pointer transform hover:scale-105 duration-200"
+                         style="border-color: ${couleur}30;">
+                        <div class="text-3xl mb-2">${icone}</div>
+                        <h3 class="font-bold text-gray-900 mb-1">${matiere.nom}</h3>
+                        <p class="text-xs text-gray-600">${matiere.chapitres_count} cours</p>
+                        <div class="mt-2 flex items-center text-xs" style="color: ${couleur};">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                            Apprendre
+                        </div>
+                    </div>
+                `
+                }).join('')
+
+            } catch (error) {
+                console.error('❌ Erreur technologies:', error)
+                const grid = document.getElementById('matieresGrid')
+                grid.innerHTML = `
+                <div class="col-span-3 text-center py-8">
+                    <p class="text-red-500 mb-2">Erreur de chargement</p>
+                    <button onclick="loadMatieres()" class="px-4 py-2 bg-green-600 text-white rounded-lg">Réessayer</button>
+                </div>
+            `
+            }
+        }
+
+        // ==========================================
+        // PROGRESSIONS
+        // ==========================================
+        async function loadProgressions() {
+            try {
+                const { data: progressions, error } = await supabase
+                    .from('progressions_cours')
+                    .select(`
+                    *,
+                    cours:cours(
+                        id, titre, duree_lecture, points_recompense,
+                        chapitres:chapitres(titre, matieres:matieres(nom, icone_url, couleur))
+                    )
+                `)
+                    .eq('user_id', currentUser.id)
+                    .eq('est_termine', false)
+                    .order('updated_at', { ascending: false })
+                    .limit(5)
+
+                if (error) throw error
+
+                const list = document.getElementById('progressionList')
+
+                if (!progressions || progressions.length === 0) {
+                    list.innerHTML = '<p class="text-gray-500 text-center py-8">Commence un cours de code !</p>'
+                    return
+                }
+
+                list.innerHTML = progressions.map(prog => {
+                    const cours = prog.cours
+                    const matiere = cours?.chapitres?.matieres
+                    const progression = prog.progression_pourcentage || 0
+
+                    return `
+                    <div onclick="window.location.href='../Dashboard-eleves/cours.html?id=${cours.id}'" 
+                         class="bg-white border-2 border-gray-100 rounded-xl p-4 hover:shadow-md transition cursor-pointer hover:border-green-300">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-2xl">${matiere?.icone_url || '💻'}</span>
+                                <div>
+                                    <h4 class="font-bold text-gray-900">${cours.titre}</h4>
+                                    <p class="text-xs text-gray-500">${matiere?.nom || 'Tech'} • ${cours.chapitres?.titre || 'Cours'}</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-semibold text-green-600">${progression}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full" style="width: ${progression}%"></div>
+                        </div>
+                    </div>
+                `
+                }).join('')
+            } catch (error) {
+                console.error('❌ Erreur progressions:', error)
+                document.getElementById('progressionList').innerHTML = `<p class="text-red-500 text-center py-4 text-sm">Impossible de charger la progression.<br><span class="text-xs text-gray-400">Erreur: ${error.message}</span></p>`
+            }
+        }
+
+        // ==========================================
+        // STATISTIQUES
+        // ==========================================
+        async function loadStats() {
+            try {
+                const { data: progressions } = await supabase
+                    .from('progressions_cours')
+                    .select('temps_passe, est_termine')
+                    .eq('user_id', currentUser.id)
+
+                const coursCompletes = progressions?.filter(p => p.est_termine).length || 0
+                document.getElementById('coursCompleted').textContent = coursCompletes
+
+                const { count: totalCours } = await supabase
+                    .from('cours')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('est_publie', true)
+
+                document.getElementById('coursTotal').textContent = `sur ${totalCours || 0} disponibles`
+
+                // Stats du jour
+                const today = new Date().toISOString().split('T')[0]
+                const { data: dailyStats } = await supabase
+                    .from('statistiques_journalieres')
+                    .select('cours_completes, challenges_resolus')
+                    .eq('user_id', currentUser.id)
+                    .eq('date', today)
+                    .single()
+
+                const coursToday = dailyStats?.cours_completes || 0
+                const challengesToday = dailyStats?.challenges_resolus || 0
+                const dailyGoal = 1
+                const dailyPercent = Math.min((challengesToday / dailyGoal) * 100, 100)
+
+                document.getElementById('dailyProgress').textContent = `${challengesToday}/${dailyGoal} défi`
+                document.getElementById('dailyProgressBar').style.width = `${dailyPercent}%`
+
+                // Compter challenges résolus
+                const { count: challengesSolved } = await supabase
+                    .from('code_challenges')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', currentUser.id)
+                    .eq('est_termine', true)
+
+                document.getElementById('challengesSolved').textContent = challengesSolved || 0
+
+            } catch (error) {
+                console.error('❌ Erreur stats:', error)
+            }
+        }
+
+        // ==========================================
+        // BADGES
+        // ==========================================
+        async function loadBadges() {
+            try {
+                const { data: userBadges } = await supabase
+                    .from('user_badges')
+                    .select(`*, badges:badges(nom, icone_url, description)`)
+                    .eq('user_id', currentUser.id)
+                    .limit(6)
+
+                const badgesList = document.getElementById('badgesList')
+
+                if (!userBadges || userBadges.length === 0) {
+                    badgesList.innerHTML = Array(6).fill(0).map(() => `
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full mx-auto flex items-center justify-center">
+                            <span class="text-2xl">🔒</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">À débloquer</p>
+                    </div>
+                `).join('')
+                    return
+                }
+
+                badgesList.innerHTML = userBadges.map(ub => `
+                <div class="text-center" title="${ub.badges.description}">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full mx-auto flex items-center justify-center animate-bounce">
+                        <span class="text-2xl">${ub.badges.icone_url || '🏆'}</span>
+                    </div>
+                    <p class="text-xs text-gray-700 mt-1 font-medium">${ub.badges.nom}</p>
+                </div>
+            `).join('')
+
+            } catch (error) {
+                console.error('❌ Erreur badges:', error)
+            }
+        }
+
+        // ==========================================
+        // STREAK
+        // ==========================================
+        async function checkDailyStreak() {
+            try {
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('derniere_connexion, streak_jours, streak_record')
+                    .eq('id', currentUser.id)
+                    .single()
+
+                if (error) throw error
+
+                const now = new Date()
+                const lastConnection = profile.derniere_connexion ? new Date(profile.derniere_connexion) : null
+
+                let newStreak = profile.streak_jours || 0
+                let streakRecord = profile.streak_record || 0
+
+                if (lastConnection) {
+                    const daysDiff = Math.floor((now - lastConnection) / (1000 * 60 * 60 * 24))
+
+                    if (daysDiff === 1) {
+                        newStreak++
+                        if (newStreak > streakRecord) {
+                            streakRecord = newStreak
+                            showToast(`🎉 Nouveau record : ${newStreak} jours de code !`, 'success')
+                        } else {
+                            showToast(`🔥 Série de ${newStreak} jours ! Keep coding!`, 'success')
+                        }
+                    } else if (daysDiff > 1) {
+                        if (newStreak > 0) {
+                            showToast(`😢 Série de ${newStreak} jours interrompue`, 'warning')
+                        }
+                        newStreak = 1
+                    }
+                } else {
+                    newStreak = 1
+                }
+
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update({
+                        derniere_connexion: now.toISOString(),
+                        streak_jours: newStreak,
+                        streak_record: streakRecord
+                    })
+                    .eq('id', currentUser.id)
+
+                if (updateError) throw updateError
+
+                document.getElementById('streakDays').textContent = `${newStreak} jours`
+                document.getElementById('streakHeader').textContent = `${newStreak} jours de suite`
+                document.getElementById('streakRecord').textContent = streakRecord
+
+            } catch (error) {
+                console.error('❌ Erreur streak:', error)
+                showToast('Erreur de mise à jour du streak', 'error')
+            }
+        }
+
+        // ==========================================
+        // ÉDITEUR DE CODE
+        // ==========================================
+        function initCodeEditor() {
+            console.log('📝 Initialisation de l\'éditeur de code...')
+
+            const textarea = document.getElementById('codeEditor')
+            if (!textarea) {
+                console.error('❌ Élément codeEditor non trouvé')
+                showToast('Erreur: éditeur non disponible', 'error')
+                return
+            }
+
+            try {
+                codeEditor = CodeMirror.fromTextArea(textarea, {
+                    mode: 'javascript',
+                    theme: 'dracula',
+                    lineNumbers: true,
+                    indentUnit: 4,
+                    tabSize: 4,
+                    indentWithTabs: false,
+                    electricChars: true,
+                    autoCloseBrackets: true,
+                    matchBrackets: true,
+                    extraKeys: {
+                        'Ctrl-Space': 'autocomplete',
+                        'Cmd-Enter': function () { runCode() },
+                        'Ctrl-Enter': function () { runCode() }
+                    },
+                    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+                    foldGutter: true
+                })
+
+                codeEditor.setSize('100%', '400px')
+
+                setTimeout(() => {
+                    if (codeEditor) {
+                        codeEditor.refresh()
+                        console.log('✅ Éditeur CodeMirror initialisé avec succès')
+                    }
+                }, 300)
+
+            } catch (error) {
+                console.error('❌ Erreur initialisation CodeMirror:', error)
+                // Fallback: utiliser textarea simple
+                textarea.style.height = '400px'
+                textarea.style.fontFamily = '"Monaco", "Menlo", "Ubuntu Mono", monospace'
+                textarea.style.fontSize = '14px'
+                textarea.style.padding = '10px'
+                textarea.style.borderRadius = '8px'
+                textarea.style.backgroundColor = '#282a36'
+                textarea.style.color = '#f8f8f2'
+                textarea.value = '// Éditeur simplifié\n// Utilisez le bouton "Exécuter" pour tester votre code\n\nconsole.log("Hello, World!")'
+
+                showToast('Éditeur simplifié activé (CodeMirror non disponible)', 'warning')
+            }
+        }
+
+        function switchLanguage(lang) {
+            currentLanguage = lang
+
+            // Mettre à jour les onglets actifs
+            document.querySelectorAll('.editor-tab').forEach(tab => {
+                tab.classList.remove('active', 'text-green-600')
+                tab.classList.add('text-gray-500')
+            })
+
+            const activeTab = document.getElementById(`${lang}-tab`)
+            if (activeTab) {
+                activeTab.classList.add('active', 'text-green-600')
+                activeTab.classList.remove('text-gray-500')
+            }
+
+            // Changer le mode de l'éditeur
+            let mode
+            switch (lang) {
+                case 'javascript':
+                    mode = 'javascript'
+                    break
+                case 'html':
+                    mode = 'htmlmixed'
+                    break
+                case 'python':
+                    mode = 'python'
+                    break
+                case 'sql':
+                    mode = 'sql'
+                    break
+                default:
+                    mode = 'javascript'
+            }
+
+            if (codeEditor) {
+                codeEditor.setOption('mode', mode)
+            }
+
+            // Charger un exemple pour ce langage
+            loadLanguageExample(lang)
+        }
+
+        function loadLanguageExample(lang) {
+            let exampleCode = ''
+
+            if (lang === 'javascript') {
+                exampleCode = '// Bienvenue dans l\'éditeur JavaScript !\n' +
+                    '// Essaye d\'exécuter ce code :\n\n' +
+                    'console.log("Hello, World!")\n\n' +
+                    'function greet(name) {\n' +
+                    '    return `Bonjour, ${name} !`\n' +
+                    '}\n\n' +
+                    'const message = greet("Développeur")\n' +
+                    'console.log(message)\n\n' +
+                    '// Puis clique sur "▶ Exécuter"'
+            }
+            else if (lang === 'html') {
+                exampleCode = '<!DOCTYPE html>\n' +
+                    '<html>\n' +
+                    '<head>\n' +
+                    '    <style>\n' +
+                    '        body {\n' +
+                    '            font-family: Arial, sans-serif;\n' +
+                    '            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n' +
+                    '            display: flex;\n' +
+                    '            justify-content: center;\n' +
+                    '            align-items: center;\n' +
+                    '            height: 100vh;\n' +
+                    '            margin: 0;\n' +
+                    '        }\n' +
+                    '        .card {\n' +
+                    '            background: white;\n' +
+                    '            padding: 2rem;\n' +
+                    '            border-radius: 1rem;\n' +
+                    '            box-shadow: 0 10px 25px rgba(0,0,0,0.1);\n' +
+                    '            text-align: center;\n' +
+                    '        }\n' +
+                    '        h1 {\n' +
+                    '            color: #333;\n' +
+                    '        }\n' +
+                    '        p {\n' +
+                    '            color: #666;\n' +
+                    '        }\n' +
+                    '    </style>\n' +
+                    '</head>\n' +
+                    '<body>\n' +
+                    '    <div class="card">\n' +
+                    '        <h1>🎨 Éditeur HTML/CSS</h1>\n' +
+                    '        <p>Modifie ce code pour personnaliser la carte !</p>\n' +
+                    '    </div>\n' +
+                    '</body>\n' +
+                    '</html>'
+            }
+            else if (lang === 'python') {
+                exampleCode = '# Bienvenue dans l\'éditeur Python !\n' +
+                    '# Essaye d\'exécuter ce code :\n\n' +
+                    'def fibonacci(n):\n' +
+                    '    """Retourne les n premiers nombres de Fibonacci"""\n' +
+                    '    sequence = [0, 1]\n' +
+                    '    while len(sequence) < n:\n' +
+                    '        sequence.append(sequence[-1] + sequence[-2])\n' +
+                    '    return sequence[:n]\n\n' +
+                    'print("Suite de Fibonacci :")\n' +
+                    'print(fibonacci(10))\n\n' +
+                    '# Calcule la somme de 1 à 100\n' +
+                    'total = sum(range(1, 101))\n' +
+                    'print(f"\\nSomme de 1 à 100 : {total}")'
+            }
+            else if (lang === 'sql') {
+                exampleCode = '-- Bienvenue dans l\'éditeur SQL !\n' +
+                    '-- Voici un exemple de requête :\n\n' +
+                    '-- Création d\'une table utilisateurs\n' +
+                    'CREATE TABLE utilisateurs (\n' +
+                    '    id INT PRIMARY KEY AUTO_INCREMENT,\n' +
+                    '    nom VARCHAR(100) NOT NULL,\n' +
+                    '    email VARCHAR(255) UNIQUE NOT NULL,\n' +
+                    '    age INT,\n' +
+                    '    ville VARCHAR(100)\n' +
+                    ');\n\n' +
+                    '-- Insertion de données\n' +
+                    'INSERT INTO utilisateurs (nom, email, age, ville) VALUES\n' +
+                    '(\'Alice Dupont\', \'alice@email.com\', 28, \'Paris\'),\n' +
+                    '(\'Bob Martin\', \'bob@email.com\', 32, \'Lyon\'),\n' +
+                    '(\'Charlie Durand\', \'charlie@email.com\', 25, \'Marseille\');\n\n' +
+                    '-- Sélection des utilisateurs de plus de 30 ans\n' +
+                    'SELECT nom, email, ville \n' +
+                    'FROM utilisateurs \n' +
+                    'WHERE age > 30 \n' +
+                    'ORDER BY nom;'
+            }
+
+            if (codeEditor) {
+                codeEditor.setValue(exampleCode)
+            } else {
+                const textarea = document.getElementById('codeEditor')
+                if (textarea) {
+                    textarea.value = exampleCode
+                }
+            }
+
+            updateInterface('Exemple', 'Démonstration', 'Modifie et exécute le code pour voir le résultat !')
+        }
+
+        function updateInterface(challengeTitle, difficulty, description) {
+            const currentChallengeElem = document.getElementById('currentChallenge')
+            const difficultyElem = document.getElementById('difficulty')
+            const challengeDesc = document.getElementById('challengeDescription')
+
+            if (currentChallengeElem) currentChallengeElem.textContent = challengeTitle
+            if (difficultyElem) difficultyElem.textContent = difficulty
+            if (challengeDesc) challengeDesc.textContent = description
+        }
+
+        // ==========================================
+        // CHALLENGES DE PROGRAMMATION
+        // ==========================================
+        const challenges = {
+            javascript: [
+                {
+                    id: 'addition',
+                    title: 'Addition Simple',
+                    description: 'Écris une fonction add qui prend deux nombres en paramètres et retourne leur somme.',
+                    difficulty: 'Débutant',
+                    initialCode: 'function add(a, b) {\n    // Ton code ici\n    return \n}',
+                    tests: [
+                        { input: 'add(2, 3)', expected: 5 },
+                        { input: 'add(-1, 1)', expected: 0 },
+                        { input: 'add(0, 0)', expected: 0 },
+                        { input: 'add(10, -5)', expected: 5 }
+                    ]
+                },
+                {
+                    id: 'palindrome',
+                    title: 'Vérificateur de Palindrome',
+                    description: 'Écris une fonction isPalindrome qui vérifie si une chaîne de caractères est un palindrome.',
+                    difficulty: 'Intermédiaire',
+                    initialCode: 'function isPalindrome(str) {\n    // Ton code ici\n    // Un palindrome se lit de la même façon dans les deux sens\n    // Exemple : "radar", "kayak", "été"\n}',
+                    tests: [
+                        { input: 'isPalindrome("radar")', expected: true },
+                        { input: 'isPalindrome("hello")', expected: false },
+                        { input: 'isPalindrome("été")', expected: true },
+                        { input: 'isPalindrome("")', expected: true },
+                        { input: 'isPalindrome("A man a plan a canal Panama")', expected: true }
+                    ]
+                },
+                {
+                    id: 'debug-loop',
+                    title: 'Bug: Boucle Infinie',
+                    description: 'Ce code contient une boucle infinie. Corrige la condition d\'arrêt pour qu\'il compte jusqu\'à 5.',
+                    difficulty: 'Débogage',
+                    initialCode: 'function countToFive() {\n    let result = [];\n    let i = 1;\n    // ❌ ERREUR : La condition i > 0 est toujours vraie !\n    while (i > 0) {\n        result.push(i);\n        if (i === 3) break; // 🐛 Bug : ça s\'arrête à 3 au lieu de 5 !\n        i++;\n    }\n    return result;\n}',
+                    tests: [
+                        { input: 'countToFive().length', expected: 5 },
+                        { input: 'countToFive()[4]', expected: 5 }
+                    ]
+                },
+                {
+                    id: 'optimize-algo',
+                    title: 'Optimisation: Algorithme',
+                    description: 'Optimise cette fonction de recherche pour qu\'elle soit plus performante.',
+                    difficulty: 'Avancé',
+                    initialCode: '// Recherche linéaire (lente)\nfunction findNumber(arr, target) {\n    for(let i = 0; i < arr.length; i++) {\n        if(arr[i] === target) return i;\n    }\n    return -1;\n}\n\n// Challenge : Implémente une recherche plus efficace !',
+                    tests: [
+                        { input: 'findNumber([1,2,3,4,5], 3)', expected: 2 },
+                        { input: 'findNumber([1,2,3,4,5], 6)', expected: -1 }
+                    ]
+                }
+            ]
+        }
+
+        function loadChallenge(challengeId) {
+            const challenge = challenges.javascript.find(c => c.id === challengeId)
+            if (!challenge) return
+
+            currentChallenge = challenge
+
+            // Mettre à jour l'éditeur
+            if (codeEditor) {
+                codeEditor.setValue(challenge.initialCode)
+            } else {
+                const textarea = document.getElementById('codeEditor')
+                if (textarea) {
+                    textarea.value = challenge.initialCode
+                }
+            }
+
+            // Mettre à jour l'affichage
+            updateInterface(challenge.title, challenge.difficulty, challenge.description)
+
+            // Mettre à jour les tests
+            updateTestDisplay(challenge.tests)
+
+            // Forcer le mode JavaScript
+            switchLanguage('javascript')
+
+            showToast(`Challenge "${challenge.title}" chargé !`, 'success')
+        }
+
+        function updateTestDisplay(tests) {
+            const testContainer = document.getElementById('testResults')
+
+            if (!tests || tests.length === 0) {
+                testContainer.innerHTML = '<div class="p-4 text-center text-gray-500"><p>Pas de tests pour ce type de code</p></div>'
+                return
+            }
+
+            testContainer.innerHTML = tests.map((test, index) => `
+                <div class="test-case p-3 rounded-lg" id="test-${index}">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 rounded-full border-2 border-gray-300 mr-2 test-indicator"></div>
+                            <span class="text-sm">Test ${index + 1}: ${test.input}</span>
+                        </div>
+                        <span class="text-xs text-gray-500 test-status">En attente...</span>
+                    </div>
+                </div>
+            `).join('')
+        }
+
+        // ==========================================
+        // EXÉCUTION DE CODE
+        // ==========================================
+        async function runCode() {
+            const code = codeEditor ? codeEditor.getValue() : document.getElementById('codeEditor').value
+            const consoleOutput = document.getElementById('consoleOutput')
+
+            // Effacer la console précédente
+            consoleOutput.innerHTML = '<div class="mb-2">⚡ Exécution en cours...</div><div class="terminal-cursor">▋</div>'
+
+            try {
+                // Préparer l'environnement d'exécution
+                const logs = []
+                const originalConsoleLog = console.log
+                const originalConsoleError = console.error
+                const originalConsoleWarn = console.warn
+
+                // Rediriger console.log vers notre sortie
+                console.log = function (...args) {
+                    logs.push({ type: 'log', args })
+                    originalConsoleLog.apply(console, args)
+                }
+
+                console.error = function (...args) {
+                    logs.push({ type: 'error', args })
+                    originalConsoleError.apply(console, args)
+                }
+
+                console.warn = function (...args) {
+                    logs.push({ type: 'warn', args })
+                    originalConsoleWarn.apply(console, args)
+                }
+
+                // Exécuter le code
+                let result
+                if (currentLanguage === 'javascript') {
+                    // Pour JavaScript, utiliser eval avec un contexte sécurisé
+                    result = safeEval(code)
+                } else if (currentLanguage === 'html') {
+                    // Pour HTML, afficher dans un iframe
+                    displayHTMLOutput(code)
+                    result = 'HTML affiché dans la prévisualisation'
+                } else {
+                    // Pour Python/SQL, simuler l'exécution
+                    result = simulateExecution(code)
+                }
+
+                // Restaurer les fonctions console originales
+                console.log = originalConsoleLog
+                console.error = originalConsoleError
+                console.warn = originalConsoleWarn
+
+                // Afficher les logs dans la console
+                displayLogs(logs)
+
+                // Exécuter les tests si c'est un challenge
+                if (currentChallenge && currentChallenge.tests.length > 0) {
+                    runTests(code)
+                }
+
+                // Afficher le résultat
+                if (result !== undefined && result !== 'HTML affiché dans la prévisualisation') {
+                    consoleOutput.innerHTML += `<div class="console-info mt-2">↪ Résultat : ${JSON.stringify(result)}</div>`
+                }
+
+                // Enregistrer l'exécution dans Supabase
+                await saveCodeExecution(code, 'success')
+
+            } catch (error) {
+                // Afficher l'erreur
+                consoleOutput.innerHTML += `
+                    <div class="console-error mt-2">❌ Erreur : ${error.message}</div>
+                    <div class="text-gray-500 text-sm mt-1">${error.stack}</div>
+                `
+
+                // Enregistrer l'erreur dans Supabase
+                await saveCodeExecution(code, 'error', error.message)
+
+                // Mettre à jour l'affichage des tests
+                document.querySelectorAll('.test-case').forEach(test => {
+                    test.classList.add('failed')
+                    test.classList.remove('passed')
+                })
+            }
+        }
+
+        function safeEval(code) {
+            // Créer un contexte sécurisé pour l'évaluation
+            const safeContext = {
+                console: {
+                    log: console.log,
+                    error: console.error,
+                    warn: console.warn,
+                    info: console.info
+                },
+                Math: Math,
+                Date: Date,
+                Array: Array,
+                Object: Object,
+                String: String,
+                Number: Number,
+                Boolean: Boolean,
+                JSON: JSON,
+                RegExp: RegExp,
+                Error: Error,
+                TypeError: TypeError,
+                RangeError: RangeError,
+                setTimeout: setTimeout,
+                clearTimeout: clearTimeout,
+                setInterval: setInterval,
+                clearInterval: clearInterval
+            }
+
+            // Définir les fonctions pour éviter l'accès à window
+            const sandbox = `
+                with (safeContext) {
+                    return (function() {
+                        "use strict";
+                        ${code}
+                    })();
+                }
+            `
+
+            // Évaluer dans un contexte sécurisé
+            const evalFunction = new Function('safeContext', sandbox)
+            return evalFunction(safeContext)
+        }
+
+        function displayHTMLOutput(htmlCode) {
+            const consoleOutput = document.getElementById('consoleOutput')
+            consoleOutput.innerHTML = `
+                <div class="mb-2">🌐 Prévisualisation HTML :</div>
+                <iframe 
+                    srcdoc="${htmlCode.replace(/"/g, '&quot;')}" 
+                    class="w-full h-64 border rounded bg-white"
+                    sandbox="allow-scripts"
+                ></iframe>
+                <div class="text-gray-500 text-sm mt-2">
+                    Note : Les scripts sont exécutés dans un environnement sécurisé.
+                </div>
+            `
+        }
+
+        function simulateExecution(code) {
+            return "Exécution simulée - Pour une exécution réelle, utilise JavaScript"
+        }
+
+        function displayLogs(logs) {
+            const consoleOutput = document.getElementById('consoleOutput')
+
+            logs.forEach(log => {
+                const className = `console-${log.type}`
+                const message = log.args.map(arg =>
+                    typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+                ).join(' ')
+
+                consoleOutput.innerHTML += `<div class="${className}">${message}</div>`
+            })
+        }
+
+        function runTests(userCode) {
+            let allPassed = true
+
+            currentChallenge.tests.forEach((test, index) => {
+                try {
+                    // Préparer le contexte pour l'évaluation
+                    const context = {}
+                    const fullCode = userCode + `\nreturn ${test.input}`
+
+                    // Évaluer le code utilisateur avec le test
+                    const testFunction = new Function(fullCode)
+                    const result = testFunction.call(context)
+
+                    // Vérifier le résultat
+                    const testElement = document.getElementById(`test-${index}`)
+                    const indicator = testElement.querySelector('.test-indicator')
+                    const status = testElement.querySelector('.test-status')
+
+                    if (result === test.expected) {
+                        testElement.classList.add('passed')
+                        testElement.classList.remove('failed')
+                        indicator.innerHTML = '✓'
+                        indicator.classList.add('text-green-500', 'border-green-500')
+                        indicator.classList.remove('border-gray-300')
+                        status.textContent = '✓ Réussi'
+                        status.classList.add('text-green-600')
+                        status.classList.remove('text-gray-500')
+                    } else {
+                        testElement.classList.add('failed')
+                        testElement.classList.remove('passed')
+                        indicator.innerHTML = '✗'
+                        indicator.classList.add('text-red-500', 'border-red-500')
+                        indicator.classList.remove('border-gray-300')
+                        status.textContent = `✗ Échec (attendu: ${test.expected}, obtenu: ${result})`
+                        status.classList.add('text-red-600')
+                        status.classList.remove('text-gray-500')
+                        allPassed = false
+                    }
+                } catch (error) {
+                    const testElement = document.getElementById(`test-${index}`)
+                    testElement.classList.add('failed')
+                    testElement.classList.remove('passed')
+                    const indicator = testElement.querySelector('.test-indicator')
+                    const status = testElement.querySelector('.test-status')
+                    if (indicator) indicator.innerHTML = '✗'
+                    if (indicator) indicator.classList.add('text-red-500', 'border-red-500')
+                    if (status) status.textContent = `Erreur: ${error.message}`
+                    if (status) status.classList.add('text-red-600')
+                    allPassed = false
+                }
+            })
+
+            // Si tous les tests passent, célébrer !
+            if (allPassed && currentChallenge.tests.length > 0) {
+                celebrateChallengeSuccess()
+            }
+        }
+
+        // ==========================================
+        // GESTION DES CHALLENGES
+        // ==========================================
+        async function celebrateChallengeSuccess() {
+            document.getElementById('celebrationModal').classList.remove('hidden')
+
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 }
+            })
+
+            try {
+                const { error } = await supabase
+                    .from('code_challenges')
+                    .insert([{
+                        user_id: currentUser.id,
+                        challenge_id: currentChallenge.id,
+                        code: codeEditor ? codeEditor.getValue() : document.getElementById('codeEditor').value,
+                        est_termine: true,
+                        points_gagnes: 50,
+                        created_at: new Date().toISOString()
+                    }])
+
+                if (error) throw error
+
+                await loadStats()
+                await loadUserProfile()
+
+            } catch (error) {
+                console.error('❌ Erreur enregistrement:', error)
+            }
+        }
+
+        async function saveCodeExecution(code, status, errorMessage = null) {
+            try {
+                const { error } = await supabase
+                    .from('code_executions')
+                    .insert([{
+                        user_id: currentUser.id,
+                        language: currentLanguage,
+                        code: code,
+                        status: status,
+                        error_message: errorMessage,
+                        execution_time: new Date().toISOString()
+                    }])
+
+                if (error) throw error
+
+            } catch (error) {
+                console.error('❌ Erreur enregistrement exécution:', error)
+            }
+        }
+
+        // ==========================================
+        // FONCTIONS UTILITAIRES
+        // ==========================================
+        function resetCode() {
+            if (currentChallenge) {
+                if (codeEditor) {
+                    codeEditor.setValue(currentChallenge.initialCode)
+                } else {
+                    const textarea = document.getElementById('codeEditor')
+                    if (textarea) {
+                        textarea.value = currentChallenge.initialCode
+                    }
+                }
+            } else {
+                loadLanguageExample(currentLanguage)
+            }
+
+            document.getElementById('consoleOutput').innerHTML = `
+                <div class="mb-2">⚡ Console réinitialisée</div>
+                <div class="mb-1">🚀 Prêt à exécuter du code...</div>
+                <div class="terminal-cursor">▋</div>
+            `
+
+            if (currentChallenge && currentChallenge.tests.length > 0) {
+                updateTestDisplay(currentChallenge.tests)
+            }
+
+            showToast('Code réinitialisé', 'info')
+        }
+
+        function showHint() {
+            if (!currentChallenge) {
+                document.getElementById('hintContent').innerHTML = '<p class="text-gray-700">Commence par charger un challenge pour obtenir des indices !</p>'
+            } else {
+                let hintHTML = `<p class="text-gray-700">Indices pour "${currentChallenge.title}" :</p><ul class="text-sm text-gray-600 space-y-1 ml-4 mt-2">`
+
+                if (currentChallenge.id === 'addition') {
+                    hintHTML += '<li>• Assure-toi que la fonction retourne bien la somme</li><li>• Pense aux nombres négatifs</li><li>• Teste avec différents types de nombres</li>'
+                } else if (currentChallenge.id === 'palindrome') {
+                    hintHTML += '<li>• Nettoie la chaîne (minuscules, caractères spéciaux)</li><li>• Compare la chaîne avec son inverse</li><li>• Utilise <code>.split(\'\').reverse().join(\'\')</code></li>'
+                } else if (currentChallenge.id === 'debug-loop') {
+                    hintHTML += '<li>• La condition <code>i > 0</code> est toujours vraie</li><li>• Remplace-la par <code>i <= 5</code></li><li>• Retire le <code>break</code> une fois la condition corrigée</li>'
+                } else if (currentChallenge.id === 'optimize-algo') {
+                    hintHTML += '<li>• La recherche linéaire prend du temps <code>O(n)</code></li><li>• Utilise une méthode native comme <code>Array.indexOf()</code> ou <code>Array.find()</code></li><li>• Pour les tableaux triés, pense à la recherche binaire</li>'
+                } else {
+                    hintHTML += '<li>• Lis attentivement l\'énoncé</li><li>• Teste ton code étape par étape</li><li>• Utilise console.log() pour déboguer</li>'
+                }
+
+                hintHTML += '</ul><div class="bg-gray-50 rounded-lg p-3 mt-4"><p class="text-xs text-gray-500 mb-1">Astuce :</p><p class="text-sm">Utilise Ctrl+Enter pour exécuter rapidement ton code !</p></div>'
+
+                document.getElementById('hintContent').innerHTML = hintHTML
+            }
+
+            document.getElementById('hintModal').classList.remove('hidden')
+        }
+
+        function closeHintModal() {
+            document.getElementById('hintModal').classList.add('hidden')
+        }
+
+        function closeCelebrationModal() {
+            document.getElementById('celebrationModal').classList.add('hidden')
+
+            const nextChallenge = challenges.javascript.find(c => c.id !== currentChallenge.id)
+            if (nextChallenge) {
+                loadChallenge(nextChallenge.id)
+            }
+        }
+
+        // ==========================================
+        // UTILITAIRES
+        // ==========================================
+        function showToast(message, type = 'info') {
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-blue-500'
+            }
+
+            const toast = document.createElement('div')
+            toast.className = `${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in`
+            toast.textContent = message
+
+            document.getElementById('toastContainer').appendChild(toast)
+            setTimeout(() => toast.remove(), 4000)
+        }
+
+        function redirectToDashboard(parcours) {
+            const dashboards = {
+                'dev-web': 'dashboard-dev.html',
+                'designer': '../Dashboard-designer/dashboard-designer.html',
+                'eleve': '../Dashboard-eleves/dashboard-eleve.html'
+            }
+            window.location.href = dashboards[parcours] || '../index.html'
+        }
+
+        // ==========================================
+        // FONCTIONS GLOBALES
+        // ==========================================
+        window.openMatiere = function (matiereId, matiereNom) {
+            window.location.href = `../Dashboard-eleves/matiere.html?id=${matiereId}&nom=${encodeURIComponent(matiereNom)}`
+        }
+
+        window.refreshMatieres = async function () {
+            showToast('Actualisation...', 'info')
+            await loadMatieres()
+        }
+
+        window.showAllBadges = function () {
+            showToast('Fonctionnalité en développement', 'info')
+        }
+
+        window.toggleNotifications = function () {
+            showToast('Aucune notification', 'info')
+        }
+
+        window.viewAllFixes = function () {
+            showToast('Historique des corrections bientôt disponible', 'info')
+        }
+
+        window.logout = async function () {
+            if (confirm('Veux-tu vraiment te déconnecter ?')) {
+                await supabase.auth.signOut()
+                window.location.href = '../index.html'
+            }
+        }
+
+        // Rendre les fonctions disponibles globalement
+        window.switchLanguage = switchLanguage
+        window.loadChallenge = loadChallenge
+        window.runCode = runCode
+        window.resetCode = resetCode
+        window.showHint = showHint
+        window.closeHintModal = closeHintModal
+        window.closeCelebrationModal = closeCelebrationModal
+
+        // INIT
+        init()
+    </script>
+</body>
+
+</html>

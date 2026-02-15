@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Élève - LearnHub</title>
+    <title>Dashboard Élève - KMERSCHOOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -70,6 +70,23 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
         }
+
+        .student-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 13px;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .student-badge .flag {
+            font-size: 20px;
+        }
     </style>
 </head>
 
@@ -80,15 +97,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-3">
-                    <div
-                        class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
-                            </path>
-                        </svg>
-                    </div>
-                    <span class="text-xl font-bold text-gray-900">LearnHub</span>
+                    <img src="../assets/logo/LOGO.png" alt="KMERSCHOOL"
+                        class="h-20 w-auto object-contain bg-white rounded-lg p-1">
                     <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Élève</span>
                 </div>
 
@@ -105,8 +115,11 @@
                     <div class="flex items-center space-x-3">
                         <img id="userAvatar" class="w-10 h-10 rounded-full border-2 border-blue-200" src=""
                             alt="Avatar">
-                        <div>
-                            <p id="userName" class="text-sm font-semibold text-gray-900">Chargement...</p>
+                        <div class="hidden md:block">
+                            <div class="flex items-center space-x-2">
+                                <p id="userName" class="text-sm font-semibold text-gray-900">Chargement...</p>
+                                <div id="studentBadgeHeader" class="scale-75 origin-left"></div>
+                            </div>
                             <p id="userLevel" class="text-xs text-gray-500">Niveau</p>
                         </div>
                     </div>
@@ -123,345 +136,462 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         <!-- Welcome Section -->
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white mb-8 animate-slide-in">
-            <h1 class="text-3xl font-bold mb-2">Bon retour, <span id="welcomeName">Élève</span> ! 👋</h1>
-            <p class="text-blue-100">Continue ton apprentissage et atteins tes objectifs</p>
-            <div class="mt-4 flex items-center space-x-4">
-                <div class="flex items-center space-x-2">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                        </path>
-                    </svg>
-                    <span id="totalPointsHeader">0 points</span>
+        <div
+            class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white mb-8 animate-slide-in relative overflow-hidden">
+            <div class="relative z-10">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">Bon retour, <span id="welcomeName">Élève</span> ! 👋</h1>
+                        <p class="text-blue-100">Continue ton apprentissage et atteins tes objectifs</p>
+                    </div>
+                    <div id="studentBadge" class="student-badge"></div>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <span class="text-orange-300">🔥</span>
-                    <span id="streakHeader">0 jours de suite</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-gray-600 text-sm">Points Total</span>
-                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <div class="mt-4 flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path
                                 d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
                             </path>
                         </svg>
+                        <span id="totalPointsHeader">0 points</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-orange-300">🔥</span>
+                        <span id="streakHeader">0 jours de suite</span>
                     </div>
                 </div>
-                <p id="totalPoints" class="text-2xl font-bold text-gray-900">0</p>
-                <p id="pointsToNextLevel" class="text-xs text-gray-500 mt-1">50 pour le prochain niveau</p>
             </div>
 
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
-                style="animation-delay: 0.1s">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-gray-600 text-sm">Série de jours</span>
-                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
-                                clip-rule="evenodd"></path>
-                        </svg>
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-600 text-sm">Points Total</span>
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p id="totalPoints" class="text-2xl font-bold text-gray-900">0</p>
+                    <p id="pointsToNextLevel" class="text-xs text-gray-500 mt-1">50 pour le prochain niveau</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
+                    style="animation-delay: 0.1s">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-600 text-sm">Série de jours</span>
+                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p id="streakDays" class="text-2xl font-bold text-gray-900">0 jours</p>
+                    <p class="text-xs text-gray-500 mt-1">Record: <span id="streakRecord">0</span> jours</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
+                    style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-600 text-sm">Cours complétés</span>
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd"
+                                    d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p id="coursCompleted" class="text-2xl font-bold text-gray-900">0</p>
+                    <p id="coursTotal" class="text-xs text-gray-500 mt-1">sur 0 disponibles</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
+                    style="animation-delay: 0.3s">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-600 text-sm">Temps d'étude</span>
+                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p id="studyTime" class="text-2xl font-bold text-gray-900">0h</p>
+                    <p class="text-xs text-gray-500 mt-1">Cette semaine</p>
+                </div>
+            </div>
+
+            <!-- Main Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                <!-- Left Column -->
+                <div class="lg:col-span-2 space-y-6">
+
+                    <!-- Matières disponibles -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-bold text-gray-900">📚 Mes Matières</h2>
+                            <button onclick="refreshMatieres()" class="text-sm text-blue-600 hover:text-blue-800">
+                                🔄 Actualiser
+                            </button>
+                        </div>
+                        <div id="matieresGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
+                            <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
+                            <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
+                        </div>
+                    </div>
+
+                    <!-- Progression récente -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4">📖 Continuer l'apprentissage</h2>
+                        <div id="progressionList" class="space-y-3">
+                            <p class="text-gray-500 text-center py-8">Aucune progression en cours</p>
+                        </div>
                     </div>
                 </div>
-                <p id="streakDays" class="text-2xl font-bold text-gray-900">0 jours</p>
-                <p class="text-xs text-gray-500 mt-1">Record: <span id="streakRecord">0</span> jours</p>
-            </div>
 
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
-                style="animation-delay: 0.2s">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-gray-600 text-sm">Cours complétés</span>
-                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                            <path fill-rule="evenodd"
-                                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                clip-rule="evenodd"></path>
-                        </svg>
+                <!-- Right Column -->
+                <div class="space-y-6">
+
+                    <!-- Objectif du jour -->
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-100">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">🎯 Objectif du jour</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-700">Progression</span>
+                                <span class="font-semibold text-blue-600" id="dailyProgress">0/3 cours</span>
+                            </div>
+                            <div class="w-full bg-white rounded-full h-3">
+                                <div id="dailyProgressBar"
+                                    class="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full transition-all duration-500"
+                                    style="width: 0%"></div>
+                            </div>
+                            <p class="text-xs text-gray-600 mt-2">Continue ! Complète 3 cours aujourd'hui pour gagner
+                                <span class="font-bold text-blue-600">+50 points</span> 🎁
+                            </p>
+                        </div>
                     </div>
-                </div>
-                <p id="coursCompleted" class="text-2xl font-bold text-gray-900">0</p>
-                <p id="coursTotal" class="text-xs text-gray-500 mt-1">sur 0 disponibles</p>
-            </div>
 
-            <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
-                style="animation-delay: 0.3s">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-gray-600 text-sm">Temps d'étude</span>
-                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                    </div>
-                </div>
-                <p id="studyTime" class="text-2xl font-bold text-gray-900">0h</p>
-                <p class="text-xs text-gray-500 mt-1">Cette semaine</p>
-            </div>
-        </div>
-
-        <!-- Main Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <!-- Left Column -->
-            <div class="lg:col-span-2 space-y-6">
-
-                <!-- Matières disponibles -->
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xl font-bold text-gray-900">📚 Mes Matières</h2>
-                        <button onclick="refreshMatieres()" class="text-sm text-blue-600 hover:text-blue-800">
-                            🔄 Actualiser
+                    <!-- Badges récents -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">🏆 Badges</h3>
+                        <div id="badgesList" class="grid grid-cols-3 gap-3">
+                            <!-- Chargement dynamique -->
+                        </div>
+                        <button onclick="showAllBadges()"
+                            class="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-semibold">
+                            Voir tous les badges →
                         </button>
                     </div>
-                    <div id="matieresGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
-                        <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
-                        <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
-                    </div>
-                </div>
 
-                <!-- Progression récente -->
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4">📖 Continuer l'apprentissage</h2>
-                    <div id="progressionList" class="space-y-3">
-                        <p class="text-gray-500 text-center py-8">Aucune progression en cours</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column -->
-            <div class="space-y-6">
-
-                <!-- Objectif du jour -->
-                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-100">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">🎯 Objectif du jour</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-gray-700">Progression</span>
-                            <span class="font-semibold text-blue-600" id="dailyProgress">0/3 cours</span>
+                    <!-- Classement -->
+                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">📊 Classement</h3>
+                        <div class="text-center py-4">
+                            <p class="text-4xl font-bold text-gray-900" id="userRank">-</p>
+                            <p class="text-sm text-gray-500 mt-1">Ta position</p>
+                            <p class="text-xs text-gray-400 mt-2">sur <span id="totalUsers">0</span> élèves</p>
                         </div>
-                        <div class="w-full bg-white rounded-full h-3">
-                            <div id="dailyProgressBar"
-                                class="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full transition-all duration-500"
-                                style="width: 0%"></div>
-                        </div>
-                        <p class="text-xs text-gray-600 mt-2">Continue ! Complète 3 cours aujourd'hui pour gagner <span
-                                class="font-bold text-blue-600">+50 points</span> 🎁</p>
+                        <button onclick="showLeaderboard()"
+                            class="w-full mt-4 px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold rounded-lg hover:shadow-lg transition">
+                            Voir le classement complet
+                        </button>
                     </div>
-                </div>
-
-                <!-- Badges récents -->
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">🏆 Badges</h3>
-                    <div id="badgesList" class="grid grid-cols-3 gap-3">
-                        <!-- Chargement dynamique -->
-                    </div>
-                    <button onclick="showAllBadges()"
-                        class="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-semibold">
-                        Voir tous les badges →
-                    </button>
-                </div>
-
-                <!-- Classement -->
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">📊 Classement</h3>
-                    <div class="text-center py-4">
-                        <p class="text-4xl font-bold text-gray-900" id="userRank">-</p>
-                        <p class="text-sm text-gray-500 mt-1">Ta position</p>
-                        <p class="text-xs text-gray-400 mt-2">sur <span id="totalUsers">0</span> élèves</p>
-                    </div>
-                    <button onclick="showLeaderboard()"
-                        class="w-full mt-4 px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold rounded-lg hover:shadow-lg transition">
-                        Voir le classement complet
-                    </button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Toast Notifications -->
-    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+        <!-- Toast Notifications -->
+        <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
 
-    <!-- Modal Cours -->
-    <div id="coursModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white z-10">
-                <div class="flex items-center justify-between">
-                    <h3 id="coursModalTitle" class="text-2xl font-bold">Titre du cours</h3>
-                    <button onclick="closeCoursModal()" class="text-white hover:text-gray-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="mt-4 flex items-center space-x-4 text-sm">
-                    <span id="coursModalDuration">⏱️ 15 min</span>
-                    <span id="coursModalPoints">🏆 +10 points</span>
-                </div>
-            </div>
-
-            <div class="p-6">
-                <!-- Vidéo si disponible -->
-                <div id="coursVideoContainer" class="hidden mb-6">
-                    <div class="aspect-video bg-gray-900 rounded-lg overflow-hidden">
-                        <iframe id="coursVideoFrame" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+        <!-- Modal Cours -->
+        <div id="coursModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white z-10">
+                    <div class="flex items-center justify-between">
+                        <h3 id="coursModalTitle" class="text-2xl font-bold">Titre du cours</h3>
+                        <button onclick="closeCoursModal()" class="text-white hover:text-gray-200">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="mt-4 flex items-center space-x-4 text-sm">
+                        <span id="coursModalDuration">⏱️ 15 min</span>
+                        <span id="coursModalPoints">🏆 +10 points</span>
                     </div>
                 </div>
 
-                <!-- Contenu du cours -->
-                <div id="coursContent" class="prose max-w-none mb-6">
-                    <!-- Contenu chargé dynamiquement -->
-                </div>
+                <div class="p-6">
+                    <!-- Vidéo si disponible -->
+                    <div id="coursVideoContainer" class="hidden mb-6">
+                        <div class="aspect-video bg-gray-900 rounded-lg overflow-hidden">
+                            <iframe id="coursVideoFrame" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                    </div>
 
-                <!-- Bouton de complétion -->
-                <div class="sticky bottom-0 bg-white pt-4 border-t border-gray-200">
-                    <button id="completeCourseBtn" onclick="completeCours()"
-                        class="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-lg hover:shadow-lg transition transform hover:scale-105">
-                        ✅ Marquer comme terminé et gagner <span id="btnPoints">+10</span> points
-                    </button>
+                    <!-- Contenu du cours -->
+                    <div id="coursContent" class="prose max-w-none mb-6">
+                        <!-- Contenu chargé dynamiquement -->
+                    </div>
+
+                    <!-- Bouton de complétion -->
+                    <div class="sticky bottom-0 bg-white pt-4 border-t border-gray-200">
+                        <button id="completeCourseBtn" onclick="completeCours()"
+                            class="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-lg hover:shadow-lg transition transform hover:scale-105">
+                            ✅ Marquer comme terminé et gagner <span id="btnPoints">+10</span> points
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="celebrationModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
-
-        <div
-            class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center animate-scale-in overflow-hidden">
-            <!-- Decorative background elements -->
-            <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-blue-50 to-transparent -z-10"></div>
-            <div class="absolute -top-10 -right-10 w-40 h-40 bg-purple-100 rounded-full blur-3xl opacity-50"></div>
-            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
-
-            <!-- Content -->
-            <div class="text-6xl mb-6 animate-bounce">🎉</div>
-
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">Félicitations !</h2>
-            <p class="text-gray-600 mb-6 text-lg">Tu as terminé le cours avec succès !</p>
+        <div id="celebrationModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
 
             <div
-                class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-6 mb-8 transform hover:scale-105 transition duration-300">
-                <p class="text-sm text-gray-500 mb-1">Points gagnés</p>
-                <div class="flex justify-center items-baseline space-x-2">
-                    <span
-                        class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600"
-                        id="celebrationPoints">+50</span>
-                    <span class="text-xl text-blue-600">XP</span>
+                class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center animate-scale-in overflow-hidden">
+                <!-- Decorative background elements -->
+                <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-blue-50 to-transparent -z-10"></div>
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-purple-100 rounded-full blur-3xl opacity-50"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
+
+                <!-- Content -->
+                <div class="text-6xl mb-6 animate-bounce">🎉</div>
+
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Félicitations !</h2>
+                <p class="text-gray-600 mb-6 text-lg">Tu as terminé le cours avec succès !</p>
+
+                <div
+                    class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-6 mb-8 transform hover:scale-105 transition duration-300">
+                    <p class="text-sm text-gray-500 mb-1">Points gagnés</p>
+                    <div class="flex justify-center items-baseline space-x-2">
+                        <span
+                            class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600"
+                            id="celebrationPoints">+50</span>
+                        <span class="text-xl text-blue-600">XP</span>
+                    </div>
                 </div>
+
+                <button onclick="closeCelebrationModal()"
+                    class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all duration-200 text-lg">
+                    Continuer l'aventure 🚀
+                </button>
             </div>
-
-            <button onclick="closeCelebrationModal()"
-                class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all duration-200 text-lg">
-                Continuer l'aventure 🚀
-            </button>
         </div>
-    </div>
 
-    <script type="module">
-        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        <script type="module">
+            const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-        let currentUser = null
-        let currentCours = null
-        let coursStartTime = null
+            // ⭐ NOUVEAU: Vérifier que l'onboarding est fait
+            async function verifierOnboarding() {
+                const { data: { user } } = await supabase.auth.getUser();
 
-        // ==========================================
-        // INITIALISATION
-        // ==========================================
-        async function init() {
-            console.log('🚀 Initialisation du dashboard élève...')
+                if (!user) {
+                    window.location.href = '../login.html';
+                    return false;
+                }
 
-            const { data: { user } } = await supabase.auth.getUser()
-
-            if (!user) {
-                console.log('❌ Utilisateur non connecté')
-                window.location.href = '../login.html'
-                return
-            }
-
-            currentUser = user
-            console.log('✅ Utilisateur connecté:', user.id)
-
-            await loadUserProfile()
-            await loadMatieres()
-            await loadProgressions()
-            await loadStats()
-            await loadBadges()
-            await checkDailyStreak()
-        }
-
-        // ==========================================
-        // PROFIL UTILISATEUR
-        // ==========================================
-        async function loadUserProfile() {
-            try {
-                const { data: profile, error } = await supabase
+                // Vérifier si l'élève a complété l'onboarding
+                const { data: profile } = await supabase
                     .from('profiles')
-                    .select('*')
-                    .eq('id', currentUser.id)
-                    .single()
+                    .select('sous_systeme_id, niveau_scolaire_id, type_parcours')
+                    .eq('id', user.id)
+                    .single();
 
-                if (error) throw error
-                if (!profile) {
-                    console.error('❌ Profil non trouvé')
-                    return
+                // Si pas de section/classe ET que c'est un élève, rediriger
+                if (profile.type_parcours === 'eleve' && (!profile.sous_systeme_id || !profile.niveau_scolaire_id)) {
+                    window.location.href = 'onboarding_cameroun.html';
+                    return false;
                 }
 
-                console.log('✅ Profil chargé:', profile)
-
-                // Vérifier que c'est bien un élève
-                if (profile.type_parcours !== 'eleve') {
-                    redirectToDashboard(profile.type_parcours)
-                    return
-                }
-
-                // Afficher les infos
-                document.getElementById('userName').textContent = profile.nom
-                document.getElementById('welcomeName').textContent = profile.nom
-                document.getElementById('userLevel').textContent = profile.niveau_actuel || 'Niveau 1'
-
-                const points = profile.points_total || 0
-                document.getElementById('totalPoints').textContent = points
-                document.getElementById('totalPointsHeader').textContent = `${points} points`
-
-                const streak = profile.streak_jours || 0
-                document.getElementById('streakDays').textContent = `${streak} jours`
-                document.getElementById('streakHeader').textContent = `${streak} jours de suite`
-
-                // Avatar
-                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.nom)}&background=667eea&color=fff&size=128`
-                document.getElementById('userAvatar').src = avatarUrl
-
-            } catch (error) {
-                console.error('❌ Erreur chargement profil:', error)
-                showToast('Erreur de chargement du profil', 'error')
+                return true;
             }
-        }
 
-        // ==========================================
-        // MATIÈRES
-        // ==========================================
-        async function loadMatieres() {
-            console.log('📚 Chargement des matières...')
+            async function chargerCours() {
+                try {
+                    // 1. Récupérer le profil de l'élève avec section/niveau/série
+                    const { data: { user } } = await supabase.auth.getUser();
 
-            try {
-                // Requête corrigée pour éviter l'erreur 406
-                const { data: matieres, error } = await supabase
-                    .from('matieres')
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select(`
+                        sous_systeme_id,
+                        niveau_scolaire_id,
+                        serie_id
+                    `)
+                        .eq('id', user.id)
+                        .single();
+
+                    // 2. Charger SEULEMENT les cours de sa section/niveau
+                    let query = supabase
+                        .from('cours')
+                        .select('*, chapitres(*, matieres(*))')
+                        .eq('est_publie', true);
+
+                    // Filtrer par sous-système si l'info existe
+                    if (profile?.sous_systeme_id) {
+                        query = query.eq('sous_systeme_id', profile.sous_systeme_id);
+                    }
+
+                    // Filtrer par série: cours généraux OU cours de sa série
+                    if (profile?.serie_id) {
+                        query = query.or(`serie_id.is.null,serie_id.eq.${profile.serie_id}`);
+                    }
+
+                    const { data: cours, error } = await query;
+                    if (error) throw error;
+
+                    // Note: La fonction afficherCours peut être implémentée pour afficher ces cours
+                    if (typeof afficherCours === 'function') {
+                        afficherCours(cours);
+                    } else {
+                        console.log('📚 Cours chargés et filtrés pour l\'élève:', cours);
+                        return cours;
+                    }
+                } catch (error) {
+                    console.error('❌ Erreur chargerCours:', error);
+                }
+            }
+
+            let currentUser = null
+            let currentCours = null
+            let coursStartTime = null
+
+            // ==========================================
+            // INITIALISATION
+            // ==========================================
+            async function init() {
+                console.log('🚀 Initialisation du dashboard élève...')
+
+                // Vérifier l'onboarding avant tout
+                const onboardingOK = await verifierOnboarding();
+                if (!onboardingOK) return;
+
+                const { data: { user } } = await supabase.auth.getUser()
+
+                if (!user) {
+                    console.log('❌ Utilisateur non connecté')
+                    window.location.href = '../login.html'
+                    return
+                }
+
+                currentUser = user
+                console.log('✅ Utilisateur connecté:', user.id)
+
+                await loadUserProfile()
+                await loadMatieres()
+                await loadProgressions()
+                await loadStats()
+                await loadBadges()
+                await checkDailyStreak()
+                await afficherBadgeEleve()
+            }
+
+            // ==========================================
+            // PROFIL UTILISATEUR
+            // ==========================================
+            async function loadUserProfile() {
+                try {
+                    const { data: profile, error } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', currentUser.id)
+                        .single()
+
+                    if (error) throw error
+                    if (!profile) {
+                        console.error('❌ Profil non trouvé')
+                        return
+                    }
+
+                    console.log('✅ Profil chargé:', profile)
+
+                    // Vérifier que c'est bien un élève
+                    if (profile.type_parcours !== 'eleve') {
+                        redirectToDashboard(profile.type_parcours)
+                        return
+                    }
+
+                    // Afficher les infos
+                    document.getElementById('userName').textContent = profile.nom
+                    document.getElementById('welcomeName').textContent = profile.nom
+                    document.getElementById('userLevel').textContent = profile.niveau_actuel || 'Niveau 1'
+
+                    const points = profile.points_total || 0
+                    document.getElementById('totalPoints').textContent = points
+                    document.getElementById('totalPointsHeader').textContent = `${points} points`
+
+                    const streak = profile.streak_jours || 0
+                    document.getElementById('streakDays').textContent = `${streak} jours`
+                    document.getElementById('streakHeader').textContent = `${streak} jours de suite`
+
+                    // Avatar
+                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.nom)}&background=667eea&color=fff&size=128`
+                    document.getElementById('userAvatar').src = avatarUrl
+
+                } catch (error) {
+                    console.error('❌ Erreur chargement profil:', error)
+                    showToast('Erreur de chargement du profil', 'error')
+                }
+            }
+
+            async function afficherBadgeEleve() {
+                const { data: { user } } = await supabase.auth.getUser();
+
+                const { data: profile } = await supabase
+                    .from('profiles')
                     .select(`
+                    sous_systeme:sous_systemes(code, nom_fr),
+                    niveau:niveaux_scolaires(nom_court),
+                    serie:series_specialites(nom_court)
+                `)
+                    .eq('id', user.id)
+                    .single();
+
+                if (!profile.sous_systeme) return;
+
+                const flag = profile.sous_systeme.code === 'francophone' ? '🇫🇷' : '🇬🇧';
+                const niveau = profile.niveau?.nom_court || '';
+                const serie = profile.serie?.nom_court || '';
+
+                const badgeHTML = `
+                <span class="flag">${flag}</span>
+                <span>${niveau} ${serie}</span>
+            `;
+
+                if (document.getElementById('studentBadge')) {
+                    document.getElementById('studentBadge').innerHTML = badgeHTML;
+                }
+                if (document.getElementById('studentBadgeHeader')) {
+                    document.getElementById('studentBadgeHeader').innerHTML = badgeHTML;
+                }
+            }
+
+            // ==========================================
+            // MATIÈRES
+            // ==========================================
+            async function loadMatieres() {
+                console.log('📚 Chargement des matières...')
+
+                try {
+                    // Requête corrigée pour éviter l'erreur 406
+                    const { data: matieres, error } = await supabase
+                        .from('matieres')
+                        .select(`
                         id,
                         nom,
                         description,
@@ -470,39 +600,39 @@
                         type_parcours,
                         ordre
                     `)
-                    .in('type_parcours', ['eleve', 'commun'])
-                    .order('ordre')
+                        .in('type_parcours', ['eleve', 'commun'])
+                        .order('ordre')
 
-                if (error) {
-                    console.error('❌ Erreur SQL:', error)
-                    throw error
-                }
+                    if (error) {
+                        console.error('❌ Erreur SQL:', error)
+                        throw error
+                    }
 
-                console.log('✅ Matières chargées:', matieres?.length || 0)
+                    console.log('✅ Matières chargées:', matieres?.length || 0)
 
-                const grid = document.getElementById('matieresGrid')
+                    const grid = document.getElementById('matieresGrid')
 
-                if (!matieres || matieres.length === 0) {
-                    grid.innerHTML = '<p class="col-span-3 text-center text-gray-500 py-8">Aucune matière disponible pour le moment</p>'
-                    return
-                }
+                    if (!matieres || matieres.length === 0) {
+                        grid.innerHTML = '<p class="col-span-3 text-center text-gray-500 py-8">Aucune matière disponible pour le moment</p>'
+                        return
+                    }
 
-                // Compter les chapitres pour chaque matière
-                const matieresAvecChapitres = await Promise.all(matieres.map(async (matiere) => {
-                    const { count } = await supabase
-                        .from('chapitres')
-                        .select('*', { count: 'exact', head: true })
-                        .eq('matiere_id', matiere.id)
-                        .eq('est_publie', true)
+                    // Compter les chapitres pour chaque matière
+                    const matieresAvecChapitres = await Promise.all(matieres.map(async (matiere) => {
+                        const { count } = await supabase
+                            .from('chapitres')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('matiere_id', matiere.id)
+                            .eq('est_publie', true)
 
-                    return { ...matiere, chapitres_count: count || 0 }
-                }))
+                        return { ...matiere, chapitres_count: count || 0 }
+                    }))
 
-                grid.innerHTML = matieresAvecChapitres.map(matiere => {
-                    const couleur = matiere.couleur || '#667eea'
-                    const icone = matiere.icone_url || '📚'
+                    grid.innerHTML = matieresAvecChapitres.map(matiere => {
+                        const couleur = matiere.couleur || '#667eea'
+                        const icone = matiere.icone_url || '📚'
 
-                    return `
+                        return `
                         <div onclick="openMatiere(${matiere.id}, '${matiere.nom.replace(/'/g, "\\'")}')" 
                              class="bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 border-2 hover:shadow-lg transition cursor-pointer transform hover:scale-105 duration-200"
                              style="border-color: ${couleur}30;">
@@ -517,12 +647,12 @@
                             </div>
                         </div>
                     `
-                }).join('')
+                    }).join('')
 
-            } catch (error) {
-                console.error('❌ Erreur chargement matières:', error)
-                const grid = document.getElementById('matieresGrid')
-                grid.innerHTML = `
+                } catch (error) {
+                    console.error('❌ Erreur chargement matières:', error)
+                    const grid = document.getElementById('matieresGrid')
+                    grid.innerHTML = `
                     <div class="col-span-3 text-center py-8">
                         <p class="text-red-500 mb-2">Erreur de chargement</p>
                         <button onclick="loadMati// ==========================================
@@ -535,17 +665,17 @@ eres()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                         </button>
                     </div>
                 `
+                }
             }
-        }
 
-        // ==========================================
-        // PROGRESSIONS
-        // ==========================================
-        async function loadProgressions() {
-            try {
-                const { data: progressions, error } = await supabase
-                    .from('progressions_cours')
-                    .select(`
+            // ==========================================
+            // PROGRESSIONS
+            // ==========================================
+            async function loadProgressions() {
+                try {
+                    const { data: progressions, error } = await supabase
+                        .from('progressions_cours')
+                        .select(`
                         *,
                         cours:cours(
                             id,
@@ -559,26 +689,26 @@ eres()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                             )
                         )
                     `)
-                    .eq('user_id', currentUser.id)
-                    .eq('est_termine', false)
-                    .order('updated_at', { ascending: false })
-                    .limit(5)
+                        .eq('user_id', currentUser.id)
+                        .eq('est_termine', false)
+                        .order('updated_at', { ascending: false })
+                        .limit(5)
 
-                if (error) throw error
+                    if (error) throw error
 
-                const list = document.getElementById('progressionList')
+                    const list = document.getElementById('progressionList')
 
-                if (!progressions || progressions.length === 0) {
-                    list.innerHTML = '<p class="text-gray-500 text-center py-8">Aucune progression en cours. Commence un cours !</p>'
-                    return
-                }
+                    if (!progressions || progressions.length === 0) {
+                        list.innerHTML = '<p class="text-gray-500 text-center py-8">Aucune progression en cours. Commence un cours !</p>'
+                        return
+                    }
 
-                list.innerHTML = progressions.map(prog => {
-                    const cours = prog.cours
-                    const matiere = cours?.chapitres?.matieres
-                    const progression = prog.progression_pourcentage || 0
+                    list.innerHTML = progressions.map(prog => {
+                        const cours = prog.cours
+                        const matiere = cours?.chapitres?.matieres
+                        const progression = prog.progression_pourcentage || 0
 
-                    return `
+                        return `
                         <div onclick="openCours(${cours.id})" 
                              class="bg-white border-2 border-gray-100 rounded-xl p-4 hover:shadow-md transition cursor-pointer hover:border-blue-300">
                             <div class="flex items-center justify-between mb-2">
@@ -597,79 +727,79 @@ eres()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                             </div>
                         </div>
                     `
-                }).join('')
+                    }).join('')
 
-            } catch (error) {
-                console.error('❌ Erreur chargement progressions:', error)
+                } catch (error) {
+                    console.error('❌ Erreur chargement progressions:', error)
+                }
             }
-        }
 
-        // ==========================================
-        // STATISTIQUES
-        // ==========================================
-        async function loadStats() {
-            try {
-                // Cours terminés
-                const { data: progressions } = await supabase
-                    .from('progressions_cours')
-                    .select('temps_passe, est_termine')
-                    .eq('user_id', currentUser.id)
+            // ==========================================
+            // STATISTIQUES
+            // ==========================================
+            async function loadStats() {
+                try {
+                    // Cours terminés
+                    const { data: progressions } = await supabase
+                        .from('progressions_cours')
+                        .select('temps_passe, est_termine')
+                        .eq('user_id', currentUser.id)
 
-                const coursCompletes = progressions?.filter(p => p.est_termine).length || 0
-                const tempsTotal = progressions?.reduce((acc, p) => acc + (p.temps_passe || 0), 0) || 0
-                const heures = Math.floor(tempsTotal / 3600)
-                const minutes = Math.floor((tempsTotal % 3600) / 60)
+                    const coursCompletes = progressions?.filter(p => p.est_termine).length || 0
+                    const tempsTotal = progressions?.reduce((acc, p) => acc + (p.temps_passe || 0), 0) || 0
+                    const heures = Math.floor(tempsTotal / 3600)
+                    const minutes = Math.floor((tempsTotal % 3600) / 60)
 
-                document.getElementById('coursCompleted').textContent = coursCompletes
-                document.getElementById('studyTime').textContent = heures > 0 ? `${heures}h${minutes}m` : `${minutes}m`
+                    document.getElementById('coursCompleted').textContent = coursCompletes
+                    document.getElementById('studyTime').textContent = heures > 0 ? `${heures}h${minutes}m` : `${minutes}m`
 
-                // Total de cours disponibles
-                const { count: totalCours } = await supabase
-                    .from('cours')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('est_publie', true)
+                    // Total de cours disponibles
+                    const { count: totalCours } = await supabase
+                        .from('cours')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('est_publie', true)
 
-                document.getElementById('coursTotal').textContent = `sur ${totalCours || 0} disponibles`
+                    document.getElementById('coursTotal').textContent = `sur ${totalCours || 0} disponibles`
 
-                // Statistiques du jour
-                const today = new Date().toISOString().split('T')[0]
-                const { data: dailyStats } = await supabase
-                    .from('statistiques_journalieres')
-                    .select('cours_completes')
-                    .eq('user_id', currentUser.id)
-                    .eq('date', today)
-                    .single()
+                    // Statistiques du jour
+                    const today = new Date().toISOString().split('T')[0]
+                    const { data: dailyStats } = await supabase
+                        .from('statistiques_journalieres')
+                        .select('cours_completes')
+                        .eq('user_id', currentUser.id)
+                        .eq('date', today)
+                        .single()
 
-                const coursToday = dailyStats?.cours_completes || 0
-                const dailyGoal = 3
-                const dailyPercent = Math.min((coursToday / dailyGoal) * 100, 100)
+                    const coursToday = dailyStats?.cours_completes || 0
+                    const dailyGoal = 3
+                    const dailyPercent = Math.min((coursToday / dailyGoal) * 100, 100)
 
-                document.getElementById('dailyProgress').textContent = `${coursToday}/${dailyGoal} cours`
-                document.getElementById('dailyProgressBar').style.width = `${dailyPercent}%`
+                    document.getElementById('dailyProgress').textContent = `${coursToday}/${dailyGoal} cours`
+                    document.getElementById('dailyProgressBar').style.width = `${dailyPercent}%`
 
-            } catch (error) {
-                console.error('❌ Erreur chargement stats:', error)
+                } catch (error) {
+                    console.error('❌ Erreur chargement stats:', error)
+                }
             }
-        }
 
-        // ==========================================
-        // BADGES
-        // ==========================================
-        async function loadBadges() {
-            try {
-                const { data: userBadges } = await supabase
-                    .from('user_badges')
-                    .select(`
+            // ==========================================
+            // BADGES
+            // ==========================================
+            async function loadBadges() {
+                try {
+                    const { data: userBadges } = await supabase
+                        .from('user_badges')
+                        .select(`
                         *,
                         badges:badges(nom, icone_url, description)
                     `)
-                    .eq('user_id', currentUser.id)
-                    .limit(6)
+                        .eq('user_id', currentUser.id)
+                        .limit(6)
 
-                const badgesList = document.getElementById('badgesList')
+                    const badgesList = document.getElementById('badgesList')
 
-                if (!userBadges || userBadges.length === 0) {
-                    badgesList.innerHTML = Array(6).fill(0).map(() => `
+                    if (!userBadges || userBadges.length === 0) {
+                        badgesList.innerHTML = Array(6).fill(0).map(() => `
                         <div class="text-center">
                             <div class="w-12 h-12 bg-gray-100 rounded-full mx-auto flex items-center justify-center">
                                 <span class="text-2xl">🔒</span>
@@ -677,10 +807,10 @@ eres()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                             <p class="text-xs text-gray-400 mt-1">À débloquer</p>
                         </div>
                     `).join('')
-                    return
-                }
+                        return
+                    }
 
-                badgesList.innerHTML = userBadges.map(ub => `
+                    badgesList.innerHTML = userBadges.map(ub => `
                     <div class="text-center" title="${ub.badges.description}">
                         <div class="w-12 h-12 bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full mx-auto flex items-center justify-center animate-bounce">
                             <span class="text-2xl">${ub.badges.icone_url || '🏆'}</span>
@@ -689,540 +819,540 @@ eres()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                     </div>
                 `).join('')
 
-            } catch (error) {
-                console.error('❌ Erreur chargement badges:', error)
+                } catch (error) {
+                    console.error('❌ Erreur chargement badges:', error)
+                }
             }
-        }
 
-        // ==========================================
-        // STREAK (SÉRIE DE JOURS)
-        // ==========================================
-        async function checkDailyStreak() {
-            try {
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('derniere_connexion, streak_jours')
-                    .eq('id', currentUser.id)
-                    .single()
+            // ==========================================
+            // STREAK (SÉRIE DE JOURS)
+            // ==========================================
+            async function checkDailyStreak() {
+                try {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('derniere_connexion, streak_jours')
+                        .eq('id', currentUser.id)
+                        .single()
 
-                const now = new Date()
-                const lastConnection = profile.derniere_connexion ? new Date(profile.derniere_connexion) : null
+                    const now = new Date()
+                    const lastConnection = profile.derniere_connexion ? new Date(profile.derniere_connexion) : null
 
-                let newStreak = profile.streak_jours || 0
+                    let newStreak = profile.streak_jours || 0
 
-                if (lastConnection) {
-                    const daysDiff = Math.floor((now - lastConnection) / (1000 * 60 * 60 * 24))
+                    if (lastConnection) {
+                        const daysDiff = Math.floor((now - lastConnection) / (1000 * 60 * 60 * 24))
 
-                    if (daysDiff === 1) {
-                        // Connexion le jour suivant : +1 streak
-                        newStreak++
-                        showToast(`🔥 Série de ${newStreak} jours ! Continue comme ça !`, 'success')
-                    } else if (daysDiff > 1) {
-                        // Série cassée
-                        if (newStreak > 0) {
-                            showToast(`😢 Ta série de ${newStreak} jours s'est arrêtée`, 'warning')
+                        if (daysDiff === 1) {
+                            // Connexion le jour suivant : +1 streak
+                            newStreak++
+                            showToast(`🔥 Série de ${newStreak} jours ! Continue comme ça !`, 'success')
+                        } else if (daysDiff > 1) {
+                            // Série cassée
+                            if (newStreak > 0) {
+                                showToast(`😢 Ta série de ${newStreak} jours s'est arrêtée`, 'warning')
+                            }
+                            newStreak = 1
                         }
+                        // Si daysDiff === 0, c'est la même journée, on ne change rien
+                    } else {
+                        // Première connexion
                         newStreak = 1
                     }
-                    // Si daysDiff === 0, c'est la même journée, on ne change rien
-                } else {
-                    // Première connexion
-                    newStreak = 1
+
+                    // Mise à jour
+                    await supabase
+                        .from('profiles')
+                        .update({
+                            derniere_connexion: now.toISOString(),
+                            streak_jours: newStreak
+                        })
+                        .eq('id', currentUser.id)
+
+                    document.getElementById('streakDays').textContent = `${newStreak} jours`
+                    document.getElementById('streakHeader').textContent = `${newStreak} jours de suite`
+
+                } catch (error) {
+                    console.error('❌ Erreur streak:', error)
                 }
-
-                // Mise à jour
-                await supabase
-                    .from('profiles')
-                    .update({
-                        derniere_connexion: now.toISOString(),
-                        streak_jours: newStreak
-                    })
-                    .eq('id', currentUser.id)
-
-                document.getElementById('streakDays').textContent = `${newStreak} jours`
-                document.getElementById('streakHeader').textContent = `${newStreak} jours de suite`
-
-            } catch (error) {
-                console.error('❌ Erreur streak:', error)
             }
-        }
 
-        // ==========================================
-        // OUVRIR UN COURS
-        // ==========================================
-        async function openCours(coursId) {
-            try {
-                console.log('📖 Ouverture du cours:', coursId)
+            // ==========================================
+            // OUVRIR UN COURS
+            // ==========================================
+            async function openCours(coursId) {
+                try {
+                    console.log('📖 Ouverture du cours:', coursId)
 
-                const { data: cours, error } = await supabase
-                    .from('cours')
-                    .select(`
+                    const { data: cours, error } = await supabase
+                        .from('cours')
+                        .select(`
                         *,
                         chapitres:chapitres(
                             titre,
                             matieres:matieres(nom)
                         )
                     `)
-                    .eq('id', coursId)
-                    .single()
+                        .eq('id', coursId)
+                        .single()
 
-                if (error) throw error
-                if (!cours) throw new Error('Cours non trouvé')
+                    if (error) throw error
+                    if (!cours) throw new Error('Cours non trouvé')
 
-                currentCours = cours
-                coursStartTime = Date.now()
+                    currentCours = cours
+                    coursStartTime = Date.now()
 
-                // Afficher le modal
-                document.getElementById('coursModalTitle').textContent = cours.titre
-                document.getElementById('coursModalDuration').textContent = `⏱️ ${cours.duree_lecture || 15} min`
-                document.getElementById('coursModalPoints').textContent = `🏆 +${cours.points_recompense || 10} points`
-                document.getElementById('btnPoints').textContent = `+${cours.points_recompense || 10}`
+                    // Afficher le modal
+                    document.getElementById('coursModalTitle').textContent = cours.titre
+                    document.getElementById('coursModalDuration').textContent = `⏱️ ${cours.duree_lecture || 15} min`
+                    document.getElementById('coursModalPoints').textContent = `🏆 +${cours.points_recompense || 10} points`
+                    document.getElementById('btnPoints').textContent = `+${cours.points_recompense || 10}`
 
-                // Vidéo
-                if (cours.video_url) {
-                    const videoContainer = document.getElementById('coursVideoContainer')
-                    const videoFrame = document.getElementById('coursVideoFrame')
+                    // Vidéo
+                    if (cours.video_url) {
+                        const videoContainer = document.getElementById('coursVideoContainer')
+                        const videoFrame = document.getElementById('coursVideoFrame')
 
-                    if (cours.video_url.includes('youtube.com') || cours.video_url.includes('youtu.be')) {
-                        const videoId = cours.video_url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([^&\n?#]+)/)?.[1]
-                        if (videoId) {
-                            videoFrame.src = `https://www.youtube.com/embed/${videoId}`
-                            videoContainer.classList.remove('hidden')
+                        if (cours.video_url.includes('youtube.com') || cours.video_url.includes('youtu.be')) {
+                            const videoId = cours.video_url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([^&\n?#]+)/)?.[1]
+                            if (videoId) {
+                                videoFrame.src = `https://www.youtube.com/embed/${videoId}`
+                                videoContainer.classList.remove('hidden')
+                            }
                         }
                     }
+
+                    // Contenu (convertir Markdown basique)
+                    const content = cours.contenu
+                        .replace(/^# (.+)$/gm, '<h1 class="text-3xl font-bold mb-4 text-gray-900">$1</h1>')
+                        .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold mb-3 text-gray-800">$1</h2>')
+                        .replace(/^### (.+)$/gm, '<h3 class="text-xl font-bold mb-2 text-gray-700">$1</h3>')
+                        .replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold">$1</strong>')
+                        .replace(/\*(.+?)\*/g, '<em class="italic">$1</em>')
+                        .replace(/^- (.+)$/gm, '<li class="ml-6 mb-1">$1</li>')
+                        .replace(/\n\n/g, '</p><p class="mb-4">')
+
+                    document.getElementById('coursContent').innerHTML = `<p class="mb-4">${content}</p>`
+
+                    // Créer ou mettre à jour la progression
+                    await createOrUpdateProgression(coursId)
+
+                    document.getElementById('coursModal').classList.remove('hidden')
+
+                } catch (error) {
+                    console.error('❌ Erreur ouverture cours:', error)
+                    showToast('Erreur lors du chargement du cours', 'error')
                 }
-
-                // Contenu (convertir Markdown basique)
-                const content = cours.contenu
-                    .replace(/^# (.+)$/gm, '<h1 class="text-3xl font-bold mb-4 text-gray-900">$1</h1>')
-                    .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold mb-3 text-gray-800">$1</h2>')
-                    .replace(/^### (.+)$/gm, '<h3 class="text-xl font-bold mb-2 text-gray-700">$1</h3>')
-                    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold">$1</strong>')
-                    .replace(/\*(.+?)\*/g, '<em class="italic">$1</em>')
-                    .replace(/^- (.+)$/gm, '<li class="ml-6 mb-1">$1</li>')
-                    .replace(/\n\n/g, '</p><p class="mb-4">')
-
-                document.getElementById('coursContent').innerHTML = `<p class="mb-4">${content}</p>`
-
-                // Créer ou mettre à jour la progression
-                await createOrUpdateProgression(coursId)
-
-                document.getElementById('coursModal').classList.remove('hidden')
-
-            } catch (error) {
-                console.error('❌ Erreur ouverture cours:', error)
-                showToast('Erreur lors du chargement du cours', 'error')
             }
-        }
 
-        // ==========================================
-        // CRÉER OU METTRE À JOUR PROGRESSION
-        // ==========================================
-        async function createOrUpdateProgression(coursId) {
-            try {
-                const { data: existing } = await supabase
-                    .from('progressions_cours')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .eq('cours_id', coursId)
-                    .single()
-
-                if (!existing) {
-                    await supabase
+            // ==========================================
+            // CRÉER OU METTRE À JOUR PROGRESSION
+            // ==========================================
+            async function createOrUpdateProgression(coursId) {
+                try {
+                    const { data: existing } = await supabase
                         .from('progressions_cours')
-                        .insert({
-                            user_id: currentUser.id,
-                            cours_id: coursId,
-                            progression_pourcentage: 0,
-                            temps_passe: 0,
-                            date_debut: new Date().toISOString()
-                        })
-                }
-            } catch (error) {
-                console.error('❌ Erreur progression:', error)
-            }
-        }
-
-        // ==========================================
-        // COMPLÉTER UN COURS
-        // ==========================================
-        async function completeCours() {
-            if (!currentCours) return
-
-            try {
-                const btn = document.getElementById('completeCourseBtn')
-                btn.disabled = true
-                btn.innerHTML = '<span class="animate-pulse">⏳ Enregistrement...</span>'
-
-                const tempsEcoule = Math.floor((Date.now() - coursStartTime) / 1000)
-                const points = currentCours.points_recompense || 10
-
-                // Mettre à jour la progression
-                const { error: progError } = await supabase
-                    .from('progressions_cours')
-                    .update({
-                        est_termine: true,
-                        progression_pourcentage: 100,
-                        temps_passe: tempsEcoule,
-                        date_fin: new Date().toISOString()
-                    })
-                    .eq('user_id', currentUser.id)
-                    .eq('cours_id', currentCours.id)
-
-                if (progError) throw progError
-
-                // Ajouter les points
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('points_total')
-                    .eq('id', currentUser.id)
-                    .single()
-
-                const newPoints = (profile.points_total || 0) + points
-
-                await supabase
-                    .from('profiles')
-                    .update({ points_total: newPoints })
-                    .eq('id', currentUser.id)
-
-                // Mettre à jour les statistiques journalières
-                const today = new Date().toISOString().split('T')[0]
-                const { data: dailyStats } = await supabase
-                    .from('statistiques_journalieres')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .eq('date', today)
-                    .single()
-
-                if (dailyStats) {
-                    await supabase
-                        .from('statistiques_journalieres')
-                        .update({
-                            cours_completes: (dailyStats.cours_completes || 0) + 1,
-                            temps_apprentissage: (dailyStats.temps_apprentissage || 0) + tempsEcoule,
-                            points_gagnes: (dailyStats.points_gagnes || 0) + points
-                        })
-                        .eq('id', dailyStats.id)
-                } else {
-                    await supabase
-                        .from('statistiques_journalieres')
-                        .insert({
-                            user_id: currentUser.id,
-                            date: today,
-                            cours_completes: 1,
-                            temps_apprentissage: tempsEcoule,
-                            points_gagnes: points
-                        })
-                }
-
-                // Vérifier si on débloque un badge
-                await checkForNewBadges()
-
-                // Animation de succès (NOUVEAU MODAL)
-                showCelebrationModal(points)
-
-            } catch (error) {
-                console.error('❌ Erreur complétion cours:', error)
-                showToast('Erreur lors de l\'enregistrement', 'error')
-                document.getElementById('completeCourseBtn').disabled = false
-            }
-        }
-
-        // ==========================================
-        // CELEBRATION MODAL
-        // ==========================================
-        function showCelebrationModal(points) {
-            // Fermer le modal de cours d'abord (ou le cacher)
-            document.getElementById('coursModal').classList.add('hidden')
-
-            // Configurer le modal de célébration
-            document.getElementById('celebrationPoints').textContent = `+${points}`
-            document.getElementById('celebrationModal').classList.remove('hidden')
-
-            // Lancer les confettis
-            const duration = 3000
-            const end = Date.now() + duration
-
-            const frame = () => {
-                confetti({
-                    particleCount: 5,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0, y: 0.8 }
-                })
-                confetti({
-                    particleCount: 5,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1, y: 0.8 }
-                })
-
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame)
-                }
-            }
-            frame()
-
-            // Son de succès (optionnel, léger blip)
-            // const audio = new Audio('../assets/success.mp3'); // Si dispo
-            // audio.play().catch(() => {}); 
-        }
-
-        function closeCelebrationModal() {
-            document.getElementById('celebrationModal').classList.add('hidden')
-
-            // Rafraîchir les données
-            loadUserProfile()
-            loadProgressions()
-            loadStats()
-
-            // Reset cours modal state
-            document.getElementById('coursVideoContainer').classList.add('hidden')
-            document.getElementById('coursVideoFrame').src = ''
-            currentCours = null
-            coursStartTime = null
-        }
-
-        // ==========================================
-        // VÉRIFIER NOUVEAUX BADGES
-        // ==========================================
-        async function checkForNewBadges() {
-            try {
-                // Badge "Premier Cours"
-                const { count: coursCount } = await supabase
-                    .from('progressions_cours')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('user_id', currentUser.id)
-                    .eq('est_termine', true)
-
-                if (coursCount === 1) {
-                    await awardBadge('Premier Cours', '🎓', 'Complète ton premier cours')
-                }
-
-                // Badge "5 Cours"
-                if (coursCount === 5) {
-                    await awardBadge('Apprenant Assidu', '📚', 'Complète 5 cours')
-                }
-
-                // Badge "10 Cours"
-                if (coursCount === 10) {
-                    await awardBadge('Expert', '🏆', 'Complète 10 cours')
-                }
-
-                // Badge "Série 7 jours"
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('streak_jours')
-                    .eq('id', currentUser.id)
-                    .single()
-
-                if (profile.streak_jours === 7) {
-                    await awardBadge('Semaine Parfaite', '🔥', 'Connecte-toi 7 jours de suite')
-                }
-
-            } catch (error) {
-                console.error('❌ Erreur vérification badges:', error)
-            }
-        }
-
-        // ==========================================
-        // ATTRIBUER UN BADGE
-        // ==========================================
-        async function awardBadge(nom, icone, description) {
-            try {
-                // Vérifier si le badge existe
-                let { data: badge } = await supabase
-                    .from('badges')
-                    .select('*')
-                    .eq('nom', nom)
-                    .single()
-
-                if (!badge) {
-                    // Créer le badge
-                    const { data: newBadge } = await supabase
-                        .from('badges')
-                        .insert({
-                            nom,
-                            icone_url: icone,
-                            description,
-                            points_bonus: 50
-                        })
-                        .select()
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .eq('cours_id', coursId)
                         .single()
-                    badge = newBadge
-                }
 
-                // Vérifier si l'utilisateur a déjà ce badge
-                const { data: existing } = await supabase
-                    .from('user_badges')
-                    .select('*')
-                    .eq('user_id', currentUser.id)
-                    .eq('badge_id', badge.id)
-                    .single()
-
-                if (!existing) {
-                    // Attribuer le badge
-                    await supabase
-                        .from('user_badges')
-                        .insert({
-                            user_id: currentUser.id,
-                            badge_id: badge.id
-                        })
-
-                    // Ajouter les points bonus
-                    await supabase.rpc('increment_points', {
-                        user_id: currentUser.id,
-                        points: badge.points_bonus
-                    }).catch(() => {
-                        // Si la fonction n'existe pas, faire manuellement
-                        supabase
-                            .from('profiles')
-                            .select('points_total')
-                            .eq('id', currentUser.id)
-                            .single()
-                            .then(({ data }) => {
-                                supabase
-                                    .from('profiles')
-                                    .update({ points_total: (data.points_total || 0) + badge.points_bonus })
-                                    .eq('id', currentUser.id)
+                    if (!existing) {
+                        await supabase
+                            .from('progressions_cours')
+                            .insert({
+                                user_id: currentUser.id,
+                                cours_id: coursId,
+                                progression_pourcentage: 0,
+                                temps_passe: 0,
+                                date_debut: new Date().toISOString()
                             })
+                    }
+                } catch (error) {
+                    console.error('❌ Erreur progression:', error)
+                }
+            }
+
+            // ==========================================
+            // COMPLÉTER UN COURS
+            // ==========================================
+            async function completeCours() {
+                if (!currentCours) return
+
+                try {
+                    const btn = document.getElementById('completeCourseBtn')
+                    btn.disabled = true
+                    btn.innerHTML = '<span class="animate-pulse">⏳ Enregistrement...</span>'
+
+                    const tempsEcoule = Math.floor((Date.now() - coursStartTime) / 1000)
+                    const points = currentCours.points_recompense || 10
+
+                    // Mettre à jour la progression
+                    const { error: progError } = await supabase
+                        .from('progressions_cours')
+                        .update({
+                            est_termine: true,
+                            progression_pourcentage: 100,
+                            temps_passe: tempsEcoule,
+                            date_fin: new Date().toISOString()
+                        })
+                        .eq('user_id', currentUser.id)
+                        .eq('cours_id', currentCours.id)
+
+                    if (progError) throw progError
+
+                    // Ajouter les points
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('points_total')
+                        .eq('id', currentUser.id)
+                        .single()
+
+                    const newPoints = (profile.points_total || 0) + points
+
+                    await supabase
+                        .from('profiles')
+                        .update({ points_total: newPoints })
+                        .eq('id', currentUser.id)
+
+                    // Mettre à jour les statistiques journalières
+                    const today = new Date().toISOString().split('T')[0]
+                    const { data: dailyStats } = await supabase
+                        .from('statistiques_journalieres')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .eq('date', today)
+                        .single()
+
+                    if (dailyStats) {
+                        await supabase
+                            .from('statistiques_journalieres')
+                            .update({
+                                cours_completes: (dailyStats.cours_completes || 0) + 1,
+                                temps_apprentissage: (dailyStats.temps_apprentissage || 0) + tempsEcoule,
+                                points_gagnes: (dailyStats.points_gagnes || 0) + points
+                            })
+                            .eq('id', dailyStats.id)
+                    } else {
+                        await supabase
+                            .from('statistiques_journalieres')
+                            .insert({
+                                user_id: currentUser.id,
+                                date: today,
+                                cours_completes: 1,
+                                temps_apprentissage: tempsEcoule,
+                                points_gagnes: points
+                            })
+                    }
+
+                    // Vérifier si on débloque un badge
+                    await checkForNewBadges()
+
+                    // Animation de succès (NOUVEAU MODAL)
+                    showCelebrationModal(points)
+
+                } catch (error) {
+                    console.error('❌ Erreur complétion cours:', error)
+                    showToast('Erreur lors de l\'enregistrement', 'error')
+                    document.getElementById('completeCourseBtn').disabled = false
+                }
+            }
+
+            // ==========================================
+            // CELEBRATION MODAL
+            // ==========================================
+            function showCelebrationModal(points) {
+                // Fermer le modal de cours d'abord (ou le cacher)
+                document.getElementById('coursModal').classList.add('hidden')
+
+                // Configurer le modal de célébration
+                document.getElementById('celebrationPoints').textContent = `+${points}`
+                document.getElementById('celebrationModal').classList.remove('hidden')
+
+                // Lancer les confettis
+                const duration = 3000
+                const end = Date.now() + duration
+
+                const frame = () => {
+                    confetti({
+                        particleCount: 5,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0, y: 0.8 }
+                    })
+                    confetti({
+                        particleCount: 5,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1, y: 0.8 }
                     })
 
-                    showBadgeNotification(nom, icone, badge.points_bonus)
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame)
+                    }
                 }
+                frame()
 
-            } catch (error) {
-                console.error('❌ Erreur attribution badge:', error)
+                // Son de succès (optionnel, léger blip)
+                // const audio = new Audio('../assets/success.mp3'); // Si dispo
+                // audio.play().catch(() => {}); 
             }
-        }
 
-        // ==========================================
-        // ANIMATIONS
-        // ==========================================
-        function showSuccessAnimation(points) {
-            // DEPRECATED - Used by showCelebrationModal internally or kept for other small successes
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            })
+            function closeCelebrationModal() {
+                document.getElementById('celebrationModal').classList.add('hidden')
 
-            showToast(`🎉 Bravo ! Tu as gagné ${points} points !`, 'success')
-        }
+                // Rafraîchir les données
+                loadUserProfile()
+                loadProgressions()
+                loadStats()
 
-        function showBadgeNotification(nom, icone, points) {
-            const toast = document.createElement('div')
-            toast.className = 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-slide-in flex items-center space-x-3'
-            toast.innerHTML = `
+                // Reset cours modal state
+                document.getElementById('coursVideoContainer').classList.add('hidden')
+                document.getElementById('coursVideoFrame').src = ''
+                currentCours = null
+                coursStartTime = null
+            }
+
+            // ==========================================
+            // VÉRIFIER NOUVEAUX BADGES
+            // ==========================================
+            async function checkForNewBadges() {
+                try {
+                    // Badge "Premier Cours"
+                    const { count: coursCount } = await supabase
+                        .from('progressions_cours')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('user_id', currentUser.id)
+                        .eq('est_termine', true)
+
+                    if (coursCount === 1) {
+                        await awardBadge('Premier Cours', '🎓', 'Complète ton premier cours')
+                    }
+
+                    // Badge "5 Cours"
+                    if (coursCount === 5) {
+                        await awardBadge('Apprenant Assidu', '📚', 'Complète 5 cours')
+                    }
+
+                    // Badge "10 Cours"
+                    if (coursCount === 10) {
+                        await awardBadge('Expert', '🏆', 'Complète 10 cours')
+                    }
+
+                    // Badge "Série 7 jours"
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('streak_jours')
+                        .eq('id', currentUser.id)
+                        .single()
+
+                    if (profile.streak_jours === 7) {
+                        await awardBadge('Semaine Parfaite', '🔥', 'Connecte-toi 7 jours de suite')
+                    }
+
+                } catch (error) {
+                    console.error('❌ Erreur vérification badges:', error)
+                }
+            }
+
+            // ==========================================
+            // ATTRIBUER UN BADGE
+            // ==========================================
+            async function awardBadge(nom, icone, description) {
+                try {
+                    // Vérifier si le badge existe
+                    let { data: badge } = await supabase
+                        .from('badges')
+                        .select('*')
+                        .eq('nom', nom)
+                        .single()
+
+                    if (!badge) {
+                        // Créer le badge
+                        const { data: newBadge } = await supabase
+                            .from('badges')
+                            .insert({
+                                nom,
+                                icone_url: icone,
+                                description,
+                                points_bonus: 50
+                            })
+                            .select()
+                            .single()
+                        badge = newBadge
+                    }
+
+                    // Vérifier si l'utilisateur a déjà ce badge
+                    const { data: existing } = await supabase
+                        .from('user_badges')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .eq('badge_id', badge.id)
+                        .single()
+
+                    if (!existing) {
+                        // Attribuer le badge
+                        await supabase
+                            .from('user_badges')
+                            .insert({
+                                user_id: currentUser.id,
+                                badge_id: badge.id
+                            })
+
+                        // Ajouter les points bonus
+                        await supabase.rpc('increment_points', {
+                            user_id: currentUser.id,
+                            points: badge.points_bonus
+                        }).catch(() => {
+                            // Si la fonction n'existe pas, faire manuellement
+                            supabase
+                                .from('profiles')
+                                .select('points_total')
+                                .eq('id', currentUser.id)
+                                .single()
+                                .then(({ data }) => {
+                                    supabase
+                                        .from('profiles')
+                                        .update({ points_total: (data.points_total || 0) + badge.points_bonus })
+                                        .eq('id', currentUser.id)
+                                })
+                        })
+
+                        showBadgeNotification(nom, icone, badge.points_bonus)
+                    }
+
+                } catch (error) {
+                    console.error('❌ Erreur attribution badge:', error)
+                }
+            }
+
+            // ==========================================
+            // ANIMATIONS
+            // ==========================================
+            function showSuccessAnimation(points) {
+                // DEPRECATED - Used by showCelebrationModal internally or kept for other small successes
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                })
+
+                showToast(`🎉 Bravo ! Tu as gagné ${points} points !`, 'success')
+            }
+
+            function showBadgeNotification(nom, icone, points) {
+                const toast = document.createElement('div')
+                toast.className = 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-slide-in flex items-center space-x-3'
+                toast.innerHTML = `
                 <span class="text-3xl">${icone}</span>
                 <div>
                     <p class="font-bold">Nouveau badge débloqué !</p>
                     <p class="text-sm">${nom} (+${points} points)</p>
                 </div>
             `
-            document.getElementById('toastContainer').appendChild(toast)
-            setTimeout(() => toast.remove(), 5000)
+                document.getElementById('toastContainer').appendChild(toast)
+                setTimeout(() => toast.remove(), 5000)
 
-            confetti({
-                particleCount: 150,
-                spread: 100,
-                origin: { y: 0.4 }
-            })
-        }
-
-        // ==========================================
-        // UTILITAIRES
-        // ==========================================
-        function showToast(message, type = 'info') {
-            const colors = {
-                success: 'bg-green-500',
-                error: 'bg-red-500',
-                warning: 'bg-yellow-500',
-                info: 'bg-blue-500'
+                confetti({
+                    particleCount: 150,
+                    spread: 100,
+                    origin: { y: 0.4 }
+                })
             }
 
-            const toast = document.createElement('div')
-            toast.className = `${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in`
-            toast.textContent = message
+            // ==========================================
+            // UTILITAIRES
+            // ==========================================
+            function showToast(message, type = 'info') {
+                const colors = {
+                    success: 'bg-green-500',
+                    error: 'bg-red-500',
+                    warning: 'bg-yellow-500',
+                    info: 'bg-blue-500'
+                }
 
-            document.getElementById('toastContainer').appendChild(toast)
-            setTimeout(() => toast.remove(), 4000)
-        }
+                const toast = document.createElement('div')
+                toast.className = `${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in`
+                toast.textContent = message
 
-        function closeCoursModal() {
-            document.getElementById('coursModal').classList.add('hidden')
-            document.getElementById('coursVideoContainer').classList.add('hidden')
-            document.getElementById('coursVideoFrame').src = ''
-            currentCours = null
-            coursStartTime = null
-        }
-
-        function redirectToDashboard(parcours) {
-            const dashboards = {
-                'dev-web': '../Dashboard-Dev/dashboard-dev.html',
-                'designer': '../Dashboard-designer/dashboard-designer.html',
-                'eleve': 'dashboard-eleve.html'
+                document.getElementById('toastContainer').appendChild(toast)
+                setTimeout(() => toast.remove(), 4000)
             }
-            window.location.href = dashboards[parcours] || '../index.html'
-        }
 
-        // ==========================================
-        // FONCTIONS GLOBALES
-        // ==========================================
-        window.openMatiere = async function (matiereId, matiereNom) {
-            // Rediriger vers une page de chapitre/cours
-            window.location.href = `matiere.html?id=${matiereId}&nom=${encodeURIComponent(matiereNom)}`
-        }
-
-        window.openCours = openCours
-        window.completeCours = completeCours
-        window.closeCoursModal = closeCoursModal
-
-        window.refreshMatieres = async function () {
-            showToast('Actualisation...', 'info')
-            await loadMatieres()
-        }
-
-        window.showAllBadges = function () {
-            showToast('Fonctionnalité en développement', 'info')
-        }
-
-        window.showLeaderboard = function () {
-            showToast('Classement bientôt disponible !', 'info')
-        }
-
-        window.toggleNotifications = function () {
-            showToast('Aucune notification', 'info')
-        }
-
-        window.logout = async function () {
-            if (confirm('Veux-tu vraiment te déconnecter ?')) {
-                await supabase.auth.signOut()
-                window.location.href = '../index.html'
+            function closeCoursModal() {
+                document.getElementById('coursModal').classList.add('hidden')
+                document.getElementById('coursVideoContainer').classList.add('hidden')
+                document.getElementById('coursVideoFrame').src = ''
+                currentCours = null
+                coursStartTime = null
             }
-        }
 
-        // ==========================================
-        // CONFETTI (Animation)
-        // ==========================================
-        function confetti(options) {
-            const defaults = {
-                particleCount: 50,
-                spread: 60,
-                origin: { y: 0.7 }
+            function redirectToDashboard(parcours) {
+                const dashboards = {
+                    'dev-web': '../Dashboard-Dev/dashboard-dev.html',
+                    'designer': '../Dashboard-designer/dashboard-designer.html',
+                    'eleve': 'dashboard-eleve.html'
+                }
+                window.location.href = dashboards[parcours] || '../index.html'
             }
-            const opts = { ...defaults, ...options }
 
-            for (let i = 0; i < opts.particleCount; i++) {
-                createConfetti(opts)
+            // ==========================================
+            // FONCTIONS GLOBALES
+            // ==========================================
+            window.openMatiere = async function (matiereId, matiereNom) {
+                // Rediriger vers une page de chapitre/cours
+                window.location.href = `matiere.html?id=${matiereId}&nom=${encodeURIComponent(matiereNom)}`
             }
-        }
 
-        function createConfetti(opts) {
-            const confetti = document.createElement('div')
-            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff']
+            window.openCours = openCours
+            window.completeCours = completeCours
+            window.closeCoursModal = closeCoursModal
 
-            confetti.style.cssText = `
+            window.refreshMatieres = async function () {
+                showToast('Actualisation...', 'info')
+                await loadMatieres()
+            }
+
+            window.showAllBadges = function () {
+                showToast('Fonctionnalité en développement', 'info')
+            }
+
+            window.showLeaderboard = function () {
+                showToast('Classement bientôt disponible !', 'info')
+            }
+
+            window.toggleNotifications = function () {
+                showToast('Aucune notification', 'info')
+            }
+
+            window.logout = async function () {
+                if (confirm('Veux-tu vraiment te déconnecter ?')) {
+                    await supabase.auth.signOut()
+                    window.location.href = '../index.html'
+                }
+            }
+
+            // ==========================================
+            // CONFETTI (Animation)
+            // ==========================================
+            function confetti(options) {
+                const defaults = {
+                    particleCount: 50,
+                    spread: 60,
+                    origin: { y: 0.7 }
+                }
+                const opts = { ...defaults, ...options }
+
+                for (let i = 0; i < opts.particleCount; i++) {
+                    createConfetti(opts)
+                }
+            }
+
+            function createConfetti(opts) {
+                const confetti = document.createElement('div')
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff']
+
+                confetti.style.cssText = `
                 position: fixed;
                 width: 10px;
                 height: 10px;
@@ -1234,34 +1364,34 @@ eres()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 z-index: 9999;
             `
 
-            document.body.appendChild(confetti)
+                document.body.appendChild(confetti)
 
-            const angle = Math.random() * opts.spread - opts.spread / 2
-            const velocity = Math.random() * 5 + 5
-            const gravity = 0.5
-            let x = 0, y = 0, vy = -velocity
+                const angle = Math.random() * opts.spread - opts.spread / 2
+                const velocity = Math.random() * 5 + 5
+                const gravity = 0.5
+                let x = 0, y = 0, vy = -velocity
 
-            const animate = () => {
-                x += Math.sin(angle * Math.PI / 180) * 2
-                y += vy
-                vy += gravity
+                const animate = () => {
+                    x += Math.sin(angle * Math.PI / 180) * 2
+                    y += vy
+                    vy += gravity
 
-                confetti.style.transform = `translate(${x}px, ${y}px) rotate(${y * 2}deg)`
-                confetti.style.opacity = Math.max(0, 1 - y / 500)
+                    confetti.style.transform = `translate(${x}px, ${y}px) rotate(${y * 2}deg)`
+                    confetti.style.opacity = Math.max(0, 1 - y / 500)
 
-                if (y < 500) {
-                    requestAnimationFrame(animate)
-                } else {
-                    confetti.remove()
+                    if (y < 500) {
+                        requestAnimationFrame(animate)
+                    } else {
+                        confetti.remove()
+                    }
                 }
+
+                requestAnimationFrame(animate)
             }
 
-            requestAnimationFrame(animate)
-        }
-
-        // INITIALISER
-        init()
-    </script>
+            // INITIALISER
+            init()
+        </script>
 </body>
 
 </html>
