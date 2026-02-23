@@ -22,7 +22,7 @@ async function checkAuth(requiredType) {
 
         if (userError || !user) {
             console.log('❌ Non authentifié, redirection vers login')
-            window.location.href = 'login.html'
+            window.location.href = 'auth.html'
             return null
         }
 
@@ -39,7 +39,7 @@ async function checkAuth(requiredType) {
             console.error('❌ Profil introuvable:', profileError)
             alert('Erreur: Profil introuvable. Veuillez vous réinscrire.')
             await supabase.auth.signOut()
-            window.location.href = 'register.html'
+            window.location.href = 'auth.html?mode=register'
             return null
         }
 

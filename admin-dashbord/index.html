@@ -5,775 +5,887 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - KMERSCHOOL</title>
-
-    <!-- External Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- MODULES DASHBOARD (dans l'ordre) -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/cours.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/exercices-manager.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
 
     <style>
         * {
             font-family: 'Inter', sans-serif;
         }
 
-        .gradient-admin {
-            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        body {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            min-height: 100vh;
         }
 
-        .sidebar-active {
-            background: rgba(59, 130, 246, 0.1);
-            border-left: 4px solid #3b82f6;
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
 
-        .animate-slide-in {
-            animation: slideIn 0.3s ease-out;
+        .glass-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .dashboard-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .dashboard-card:hover {
+            transform: scale(1.05);
+            border-color: rgba(99, 102, 241, 0.8);
+            box-shadow: 0 25px 50px rgba(99, 102, 241, 0.3);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+            border-left: 4px solid;
+        }
+
+        .stat-card.francophone {
+            border-left-color: #3B82F6;
+        }
+
+        .stat-card.anglophone {
+            border-left-color: #F59E0B;
+        }
+
+        .sidebar-item {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-left-color: #6366F1;
+        }
+
+        .sidebar-item.active {
+            background: rgba(99, 102, 241, 0.2);
+            border-left-color: #6366F1;
+        }
+
+        .tab-button {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #10B981;
+        }
+
+        .input-dark {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .input-dark:focus {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: #6366F1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            outline: none;
+        }
+
+        .input-dark::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .course-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .course-card:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateX(4px);
+        }
+
+        .upload-zone-dark {
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px dashed rgba(99, 102, 241, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone-dark:hover {
+            border-color: #6366F1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .badge-fr {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        }
+
+        .badge-an {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        }
+
+        .section-divider {
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+            height: 1px;
         }
 
         @keyframes slideIn {
             from {
-                transform: translateX(100%);
                 opacity: 0;
+                transform: translateY(20px);
             }
 
             to {
-                transform: translateX(0);
                 opacity: 1;
+                transform: translateY(0);
             }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .editor-toolbar-dark {
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .editor-content-dark {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            min-height: 300px;
+            padding: 1rem;
+            outline: none;
+        }
+
+        .editor-content-dark:focus {
+            border-color: #6366F1;
+        }
+
+        /* Scrollbar personnalisée */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.8);
         }
     </style>
 </head>
 
-<body class="bg-gray-50">
+<body class="text-gray-100">
 
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 shadow-lg z-40">
-        <div class="gradient-admin p-6">
-            <div class="flex flex-col items-center justify-center text-center space-y-2">
-                <div class="flex items-center justify-center w-full">
-                    <img src="../assets/logo/LOGO.png" alt="KMERSCHOOL"
-                        class="h-28 w-auto object-contain bg-white rounded-xl p-2 shadow-sm">
+    <!-- ========================================= -->
+    <!-- PAGE D'ACCUEIL - SELECTION ESPACE -->
+    <!-- ========================================= -->
+    <div id="screen-dashboard" class="screen min-h-screen flex items-center justify-center p-8">
+        <div class="max-w-7xl w-full animate-slide-in">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <div class="flex items-center justify-center space-x-4 mb-4">
+                    <div
+                        class="text-4xl font-black bg-gradient-to-r from-indigo-400 to-emerald-400 bg-clip-text text-transparent">
+                        KMERSCHOOL
+                    </div>
+                    <span class="px-4 py-1 bg-indigo-500/20 text-indigo-300 text-sm font-bold rounded-full">
+                        ADMIN
+                    </span>
                 </div>
-                <div>
-                    <p class="text-blue-100 text-sm font-semibold tracking-wide uppercase">Admin Dashboard</p>
+                <p class="text-gray-400 text-lg">Tableau de bord administrateur</p>
+                <div class="flex items-center justify-center space-x-4 mt-4">
+                    <div class="text-sm text-gray-500">
+                        <span id="adminNameHome" class="font-semibold text-gray-300">Admin</span> •
+                        <span id="currentDate"></span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <nav class="p-4 space-y-1">
-            <a href="#" data-view="dashboard"
-                class="nav-link sidebar-active flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                    </path>
-                </svg>
-                <span class="font-semibold">Tableau de bord</span>
-            </a>
+            <!-- 3 Cards Élégantes -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <!-- CARD ÉLÈVES -->
+                <div onclick="Navigation.openEspace('eleves')"
+                    class="dashboard-card rounded-2xl p-8 text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 text-9xl opacity-5">📚</div>
+                    <div class="relative z-10">
+                        <div class="text-6xl mb-4">📚</div>
+                        <h2 class="text-2xl font-bold mb-2">GESTION ÉLÈVES</h2>
+                        <p class="text-gray-400 mb-6">Système éducatif camerounais</p>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-400">🇫🇷 Francophone</span>
+                                <span class="font-bold text-blue-400" id="statElevesFr">---</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-400">🇬🇧 Anglophone</span>
+                                <span class="font-bold text-orange-400" id="statElevesAn">---</span>
+                            </div>
+                        </div>
+                        <button
+                            class="mt-6 px-6 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg font-semibold transition">
+                            Ouvrir →
+                        </button>
+                    </div>
+                </div>
 
-            <a href="#" data-view="matieres"
-                class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                    </path>
-                </svg>
-                <span class="font-semibold">Matières</span>
-            </a>
+                <!-- CARD DEV-WEB -->
+                <div onclick="Navigation.openEspace('dev')"
+                    class="dashboard-card rounded-2xl p-8 text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 text-9xl opacity-5">💻</div>
+                    <div class="relative z-10">
+                        <div class="text-6xl mb-4">💻</div>
+                        <h2 class="text-2xl font-bold mb-2">GESTION DEV-WEB</h2>
+                        <p class="text-gray-400 mb-6">Développement & Programmation</p>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-400">📚 Cours</span>
+                                <span class="font-bold text-emerald-400" id="statCoursdev">---</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-400">👥 Apprenants</span>
+                                <span class="font-bold text-emerald-400" id="statApprenantsdev">---</span>
+                            </div>
+                        </div>
+                        <button
+                            class="mt-6 px-6 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-semibold transition">
+                            Ouvrir →
+                        </button>
+                    </div>
+                </div>
 
-            <a href="#" data-view="chapitres"
-                class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                    </path>
-                </svg>
-                <span class="font-semibold">Chapitres</span>
-            </a>
-
-            <a href="#" data-view="cours"
-                class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
-                    </path>
-                </svg>
-                <span class="font-semibold">Cours</span>
-            </a>
-
-            <a href="#" data-view="exercices"
-                class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
-                    </path>
-                </svg>
-                <span class="font-semibold">Exercices QCM</span>
-            </a>
-
-            <a href="#" data-view="exercices-code"
-                class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                </svg>
-                <span class="font-semibold">Exercices Code</span>
-            </a>
-
-            <div class="pt-4 mt-4 border-t border-gray-200">
-                <a href="#" data-view="utilisateurs"
-                    class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
-                        </path>
-                    </svg>
-                    <span class="font-semibold">Utilisateurs</span>
-                </a>
+                <!-- CARD DESIGNER -->
+                <div onclick="Navigation.openEspace('designer')"
+                    class="dashboard-card rounded-2xl p-8 text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 text-9xl opacity-5">🎨</div>
+                    <div class="relative z-10">
+                        <div class="text-6xl mb-4">🎨</div>
+                        <h2 class="text-2xl font-bold mb-2">GESTION DESIGNER</h2>
+                        <p class="text-gray-400 mb-6">Design & Créativité</p>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-400">📚 Cours</span>
+                                <span class="font-bold text-purple-400" id="statCoursDesign">---</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-400">👥 Créatifs</span>
+                                <span class="font-bold text-purple-400" id="statCreatifs">---</span>
+                            </div>
+                        </div>
+                        <button
+                            class="mt-6 px-6 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg font-semibold transition">
+                            Ouvrir →
+                        </button>
+                    </div>
+                </div>
             </div>
-        </nav>
 
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-gray-50">
-            <div class="flex items-center space-x-3">
-                <div
-                    class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                    <span id="userInitials" class="text-white font-bold text-sm">AD</span>
+            <!-- Stats Globales -->
+            <div class="glass-card rounded-2xl p-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                    <div>
+                        <div class="text-3xl font-bold text-indigo-400" id="statTotalEleves">---</div>
+                        <div class="text-sm text-gray-400">Total Élèves</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-emerald-400" id="statTotalCours">---</div>
+                        <div class="text-sm text-gray-400">Total Cours</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-orange-400" id="statTotalChapitres">---</div>
+                        <div class="text-sm text-gray-400">Chapitres</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-purple-400" id="statTotalMatieres">---</div>
+                        <div class="text-sm text-gray-400">Matières</div>
+                    </div>
                 </div>
-                <div class="flex-1 min-w-0 hidden md:block">
-                    <p id="userName" class="text-sm font-semibold text-gray-900 truncate">Admin</p>
-                    <p class="text-xs text-gray-500">Administrateur</p>
-                </div>
-                <button id="logoutBtn" class="text-gray-400 hover:text-red-600 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                        </path>
-                    </svg>
+            </div>
+
+            <!-- Logout -->
+            <div class="text-center mt-8">
+                <button onclick="Auth.logout()" class="text-gray-500 hover:text-red-400 transition">
+                    🚪 Déconnexion
                 </button>
             </div>
         </div>
-    </aside>
+    </div>
 
-    <!-- Main Content -->
-    <main class="ml-64 min-h-screen">
-        <header class="bg-white border-b border-gray-200 sticky top-0 z-30">
-            <div class="px-8 py-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 id="pageTitle" class="text-2xl font-bold text-gray-900">Tableau de bord</h2>
-                        <p id="pageSubtitle" class="text-sm text-gray-500 mt-1">Vue d'ensemble</p>
+    <!-- ========================================= -->
+    <!-- ESPACE ÉLÈVES - INTERFACE COMPLÈTE -->
+    <!-- ========================================= -->
+    <div id="screen-eleves" style="display: none;" class="screen min-h-screen">
+        <div class="flex">
+            <!-- SIDEBAR -->
+            <div class="w-64 bg-slate-900 border-r border-slate-800 min-h-screen p-4">
+                <!-- Logo -->
+                <div class="mb-8">
+                    <div
+                        class="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-emerald-400 bg-clip-text text-transparent mb-1">
+                        KMERSCHOOL
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <button id="addNewBtn"
-                            class="hidden px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all">
-                            + Ajouter
+                    <div class="text-xs text-gray-500">Gestion Élèves</div>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="space-y-2">
+                    <div onclick="Navigation.switchSection('dashboard')"
+                        class="sidebar-item active px-4 py-3 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xl">📊</span>
+                            <span class="font-medium">Tableau de bord</span>
+                        </div>
+                    </div>
+                    <div onclick="Navigation.switchSection('cours')"
+                        class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xl">📚</span>
+                            <span class="font-medium">Gestion Cours</span>
+                        </div>
+                    </div>
+                    <div onclick="Navigation.switchSection('eleves')"
+                        class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xl">👥</span>
+                            <span class="font-medium">Liste Élèves</span>
+                        </div>
+                    </div>
+                    <div onclick="Navigation.switchSection('matieres')"
+                        class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xl">📖</span>
+                            <span class="font-medium">Matières</span>
+                        </div>
+                    </div>
+                    <div onclick="Navigation.switchSection('examens')"
+                        class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xl">📝</span>
+                            <span class="font-medium">Examens</span>
+                        </div>
+                    </div>
+                    <div onclick="Navigation.switchSection('annales')"
+                        class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xl">📄</span>
+                            <span class="font-medium">Annales</span>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="section-divider my-6"></div>
+
+                <!-- Stats Sidebar -->
+                <div class="space-y-3">
+                    <div class="text-xs font-semibold text-gray-500 uppercase">Statistiques</div>
+                    <div class="stat-card francophone rounded-lg p-3">
+                        <div class="text-xs text-gray-400">🇫🇷 Francophone</div>
+                        <div class="text-2xl font-bold text-blue-400" id="sidebarStatFr">0</div>
+                        <div class="text-xs text-gray-500">élèves</div>
+                    </div>
+                    <div class="stat-card anglophone rounded-lg p-3">
+                        <div class="text-xs text-gray-400">🇬🇧 Anglophone</div>
+                        <div class="text-2xl font-bold text-orange-400" id="sidebarStatAn">0</div>
+                        <div class="text-xs text-gray-500">élèves</div>
+                    </div>
+                </div>
+
+                <!-- Back Button -->
+                <button onclick="Navigation.backToHome()"
+                    class="mt-8 w-full px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                    ← Retour accueil
+                </button>
+            </div>
+
+            <!-- MAIN CONTENT -->
+            <div class="flex-1 p-8">
+                <!-- Header -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold mb-2">Gestion des Cours</h1>
+                    <p class="text-gray-400">Créer et gérer les cours pour le système éducatif camerounais</p>
+                </div>
+
+                <!-- TABS FRANCOPHONE / ANGLOPHONE -->
+                <div class="mb-6">
+                    <div class="flex space-x-4">
+                        <button onclick="Navigation.switchLanguageTab('fr')"
+                            class="tab-button active px-8 py-3 rounded-lg font-semibold text-white">
+                            🇫🇷 SECTION FRANCOPHONE
+                        </button>
+                        <button onclick="Navigation.switchLanguageTab('an')"
+                            class="tab-button px-8 py-3 rounded-lg font-semibold text-gray-400 bg-slate-800">
+                            🇬🇧 SECTION ANGLOPHONE
                         </button>
                     </div>
                 </div>
-            </div>
-        </header>
 
-        <div id="contentArea" class="p-8"></div>
-    </main>
+                <!-- CONTENU FRANCOPHONE -->
+                <div id="contentFr" class="animate-slide-in">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- FORMULAIRE DE CRÉATION -->
+                        <div class="lg:col-span-2">
+                            <div class="glass-card rounded-2xl p-6">
+                                <h2 class="text-xl font-bold mb-6">➕ Créer un Nouveau Cours</h2>
 
-    <!-- Modal Matière -->
-    <div id="matiereModal"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="gradient-admin p-6 text-white">
-                <h3 id="modalTitle" class="text-2xl font-bold">Nouvelle Matière</h3>
-            </div>
-            <form id="matiereForm" class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nom de la matière *</label>
-                    <input type="text" id="matiereNom" required
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
-                        placeholder="Ex: Mathématiques">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
-                    <textarea id="matiereDescription" rows="3"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
-                        placeholder="Description..."></textarea>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Type de parcours *</label>
-                        <select id="matiereTypeParcours" required
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
-                            <option value="">Sélectionner...</option>
-                            <option value="eleve">🎓 Élève</option>
-                            <option value="dev-web">💻 Développeur Web</option>
-                            <option value="designer">🎨 Designer</option>
-                            <option value="commun">Commun</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Couleur</label>
-                        <input type="color" id="matiereCouleur" value="#3b82f6"
-                            class="w-full h-12 px-2 py-1 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ordre d'affichage</label>
-                    <input type="number" id="matiereOrdre" min="1" value="1"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
-                </div>
-                <div class="flex gap-3 pt-4">
-                    <button type="submit"
-                        class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
-                        <span class="submit-text">Enregistrer</span>
-                        <span class="submit-loader hidden">
-                            <svg class="inline w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                            Enregistrement...
-                        </span>
-                    </button>
-                    <button type="button" id="cancelModal"
-                        class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all">
-                        Annuler
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+                                <form id="coursFormFr" class="space-y-6">
+                                    <!-- Matière & Chapitre -->
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">📖 Matière *</label>
+                                            <input type="text" id="matiereFr" list="matieresFrList"
+                                                placeholder="Ex: Mathématiques"
+                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                            <datalist id="matieresFrList">
+                                                <option value="Mathématiques">
+                                                <option value="Physique-Chimie">
+                                                <option value="SVT">
+                                                <option value="Français">
+                                                <option value="Philosophie">
+                                                <option value="Histoire-Géographie">
+                                                <option value="Anglais">
+                                                <option value="Espagnol">
+                                            </datalist>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">📑 Chapitre *</label>
+                                            <input type="text" id="chapitreFr" placeholder="Ex: Les fonctions"
+                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                        </div>
+                                    </div>
 
-    <!-- Modal Chapitre -->
-    <div id="chapitreModal"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="gradient-admin p-6 text-white">
-                <h3 id="chapitreModalTitle" class="text-2xl font-bold">Nouveau Chapitre</h3>
-            </div>
-            <form id="chapitreForm" class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Matière *</label>
-                    <select id="chapitreMatiere" required
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
-                        <option value="">Sélectionner une matière...</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Titre *</label>
-                    <input type="text" id="chapitreTitre" required
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
-                    <textarea id="chapitreDescription" rows="3"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"></textarea>
-                </div>
-                <!-- Section PDF removed (duplicate) -->
+                                    <!-- Classe & Série -->
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">🎓 Classe *</label>
+                                            <select id="classeFr" onchange="loadSeriesFr()"
+                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                                <option value="">Sélectionner...</option>
+                                            </select>
+                                        </div>
+                                        <div id="serieFrContainer" style="display: none;">
+                                            <label class="block text-sm font-semibold mb-2">🎯 Série</label>
+                                            <select id="serieFr" class="input-dark w-full px-4 py-3 rounded-lg">
+                                                <option value="">Toutes les séries</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
-                <!-- ========================================== -->
-                <!-- SECTION PDF UPLOAD - VERSION CORRIGÉE -->
-                <!-- À placer dans le formulaire chapitreForm -->
-                <!-- ========================================== -->
+                                    <!-- Titre du cours -->
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-2">✏️ Titre du cours *</label>
+                                        <input type="text" id="titreFr" placeholder="Ex: Les limites de fonctions"
+                                            class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                    </div>
 
-                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6">
-                    <div class="flex items-start space-x-3 mb-4">
-                        <svg class="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-blue-900 mb-1">📄 PDF du chapitre (optionnel)</h4>
-                            <p class="text-sm text-blue-800">Uploadez un PDF accessible aux élèves (Max 10 MB)</p>
-                        </div>
-                    </div>
+                                    <!-- Image du cours -->
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-2">🖼️ Image du cours *</label>
+                                        <div class="upload-zone-dark rounded-lg p-6 cursor-pointer"
+                                            onclick="document.getElementById('imageFr').click()">
+                                            <input type="file" id="imageFr" accept="image/*" style="display: none;"
+                                                onchange="handleImageUpload(event, 'fr')">
+                                            <div id="imagePreviewFr" class="text-center">
+                                                <div class="text-4xl mb-2">📷</div>
+                                                <p class="text-gray-400">Cliquez pour choisir une image</p>
+                                                <p class="text-xs text-gray-500 mt-2">JPG, PNG (Max 5 MB)</p>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                    <!-- Zone de drop / Upload -->
-                    <div id="pdfUploadZone"
-                        class="border-2 border-dashed border-blue-300 rounded-xl p-8 text-center hover:border-blue-500 hover:bg-blue-50 transition cursor-pointer">
-                        <input type="file" id="chapitrePdfFile" accept=".pdf" class="hidden">
+                                    <!-- Contenu du cours -->
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-2">📝 Contenu du cours *</label>
+                                        <div class="editor-toolbar-dark rounded-t-lg p-2 flex space-x-2">
+                                            <button type="button" onclick="Utils.formatText('bold', 'fr')"
+                                                class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                                                <strong>B</strong>
+                                            </button>
+                                            <button type="button" onclick="Utils.formatText('italic', 'fr')"
+                                                class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                                                <em>I</em>
+                                            </button>
+                                            <button type="button" onclick="Utils.formatText('underline', 'fr')"
+                                                class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                                                <u>U</u>
+                                            </button>
+                                        </div>
+                                        <div id="contenuFr" class="editor-content-dark rounded-b-lg"
+                                            contenteditable="true"
+                                            data-placeholder="Rédigez le contenu du cours ici..."></div>
+                                    </div>
 
-                        <label for="chapitrePdfFile" class="cursor-pointer block">
-                            <div class="text-5xl mb-3">📄</div>
-                            <p class="text-lg font-semibold text-gray-700 mb-1">Cliquez pour sélectionner un PDF</p>
-                            <p class="text-sm text-gray-500">ou glissez-déposez le fichier ici</p>
-                            <p class="text-xs text-gray-400 mt-2">Max 10 MB • Format PDF uniquement</p>
-                        </label>
-                    </div>
+                                    <!-- Vidéo -->
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-2">🎥 Vidéo (optionnel)</label>
+                                        <input type="url" id="videoFr" placeholder="https://youtube.com/watch?v=..."
+                                            class="input-dark w-full px-4 py-3 rounded-lg">
+                                    </div>
 
-                    <!-- Progress bar -->
-                    <div id="pdfUploadProgress" class="hidden mt-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm font-semibold text-gray-700">Upload en cours...</span>
-                            <span id="pdfUploadPercent" class="text-sm font-semibold text-blue-600">0%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                            <div id="pdfProgressBar"
-                                class="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full transition-all duration-300"
-                                style="width: 0%"></div>
-                        </div>
-                        <p id="pdfUploadStatus" class="text-sm text-gray-600 mt-2">Préparation...</p>
-                    </div>
+                                    <!-- PDF -->
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-2">📄 PDF (optionnel)</label>
+                                        <div class="upload-zone-dark rounded-lg p-4 cursor-pointer"
+                                            onclick="document.getElementById('pdfFr').click()">
+                                            <input type="file" id="pdfFr" accept=".pdf" style="display: none;"
+                                                onchange="handlePdfUpload(event, 'fr')">
+                                            <div id="pdfPreviewFr" class="text-center">
+                                                <p class="text-gray-400">📎 Cliquez pour choisir un PDF</p>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                    <!-- Fichier uploadé avec succès -->
-                    <div id="pdfUploadSuccess" class="hidden mt-4 bg-green-50 border-2 border-green-200 rounded-xl p-4">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-3 flex-1 min-w-0">
-                                <div
-                                    class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="font-semibold text-green-900 truncate" id="pdfUploadedName">
-                                        fichier.pdf</p>
-                                    <p class="text-sm text-green-700" id="pdfUploadedSize">2.5 MB</p>
-                                </div>
+                                    <!-- Métadonnées -->
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">⏱️ Durée (min)</label>
+                                            <input type="number" id="dureeFr" placeholder="45"
+                                                class="input-dark w-full px-4 py-3 rounded-lg">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">🏆 Points XP</label>
+                                            <input type="number" id="pointsFr" value="20"
+                                                class="input-dark w-full px-4 py-3 rounded-lg">
+                                        </div>
+                                    </div>
+
+                                    <!-- Publier -->
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" id="publieFr" checked class="w-5 h-5">
+                                        <label class="font-semibold">✅ Publier immédiatement</label>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="flex flex-wrap gap-3">
+                                        <button type="submit" id="submitBtnFr"
+                                            class="btn-primary flex-1 min-w-[200px] px-6 py-3 rounded-lg font-semibold text-white">
+                                            💾 Enregistrer le Cours
+                                        </button>
+                                        <button type="button" id="cancelEditBtnFr" style="display: none;"
+                                            onclick="App.cancelEdit('fr')"
+                                            class="px-6 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-semibold transition">
+                                            ✖️ Annuler
+                                        </button>
+                                        <button type="button" onclick="resetFormFr()"
+                                            class="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition">
+                                            🔄 Réinitialiser
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                            <button type="button" onclick="removePdfUpload()"
-                                class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition ml-2 flex-shrink-0">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                            </button>
                         </div>
-                        <a id="pdfPreviewLink" href="#" target="_blank"
-                            class="inline-flex items-center mt-3 text-sm text-blue-600 hover:text-blue-700 font-semibold">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                </path>
-                            </svg>
-                            Prévisualiser le PDF
-                        </a>
-                    </div>
 
-                    <!-- PDF existant (en mode édition) -->
-                    <div id="pdfExisting" class="hidden mt-4 bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-3 flex-1">
-                                <div
-                                    class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="font-semibold text-blue-900">PDF actuel</p>
-                                    <a id="pdfExistingLink" href="#" target="_blank"
-                                        class="text-sm text-blue-600 hover:text-blue-700 font-semibold">
-                                        Voir le PDF →
-                                    </a>
+
+                        <!-- STATS & RECENT -->
+                        <div class="space-y-6">
+                            <!-- Stats Rapides -->
+                            <div class="glass-card rounded-xl p-6">
+                                <h3 class="font-bold mb-4">📊 Statistiques FR</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">Total cours</span>
+                                        <span class="font-bold text-blue-400" id="statCoursFr">0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">Chapitres</span>
+                                        <span class="font-bold text-emerald-400" id="statChapitresFr">0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">Matières</span>
+                                        <span class="font-bold text-purple-400" id="statMatieresFr">0</span>
+                                    </div>
                                 </div>
                             </div>
-                            <button type="button" onclick="removeExistingPdfUpload()"
-                                class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded transition flex-shrink-0">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                            </button>
+
+                            <!-- Actions Rapides -->
+                            <div class="glass-card rounded-xl p-6">
+                                <h3 class="font-bold mb-4">⚡ Actions Rapides</h3>
+                                <div class="space-y-2">
+                                    <button
+                                        class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                                        📚 Voir tous les cours
+                                    </button>
+                                    <button
+                                        class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                                        📝 Créer un examen
+                                    </button>
+                                    <button
+                                        class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                                        📄 Ajouter une annale
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Input hidden pour stocker l'URL finale -->
-                    <input type="hidden" id="chapitrePdfUrlHidden">
+                    <!-- Liste des cours -->
+                    <div class="mt-8 glass-card rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-6">📚 Cours Existants - Section Francophone</h2>
+                        <div id="coursListFr" class="space-y-3">
+                            <p class="text-gray-500 text-center py-8">Aucun cours pour le moment</p>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- CONTENU ANGLOPHONE -->
+                <div id="contentAn" style="display: none;" class="animate-slide-in">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- CREATION FORM -->
+                        <div class="lg:col-span-2">
+                            <div class="glass-card rounded-2xl p-6">
+                                <h2 class="text-xl font-bold mb-6">➕ Create a New Course</h2>
 
+                                <form id="coursFormAn" class="space-y-6">
+                                    <!-- Subject & Chapter -->
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">📖 Subject *</label>
+                                            <input type="text" id="matiereAn" list="matieresAnList"
+                                                placeholder="Ex: Mathematics"
+                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                            <datalist id="matieresAnList">
+                                                <option value="Mathematics">
+                                                <option value="Physics">
+                                                <option value="Chemistry">
+                                                <option value="Biology/SVT">
+                                                <option value="English">
+                                                <option value="French">
+                                                <option value="Philosophy">
+                                                <option value="History">
+                                                <option value="Geography">
+                                            </datalist>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">📑 Chapter *</label>
+                                            <input type="text" id="chapitreAn" placeholder="Ex: Functions"
+                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                        </div>
+                                    </div>
 
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Difficulté</label>
-                        <select id="chapitreDifficulte" class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg">
-                            <option value="facile">Facile</option>
-                            <option value="moyen" selected>Moyen</option>
-                            <option value="difficile">Difficile</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Durée (min)</label>
-                        <input type="number" id="chapitreDuree" value="30"
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Ordre *</label>
-                        <input type="number" id="chapitreOrdre" value="1" required
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Objectifs</label>
-                    <textarea id="chapitreObjectifs" rows="3"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg"></textarea>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" id="chapitreEstPublie" checked class="w-5 h-5">
-                        <span class="ml-2 text-sm font-semibold">Publié</span>
-                    </label>
-                    <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" id="chapitreEstPremium" class="w-5 h-5">
-                        <span class="ml-2 text-sm font-semibold">Premium</span>
-                    </label>
-                </div>
-                <div class="flex gap-3 pt-4">
-                    <button type="submit"
-                        class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-lg">
-                        <span class="submit-text">Enregistrer</span>
-                        <span class="submit-loader hidden">Chargement...</span>
-                    </button>
-                    <button type="button" id="cancelChapitreModal"
-                        class="px-6 py-3 border-2 border-gray-300 rounded-lg">Annuler</button>
-                </div>
-            </form>
-        </div>
-    </div>
+                                    <!-- Class & Series -->
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">🎓 Class *</label>
+                                            <select id="classeAn" onchange="loadSeriesAn()"
+                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                                <option value="">Select...</option>
+                                            </select>
+                                        </div>
+                                        <div id="serieAnContainer" style="display: none;">
+                                            <label class="block text-sm font-semibold mb-2">🎯 Series</label>
+                                            <select id="serieAn" class="input-dark w-full px-4 py-3 rounded-lg">
+                                                <option value="">All series</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
-    <!-- Modal Cours -->
-    <div id="coursModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="gradient-admin p-6 text-white">
-                <h3 id="coursModalTitle" class="text-2xl font-bold">Nouveau Cours</h3>
-            </div>
-            <form id="coursForm" class="p-6 space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Matière *</label>
-                        <select id="coursMatiere" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg">
-                            <option value="">Sélectionner...</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Chapitre *</label>
-                        <select id="coursChapitre" required
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg">
-                            <option value="">Sélectionner...</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Titre *</label>
-                    <input type="text" id="coursTitre" required
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Type *</label>
-                    <div class="grid grid-cols-3 gap-3">
-                        <label>
-                            <input type="radio" name="typeContenu" value="texte" checked class="peer sr-only">
-                            <div class="p-4 border-2 peer-checked:border-blue-500 rounded-lg cursor-pointer">📝 Texte
+                                    <!-- Course Title -->
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-2">✏️ Course Title *</label>
+                                        <input type="text" id="titreAn" placeholder="Ex: Limits of functions"
+                                            class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                    </div>
+
+                                    <!-- Course Image -->
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-2">🖼️ Course Image *</label>
+                                        <div class="upload-zone-dark rounded-lg p-6 cursor-pointer"
+                                            onclick="document.getElementById('imageAn').click()">
+                                            <input type="file" id="imageAn" accept="image/*" style="display: none;"
+                                                onchange="handleImageUpload(event, 'an')">
+                                            <div id="imagePreviewAn" class="text-center">
+                                                <div class="text-4xl mb-2">📷</div>
+                                                <p class="text-gray-400">Click to choose an image</p>
+                                                <p class="text-xs text-gray-500 mt-2">JPG, PNG (Max 5 MB)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Course Content -->
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-2">📝 Course Content *</label>
+                                        <div class="editor-toolbar-dark rounded-t-lg p-2 flex space-x-2">
+                                            <button type="button" onclick="Utils.formatText('bold', 'an')"
+                                                class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                                                <strong>B</strong>
+                                            </button>
+                                            <button type="button" onclick="Utils.formatText('italic', 'an')"
+                                                class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                                                <em>I</em>
+                                            </button>
+                                            <button type="button" onclick="Utils.formatText('underline', 'an')"
+                                                class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                                                <u>U</u>
+                                            </button>
+                                        </div>
+                                        <div id="contenuAn" class="editor-content-dark rounded-b-lg"
+                                            contenteditable="true" data-placeholder="Write course content here...">
+                                        </div>
+                                    </div>
+
+                                    <!-- Video -->
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-2">🎥 Video (optional)</label>
+                                        <input type="url" id="videoAn" placeholder="https://youtube.com/watch?v=..."
+                                            class="input-dark w-full px-4 py-3 rounded-lg">
+                                    </div>
+
+                                    <!-- PDF -->
+                                    <div>
+                                        <label class="block text-sm font-semibold mb-2">📄 PDF (optional)</label>
+                                        <div class="upload-zone-dark rounded-lg p-4 cursor-pointer"
+                                            onclick="document.getElementById('pdfAn').click()">
+                                            <input type="file" id="pdfAn" accept=".pdf" style="display: none;"
+                                                onchange="handlePdfUpload(event, 'an')">
+                                            <div id="pdfPreviewAn" class="text-center">
+                                                <p class="text-gray-400">📎 Click to choose a PDF</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Metadata -->
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">⏱️ Duration (min)</label>
+                                            <input type="number" id="dureeAn" placeholder="45"
+                                                class="input-dark w-full px-4 py-3 rounded-lg">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">🏆 XP Points</label>
+                                            <input type="number" id="pointsAn" value="20"
+                                                class="input-dark w-full px-4 py-3 rounded-lg">
+                                        </div>
+                                    </div>
+
+                                    <!-- Publish -->
+                                    <div class="flex items-center space-x-3">
+                                        <input type="checkbox" id="publieAn" checked class="w-5 h-5">
+                                        <label class="font-semibold">✅ Publish immediately</label>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="flex flex-wrap gap-3">
+                                        <button type="submit" id="submitBtnAn"
+                                            class="btn-primary flex-1 min-w-[200px] px-6 py-3 rounded-lg font-semibold text-white">
+                                            💾 Save Course
+                                        </button>
+                                        <button type="button" id="cancelEditBtnAn" style="display: none;"
+                                            onclick="App.cancelEdit('an')"
+                                            class="px-6 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-semibold transition">
+                                            ✖️ Cancel
+                                        </button>
+                                        <button type="button" onclick="resetFormAn()"
+                                            class="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition">
+                                            🔄 Reset
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                        </label>
-                        <label>
-                            <input type="radio" name="typeContenu" value="video" class="peer sr-only">
-                            <div class="p-4 border-2 peer-checked:border-blue-500 rounded-lg cursor-pointer">🎥 Vidéo
+                        </div>
+
+                        <!-- STATS & RECENT -->
+                        <div class="space-y-6">
+                            <!-- Quick Stats -->
+                            <div class="glass-card rounded-xl p-6">
+                                <h3 class="font-bold mb-4">📊 Statistics EN</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">Total courses</span>
+                                        <span class="font-bold text-orange-400" id="statCoursAn">0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">Chapters</span>
+                                        <span class="font-bold text-emerald-400" id="statChapitresAn">0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-400">Subjects</span>
+                                        <span class="font-bold text-purple-400" id="statMatieresAn">0</span>
+                                    </div>
+                                </div>
                             </div>
-                        </label>
-                        <label>
-                            <input type="radio" name="typeContenu" value="mixte" class="peer sr-only">
-                            <div class="p-4 border-2 peer-checked:border-blue-500 rounded-lg cursor-pointer">🎬 Mixte
+
+                            <!-- Quick Actions -->
+                            <div class="glass-card rounded-xl p-6">
+                                <h3 class="font-bold mb-4">⚡ Quick Actions</h3>
+                                <div class="space-y-2">
+                                    <button
+                                        class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                                        📚 View all courses
+                                    </button>
+                                    <button
+                                        class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                                        📝 Create an exam
+                                    </button>
+                                    <button
+                                        class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                                        📄 Add past questions
+                                    </button>
+                                </div>
                             </div>
-                        </label>
+                        </div>
                     </div>
-                </div>
-                <div id="videoSection" class="hidden border-2 border-dashed border-purple-300 rounded-lg p-4">
-                    <label class="block text-sm mb-2">Lien YouTube</label>
-                    <input type="url" id="coursVideoUrl"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg mb-2">
-                    <label class="block text-sm mb-2">Ou uploader vidéo</label>
-                    <input type="file" id="coursVideoFile" accept="video/*" class="w-full">
-                    <div id="videoPreview" class="hidden mt-2">
-                        <p id="videoFileName" data-file-name class="text-sm"></p>
-                        <p id="videoFileSize" data-file-size class="text-xs"></p>
-                        <button type="button" id="removeVideo" class="text-red-600 text-sm">Supprimer</button>
-                    </div>
-                    <div id="existingVideo" class="hidden mt-2">
-                        <a id="existingVideoLink" href="#" target="_blank" class="text-blue-600 text-sm">Voir vidéo</a>
-                        <button type="button" id="deleteExistingVideo"
-                            class="text-red-600 text-sm ml-2">Supprimer</button>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Contenu *</label>
-                    <textarea id="coursContenu" rows="10" required
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg font-mono"></textarea>
-                </div>
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Durée (min)</label>
-                        <input type="number" id="coursDuree" value="15"
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Points</label>
-                        <input type="number" id="coursPoints" value="10"
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Ordre</label>
-                        <input type="number" id="coursOrdre" value="1" required
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg">
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" id="coursEstGratuit" checked class="w-5 h-5">
-                        <span class="ml-2 text-sm font-semibold">Gratuit</span>
-                    </label>
-                    <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" id="coursEstPublie" checked class="w-5 h-5">
-                        <span class="ml-2 text-sm font-semibold">Publié</span>
-                    </label>
-                </div>
-                <div class="flex gap-3 pt-4">
-                    <button type="submit"
-                        class="flex-1 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold rounded-lg">
-                        <span class="submit-text">Enregistrer</span>
-                        <span class="submit-loader hidden">Chargement...</span>
-                    </button>
-                    <button type="button" id="cancelCoursModal"
-                        class="px-6 py-3 border-2 border-gray-300 rounded-lg">Annuler</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- Modal Exercice QCM -->
-    <div id="exerciceModal"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="gradient-admin p-6 text-white">
-                <h3 id="exerciceModalTitle" class="text-2xl font-bold">Nouvel exercice QCM</h3>
+                    <!-- Course list -->
+                    <div class="mt-8 glass-card rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-6">📚 Existing Courses - Anglophone Section</h2>
+                        <div id="coursListAn" class="space-y-3">
+                            <p class="text-gray-500 text-center py-8">No courses yet</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <form id="exerciceForm" class="p-6 space-y-6">
-
-                <!-- Cours -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Cours associé *</label>
-                    <select id="exerciceCours" required
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
-                        <option value="">Sélectionner un cours...</option>
-                    </select>
-                </div>
-
-                <!-- Type et difficulté -->
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Type de question *</label>
-                        <select id="exerciceType" required
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
-                            <option value="qcm_unique">Choix unique</option>
-                            <option value="qcm_multiple">Choix multiples</option>
-                            <option value="vrai_faux">Vrai/Faux</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Difficulté *</label>
-                        <select id="exerciceDifficulte" required
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
-                            <option value="facile">⭐ Facile</option>
-                            <option value="moyen" selected>⭐⭐ Moyen</option>
-                            <option value="difficile">⭐⭐⭐ Difficile</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Points *</label>
-                        <input type="number" id="exercicePoints" min="1" max="100" value="10" required
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none">
-                    </div>
-                </div>
-
-                <!-- Question -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Question *</label>
-                    <textarea id="exerciceQuestion" rows="3" required
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
-                        placeholder="Posez votre question ici..."></textarea>
-                </div>
-
-                <!-- Choix de réponses -->
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <label class="block text-sm font-semibold text-gray-700">Choix de réponses *</label>
-                        <!-- Trouvez cette ligne dans le modal exercice -->
-                        <button type="button" onclick="window.exercicesView.addChoix()"
-                            class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition text-sm font-semibold">
-                            + Ajouter un choix
-                        </button>
-                    </div>
-
-                    <div id="choixContainer" class="space-y-3">
-                        <!-- Les choix seront ajoutés ici dynamiquement -->
-                    </div>
-
-                    <p class="text-xs text-gray-500 mt-2">
-                        💡 Cochez la case pour marquer une réponse comme correcte
-                    </p>
-                </div>
-
-                <!-- Explication -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Explication (affichée après la réponse)
-                    </label>
-                    <textarea id="exerciceExplication" rows="3"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
-                        placeholder="Expliquez pourquoi cette réponse est correcte..."></textarea>
-                </div>
-
-                <!-- Statut -->
-                <div class="flex items-center space-x-4">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" id="exerciceEstActif" checked
-                            class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                        <span class="ml-2 text-sm font-semibold text-gray-700">Exercice actif (visible par les
-                            étudiants)</span>
-                    </label>
-                </div>
-
-                <!-- Boutons -->
-                <div class="flex gap-3 pt-4 border-t border-gray-200">
-                    <button type="submit"
-                        class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
-                        💾 Enregistrer l'exercice
-                    </button>
-                    <button type="button" id="cancelExerciceModal"
-                        class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all">
-                        Annuler
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- Modal Exercice Code -->
-    <div id="exerciceCodeModal"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="gradient-admin p-6 text-white">
-                <h3 id="exerciceCodeModalTitle" class="text-2xl font-bold">Nouvel exercice de code</h3>
-            </div>
-
-            <form id="exerciceCodeForm" class="p-6 space-y-6">
-
-                <!-- Cours -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Cours associé *</label>
-                    <select id="exerciceCodeCours" required
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
-                        <option value="">Sélectionner un cours...</option>
-                    </select>
-                </div>
-
-                <!-- Titre et Description -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Titre de l'exercice *</label>
-                    <input type="text" id="exerciceCodeTitre" required
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none"
-                        placeholder="Ex: Créer une fonction de tri">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Description / Consigne</label>
-                    <textarea id="exerciceCodeDescription" rows="3"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none"
-                        placeholder="Décrivez l'exercice et les objectifs..."></textarea>
-                </div>
-
-                <!-- Langage, Difficulté, Points -->
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Langage *</label>
-                        <select id="exerciceCodeLangage" required
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
-                            <option value="javascript">🟨 JavaScript</option>
-                            <option value="python">🐍 Python</option>
-                            <option value="html">🌐 HTML</option>
-                            <option value="css">🎨 CSS</option>
-                            <option value="sql">🗄️ SQL</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Difficulté *</label>
-                        <select id="exerciceCodeDifficulte" required
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
-                            <option value="facile">⭐ Facile</option>
-                            <option value="moyen" selected>⭐⭐ Moyen</option>
-                            <option value="difficile">⭐⭐⭐ Difficile</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Points *</label>
-                        <input type="number" id="exerciceCodePoints" min="10" max="100" value="20" required
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none">
-                    </div>
-                </div>
-
-                <!-- Code Initial -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Code initial (template)</label>
-                    <textarea id="exerciceCodeInitial" rows="8"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none font-mono text-sm"
-                        placeholder="// Code de départ pour l'élève&#10;function maFonction() {&#10;  // À compléter&#10;}"></textarea>
-                </div>
-
-                <!-- Code Solution -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Code solution *</label>
-                    <textarea id="exerciceCodeSolution" rows="8" required
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none font-mono text-sm"
-                        placeholder="// Solution de référence&#10;function maFonction() {&#10;  return 'Hello World';&#10;}"></textarea>
-                </div>
-
-                <!-- Tests unitaires (JSON) -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Tests unitaires (JSON)</label>
-                    <textarea id="exerciceCodeTests" rows="6"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none font-mono text-sm"
-                        placeholder='[&#10;  {&#10;    "input": [1, 2],&#10;    "expected": 3,&#10;    "description": "Addition de 1 et 2"&#10;  }&#10;]'></textarea>
-                    <p class="text-xs text-gray-500 mt-1">Format JSON pour tester automatiquement le code</p>
-                </div>
-
-                <!-- Statut -->
-                <div class="flex items-center space-x-4">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" id="exerciceCodeActif" checked
-                            class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500">
-                        <span class="ml-2 text-sm font-semibold text-gray-700">Exercice actif</span>
-                    </label>
-                </div>
-
-                <!-- Boutons -->
-                <div class="flex gap-3 pt-4 border-t border-gray-200">
-                    <button type="submit"
-                        class="flex-1 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
-                        💾 Enregistrer l'exercice
-                    </button>
-                    <button type="button" id="cancelExerciceCodeModal"
-                        class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all">
-                        Annuler
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 
-    <!-- Load modules -->
-    <script type="module" src="js/main.js"></script>
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+
 </body>
 
 </html>

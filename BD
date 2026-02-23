@@ -44,9 +44,13 @@ CREATE TABLE public.chapitres (
   created_at timestamp without time zone DEFAULT now(),
   updated_at timestamp without time zone DEFAULT now(),
   pdf_url text CHECK (pdf_url IS NULL OR pdf_url ~~ 'http://%'::text OR pdf_url ~~ 'https://%'::text),
+  sous_systeme_id uuid,
+  serie_id uuid,
   CONSTRAINT chapitres_pkey PRIMARY KEY (id),
   CONSTRAINT chapitres_matiere_id_fkey FOREIGN KEY (matiere_id) REFERENCES public.matieres(id),
-  CONSTRAINT chapitres_classe_id_fkey FOREIGN KEY (classe_id) REFERENCES public.classes(id)
+  CONSTRAINT chapitres_classe_id_fkey FOREIGN KEY (classe_id) REFERENCES public.classes(id),
+  CONSTRAINT chapitres_sous_systeme_id_fkey FOREIGN KEY (sous_systeme_id) REFERENCES public.sous_systemes(id),
+  CONSTRAINT chapitres_serie_id_fkey FOREIGN KEY (serie_id) REFERENCES public.series_specialites(id)
 );
 CREATE TABLE public.classes (
   id integer NOT NULL DEFAULT nextval('classes_id_seq'::regclass),
@@ -130,8 +134,29 @@ CREATE TABLE public.cours (
   vues_total integer DEFAULT 0,
   created_at timestamp without time zone DEFAULT now(),
   updated_at timestamp without time zone DEFAULT now(),
+  sous_systeme_id uuid,
+  serie_id uuid,
+  image_url text,
+  matiere text,
+  chapitre text,
+  pdf_url text CHECK (pdf_url IS NULL OR pdf_url ~~ 'http://%'::text OR pdf_url ~~ 'https://%'::text),
   CONSTRAINT cours_pkey PRIMARY KEY (id),
-  CONSTRAINT cours_chapitre_id_fkey FOREIGN KEY (chapitre_id) REFERENCES public.chapitres(id)
+  CONSTRAINT cours_chapitre_id_fkey FOREIGN KEY (chapitre_id) REFERENCES public.chapitres(id),
+  CONSTRAINT cours_sous_systeme_id_fkey FOREIGN KEY (sous_systeme_id) REFERENCES public.sous_systemes(id),
+  CONSTRAINT cours_serie_id_fkey FOREIGN KEY (serie_id) REFERENCES public.series_specialites(id)
+);
+CREATE TABLE public.cycles (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  sous_systeme_id uuid,
+  code character varying NOT NULL UNIQUE,
+  nom_fr character varying NOT NULL,
+  nom_en character varying NOT NULL,
+  ordre integer NOT NULL,
+  duree_annees integer NOT NULL,
+  diplome_fin character varying,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT cycles_pkey PRIMARY KEY (id),
+  CONSTRAINT cycles_sous_systeme_id_fkey FOREIGN KEY (sous_systeme_id) REFERENCES public.sous_systemes(id)
 );
 CREATE TABLE public.design_projects (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -163,9 +188,13 @@ CREATE TABLE public.exercices (
   question text,
   explication text,
   est_actif boolean DEFAULT true,
+  sous_systeme_id uuid,
+  serie_id uuid,
   CONSTRAINT exercices_pkey PRIMARY KEY (id),
   CONSTRAINT exercices_chapitre_id_fkey FOREIGN KEY (chapitre_id) REFERENCES public.chapitres(id),
-  CONSTRAINT exercices_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id)
+  CONSTRAINT exercices_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id),
+  CONSTRAINT exercices_sous_systeme_id_fkey FOREIGN KEY (sous_systeme_id) REFERENCES public.sous_systemes(id),
+  CONSTRAINT exercices_serie_id_fkey FOREIGN KEY (serie_id) REFERENCES public.series_specialites(id)
 );
 CREATE TABLE public.exercices_code (
   id bigint NOT NULL DEFAULT nextval('exercices_code_id_seq'::regclass),
@@ -215,7 +244,38 @@ CREATE TABLE public.matieres (
   type_parcours character varying CHECK (type_parcours::text = ANY (ARRAY['eleve'::character varying, 'dev-web'::character varying, 'designer'::character varying, 'commun'::character varying]::text[])),
   ordre integer,
   created_at timestamp without time zone DEFAULT now(),
-  CONSTRAINT matieres_pkey PRIMARY KEY (id)
+  sous_systeme_id uuid,
+  CONSTRAINT matieres_pkey PRIMARY KEY (id),
+  CONSTRAINT matieres_sous_systeme_id_fkey FOREIGN KEY (sous_systeme_id) REFERENCES public.sous_systemes(id)
+);
+CREATE TABLE public.matieres_series (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  matiere_id integer,
+  serie_id uuid,
+  coefficient integer DEFAULT 1,
+  est_obligatoire boolean DEFAULT true,
+  heures_hebdo integer,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT matieres_series_pkey PRIMARY KEY (id),
+  CONSTRAINT matieres_series_matiere_id_fkey FOREIGN KEY (matiere_id) REFERENCES public.matieres(id),
+  CONSTRAINT matieres_series_serie_id_fkey FOREIGN KEY (serie_id) REFERENCES public.series_specialites(id)
+);
+CREATE TABLE public.niveaux_scolaires (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  cycle_id uuid,
+  code character varying NOT NULL UNIQUE,
+  nom_fr character varying NOT NULL,
+  nom_en character varying NOT NULL,
+  nom_court character varying NOT NULL,
+  ordre integer NOT NULL,
+  age_moyen integer,
+  est_classe_examen boolean DEFAULT false,
+  type_examen character varying,
+  icone character varying,
+  couleur character varying,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT niveaux_scolaires_pkey PRIMARY KEY (id),
+  CONSTRAINT niveaux_scolaires_cycle_id_fkey FOREIGN KEY (cycle_id) REFERENCES public.cycles(id)
 );
 CREATE TABLE public.notes_personnelles (
   id integer NOT NULL DEFAULT nextval('notes_personnelles_id_seq'::regclass),
@@ -281,6 +341,10 @@ CREATE TABLE public.profiles (
   bio text,
   created_at timestamp without time zone DEFAULT now(),
   updated_at timestamp without time zone DEFAULT now(),
+  sous_systeme_id uuid,
+  niveau_scolaire_id uuid,
+  serie_id uuid,
+  annee_scolaire character varying,
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
@@ -346,6 +410,21 @@ CREATE TABLE public.ressources (
   CONSTRAINT ressources_pkey PRIMARY KEY (id),
   CONSTRAINT ressources_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id)
 );
+CREATE TABLE public.series_specialites (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  niveau_id uuid,
+  code character varying NOT NULL UNIQUE,
+  nom_fr character varying NOT NULL,
+  nom_en character varying NOT NULL,
+  nom_court character varying NOT NULL,
+  categorie character varying,
+  description text,
+  ordre integer,
+  actif boolean DEFAULT true,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT series_specialites_pkey PRIMARY KEY (id),
+  CONSTRAINT series_specialites_niveau_id_fkey FOREIGN KEY (niveau_id) REFERENCES public.niveaux_scolaires(id)
+);
 CREATE TABLE public.soumissions_code (
   id bigint NOT NULL DEFAULT nextval('soumissions_code_id_seq'::regclass),
   user_id uuid,
@@ -393,6 +472,17 @@ CREATE TABLE public.soumissions_projets (
   CONSTRAINT soumissions_projets_pkey PRIMARY KEY (id),
   CONSTRAINT soumissions_projets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id),
   CONSTRAINT soumissions_projets_projet_id_fkey FOREIGN KEY (projet_id) REFERENCES public.projets(id)
+);
+CREATE TABLE public.sous_systemes (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  code character varying NOT NULL UNIQUE,
+  nom_fr character varying NOT NULL,
+  nom_en character varying NOT NULL,
+  description text,
+  langue_principale character varying NOT NULL,
+  actif boolean DEFAULT true,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT sous_systemes_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.statistiques_journalieres (
   id integer NOT NULL DEFAULT nextval('statistiques_journalieres_id_seq'::regclass),

@@ -315,7 +315,7 @@
         async function init() {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) {
-                window.location.href = 'login.html'
+                window.location.href = 'auth.html'
                 return
             }
             currentUser = user

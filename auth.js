@@ -48,7 +48,7 @@ async function redirectToDashboard(userId) {
 
     if (!profile) {
         console.error('Profil non trouvé')
-        window.location.href = 'login.html'
+        window.location.href = 'auth.html'
         return
     }
 
@@ -77,7 +77,7 @@ async function protectPage(requiredParcours = null) {
 
     if (!user) {
         console.log('❌ Non connecté - redirection vers login')
-        window.location.href = 'login.html'
+        window.location.href = 'auth.html'
         return false
     }
 
