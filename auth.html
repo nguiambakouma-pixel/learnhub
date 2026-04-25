@@ -241,6 +241,74 @@
             z-index: 101;
             cursor: pointer;
         }
+
+        .mobile-toggle {
+            display: none;
+            margin-top: 20px;
+            color: #7c3aed;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+                padding-top: 80px;
+            }
+
+            .logo-container {
+                top: 20px;
+                left: 20px;
+            }
+
+            .container {
+                min-height: auto;
+                width: 100%;
+                border-radius: 24px;
+            }
+
+            .form-container {
+                width: 100%;
+                height: auto;
+                position: static;
+            }
+
+            .sign-in-container, .sign-up-container {
+                width: 100%;
+                position: static;
+                opacity: 1;
+                z-index: 1;
+                transform: none !important;
+            }
+
+            .container.right-panel-active .sign-in-container {
+                display: none;
+            }
+
+            .container:not(.right-panel-active) .sign-up-container {
+                display: none;
+            }
+
+            .overlay-container {
+                display: none;
+            }
+
+            form {
+                padding: 40px 25px;
+                height: auto;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .btn-auth {
+                width: 100%;
+                padding: 14px;
+            }
+        }
     </style>
 </head>
 
@@ -268,6 +336,9 @@
                     <option value="designer">🎨 Designer UI/UX</option>
                 </select>
                 <button type="submit" class="btn-auth">S'inscrire</button>
+                <div class="mobile-toggle" onclick="container.classList.remove('right-panel-active')">
+                    Déjà un compte ? Se connecter
+                </div>
             </form>
         </div>
 
@@ -281,6 +352,9 @@
                 <a href="#" class="text-sm text-gray-400 mt-2 mb-4 hover:text-purple-600 transition">Mot de passe oublié
                     ?</a>
                 <button type="submit" class="btn-auth">Connexion</button>
+                <div class="mobile-toggle" onclick="container.classList.add('right-panel-active')">
+                    Pas encore de compte ? S'inscrire
+                </div>
             </form>
         </div>
 
