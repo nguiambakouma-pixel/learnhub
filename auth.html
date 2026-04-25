@@ -412,7 +412,7 @@
                     .from('profiles')
                     .select('type_parcours')
                     .eq('id', userId)
-                    .single();
+                    .maybeSingle();
 
                 if (profileError) throw profileError;
 
