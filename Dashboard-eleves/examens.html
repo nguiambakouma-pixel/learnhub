@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Examens Blancs — KMERSCHOOL</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/secrets.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
@@ -1524,8 +1525,8 @@
      JAVASCRIPT
 ════════════════════════ -->
     <script>
-        const SB_URL = 'https://zbbulpomopfwkqipbehk.supabase.co';
-        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A';
+        const SB_URL = window.SUPABASE_SECRETS ? window.SUPABASE_SECRETS.url : 'https://votre-url-supabase.supabase.co';
+        const SB_KEY = window.SUPABASE_SECRETS ? window.SUPABASE_SECRETS.key : 'votre-cle-anonyme';
         const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
         /* ── STATE ── */
