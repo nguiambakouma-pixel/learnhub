@@ -181,6 +181,40 @@
             </div>
         </div>
     </nav>
+    
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 z-[60] bg-slate-900/50 backdrop-blur-sm hidden">
+        <div class="absolute right-0 top-0 bottom-0 w-80 bg-white shadow-2xl p-8 flex flex-col transform translate-x-full transition-transform duration-300">
+            <div class="flex justify-between items-center mb-12">
+                <span class="text-xl font-bold gradient-text">MENU</span>
+                <button id="close-menu" class="p-2 hover:bg-slate-100 rounded-lg">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <nav class="flex flex-col space-y-6">
+                <a href="#parcours" class="mobile-link text-lg font-bold text-slate-900 flex items-center justify-between">
+                    Parcours <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+                </a>
+                <a href="#methode" class="mobile-link text-lg font-bold text-slate-900 flex items-center justify-between">
+                    Ma méthode <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+                </a>
+                <a href="#stats" class="mobile-link text-lg font-bold text-slate-900 flex items-center justify-between">
+                    Impact <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+                </a>
+                <div class="h-px bg-slate-100 my-4"></div>
+                <a href="professeur/login.html" class="text-lg font-bold text-purple-600">Espace Professeur</a>
+                <a href="auth.html" class="text-lg font-bold text-slate-900">Connexion</a>
+                <a href="auth.html?mode=register" class="py-4 bg-blue-600 text-white text-center font-bold rounded-2xl shadow-lg">
+                    S'inscrire
+                </a>
+            </nav>
+            
+            <div class="mt-auto pt-10 text-center">
+                <p class="text-sm text-slate-500">&copy; 2024 KMERSCHOOL</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section class="relative pt-40 pb-32 overflow-hidden bg-white">
@@ -531,9 +565,30 @@
 
         // Mobile menu toggle
         const menuBtn = document.getElementById('mobile-menu-button');
-        menuBtn.addEventListener('click', () => {
-            // Logique simple pour l'exemple
-            alert('Menu mobile bientôt disponible !');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuDrawer = mobileMenu.querySelector('div');
+        const closeBtn = document.getElementById('close-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        function toggleMenu(show) {
+            if (show) {
+                mobileMenu.classList.remove('hidden');
+                setTimeout(() => menuDrawer.classList.remove('translate-x-full'), 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                menuDrawer.classList.add('translate-x-full');
+                setTimeout(() => mobileMenu.classList.add('hidden'), 300);
+                document.body.style.overflow = '';
+            }
+        }
+
+        menuBtn.addEventListener('click', () => toggleMenu(true));
+        closeBtn.addEventListener('click', () => toggleMenu(false));
+        mobileMenu.addEventListener('click', (e) => {
+            if (e.target === mobileMenu) toggleMenu(false);
+        });
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => toggleMenu(false));
         });
 
         // Sticky Navbar subtle effect
