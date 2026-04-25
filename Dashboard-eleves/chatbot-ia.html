@@ -16,6 +16,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         /* ═══════════════════════════════════════
@@ -1022,15 +1023,13 @@
             padding: .3rem;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .sidebar {
                 position: fixed;
-                top: 0;
                 left: 0;
+                top: 0;
                 bottom: 0;
-                z-index: 100;
                 transform: translateX(-100%);
-            }
 
             .sidebar.open {
                 transform: translateX(0);
@@ -1893,10 +1892,10 @@ Tu es là pour aider ${name} à réussir. Commence chaque session avec enthousia
         <div class="welcome-sub">${t('welcome_desc')}</div>
       </div>
       <div class="chips-grid">
-        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon">📐</div><div class="chip-title">${t('chip_math_t')}</div><div class="chip-desc">${t('chip_math_d')}</div></div>
-        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon">⚗️</div><div class="chip-title">${t('chip_pc_t')}</div><div class="chip-desc">${t('chip_pc_d')}</div></div>
-        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon">📖</div><div class="chip-title">${t('chip_fr_t')}</div><div class="chip-desc">${t('chip_fr_d')}</div></div>
-        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon">🎓</div><div class="chip-title">${t('chip_prep_t')}</div><div class="chip-desc">${t('chip_prep_d')}</div></div>
+        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon"><i data-lucide="calculator"></i></div><div class="chip-title">${t('chip_math_t')}</div><div class="chip-desc">${t('chip_math_d')}</div></div>
+        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon"><i data-lucide="flask-conical"></i></div><div class="chip-title">${t('chip_pc_t')}</div><div class="chip-desc">${t('chip_pc_d')}</div></div>
+        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon"><i data-lucide="book-marked"></i></div><div class="chip-title">${t('chip_fr_t')}</div><div class="chip-desc">${t('chip_fr_d')}</div></div>
+        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon"><i data-lucide="graduation-cap"></i></div><div class="chip-title">${t('chip_prep_t')}</div><div class="chip-desc">${t('chip_prep_d')}</div></div>
       </div>
     </div>`;
             }
@@ -1965,7 +1964,10 @@ Tu es là pour aider ${name} à réussir. Commence chaque session avec enthousia
         function goBack() { window.location.href = 'dashboard-eleve.html'; }
 
         // ── START ─────────────────────────────────────────────────────────
-        init().catch(console.error);
+        async function initIcons() {
+            lucide.createIcons();
+        }
+        init().then(initIcons).catch(console.error);
     </script>
 </body>
 

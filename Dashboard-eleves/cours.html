@@ -11,6 +11,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         :root {
@@ -682,9 +683,7 @@
         <div style="display:flex;align-items:center;gap:.75rem;min-width:0;">
             <a href="dashboard-eleve.html"
                 style="color:#475569;text-decoration:none;display:flex;align-items:center;gap:.3rem;font-size:.82rem;white-space:nowrap;flex-shrink:0;">
-                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <polyline points="15 18 9 12 15 6" />
-                </svg><span data-i18n="btn_back">Retour</span>
+                <i data-lucide="chevron-left" class="w-4 h-4"></i><span data-i18n="btn_back">Retour</span>
             </a>
             <div style="width:1px;height:18px;background:rgba(255,255,255,.1);flex-shrink:0;"></div>
             <span id="topbarMatiere" style="font-size:.72rem;font-weight:600;color:#818cf8;flex-shrink:0;"></span>
@@ -692,18 +691,19 @@
             <span class="topbar-title" id="topbarTitle" data-i18n="loading">Chargement...</span>
         </div>
         <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0;">
-            <div class="timer-badge"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
-                    viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                </svg><span id="timerEl">0:00</span></div>
+            <div class="timer-badge">
+                <i data-lucide="clock" class="w-3 h-3"></i>
+                <span id="timerEl">0:00</span>
+            </div>
             <div
                 style="display:flex;align-items:center;gap:.4rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);padding:.3rem .8rem;border-radius:99px;">
                 <span style="font-size:.75rem;font-weight:700;color:#a5b4fc;" id="topPct">0%</span>
                 <span style="font-size:.7rem;color:#475569;" data-i18n="lbl_read">lu</span>
             </div>
             <button id="mobileToggle" onclick="toggleSidebar()"
-                style="display:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:.5rem;padding:.4rem .55rem;cursor:pointer;color:#94a3b8;">⊞</button>
+                style="display:flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:.5rem;padding:.4rem .55rem;cursor:pointer;color:#94a3b8;" class="lg:hidden">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+            </button>
             <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;color:white;cursor:pointer;"
                 id="avatarEl" onclick="window.location.href='profil.html'">?</div>
         </div>
@@ -785,7 +785,7 @@
                         <hr class="section-divider" />
                         <h2
                             style="font-size:1.1rem;font-weight:800;margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem;" data-i18n="lbl_exercises">
-                            ✏️ Exercices
+                            <i data-lucide="pen-tool" class="w-5 h-5 text-indigo-400"></i> Exercices
                             <span id="exCount"
                                 style="background:rgba(99,102,241,.15);color:#818cf8;font-size:.7rem;padding:.15rem .5rem;border-radius:99px;font-weight:700;"></span>
                         </h2>
@@ -795,7 +795,9 @@
                     <!-- Resources -->
                     <div id="resSection" style="display:none;margin-top:2rem;">
                         <hr class="section-divider" />
-                        <h2 style="font-size:1rem;font-weight:700;margin-bottom:.75rem;" data-i18n="lbl_resources">📎 Ressources</h2>
+                        <h2 style="font-size:1rem;font-weight:700;margin-bottom:.75rem;" data-i18n="lbl_resources">
+                            <i data-lucide="paperclip" class="w-4 h-4 text-indigo-400"></i> Ressources
+                        </h2>
                         <div id="resContainer"></div>
                     </div>
 
@@ -953,6 +955,7 @@
     </div>
 
     <script>
+        lucide.createIcons();
         const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A';
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);

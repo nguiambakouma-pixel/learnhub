@@ -15,6 +15,7 @@
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         *,
@@ -112,6 +113,38 @@
             top: 0;
             bottom: 0;
             z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main {
+                margin-left: 0;
+            }
+            .mobile-header {
+                display: flex !important;
+            }
+            .topbar {
+                display: none;
+            }
+        }
+
+        .mobile-header {
+            display: none;
+            height: 60px;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 90;
         }
 
         .sidebar-logo {
@@ -1621,6 +1654,13 @@
         <style>@keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }</style>
     </div>
 
+    <div class="mobile-header">
+        <div class="logo-mark">KMERSCHOOL</div>
+        <button onclick="document.querySelector('.sidebar').classList.toggle('open')" class="icon-btn">
+            <i data-lucide="menu"></i>
+        </button>
+    </div>
+
     <div class="layout">
 
         <!-- SIDEBAR -->
@@ -1652,31 +1692,35 @@
             <nav class="sidebar-nav">
                 <div class="nav-section-label" data-i18n="nav_main">Principal</div>
                 <div class="nav-item active" onclick="navigate('dashboard')">
-                    <div class="nav-icon">🏠</div><span data-i18n="menu_dashboard">Tableau de bord</span>
+                    <div class="nav-icon"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></div>
+                    <span data-i18n="menu_dashboard">Tableau de bord</span>
                 </div>
                 <div class="nav-item" onclick="navigate('cours')">
-                    <div class="nav-icon">📚</div><span data-i18n="menu_courses">Mes Cours</span>
-                </div>
-                <div class="nav-item" onclick="window.location.href='exercices.html'">
-                    <div class="nav-icon">✏️</div><span data-i18n="menu_exercises">Exercices</span><span class="nav-badge" id="exBadge"
-                        style="display:none">0</span>
-                </div>
-                <div class="nav-item" onclick="window.location.href='chatbot-ia.html'">
-                    <div class="nav-icon">🤖</div><span>KmerAI</span>
+                    <div class="nav-icon"><i data-lucide="book-open" class="w-5 h-5"></i></div>
+                    <span data-i18n="menu_courses">Mes Cours</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='examens.html'">
-                    <div class="nav-icon">📝</div><span data-i18n="menu_exams">Examens</span>
+                    <div class="nav-icon"><i data-lucide="clipboard-list" class="w-5 h-5"></i></div>
+                    <span data-i18n="menu_exams">Examens</span>
+                </div>
+                <div class="nav-item" onclick="window.location.href='chatbot-ia.html'">
+                    <div class="nav-icon"><i data-lucide="bot" class="w-5 h-5"></i></div>
+                    <span>KmerAI</span>
                 </div>
                 <div class="nav-item" onclick="window.location.href='annales.html'">
-                    <div class="nav-icon">📄</div><span data-i18n="menu_annales">Annales</span>
+                    <div class="nav-icon"><i data-lucide="file-text" class="w-5 h-5"></i></div>
+                    <span data-i18n="menu_annales">Annales</span>
                 </div>
                 <div class="nav-section-label" data-i18n="nav_community">Communauté</div>
                 <div class="nav-item" onclick="navigate('classement')">
-                    <div class="nav-icon">🏆</div><span data-i18n="menu_ranking">Classement</span>
+                    <div class="nav-icon"><i data-lucide="award" class="w-5 h-5"></i></div>
+                    <span data-i18n="menu_ranking">Classement</span>
                 </div>
                 <div class="nav-item" onclick="navigate('favoris')">
-                    <div class="nav-icon">❤️</div><span data-i18n="menu_favorites">Favoris</span>
+                    <div class="nav-icon"><i data-lucide="heart" class="w-5 h-5"></i></div>
+                    <span data-i18n="menu_favorites">Favoris</span>
                 </div>
+
                 <div class="nav-section-label" data-i18n="nav_account">Compte</div>
                 <div class="nav-item" onclick="window.location.href='profil.html'">
                     <div class="nav-icon">👤</div><span data-i18n="menu_profile">Mon Profil</span>
@@ -1687,7 +1731,7 @@
             </nav>
 
             <div class="sidebar-streak">
-                <div class="streak-fire">🔥</div>
+                <div class="streak-fire"><i data-lucide="flame" class="w-8 h-8 text-orange-500"></i></div>
                 <div>
                     <div class="streak-count" id="sidebarStreak">0</div>
                     <div class="streak-label" data-i18n="streak_days">jours de suite</div>

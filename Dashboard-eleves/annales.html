@@ -11,6 +11,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap"
         rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         :root {
@@ -572,13 +573,18 @@
             border-radius: .4rem;
         }
 
-        @keyframes shimmer {
-            0% {
-                background-position: 200% 0;
+        @media (max-width: 900px) {
+            .filter-sidebar {
+                position: fixed;
+                left: 0;
+                top: 56px;
+                bottom: 0;
+                z-index: 100;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
             }
-
-            100% {
-                background-position: -200% 0;
+            .filter-sidebar.open {
+                transform: translateX(0);
             }
         }
 
@@ -759,19 +765,22 @@
     <!-- ═══ TOPBAR ═══ -->
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:.85rem;">
+            <button onclick="document.querySelector('.filter-sidebar').classList.toggle('open')" class="vtBtn lg:hidden">
+                <i data-lucide="filter"></i>
+            </button>
             <button onclick="goBack()" class="btn btn-ghost btn-sm" data-i18n="nav_back">← Retour</button>
             <div class="logo">KMERSCHOOL</div>
-            <span style="color:#475569;font-size:.75rem;" data-i18n="title">/ Annales</span>
+            <span class="hidden sm:inline" style="color:#475569;font-size:.75rem;" data-i18n="title">/ Annales</span>
         </div>
         <div style="display:flex;align-items:center;gap:.75rem;">
             <div
                 style="display:flex;align-items:center;gap:.4rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);padding:.3rem .8rem;border-radius:99px;">
-                <span style="font-size:.8rem;">📋</span>
+                <i data-lucide="clipboard-list" class="w-4 h-4 text-indigo-400"></i>
                 <span id="topCount" style="font-size:.78rem;font-weight:700;color:#a5b4fc;">0 annales</span>
             </div>
             <div
                 style="display:flex;align-items:center;gap:.4rem;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);padding:.3rem .8rem;border-radius:99px;">
-                <span style="font-size:.8rem;">🆓</span>
+                <i data-lucide="gift" class="w-4 h-4 text-emerald-400"></i>
                 <span id="topFree" style="font-size:.78rem;font-weight:700;color:#34d399;">0 gratuits</span>
             </div>
             <div id="userAvatar" onclick="window.location.href='profil.html'"
@@ -788,9 +797,18 @@
 
             <div style="display:none">
                 <div class="filter-section-label" data-i18n="filter_sys">Sous-système</div>
-                <button class="f-btn active" onclick="setF('sys','all')" id="fs-all">🌍 <span data-i18n="f_all">Tous</span></button>
-                <button class="f-btn" onclick="setF('sys','francophone')" id="fs-francophone">🇫🇷 Francophone</button>
-                <button class="f-btn" onclick="setF('sys','anglophone')" id="fs-anglophone">🇬🇧 Anglophone</button>
+                <button class="f-btn active" onclick="setF('sys','all')" id="fs-all">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                    <span data-i18n="f_all" class="ml-1">Tous</span>
+                </button>
+                <button class="f-btn" onclick="setF('sys','francophone')" id="fs-francophone">
+                    <i data-lucide="languages" class="w-4 h-4"></i>
+                    <span class="ml-1">Francophone</span>
+                </button>
+                <button class="f-btn" onclick="setF('sys','anglophone')" id="fs-anglophone">
+                    <i data-lucide="languages" class="w-4 h-4"></i>
+                    <span class="ml-1">Anglophone</span>
+                </button>
             </div>
 
             <div>
@@ -1512,10 +1530,11 @@
             tCo.classList.toggle('disabled', !a.correction_pdf_url);
             tVi.classList.toggle('disabled', !a.corrige_video_url);
 
-            tCo.innerHTML = `📝 ${t('viewer_corr')}`;
-            tVi.innerHTML = `🎥 ${t('viewer_video')}`;
-            document.getElementById('vt-sujet').innerHTML = `📄 ${t('viewer_sujet')}`;
-            document.getElementById('vt-infos').innerHTML = `ℹ️ ${t('viewer_infos')}`;
+            tCo.innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> ${t('viewer_corr')}`;
+            tVi.innerHTML = `<i data-lucide="play-circle" class="w-4 h-4"></i> ${t('viewer_video')}`;
+            document.getElementById('vt-sujet').innerHTML = `<i data-lucide="file-text" class="w-4 h-4"></i> ${t('viewer_sujet')}`;
+            document.getElementById('vt-infos').innerHTML = `<i data-lucide="info" class="w-4 h-4"></i> ${t('viewer_infos')}`;
+            setTimeout(() => lucide.createIcons(), 10);
 
             // Load side meta
             buildSideMeta(a);
@@ -1752,6 +1771,9 @@
         }
 
         // ── KEYBOARD ─────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            init().then(() => lucide.createIcons());
+        });
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape' && currentAnnale) closeViewer();
         });

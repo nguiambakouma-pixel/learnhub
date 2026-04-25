@@ -11,6 +11,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --bg: #060b16;
@@ -111,7 +112,20 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 1.25rem
+            gap: 1.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                z-index: 100;
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
         }
 
         .filter-label {
@@ -1325,17 +1339,23 @@
     <!-- TOPBAR -->
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:.85rem">
+            <button onclick="document.querySelector('.sidebar').classList.toggle('open')" class="btn-icon lg:hidden">
+                <i data-lucide="menu"></i>
+            </button>
             <button onclick="goBack()" class="btn btn-ghost btn-sm" data-i18n="nav_back">← Retour</button>
             <div class="logo">KMERSCHOOL</div>
-            <span style="color:var(--t3);font-size:.74rem" data-i18n="title">/ Examens Blancs</span>
+            <span class="hidden sm:inline" style="color:var(--t3);font-size:.74rem" data-i18n="title">/ Examens Blancs</span>
         </div>
         <div style="display:flex;align-items:center;gap:.65rem">
             <div id="topChip"
                 style="display:flex;align-items:center;gap:.4rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);padding:.28rem .8rem;border-radius:99px">
-                <span style="font-size:.78rem">📝</span>
+                <i data-lucide="clipboard-list" class="w-4 h-4 text-indigo-400"></i>
                 <span style="font-size:.76rem;font-weight:700;color:#a5b4fc" id="topCount">—</span>
             </div>
-            <button onclick="showHistory()" class="btn btn-ghost btn-sm" data-i18n="nav_history">📜 Mes résultats</button>
+            <button onclick="showHistory()" class="btn btn-ghost btn-sm" data-i18n="nav_history">
+                <i data-lucide="history" class="w-4 h-4 mr-1"></i>
+                <span class="hidden sm:inline">Mes résultats</span>
+            </button>
             <div id="userAvatar" onclick="window.location.href='profil.html'"
                 style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;color:white;cursor:pointer;margin-left:.5rem">
                 ?</div>
@@ -1348,16 +1368,35 @@
         <aside class="sidebar">
             <div>
                 <div class="filter-label" data-i18n="filter_type">Type</div>
-                <button class="f-btn active" onclick="setF('type','all')" id="ftype-all">🗂 <span data-i18n="f_all">Tous</span> <span class="f-count"
-                        id="fc-all">0</span></button>
-                <button class="f-btn" onclick="setF('type','evaluation')" id="ftype-evaluation">📝 <span data-i18n="lbl_eval">Évaluation</span></button>
-                <button class="f-btn" onclick="setF('type','controle')" id="ftype-controle">✏️ <span data-i18n="lbl_ctrl">Contrôle</span></button>
-                <button class="f-btn" onclick="setF('type','devoir')" id="ftype-devoir">📋 <span data-i18n="lbl_dev">Devoir</span></button>
-                <button class="f-btn" onclick="setF('type','composition')" id="ftype-composition">🏆
-                    <span data-i18n="lbl_comp">Composition</span></button>
-                <button class="f-btn" onclick="setF('type','examen_blanc')" id="ftype-examen_blanc">📌 <span data-i18n="lbl_exam">Examen
-                    blanc</span></button>
-                <button class="f-btn" onclick="setF('type','test')" id="ftype-test">⚡ <span data-i18n="lbl_test">Test rapide</span></button>
+                <button class="f-btn active" onclick="setF('type','all')" id="ftype-all">
+                    <i data-lucide="grid" class="w-4 h-4"></i>
+                    <span data-i18n="f_all" class="ml-1">Tous</span>
+                    <span class="f-count" id="fc-all">0</span>
+                </button>
+                <button class="f-btn" onclick="setF('type','evaluation')" id="ftype-evaluation">
+                    <i data-lucide="file-edit" class="w-4 h-4"></i>
+                    <span data-i18n="lbl_eval" class="ml-1">Évaluation</span>
+                </button>
+                <button class="f-btn" onclick="setF('type','controle')" id="ftype-controle">
+                    <i data-lucide="pen-tool" class="w-4 h-4"></i>
+                    <span data-i18n="lbl_ctrl" class="ml-1">Contrôle</span>
+                </button>
+                <button class="f-btn" onclick="setF('type','devoir')" id="ftype-devoir">
+                    <i data-lucide="clipboard" class="w-4 h-4"></i>
+                    <span data-i18n="lbl_dev" class="ml-1">Devoir</span>
+                </button>
+                <button class="f-btn" onclick="setF('type','composition')" id="ftype-composition">
+                    <i data-lucide="award" class="w-4 h-4"></i>
+                    <span data-i18n="lbl_comp" class="ml-1">Composition</span>
+                </button>
+                <button class="f-btn" onclick="setF('type','examen_blanc')" id="ftype-examen_blanc">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    <span data-i18n="lbl_exam" class="ml-1">Examen blanc</span>
+                </button>
+                <button class="f-btn" onclick="setF('type','test')" id="ftype-test">
+                    <i data-lucide="zap" class="w-4 h-4"></i>
+                    <span data-i18n="lbl_test" class="ml-1">Test rapide</span>
+                </button>
             </div>
             <div>
                 <div class="filter-label" data-i18n="filter_mat">Matière</div>
@@ -1366,10 +1405,22 @@
             </div>
             <div>
                 <div class="filter-label" data-i18n="filter_status">Statut</div>
-                <button class="f-btn active" onclick="setF('status','all')" id="fstatus-all">🌐 <span data-i18n="f_all">Tous</span></button>
-                <button class="f-btn" onclick="setF('status','new')" id="fstatus-new">🆕 <span data-i18n="f_new">Non tentés</span></button>
-                <button class="f-btn" onclick="setF('status','done')" id="fstatus-done">✅ <span data-i18n="f_done">Réussis</span></button>
-                <button class="f-btn" onclick="setF('status','fail')" id="fstatus-fail">❌ <span data-i18n="f_fail">Échoués</span></button>
+                <button class="f-btn active" onclick="setF('status','all')" id="fstatus-all">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                    <span data-i18n="f_all" class="ml-1">Tous</span>
+                </button>
+                <button class="f-btn" onclick="setF('status','new')" id="fstatus-new">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span data-i18n="f_new" class="ml-1">Non tentés</span>
+                </button>
+                <button class="f-btn" onclick="setF('status','done')" id="fstatus-done">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                    <span data-i18n="f_done" class="ml-1">Réussis</span>
+                </button>
+                <button class="f-btn" onclick="setF('status','fail')" id="fstatus-fail">
+                    <i data-lucide="x-circle" class="w-4 h-4"></i>
+                    <span data-i18n="f_fail" class="ml-1">Échoués</span>
+                </button>
             </div>
         </aside>
 
@@ -1580,8 +1631,8 @@
                 lbl_exam: "Examen blanc",
                 lbl_test: "Test rapide",
                 
-                badge_done: "✅ Réussi {0}",
-                badge_fail: "❌ {0} tentative(s)",
+                badge_done: "Réussi {0}",
+                badge_fail: "{0} tentative(s)",
                 card_mins: "{0} min",
                 card_qs: "{0} questions",
                 card_pts: "/{0} pts",
@@ -1645,8 +1696,8 @@
                 lbl_exam: "Mock Exam",
                 lbl_test: "Quick Test",
                 
-                badge_done: "✅ Passed {0}",
-                badge_fail: "❌ {0} attempt(s)",
+                badge_done: "Passed {0}",
+                badge_fail: "{0} attempt(s)",
                 card_mins: "{0} min",
                 card_qs: "{0} questions",
                 card_pts: "/{0} pts",
@@ -1712,12 +1763,12 @@
 
         /* ── TYPE CONFIG ── */
         const TYPE_CFG = {
-            evaluation: { labelKey: 'lbl_eval', icon: '📝', col: 'rgba(99,102,241,.15)', tc: '#818cf8' },
-            controle: { labelKey: 'lbl_ctrl', icon: '✏️', col: 'rgba(16,185,129,.12)', tc: '#34d399' },
-            devoir: { labelKey: 'lbl_dev', icon: '📋', col: 'rgba(245,158,11,.12)', tc: '#fbbf24' },
-            composition: { labelKey: 'lbl_comp', icon: '🏆', col: 'rgba(168,85,247,.12)', tc: '#c084fc' },
-            examen_blanc: { labelKey: 'lbl_exam', icon: '📌', col: 'rgba(244,63,94,.1)', tc: '#fb7185' },
-            test: { labelKey: 'lbl_test', icon: '⚡', col: 'rgba(6,182,212,.12)', tc: '#67e8f9' },
+            evaluation: { labelKey: 'lbl_eval', icon: 'file-edit', col: 'rgba(99,102,241,.15)', tc: '#818cf8' },
+            controle: { labelKey: 'lbl_ctrl', icon: 'pen-tool', col: 'rgba(16,185,129,.12)', tc: '#34d399' },
+            devoir: { labelKey: 'lbl_dev', icon: 'clipboard', col: 'rgba(245,158,11,.12)', tc: '#fbbf24' },
+            composition: { labelKey: 'lbl_comp', icon: 'award', col: 'rgba(168,85,247,.12)', tc: '#c084fc' },
+            examen_blanc: { labelKey: 'lbl_exam', icon: 'file-text', col: 'rgba(244,63,94,.1)', tc: '#fb7185' },
+            test: { labelKey: 'lbl_test', icon: 'zap', col: 'rgba(6,182,212,.12)', tc: '#67e8f9' },
         };
         function getCfg(tKey) { 
             const cfg = TYPE_CFG[tKey] || { labelKey: tKey || 'lbl_exam', icon: '📝', col: 'rgba(255,255,255,.06)', tc: '#64748b' };
@@ -1732,7 +1783,18 @@
 
         /* ── MAT ICONS ── */
         const MI = { mathematiques: '📐', physique: '⚗️', chimie: '🧪', svt: '🌿', francais: '📖', anglais: '🌐', histoire: '📜', geographie: '🗺', philosophie: '🧠', informatique: '💻', economie: '📊', default: '📚' };
-        function getMatIcon(n) { if (!n) return MI.default; const k = n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); for (const key in MI) if (k.includes(key)) return MI[key]; return MI.default; }
+        function getMatIcon(n) { 
+            const miMap = {
+                mathematiques: 'compass', physique: 'zap', chimie: 'flask-conical', 
+                svt: 'leaf', francais: 'book', anglais: 'globe', 
+                histoire: 'scroll', geographie: 'map', philosophie: 'lightbulb', 
+                informatique: 'monitor', economie: 'bar-chart', default: 'book-open'
+            };
+            if (!n) return `<i data-lucide="${miMap.default}" class="w-3 h-3 mr-1"></i>`; 
+            const k = n.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); 
+            for (const key in miMap) if (k.includes(key)) return `<i data-lucide="${miMap[key]}" class="w-3 h-3 mr-1"></i>`; 
+            return `<i data-lucide="${miMap.default}" class="w-3 h-3 mr-1"></i>`; 
+        }
 
         /* ══════════════
            INIT
@@ -1872,11 +1934,12 @@
             const tentes = list.filter(e => myPassages[e.id]?.length).length;
             const totalMins = list.reduce((s, e) => s + (e.duree_minutes || 0), 0);
             document.getElementById('statsStrip').innerHTML = [
-                { icon: '📝', val: list.length, lbl: t('stat_exams') },
-                { icon: '✅', val: reussis, lbl: t('stat_success') },
-                { icon: '⏱', val: totalMins + 'min', lbl: t('stat_content') },
-                { icon: '🎯', val: tentes, lbl: t('stat_tried') },
-            ].map(s => `<div class="stat-chip"><span>${s.icon}</span> <strong style="color:var(--t1)">${s.val}</strong> <span style="color:var(--t3)">${s.lbl}</span></div>`).join('');
+                { icon: 'clipboard-list', val: list.length, lbl: t('stat_exams'), col: 'var(--ind)' },
+                { icon: 'check-circle', val: reussis, lbl: t('stat_success'), col: 'var(--em)' },
+                { icon: 'clock', val: totalMins + 'min', lbl: t('stat_content'), col: 'var(--amb)' },
+                { icon: 'target', val: tentes, lbl: t('stat_tried'), col: 'var(--ros)' },
+            ].map(s => `<div class="stat-chip"><i data-lucide="${s.icon}" class="w-4 h-4" style="color:${s.col}"></i> <strong style="color:var(--t1)">${s.val}</strong> <span style="color:var(--t3)">${s.lbl}</span></div>`).join('');
+            setTimeout(() => lucide.createIcons(), 10);
         }
 
         function renderCard(e) {
@@ -1894,7 +1957,7 @@
     <div class="card-accent" style="background:${cfg.tc}"></div>
     <div class="card-body">
       <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
-        <span class="badge badge-type" style="background:${cfg.col};color:${cfg.tc}">${cfg.icon} ${cfg.label}</span>
+        <span class="badge badge-type" style="background:${cfg.col};color:${cfg.tc}"><i data-lucide="${cfg.icon}" class="w-3 h-3 mr-1"></i> ${cfg.label}</span>
         ${e.matiere?.nom ? `<span class="badge badge-mat">${getMatIcon(e.matiere.nom)} ${e.matiere.nom}</span>` : ''}
         ${statusBadge}
       </div>
@@ -2494,7 +2557,9 @@
             
             if (sec.right_click) {
                 const onCtx = e => { e.preventDefault(); toast("Clic droit interdit !"); };
-                document.addEventListener('contextmenu', onCtx);
+                document.addEventListener('DOMContentLoaded', () => {
+            init().then(() => lucide.createIcons());
+        });
                 securityEvents.push({ type: 'contextmenu', fn: onCtx });
             }
             
