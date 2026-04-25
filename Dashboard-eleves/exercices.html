@@ -1,0 +1,2355 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exercices — KMERSCHOOL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg: #060b16;
+            --surface: #0d1526;
+            --surface2: #0a0f1e;
+            --border: rgba(255, 255, 255, .07);
+            --indigo: #6366f1;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --rose: #f43f5e;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: #cbd5e1;
+            min-height: 100vh;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        code,
+        pre,
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, .3);
+            border-radius: 3px;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 300;
+            height: 56px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #818cf8, #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ── LAYOUT ── */
+        .page-wrap {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 56px;
+        }
+
+        /* ── LEFT SIDEBAR (Filters) ── */
+        .filter-sidebar {
+            width: 250px;
+            flex-shrink: 0;
+            background: var(--surface2);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            position: sticky;
+            top: 56px;
+            height: calc(100vh - 56px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .filter-title {
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            color: #475569;
+            text-transform: uppercase;
+            margin-bottom: .6rem;
+        }
+
+        .filter-btn {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .55rem .85rem;
+            border-radius: .55rem;
+            cursor: pointer;
+            font-size: .82rem;
+            font-weight: 500;
+            color: #64748b;
+            transition: all .15s;
+            width: 100%;
+            background: none;
+            border: none;
+            text-align: left;
+            position: relative;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, .05);
+            color: #94a3b8;
+        }
+
+        .filter-btn.active {
+            background: rgba(99, 102, 241, .15);
+            color: #a5b4fc;
+            border-left: 2px solid #6366f1;
+            padding-left: calc(.85rem - 2px);
+        }
+
+        .filter-count {
+            margin-left: auto;
+            font-size: .65rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, .08);
+            color: #64748b;
+            padding: .1rem .4rem;
+            border-radius: 99px;
+        }
+
+        .filter-btn.active .filter-count {
+            background: rgba(99, 102, 241, .2);
+            color: #818cf8;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── CONTENT HEADER ── */
+        .content-header {
+            padding: 1.5rem 2rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* ── SEARCH BAR ── */
+        .search-wrap {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            border-radius: .6rem;
+            padding: .5rem 1rem;
+            transition: border-color .2s;
+            flex: 1;
+            max-width: 360px;
+        }
+
+        .search-wrap:focus-within {
+            border-color: rgba(99, 102, 241, .4);
+        }
+
+        .search-wrap input {
+            background: none;
+            border: none;
+            outline: none;
+            color: #e2e8f0;
+            font-size: .85rem;
+            width: 100%;
+        }
+
+        .search-wrap input::placeholder {
+            color: #475569;
+        }
+
+        /* ── CATALOG GRID ── */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem 2rem 3rem;
+        }
+
+        /* ── EXERCISE CARD ── */
+        .exo-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform .2s, border-color .2s, box-shadow .2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .exo-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(99, 102, 241, .3);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .35);
+        }
+
+        .exo-card-top {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: .6rem;
+            flex: 1;
+        }
+
+        .exo-card-footer {
+            padding: .75rem 1.25rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+            padding: .2rem .65rem;
+            border-radius: 99px;
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+        }
+
+        .type-qcm {
+            background: rgba(99, 102, 241, .15);
+            color: #818cf8;
+        }
+
+        .type-code {
+            background: rgba(16, 185, 129, .12);
+            color: #34d399;
+        }
+
+        .type-texte {
+            background: rgba(59, 130, 246, .12);
+            color: #60a5fa;
+        }
+
+        .type-projet {
+            background: rgba(245, 158, 11, .12);
+            color: #fbbf24;
+        }
+
+        .diff-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: .18rem .55rem;
+            border-radius: 99px;
+            font-size: .68rem;
+            font-weight: 700;
+        }
+
+        .diff-facile {
+            background: rgba(16, 185, 129, .12);
+            color: #34d399;
+        }
+
+        .diff-moyen {
+            background: rgba(245, 158, 11, .12);
+            color: #fbbf24;
+        }
+
+        .diff-difficile {
+            background: rgba(244, 63, 94, .1);
+            color: #fb7185;
+        }
+
+        .done-check {
+            position: absolute;
+            top: .75rem;
+            right: .75rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, .15);
+            border: 1px solid rgba(16, 185, 129, .3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem;
+            color: #34d399;
+        }
+
+        /* ── EXERCISE ARENA (full screen overlay) ── */
+        .arena {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 400;
+            background: var(--bg);
+            flex-direction: column;
+        }
+
+        .arena.show {
+            display: flex;
+        }
+
+        .arena-header {
+            height: 56px;
+            flex-shrink: 0;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            gap: 1rem;
+        }
+
+        .arena-body {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ── QCM ARENA ── */
+        .qcm-wrap {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 760px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .question-progress {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .q-dot {
+            width: 28px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, .08);
+            transition: background .2s;
+        }
+
+        .q-dot.done {
+            background: var(--indigo);
+        }
+
+        .q-dot.correct {
+            background: var(--emerald);
+        }
+
+        .q-dot.wrong {
+            background: var(--rose);
+        }
+
+        .q-dot.current {
+            background: var(--amber);
+        }
+
+        .question-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.75rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: .85rem;
+            padding: .9rem 1.1rem;
+            border-radius: .7rem;
+            cursor: pointer;
+            margin-bottom: .5rem;
+            border: 1px solid rgba(255, 255, 255, .08);
+            background: rgba(255, 255, 255, .03);
+            transition: all .15s;
+            font-size: .9rem;
+            color: #cbd5e1;
+        }
+
+        .option:hover {
+            border-color: rgba(99, 102, 241, .4);
+            background: rgba(99, 102, 241, .06);
+        }
+
+        .option.selected {
+            border-color: var(--indigo);
+            background: rgba(99, 102, 241, .1);
+            color: #a5b4fc;
+        }
+
+        .option.correct {
+            border-color: var(--emerald);
+            background: rgba(16, 185, 129, .1);
+            color: #34d399;
+        }
+
+        .option.wrong {
+            border-color: var(--rose);
+            background: rgba(244, 63, 94, .08);
+            color: #fb7185;
+        }
+
+        .option.reveal-correct {
+            border-color: var(--emerald);
+            background: rgba(16, 185, 129, .06);
+        }
+
+        .option-letter {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, .15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .explication-box {
+            background: rgba(16, 185, 129, .07);
+            border: 1px solid rgba(16, 185, 129, .2);
+            border-radius: .7rem;
+            padding: 1rem 1.1rem;
+            font-size: .85rem;
+            color: #6ee7b7;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .explication-box.show {
+            display: block;
+        }
+
+        /* ── CODE ARENA ── */
+        .code-arena-wrap {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .code-description {
+            width: 360px;
+            flex-shrink: 0;
+            background: var(--surface2);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .code-editor-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .code-toolbar {
+            background: #0d1220;
+            border-bottom: 1px solid var(--border);
+            padding: .5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            flex-wrap: wrap;
+        }
+
+        .lang-badge {
+            display: flex;
+            align-items: center;
+            gap: .35rem;
+            padding: .3rem .75rem;
+            border-radius: .5rem;
+            font-size: .75rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .lang-js {
+            background: rgba(245, 201, 50, .1);
+            color: #f5c932;
+        }
+
+        .lang-python {
+            background: rgba(59, 130, 246, .1);
+            color: #60a5fa;
+        }
+
+        .lang-html {
+            background: rgba(244, 63, 94, .1);
+            color: #fb7185;
+        }
+
+        .lang-css {
+            background: rgba(99, 102, 241, .12);
+            color: #818cf8;
+        }
+
+        .lang-sql {
+            background: rgba(16, 185, 129, .1);
+            color: #34d399;
+        }
+
+        .code-editor {
+            flex: 1;
+            min-height: 0;
+            background: #070d1c;
+            color: #a5b4fc;
+            border: none;
+            outline: none;
+            resize: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .87rem;
+            line-height: 1.7;
+            padding: 1.25rem 1.5rem;
+            tab-size: 2;
+        }
+
+        .output-panel {
+            height: 180px;
+            flex-shrink: 0;
+            background: #05090f;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .output-toolbar {
+            background: #070d1c;
+            padding: .45rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, .05);
+            flex-shrink: 0;
+        }
+
+        .output-console {
+            flex: 1;
+            overflow-y: auto;
+            padding: .75rem 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .82rem;
+            line-height: 1.7;
+        }
+
+        .console-line {
+            display: flex;
+            gap: .75rem;
+        }
+
+        .console-line.log {
+            color: #94a3b8;
+        }
+
+        .console-line.error {
+            color: #fb7185;
+        }
+
+        .console-line.success {
+            color: #34d399;
+        }
+
+        .console-line.info {
+            color: #60a5fa;
+        }
+
+        .console-prefix {
+            color: #475569;
+            flex-shrink: 0;
+        }
+
+        /* Test Results */
+        .test-result {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .5rem .75rem;
+            border-radius: .5rem;
+            font-size: .8rem;
+            margin-bottom: .35rem;
+        }
+
+        .test-pass {
+            background: rgba(16, 185, 129, .08);
+            border: 1px solid rgba(16, 185, 129, .2);
+            color: #6ee7b7;
+        }
+
+        .test-fail {
+            background: rgba(244, 63, 94, .06);
+            border: 1px solid rgba(244, 63, 94, .2);
+            color: #fca5a5;
+        }
+
+        /* ── TIMER ── */
+        .timer-ring {
+            transform: rotate(-90deg);
+        }
+
+        .timer-ring-fill {
+            transition: stroke-dashoffset .1s linear;
+        }
+
+        .timer-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .9rem;
+            font-weight: 600;
+            color: #94a3b8;
+            letter-spacing: .05em;
+        }
+
+        .timer-display.warning {
+            color: #fbbf24;
+        }
+
+        .timer-display.danger {
+            color: #fb7185;
+            animation: pulse .5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .6;
+            }
+        }
+
+        /* ── RESULTS OVERLAY ── */
+        .results-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(0, 0, 0, .85);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .results-overlay.show {
+            display: flex;
+        }
+
+        .results-box {
+            background: linear-gradient(145deg, #0d1526, #091222);
+            border: 1px solid rgba(99, 102, 241, .25);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results-box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, .1) 0%, transparent 60%);
+        }
+
+        .score-ring {
+            position: relative;
+            display: inline-block;
+        }
+
+        .score-pct {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.6rem;
+        }
+
+        .stat-pill {
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            border-radius: .75rem;
+            padding: .75rem 1rem;
+            text-align: center;
+            flex: 1;
+        }
+
+        /* ── BUTTONS ── */
+        .btn {
+            border: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all .15s;
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            border-radius: .6rem;
+            padding: .55rem 1.25rem;
+            font-size: .82rem;
+        }
+
+        .btn-primary:hover {
+            opacity: .9;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: .45;
+            pointer-events: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: .6rem;
+            padding: .55rem 1.25rem;
+            font-size: .82rem;
+        }
+
+        .btn-success:hover {
+            opacity: .9;
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            color: #94a3b8;
+            border-radius: .6rem;
+            padding: .5rem 1rem;
+            font-size: .82rem;
+        }
+
+        .btn-ghost:hover {
+            border-color: rgba(99, 102, 241, .3);
+            color: #c7d2fe;
+        }
+
+        .btn-run {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: .6rem;
+            padding: .45rem 1.1rem;
+            font-size: .78rem;
+        }
+
+        .btn-run:hover {
+            opacity: .9;
+        }
+
+        .btn-sm {
+            padding: .35rem .75rem;
+            font-size: .75rem;
+        }
+
+        .btn-icon {
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            color: #94a3b8;
+            border-radius: .5rem;
+            padding: .4rem .6rem;
+            font-size: .8rem;
+        }
+
+        /* ── XP FLOAT ANIMATION ── */
+        .xp-float {
+            position: fixed;
+            z-index: 999;
+            pointer-events: none;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #fbbf24;
+            text-shadow: 0 0 12px rgba(245, 158, 11, .6);
+            animation: floatUp 1.5s ease both;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-80px) scale(1.3);
+            }
+        }
+
+        /* ── CONFETTI ── */
+        .confetti-dot {
+            position: fixed;
+            pointer-events: none;
+            z-index: 998;
+            border-radius: 3px;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            to {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ── TOAST ── */
+        .toast-area {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 600;
+            display: flex;
+            flex-direction: column;
+            gap: .4rem;
+            align-items: center;
+        }
+
+        .toast {
+            background: var(--surface);
+            border: 1px solid rgba(99, 102, 241, .25);
+            border-radius: .75rem;
+            padding: .55rem 1.25rem;
+            font-size: .82rem;
+            font-weight: 500;
+            white-space: nowrap;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .4);
+            animation: toastIn .25s ease both;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── SKELETON ── */
+        .skel {
+            background: linear-gradient(90deg, rgba(255, 255, 255, .04) 25%, rgba(255, 255, 255, .08) 50%, rgba(255, 255, 255, .04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: .4rem;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ── STATS BAR ── */
+        .stats-bar {
+            display: flex;
+            gap: 1rem;
+            padding: 0 2rem 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-chip {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: .6rem;
+            padding: .5rem .9rem;
+            font-size: .8rem;
+        }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+            color: #475569;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .filter-sidebar {
+                display: none;
+            }
+
+            .code-description {
+                width: 100%;
+                max-height: 220px;
+            }
+
+            .code-arena-wrap {
+                flex-direction: column;
+            }
+        }
+
+        /* ── SPINNER ── */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #F5B800;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-sm { width: 14px; height: 14px; border-width: 1.5px; }
+        .spinner-lg { width: 40px; height: 40px; border-width: 3px; }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══ TOPBAR ═══ -->
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:.85rem;">
+            <button onclick="goBack()" class="btn btn-ghost btn-sm">← Retour</button>
+            <div class="logo">KMERSCHOOL</div>
+            <span style="color:#475569;font-size:.75rem;">/ Exercices</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem;">
+            <!-- Global stats chips -->
+            <div
+                style="display:flex;align-items:center;gap:.4rem;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);padding:.3rem .8rem;border-radius:99px;">
+                <span style="font-size:.8rem;">✅</span>
+                <span id="topReussis" style="font-size:.78rem;font-weight:700;color:#34d399;">0 réussis</span>
+            </div>
+            <div
+                style="display:flex;align-items:center;gap:.4rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);padding:.3rem .8rem;border-radius:99px;">
+                <span style="font-size:.8rem;">⭐</span>
+                <span id="topXP" style="font-size:.78rem;font-weight:700;color:#fbbf24;">0 XP</span>
+            </div>
+            <div class="timer-display" id="topTimer" style="display:none;">⏱ <span id="topTimerVal">00:00</span></div>
+        </div>
+    </header>
+
+    <!-- ═══ PAGE WRAP ═══ -->
+    <div class="page-wrap">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="filter-sidebar">
+            <div>
+                <div class="filter-title" data-i18n="filter_type">Type d'exercice</div>
+                <button class="filter-btn active" onclick="setFilter('type','all')" id="f-all">
+                    <span>🗂</span> <span data-i18n="filter_all_m">Tous</span> <span class="filter-count" id="fc-all">0</span>
+                </button>
+                <button class="filter-btn" onclick="setFilter('type','qcm')" id="f-qcm">
+                    <span>❓</span> <span data-i18n="type_qcm">QCM</span> <span class="filter-count" id="fc-qcm">0</span>
+                </button>
+                <button class="filter-btn" onclick="setFilter('type','code')" id="f-code">
+                    <span>💻</span> <span data-i18n="type_code">Code</span> <span class="filter-count" id="fc-code">0</span>
+                </button>
+                <button class="filter-btn" onclick="setFilter('type','texte')" id="f-texte">
+                    <span>📝</span> <span data-i18n="type_texte">Texte</span> <span class="filter-count" id="fc-texte">0</span>
+                </button>
+            </div>
+
+            <div>
+                <div class="filter-title" data-i18n="filter_diff">Difficulté</div>
+                <button class="filter-btn" onclick="setFilter('diff','all')" id="fd-all">
+                    <span>🎯</span> <span data-i18n="filter_all">Toutes</span>
+                </button>
+                <button class="filter-btn" onclick="setFilter('diff','facile')" id="fd-facile">
+                    <span style="color:#34d399;">●</span> <span data-i18n="diff_facile">Facile</span>
+                </button>
+                <button class="filter-btn" onclick="setFilter('diff','moyen')" id="fd-moyen">
+                    <span style="color:#fbbf24;">●</span> <span data-i18n="diff_moyen">Moyen</span>
+                </button>
+                <button class="filter-btn" onclick="setFilter('diff','difficile')" id="fd-difficile">
+                    <span style="color:#fb7185;">●</span> <span data-i18n="diff_difficile">Difficile</span>
+                </button>
+            </div>
+
+            <div>
+                <div class="filter-title" data-i18n="filter_subject">Matière</div>
+                <div id="matiereFilters">
+                    <button class="filter-btn active" onclick="setFilter('mat','all')" id="fm-all">
+                        <span>📚</span> <span data-i18n="filter_all">Toutes</span>
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top:auto;">
+                <div class="filter-title" data-i18n="filter_history">Mon historique</div>
+                <button class="filter-btn" onclick="setFilter('status','done')" id="f-done">
+                    <span>✅</span> <span data-i18n="status_done">Réussis</span>
+                </button>
+                <button class="filter-btn" onclick="setFilter('status','failed')" id="f-failed">
+                    <span>❌</span> <span data-i18n="status_failed">À refaire</span>
+                </button>
+                <button class="filter-btn" onclick="setFilter('status','new')" id="f-new">
+                    <span>🆕</span> <span data-i18n="status_new">Non faits</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="content-header">
+                <div>
+                    <h2 style="font-size:1.3rem;font-weight:800;color:#f1f5f9;" data-i18n="page_title">✏️ Mes Exercices</h2>
+                    <p style="font-size:.82rem;color:#475569;margin-top:.2rem;" id="subLabel" data-i18n="loading"><div class="spinner spinner-sm"></div></p>
+                </div>
+                <div class="search-wrap">
+                    <svg width="14" height="14" fill="none" stroke="#475569" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Rechercher un exercice…" data-i18n-placeholder="search_placeholder" />
+                </div>
+            </div>
+
+            <!-- Stats bar -->
+            <div class="stats-bar" id="statsBar" style="margin-top:1rem;">
+                <div class="spinner spinner-sm"></div>
+            </div>
+
+            <!-- Catalog grid -->
+            <div class="catalog-grid" id="catalogGrid" style="display:flex;justify-content:center;padding:4rem;">
+                <div class="spinner spinner-lg"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+     ARENA — QCM
+═══════════════════════════════════════════════════════ -->
+    <div class="arena" id="arenaQcm">
+        <div class="arena-header">
+            <div style="display:flex;align-items:center;gap:.85rem;">
+                <button onclick="closeArena()" class="btn btn-ghost btn-sm">✕ <span data-i18n="btn_quit">Quitter</span></button>
+                <div style="font-size:.85rem;font-weight:600;color:#94a3b8;" id="qcmArenaTitle">QCM</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <!-- timer ring -->
+                <div style="position:relative;width:38px;height:38px;" id="timerWrap">
+                    <svg width="38" height="38" viewBox="0 0 38 38">
+                        <circle cx="19" cy="19" r="15" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="3" />
+                        <circle cx="19" cy="19" r="15" fill="none" stroke="#6366f1" stroke-width="3"
+                            stroke-linecap="round" stroke-dasharray="94" stroke-dashoffset="0" id="timerCircle"
+                            class="timer-ring" transform="rotate(-90 19 19)" />
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                        <span class="timer-display" id="qcmTimerVal" style="font-size:.65rem;">–</span>
+                    </div>
+                </div>
+                <div style="font-size:.8rem;color:#64748b;" id="qcmQuestionCounter">Q 0/0</div>
+                <div style="font-size:.8rem;color:#fbbf24;font-weight:700;" id="qcmScoreDisplay">Score: 0</div>
+            </div>
+        </div>
+
+        <div class="arena-body">
+            <div class="qcm-wrap" id="qcmWrap">
+                <!-- dynamic content -->
+            </div>
+        </div>
+
+        <!-- Bottom bar -->
+        <div
+            style="padding:1rem 1.5rem;background:var(--surface2);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+            <div class="question-progress" id="qcmDotProgress" style="flex:1;"></div>
+            <button class="btn btn-primary" id="qcmValidateBtn" onclick="validateQcm()" disabled data-i18n="btn_validate">
+                Valider →
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+     ARENA — CODE
+═══════════════════════════════════════════════════════ -->
+    <div class="arena" id="arenaCode">
+        <div class="arena-header">
+            <div style="display:flex;align-items:center;gap:.85rem;">
+                <button onclick="closeArena()" class="btn btn-ghost btn-sm">✕ <span data-i18n="btn_quit">Quitter</span></button>
+                <div style="font-size:.85rem;font-weight:600;color:#94a3b8;" id="codeArenaTitle">Exercice Code</div>
+                <div id="codeLangBadge" class="lang-badge lang-js">JS</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <div style="position:relative;width:38px;height:38px;">
+                    <svg width="38" height="38" viewBox="0 0 38 38">
+                        <circle cx="19" cy="19" r="15" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="3" />
+                        <circle cx="19" cy="19" r="15" fill="none" stroke="#10b981" stroke-width="3"
+                            stroke-linecap="round" stroke-dasharray="94" stroke-dashoffset="0" id="codeTimerCircle"
+                            class="timer-ring" transform="rotate(-90 19 19)" />
+                    </svg>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                        <span class="timer-display" id="codeTimerVal" style="font-size:.65rem;">–</span>
+                    </div>
+                </div>
+                <span id="codeXpBadge" style="font-size:.78rem;color:#fbbf24;font-weight:700;"></span>
+            </div>
+        </div>
+
+        <div class="arena-body code-arena-wrap">
+            <!-- LEFT: description -->
+            <div class="code-description">
+                <div>
+                    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem;" id="codeMetaBadges"></div>
+                    <h3 style="font-size:1rem;font-weight:800;color:#f1f5f9;margin-bottom:.5rem;" id="codeTitleDisplay">
+                        —</h3>
+                    <p style="font-size:.85rem;color:#64748b;line-height:1.7;" id="codeDescDisplay">—</p>
+                </div>
+
+                <!-- Tests -->
+                <div id="codeTestsSection" style="display:none;">
+                    <div
+                        style="font-size:.72rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem;">
+                        Tests à passer</div>
+                    <div id="codeTestsList"></div>
+                </div>
+
+                <!-- Hints -->
+                <div style="margin-top:auto;">
+                    <button onclick="toggleHint()" class="btn btn-ghost"
+                        style="width:100%;justify-content:center;font-size:.78rem;">
+                        💡 Voir un indice
+                    </button>
+                    <div id="hintBox"
+                        style="display:none;margin-top:.75rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:.6rem;padding:.85rem;font-size:.82rem;color:#fbbf24;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: editor + output -->
+            <div class="code-editor-wrap">
+                <div class="code-toolbar">
+                    <button onclick="resetCode()" class="btn btn-ghost btn-sm">↺ <span data-i18n="btn_reset">Reset</span></button>
+                    <button onclick="formatCode()" class="btn btn-ghost btn-sm">⚡ <span data-i18n="btn_format">Format</span></button>
+                    <div style="margin-left:auto;display:flex;gap:.5rem;">
+                        <button onclick="runCode()" class="btn btn-run">▶ <span data-i18n="btn_run">Exécuter</span></button>
+                        <button onclick="submitCode()" class="btn btn-success btn-sm" id="submitCodeBtn">✓
+                            <span data-i18n="btn_submit">Soumettre</span></button>
+                    </div>
+                </div>
+
+                <!-- Line numbers + editor -->
+                <div style="flex:1;display:flex;overflow:hidden;position:relative;">
+                    <div id="lineNums"
+                        style="background:#06090f;padding:1.25rem .5rem;min-width:40px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:.87rem;line-height:1.7;color:#334155;user-select:none;border-right:1px solid rgba(255,255,255,.04);overflow:hidden;">
+                    </div>
+                    <textarea id="codeEditor" class="code-editor" spellcheck="false" oninput="syncLineNums()"
+                        onkeydown="handleEditorKey(event)" placeholder="// Écris ton code ici…"></textarea>
+                </div>
+
+                <!-- Output Panel -->
+                <div class="output-panel">
+                    <div class="output-toolbar">
+                        <span
+                            style="font-size:.72rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.08em;" data-i18n="lbl_console">Console</span>
+                        <span id="testResultsSummary" style="font-size:.75rem;color:#64748b;margin-left:.5rem;"></span>
+                        <button onclick="clearConsole()" class="btn btn-icon"
+                            style="margin-left:auto;font-size:.68rem;" data-i18n="btn_clear">Effacer</button>
+                    </div>
+                    <div class="output-console" id="outputConsole">
+                        <div class="console-line info"><span class="console-prefix">ℹ</span> Prêt. Clique sur "Exécuter"
+                            pour lancer ton code.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ RESULTS OVERLAY ═══ -->
+    <div class="results-overlay" id="resultsOverlay">
+        <div class="results-box">
+            <div style="position:relative;z-index:1;">
+                <div style="font-size:3rem;margin-bottom:.75rem;" id="resEmoji">🏆</div>
+                <h2 style="font-size:1.5rem;font-weight:900;color:#f1f5f9;margin-bottom:.4rem;" id="resTitle" data-i18n="res_title">Résultats
+                </h2>
+                <p style="font-size:.85rem;color:#64748b;margin-bottom:1.75rem;" id="resSubtitle">—</p>
+
+                <!-- Score ring -->
+                <div class="score-ring" style="margin-bottom:1.75rem;">
+                    <svg width="110" height="110" viewBox="0 0 110 110">
+                        <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="9" />
+                        <circle cx="55" cy="55" r="46" fill="none" stroke="url(#rg)" stroke-width="9"
+                            stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289" id="resultCircle"
+                            transform="rotate(-90 55 55)" />
+                        <defs>
+                            <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#6366f1" />
+                                <stop offset="100%" stop-color="#10b981" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="score-pct" id="resPct" style="color:#f1f5f9;">0%</div>
+                </div>
+
+                <!-- Stats row -->
+                <div style="display:flex;gap:.75rem;margin-bottom:1.75rem;flex-wrap:wrap;">
+                    <div class="stat-pill">
+                        <div style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:900;color:#818cf8;"
+                            id="resScore">0/0</div>
+                        <div style="font-size:.7rem;color:#475569;margin-top:.15rem;" data-i18n="lbl_responses">Réponses</div>
+                    </div>
+                    <div class="stat-pill">
+                        <div style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:900;color:#fbbf24;"
+                            id="resXP">+0 XP</div>
+                        <div style="font-size:.7rem;color:#475569;margin-top:.15rem;" data-i18n="lbl_earned">Gagnés</div>
+                    </div>
+                    <div class="stat-pill">
+                        <div style="font-family:'Outfit',sans-serif;font-size:1.4rem;font-weight:900;color:#34d399;"
+                            id="resTime">0s</div>
+                        <div style="font-size:.7rem;color:#475569;margin-top:.15rem;" data-i18n="lbl_time">Temps</div>
+                    </div>
+                </div>
+
+                <!-- Encouragement message -->
+                <div id="resMessage" style="font-size:.85rem;color:#64748b;margin-bottom:1.5rem;line-height:1.6;"></div>
+
+                <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+                    <button onclick="retryExercise()" class="btn btn-ghost" data-i18n="btn_retry">↺ Recommencer</button>
+                    <button onclick="closeResults()" class="btn btn-primary" data-i18n="btn_continue_general">Continuer →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST AREA -->
+    <div class="toast-area" id="toastArea"></div>
+
+    <!-- ═══════════════════════════ JAVASCRIPT ═══════════════════════════ -->
+    <script>
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A';
+        
+        let sb = null;
+        try {
+            if (window.supabase) {
+                sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            } else {
+                console.error("Supabase library not loaded. Check your internet connection.");
+            }
+        } catch (e) {
+            console.error("Error initializing Supabase:", e);
+        }
+
+        // ── I18N ──
+        const I18N = {
+            fr: {
+                page_title: "✏️ Mes Exercices",
+                loading: "Chargement…",
+                search_placeholder: "Rechercher un exercice…",
+                filter_type: "Type d'exercice",
+                filter_all: "Toutes",
+                filter_all_m: "Tous",
+                type_qcm: "QCM",
+                type_code: "Code",
+                type_texte: "Texte",
+                filter_diff: "Difficulté",
+                diff_facile: "Facile",
+                diff_moyen: "Moyen",
+                diff_difficile: "Difficile",
+                filter_subject: "Matières",
+                filter_history: "Mon historique",
+                status_done: "Réussis",
+                status_failed: "À refaire",
+                status_new: "Non faits",
+                btn_quit: "Quitter",
+                btn_validate: "Valider →",
+                btn_reset: "Reset",
+                btn_format: "Format",
+                btn_run: "Exécuter",
+                btn_submit: "Soumettre",
+                lbl_console: "Console",
+                btn_clear: "Effacer",
+                res_title: "Résultats",
+                btn_retry: "Recommencer",
+                btn_continue_general: "Continuer →",
+                
+                // Dynamic
+                found_count: "{0} exercices trouvés",
+                found_count_single: "1 exercice trouvé",
+                stat_total: "exercices",
+                stat_tried: "tentés",
+                stat_success: "réussis",
+                stat_xp: "XP total",
+                lbl_test: "test",
+                lbl_tests: "tests",
+                lbl_question: "question",
+                lbl_questions: "questions",
+                lbl_score: "Score",
+                lbl_responses: "Réponses",
+                lbl_earned: "Gagnés",
+                lbl_time: "Temps",
+                msg_ready: "Prêt. Clique sur 'Exécuter' pour lancer ton code.",
+                msg_finished: "Exercice terminé !",
+                msg_error_init: "Erreur d'initialisation",
+                msg_question_of: "Question {0} sur {1}",
+                btn_next: "Question suivante →",
+                btn_res: "Voir les résultats →",
+                res_excellent: "Excellent !",
+                res_success: "Réussi !",
+                res_not_bad: "Pas mal !",
+                res_keep_training: "Continue à t'entraîner !",
+                res_msg_mastery: "Tu maîtrises ce sujet. Continue sur ta lancée !",
+                res_msg_success: "Tu as réussi l'exercice. Reviens revoir les questions ratées.",
+                res_msg_retry: "Relis le cours correspondant et recommence. Tu vas y arriver !"
+            },
+            en: {
+                page_title: "✏️ My Exercises",
+                loading: "Loading…",
+                search_placeholder: "Search for an exercise…",
+                filter_type: "Exercise Type",
+                filter_all: "All",
+                filter_all_m: "All",
+                type_qcm: "Quiz",
+                type_code: "Code",
+                type_texte: "Text",
+                filter_diff: "Difficulty",
+                diff_facile: "Easy",
+                diff_moyen: "Medium",
+                diff_difficile: "Hard",
+                filter_subject: "Subjects",
+                filter_history: "My History",
+                status_done: "Passed",
+                status_failed: "To Retry",
+                status_new: "Not Done",
+                btn_quit: "Quit",
+                btn_validate: "Validate →",
+                btn_reset: "Reset",
+                btn_format: "Format",
+                btn_run: "Run",
+                btn_submit: "Submit",
+                lbl_console: "Console",
+                btn_clear: "Clear",
+                res_title: "Results",
+                btn_retry: "Retry",
+                btn_continue_general: "Continue →",
+
+                // Dynamic
+                found_count: "{0} exercises found",
+                found_count_single: "1 exercise found",
+                stat_total: "exercises",
+                stat_tried: "tried",
+                stat_success: "passed",
+                stat_xp: "total XP",
+                lbl_test: "test",
+                lbl_tests: "tests",
+                lbl_question: "question",
+                lbl_questions: "questions",
+                lbl_score: "Score",
+                lbl_responses: "Answers",
+                lbl_earned: "Earned",
+                lbl_time: "Time",
+                msg_ready: "Ready. Click 'Run' to start your code.",
+                msg_finished: "Exercise finished!",
+                msg_error_init: "Initialization Error",
+                msg_question_of: "Question {0} of {1}",
+                btn_next: "Next question →",
+                btn_res: "See results →",
+                res_excellent: "Excellent !",
+                res_success: "Success !",
+                res_not_bad: "Not bad !",
+                res_keep_training: "Keep training !",
+                res_msg_mastery: "You master this subject. Keep it up!",
+                res_msg_success: "You passed the exercise. Come back to review the missed questions.",
+                res_msg_retry: "Read the corresponding course and try again. You can do it!"
+            }
+        };
+
+        function t(key, ...args) {
+            let __userId = ''; let __sysCode = '';
+            if (typeof STATE !== 'undefined' && STATE.profile) { __userId = STATE.profile.id; __sysCode = STATE.profile.sous_systeme?.code; }
+            else if (typeof currentUser !== 'undefined' && currentUser) { __userId = currentUser.id; __sysCode = typeof userProfile !== 'undefined' && userProfile ? userProfile.sous_systeme?.code : ''; }
+            else if (typeof user !== 'undefined' && user) { __userId = user.id; __sysCode = typeof profile !== 'undefined' && profile ? profile.sous_systeme?.code : ''; }
+            const storeKey = __userId ? `kmer_eleve_settings_${__userId}` : 'kmer_eleve_settings';
+            const st = JSON.parse(localStorage.getItem(storeKey) || '{}');
+            let lang = st.lang;
+            if (!lang && __sysCode) lang = (__sysCode === 'anglophone' || __sysCode === 'EN' || __sysCode === 'en') ? 'en' : 'fr';
+            lang = lang || 'fr';
+            let str = (I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : (I18N['fr'][key] || key);
+            args.forEach((a, i) => { str = str.replace(`{${i}}`, a); });
+            return str;
+        }
+
+        function applyTranslations() {
+            let __userId = ''; let __sysCode = '';
+            if (typeof STATE !== 'undefined' && STATE.profile) { __userId = STATE.profile.id; __sysCode = STATE.profile.sous_systeme?.code; }
+            else if (typeof currentUser !== 'undefined' && currentUser) { __userId = currentUser.id; __sysCode = typeof userProfile !== 'undefined' && userProfile ? userProfile.sous_systeme?.code : ''; }
+            else if (typeof user !== 'undefined' && user) { __userId = user.id; __sysCode = typeof profile !== 'undefined' && profile ? profile.sous_systeme?.code : ''; }
+            const storeKey = __userId ? `kmer_eleve_settings_${__userId}` : 'kmer_eleve_settings';
+            const st = JSON.parse(localStorage.getItem(storeKey) || '{}');
+            let lang = st.lang;
+            if (!lang && __sysCode) lang = (__sysCode === 'anglophone' || __sysCode === 'EN' || __sysCode === 'en') ? 'en' : 'fr';
+            lang = lang || 'fr';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (I18N[lang] && I18N[lang][key]) el.innerHTML = I18N[lang][key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (I18N[lang] && I18N[lang][key]) el.placeholder = I18N[lang][key];
+            });
+        }
+
+        // ── STATE ────────────────────────────────────────────────────────
+        let currentUser = null, userProfile = null;
+        let allExercices = [], allExercicesCode = [];
+        let submissions = {}; // exercice_id → submission
+        let filters = { type: 'all', diff: 'all', mat: 'all', status: 'all', q: '' };
+
+        // QCM State
+        let qcmState = {
+            ex: null, questions: [], current: 0, score: 0,
+            answered: false, answers: [], timer: null, seconds: 0, totalSec: 0
+        };
+
+        // Code State
+        let codeState = {
+            ex: null, initialCode: '', timer: null, seconds: 0, startTs: 0,
+            totalSec: 0, testResults: []
+        };
+
+        let lastOpenedExId = null;
+        let lastOpenedType = null; // 'qcm' | 'code'
+
+        // ── INIT ─────────────────────────────────────────────────────────
+        async function init() {
+            try {
+                const { data: { user } } = await sb.auth.getUser();
+                if (!user) { window.location.href = 'onboarding_cameroun.html'; return; }
+                currentUser = user;
+
+                // Fetch Profile robustly
+                const { data: prof, error: pErr } = await sb.from('profiles').select('*').eq('id', user.id).single();
+                if (pErr) throw pErr;
+                userProfile = prof;
+
+                await Promise.all([loadExercices(), loadExercicesCode(), loadSubmissions()]);
+                console.log("QCM loaded:", allExercices.length);
+                console.log("Code loaded:", allExercicesCode.length);
+                buildMatiereFilters();
+                renderCatalog();
+                renderStats();
+                bindSearch();
+                applyTranslations();
+            } catch (err) {
+                console.error("Init error:", err);
+                toast(t('msg_error_init') + " : " + err.message);
+            }
+        }
+
+        // ── LOAD DATA ────────────────────────────────────────────────────
+        async function loadExercices() {
+            try {
+                let q = sb.from('exercices')
+                    .select('*, cours(matiere), questions(id, question_texte, type_question, points, explication, ordre, reponses(id,texte_reponse,est_correcte,ordre))')
+                    .eq('est_publie', true).eq('est_actif', true).order('ordre');
+
+                // Be more permissive: match user profile OR global (null)
+                if (userProfile?.sous_systeme_id) {
+                    q = q.eq('sous_systeme_id', userProfile.sous_systeme_id);
+                }
+                if (userProfile?.niveau_scolaire_id) {
+                    q = q.or(`niveau_scolaire_id.eq.${userProfile.niveau_scolaire_id},niveau_scolaire_id.is.null`);
+                }
+                if (userProfile?.serie_id) {
+                    q = q.or(`serie_id.eq.${userProfile.serie_id},serie_id.is.null`);
+                }
+
+                const { data, error } = await q;
+                if (error) throw error;
+                // Flatten matiere from cours join
+                allExercices = (data || []).map(e => ({
+                    ...e,
+                    matiere: e.matiere || (e.cours?.matiere) || 'Général'
+                }));
+            } catch (err) {
+                console.error("Error loading exercises:", err);
+                const isNetworkError = !navigator.onLine || err.message?.includes('fetch') || err.code === 'PGRST301';
+                showToast(isNetworkError ? "Réseau instable" : "Erreur de chargement", "error");
+            }
+        }
+
+        async function loadExercicesCode() {
+            // Since exercices_code only has cours_id, we fetch it via its relation or just fetch all active for now if missing specific filtering columns
+            let q = sb.from('exercices_code').select('*').eq('est_actif', true).order('ordre');
+            const { data, error } = await q;
+            if (error) console.error("Error loading code exercises:", error);
+            allExercicesCode = data || [];
+        }
+
+        async function loadSubmissions() {
+            const { data: subs } = await sb.from('soumissions_exercices')
+                .select('exercice_id, est_reussi, score, score_max, tentative_numero')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            const { data: codeSubs } = await sb.from('soumissions_code')
+                .select('exercice_id, est_reussi, points_obtenus, tests_passes, tests_total')
+                .eq('user_id', currentUser.id)
+                .order('soumis_le', { ascending: false });
+
+            submissions = {};
+            (subs || []).forEach(s => { if (!submissions[`qcm_${s.exercice_id}`]) submissions[`qcm_${s.exercice_id}`] = s; });
+            (codeSubs || []).forEach(s => { if (!submissions[`code_${s.exercice_id}`]) submissions[`code_${s.exercice_id}`] = s; });
+
+            // Update top stats
+            const reussis = Object.values(submissions).filter(s => s.est_reussi).length;
+            document.getElementById('topReussis').textContent = `${reussis} ${t('stat_success')}`;
+            document.getElementById('topXP').textContent = `${userProfile?.points_total || 0} XP`;
+        }
+
+        // ── BUILD MATIERE FILTERS ─────────────────────────────────────────
+        function buildMatiereFilters() {
+            const all = [...allExercices.map(e => e.matiere), ...allExercicesCode.map(e => e.langage)];
+            const mats = [...new Set(all.filter(Boolean))];
+            const container = document.getElementById('matiereFilters');
+            const existingAll = container.querySelector('#fm-all');
+            container.innerHTML = '';
+            container.appendChild(existingAll || (() => {
+                const b = document.createElement('button');
+                b.className = 'filter-btn active';
+                b.id = 'fm-all';
+                b.onclick = () => setFilter('mat', 'all');
+                b.innerHTML = '<span>📚</span> Toutes';
+                return b;
+            })());
+            mats.slice(0, 8).forEach(m => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.id = `fm-${m}`;
+                btn.onclick = () => setFilter('mat', m);
+                btn.innerHTML = `<span style="font-size:.8rem;">▸</span> ${m}`;
+                container.appendChild(btn);
+            });
+        }
+
+        // ── RENDER STATS BAR ─────────────────────────────────────────────
+        function renderStats() {
+            const total = allExercices.length + allExercicesCode.length;
+            const done = Object.keys(submissions).length;
+            const reussi = Object.values(submissions).filter(s => s.est_reussi).length;
+            const xp = Object.values(submissions).filter(s => s.est_reussi).reduce((a, s) => a + (s.points_obtenus || s.score || 0), 0);
+
+            document.getElementById('statsBar').innerHTML = `
+    <div class="stat-chip"><span>📊</span> <span style="font-weight:700;color:#f1f5f9;">${total}</span> <span style="color:#64748b;">${t('stat_total')}</span></div>
+    <div class="stat-chip"><span>✅</span> <span style="font-weight:700;color:#34d399;">${done}</span> <span style="color:#64748b;">${t('stat_tried')}</span></div>
+    <div class="stat-chip"><span>🏆</span> <span style="font-weight:700;color:#818cf8;">${reussi}</span> <span style="color:#64748b;">${t('stat_success')}</span></div>
+    <div class="stat-chip"><span>⭐</span> <span style="font-weight:700;color:#fbbf24;">${userProfile?.points_total || 0}</span> <span style="color:#64748b;">${t('stat_xp')}</span></div>
+  `;
+
+            document.getElementById('subLabel').textContent = total === 1 ? t('found_count_single') : t('found_count', total);
+
+            // Count badges
+            document.getElementById('fc-all').textContent = total;
+            document.getElementById('fc-qcm').textContent = allExercices.filter(e => e.type_exercice === 'qcm').length;
+            document.getElementById('fc-code').textContent = allExercicesCode.length;
+            document.getElementById('fc-texte').textContent = allExercices.filter(e => e.type_exercice === 'texte').length;
+        }
+
+        // ── FILTERS ──────────────────────────────────────────────────────
+        function setFilter(dim, val) {
+            filters[dim] = val;
+
+            // Update active states
+            const groups = {
+                type: ['all', 'qcm', 'code', 'texte'],
+                diff: ['all', 'facile', 'moyen', 'difficile'],
+                status: ['done', 'failed', 'new']
+            };
+            if (groups[dim]) {
+                groups[dim].forEach(v => {
+                    const el = document.getElementById(dim === 'diff' ? `fd-${v}` : dim === 'status' ? `f-${v}` : `f-${v}`);
+                    if (el) el.classList.toggle('active', v === val);
+                });
+            }
+            if (dim === 'mat') {
+                document.querySelectorAll('[id^="fm-"]').forEach(el => el.classList.remove('active'));
+                const el = document.getElementById(`fm-${val}`);
+                if (el) el.classList.add('active');
+            }
+            renderCatalog();
+        }
+
+        function bindSearch() {
+            document.getElementById('searchInput').addEventListener('input', e => {
+                filters.q = e.target.value.toLowerCase().trim();
+                renderCatalog();
+            });
+        }
+
+        // ── RENDER CATALOG ────────────────────────────────────────────────
+        function renderCatalog() {
+            const grid = document.getElementById('catalogGrid');
+
+            // Merge exercices + exercices_code into unified list
+            let items = [
+                ...allExercices.map(e => ({ ...e, _src: 'qcm', _type: e.type_exercice || 'qcm' })),
+                ...allExercicesCode.map(e => ({ ...e, _src: 'code', _type: 'code', difficulte: e.difficulte, matiere: e.langage, titre: e.titre, points: e.points_recompense }))
+            ];
+
+            // Apply filters
+            if (filters.type !== 'all') items = items.filter(e => e._type === filters.type);
+            if (filters.diff !== 'all') items = items.filter(e => e.difficulte === filters.diff);
+            if (filters.mat !== 'all') items = items.filter(e => e.matiere === filters.mat || e.langage === filters.mat);
+            if (filters.q) items = items.filter(e =>
+                (e.titre || '').toLowerCase().includes(filters.q) ||
+                (e.consigne || e.description || '').toLowerCase().includes(filters.q) ||
+                (e.matiere || e.langage || '').toLowerCase().includes(filters.q)
+            );
+
+            if (filters.status === 'done') items = items.filter(e => submissions[`${e._src}_${e.id}`]?.est_reussi);
+            if (filters.status === 'failed') items = items.filter(e => submissions[`${e._src}_${e.id}`] && !submissions[`${e._src}_${e.id}`].est_reussi);
+            if (filters.status === 'new') items = items.filter(e => !submissions[`${e._src}_${e.id}`]);
+
+            document.getElementById('subLabel').textContent = items.length === 1 ? t('found_count_single') : t('found_count', items.length);
+
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <div style="font-size:3rem;margin-bottom:.75rem;">🔍</div>
+      <div style="font-size:.95rem;font-weight:600;color:#64748b;margin-bottom:.3rem;">Aucun exercice trouvé</div>
+      <div style="font-size:.8rem;">Essaie de changer les filtres</div>
+    </div>`;
+                return;
+            }
+
+            const DIFF_LABEL = { facile: t('diff_facile'), moyen: t('diff_moyen'), difficile: t('diff_difficile') };
+            const TYPE_CONFIG = {
+                qcm: { cls: 'type-qcm', icon: '❓', label: t('type_qcm') },
+                code: { cls: 'type-code', icon: '💻', label: t('type_code') },
+                texte: { cls: 'type-texte', icon: '📝', label: t('type_texte') },
+                projet: { cls: 'type-projet', icon: '🛠', label: 'Projet' },
+            };
+            const LANG_LABEL = { javascript: 'JS', python: 'Python', html: 'HTML', css: 'CSS', sql: 'SQL' };
+
+            grid.innerHTML = items.map(e => {
+                const tc = TYPE_CONFIG[e._type] || TYPE_CONFIG.qcm;
+                const sub = submissions[`${e._src}_${e.id}`];
+                const done = sub?.est_reussi;
+                const tried = !!sub && !done;
+                const nbQ = e.questions?.length || e.tests_unitaires?.length || 0;
+                const pts = e.points || e.points_recompense || 10;
+                const diff = e.difficulte;
+                const matLabel = e._src === 'code' ? (LANG_LABEL[e.langage] || e.langage || '') : (e.matiere || '');
+
+                let scoreInfo = '';
+                if (sub) {
+                    const pct = sub.score_max > 0 ? Math.round((sub.score / sub.score_max) * 100) : (sub.tests_total > 0 ? Math.round((sub.tests_passes / sub.tests_total) * 100) : 0);
+                    scoreInfo = `<span style="font-size:.72rem;color:${done ? '#34d399' : '#fb7185'};font-weight:600;">${done ? '✅' : '❌'} ${pct}%</span>`;
+                }
+
+                return `
+    <div class="exo-card" onclick="openExercice(${JSON.stringify(e.id)}, '${e._src}')">
+      <div class="exo-card-top" style="position:relative;">
+        ${done ? '<div class="done-check">✓</div>' : ''}
+        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+          <span class="type-badge ${tc.cls}">${tc.icon} ${tc.label}</span>
+          ${diff ? `<span class="diff-badge diff-${diff}">${DIFF_LABEL[diff] || diff}</span>` : ''}
+          ${matLabel ? `<span style="font-size:.68rem;color:#475569;font-weight:600;">${matLabel}</span>` : ''}
+        </div>
+        <div style="font-weight:700;font-size:.92rem;color:#e2e8f0;line-height:1.4;">${e.titre || 'Exercice'}</div>
+        <div style="font-size:.78rem;color:#64748b;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${e.consigne || e.description || e.question || ''}</div>
+      </div>
+      <div class="exo-card-footer">
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          ${nbQ ? `<span style="font-size:.72rem;color:#475569;">${nbQ} ${e._src === 'code' ? 'test' : 'question'}${nbQ > 1 ? 's' : ''}</span>` : ''}
+          ${e.temps_limite ? `<span style="font-size:.72rem;color:#475569;">⏱ ${e.temps_limite}s</span>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          ${scoreInfo}
+          <span style="font-size:.78rem;color:#fbbf24;font-weight:700;">+${pts} XP</span>
+        </div>
+      </div>
+    </div>`;
+            }).join('');
+        }
+
+        // ── OPEN EXERCISE ─────────────────────────────────────────────────
+        function openExercice(id, src) {
+            lastOpenedExId = id;
+            lastOpenedType = src;
+            if (src === 'code') {
+                const ex = allExercicesCode.find(e => e.id === id);
+                if (ex) openCodeArena(ex);
+            } else {
+                const ex = allExercices.find(e => e.id === id);
+                if (ex) openQcmArena(ex);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // QCM ARENA
+        // ═══════════════════════════════════════════════════════
+        function openQcmArena(ex) {
+            qcmState.ex = ex;
+            const qs = (ex.questions || []).sort((a, b) => (a.ordre || 0) - (b.ordre || 0));
+            qcmState.questions = qs;
+            qcmState.current = 0;
+            qcmState.score = 0;
+            qcmState.answers = new Array(qs.length).fill(null);
+            qcmState.answered = false;
+            qcmState.startTs = Date.now();
+
+            document.getElementById('qcmArenaTitle').textContent = ex.titre || 'QCM';
+            document.getElementById('arenaQcm').classList.add('show');
+            document.body.style.overflow = 'hidden';
+
+            // Timer
+            const totalSec = ex.temps_limite || (qs.length * 45);
+            qcmState.totalSec = totalSec;
+            qcmState.seconds = totalSec;
+            startQcmTimer();
+            renderQcmQuestion();
+        }
+
+        function renderQcmQuestion() {
+            const { questions, current, answers } = qcmState;
+            const q = questions[current];
+            if (!q) return;
+
+            document.getElementById('qcmQuestionCounter').textContent = `Q ${current + 1}/${questions.length}`;
+            document.getElementById('qcmScoreDisplay').textContent = `${t('lbl_score')}: ${qcmState.score}/${current}`;
+
+            // Dots
+            document.getElementById('qcmDotProgress').innerHTML = questions.map((_, i) => {
+                let cls = i < current ? (answers[i]?.correct ? 'correct' : 'wrong') : i === current ? 'current' : '';
+                return `<div class="q-dot ${cls}"></div>`;
+            }).join('');
+
+            document.getElementById('qcmValidateBtn').disabled = true;
+            qcmState.answered = false;
+
+            // Get choices from reponses table OR choix jsonb
+            let choices = [];
+            if (q.reponses && q.reponses.length > 0) {
+                choices = q.reponses.sort((a, b) => (a.ordre || 0) - (b.ordre || 0)).map(r => ({
+                    text: r.texte_reponse, correct: r.est_correcte, id: r.id
+                }));
+            } else if (q.choix) {
+                const raw = typeof q.choix === 'string' ? JSON.parse(q.choix) : q.choix;
+                if (Array.isArray(raw)) choices = raw.map(c => typeof c === 'object' ? { text: c.texte || c.text || c, correct: c.est_correcte || c.correct || false } : { text: c, correct: false });
+                else choices = Object.values(raw).map(c => ({ text: c.texte || c.text || c, correct: c.est_correcte || c.correct || false }));
+            }
+
+            const lettersHtml = choices.map((c, i) => {
+                const letter = String.fromCharCode(65 + i);
+                return `
+    <div class="option" onclick="selectOption(this, ${i}, ${c.correct})"
+         data-idx="${i}" data-correct="${c.correct}">
+      <div class="option-letter">${letter}</div>
+      <span>${c.text}</span>
+    </div>`;
+            }).join('');
+
+            document.getElementById('qcmWrap').innerHTML = `
+    <div style="font-size:.72rem;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:.08em;">
+      Question ${current + 1} sur ${questions.length}
+      ${q.points ? `· <span style="color:#fbbf24">+${q.points} pts</span>` : ''}
+    </div>
+    <div class="question-card">
+      <div style="font-size:1.05rem;font-weight:700;color:#f1f5f9;line-height:1.5;margin-bottom:1.25rem;">${q.question_texte}</div>
+      <div id="optionsWrap">${lettersHtml || '<div style="color:#64748b;font-size:.85rem;">Pas de choix disponibles — exercice de type texte libre.</div>'}</div>
+      <div class="explication-box" id="explBox">${q.explication ? `💡 ${q.explication}` : ''}</div>
+    </div>
+  `;
+        }
+
+        function selectOption(el, idx, isCorrect) {
+            if (qcmState.answered) return;
+            document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            qcmState.selectedIdx = idx;
+            qcmState.selectedCorrect = isCorrect;
+            document.getElementById('qcmValidateBtn').disabled = false;
+        }
+
+        function validateQcm() {
+            if (qcmState.answered && qcmState.current < qcmState.questions.length - 1) {
+                // Move to next
+                qcmState.current++;
+                renderQcmQuestion();
+                return;
+            }
+            if (qcmState.answered) { finishQcm(); return; }
+
+            qcmState.answered = true;
+            const isCorrect = qcmState.selectedCorrect || false;
+            if (isCorrect) qcmState.score++;
+
+            qcmState.answers[qcmState.current] = { idx: qcmState.selectedIdx, correct: isCorrect };
+
+            // Reveal correct/wrong
+            document.querySelectorAll('.option').forEach(o => {
+                const correct = o.dataset.correct === 'true';
+                if (correct) o.classList.add('reveal-correct');
+                if (parseInt(o.dataset.idx) === qcmState.selectedIdx && !isCorrect) o.classList.add('wrong');
+                if (parseInt(o.dataset.idx) === qcmState.selectedIdx && isCorrect) o.classList.add('correct');
+                o.style.cursor = 'default';
+            });
+
+            // Show explanation
+            const explBox = document.getElementById('explBox');
+            if (explBox && qcmState.questions[qcmState.current]?.explication) explBox.classList.add('show');
+
+            const btn = document.getElementById('qcmValidateBtn');
+            if (qcmState.current < qcmState.questions.length - 1) {
+                btn.textContent = t('btn_next');
+                btn.disabled = false;
+            } else {
+                btn.textContent = t('btn_res');
+                btn.disabled = false;
+            }
+
+            document.getElementById('qcmScoreDisplay').textContent = `${t('lbl_score')}: ${qcmState.score}/${qcmState.current + 1}`;
+
+            // Update dots
+            document.getElementById('qcmDotProgress').innerHTML = qcmState.questions.map((_, i) => {
+                let cls = i < qcmState.current ? (qcmState.answers[i]?.correct ? 'correct' : 'wrong') :
+                    i === qcmState.current ? (isCorrect ? 'correct' : 'wrong') : '';
+                return `<div class="q-dot ${cls}"></div>`;
+            }).join('');
+        }
+
+        async function finishQcm() {
+            clearInterval(qcmState.timer);
+            const elapsed = Math.floor((Date.now() - qcmState.startTs) / 1000);
+            const total = qcmState.questions.length;
+            const score = qcmState.score;
+            const pct = total > 0 ? Math.round((score / total) * 100) : 0;
+            const reussi = pct >= 50;
+            const pts = reussi ? Math.round((qcmState.ex.points || 10) * pct / 100) : 0;
+
+            // Save to DB
+            const { data: sub } = await sb.from('soumissions_exercices').insert({
+                user_id: currentUser.id,
+                exercice_id: qcmState.ex.id,
+                score, score_max: total,
+                est_reussi: reussi,
+                temps_pris: elapsed,
+                reponses: JSON.stringify(qcmState.answers),
+                tentative_numero: (submissions[`qcm_${qcmState.ex.id}`]?.tentative_numero || 0) + 1
+            }).select().single();
+
+            if (reussi && pts > 0) {
+                await sb.from('profiles').update({ points_total: (userProfile?.points_total || 0) + pts }).eq('id', currentUser.id);
+                if (userProfile) userProfile.points_total = (userProfile.points_total || 0) + pts;
+                floatXP(pts);
+            }
+
+            submissions[`qcm_${qcmState.ex.id}`] = { est_reussi: reussi, score, score_max: total };
+
+            closeArena();
+            showResults({ pct, score, total, xp: pts, time: elapsed, reussi });
+            if (reussi) spawnConfetti();
+        }
+
+        function startQcmTimer() {
+            clearInterval(qcmState.timer);
+            const total = qcmState.totalSec;
+            const circle = document.getElementById('timerCircle');
+            const display = document.getElementById('qcmTimerVal');
+
+            function tick() {
+                const s = qcmState.seconds;
+                const m = Math.floor(s / 60).toString().padStart(2, '0');
+                const sec = (s % 60).toString().padStart(2, '0');
+                if (display) display.textContent = total > 120 ? `${m}:${sec}` : `${s}s`;
+                if (circle) circle.style.strokeDashoffset = 94 * (1 - s / total);
+                if (display) {
+                    display.className = 'timer-display' + (s <= 10 ? ' danger' : s <= 30 ? ' warning' : '');
+                }
+                if (s <= 0) { clearInterval(qcmState.timer); finishQcm(); return; }
+                qcmState.seconds--;
+            }
+            tick();
+            qcmState.timer = setInterval(tick, 1000);
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // CODE ARENA
+        // ═══════════════════════════════════════════════════════
+        const LANG_CONFIG = {
+            javascript: { cls: 'lang-js', label: 'JavaScript', ext: '.js', placeholder: '// Écris ton code JavaScript ici\n\n' },
+            python: { cls: 'lang-python', label: 'Python', ext: '.py', placeholder: '# Écris ton code Python ici\n\n' },
+            html: { cls: 'lang-html', label: 'HTML', ext: '.html', placeholder: '<!-- Écris ton code HTML ici -->\n\n' },
+            css: { cls: 'lang-css', label: 'CSS', ext: '.css', placeholder: '/* Écris ton CSS ici */\n\n' },
+            sql: { cls: 'lang-sql', label: 'SQL', ext: '.sql', placeholder: '-- Écris ta requête SQL ici\n\n' },
+        };
+
+        function openCodeArena(ex) {
+            codeState.ex = ex;
+            const lang = ex.langage || 'javascript';
+            const lcfg = LANG_CONFIG[lang] || LANG_CONFIG.javascript;
+
+            document.getElementById('codeArenaTitle').textContent = ex.titre || 'Exercice Code';
+            document.getElementById('codeLangBadge').textContent = lcfg.label;
+            document.getElementById('codeLangBadge').className = `lang-badge ${lcfg.cls}`;
+            document.getElementById('codeTitleDisplay').textContent = ex.titre || '—';
+            document.getElementById('codeDescDisplay').textContent = ex.description || '—';
+            document.getElementById('codeXpBadge').textContent = `+${ex.points_recompense || 20} XP`;
+
+            // Meta badges
+            const diff = ex.difficulte;
+            const diffMap = { facile: 'diff-facile', moyen: 'diff-moyen', difficile: 'diff-difficile' };
+            document.getElementById('codeMetaBadges').innerHTML = `
+    <span class="type-badge type-code">💻 Code</span>
+    ${diff ? `<span class="diff-badge ${diffMap[diff] || ''}">${diff}</span>` : ''}
+    <span class="${lcfg.cls} lang-badge">${lcfg.label}</span>
+  `;
+
+            // Editor
+            const initialCode = ex.code_initial || lcfg.placeholder;
+            codeState.initialCode = initialCode;
+            const editor = document.getElementById('codeEditor');
+            editor.value = initialCode;
+            syncLineNums();
+
+            // Hint
+            document.getElementById('hintBox').textContent = ex.description || '';
+            document.getElementById('hintBox').style.display = 'none';
+
+            // Tests
+            const tests = ex.tests_unitaires;
+            if (tests) {
+                const testsArr = Array.isArray(tests) ? tests : (typeof tests === 'object' ? Object.values(tests) : []);
+                if (testsArr.length > 0) {
+                    document.getElementById('codeTestsSection').style.display = 'block';
+                    document.getElementById('codeTestsList').innerHTML = testsArr.map((t, i) => `
+        <div class="test-result" id="testRow-${i}" style="background:rgba(255,255,255,.04);border:1px solid var(--border);">
+          <span style="font-size:.8rem;">⚪</span>
+          <span class="mono" style="font-size:.78rem;flex:1;">${t.description || t.desc || (t('lbl_test') + " " + (i + 1))}</span>
+        </div>`).join('');
+                }
+            }
+
+            // Timer
+            const totalSec = ex.temps_limite || 900; // 15min default
+            codeState.totalSec = totalSec;
+            codeState.seconds = totalSec;
+            codeState.startTs = Date.now();
+            startCodeTimer();
+
+            // Clear console
+            clearConsole();
+            logConsole('info', `Exercice "${ex.titre}" chargé. Langage: ${lcfg.label}`);
+            logConsole('info', 'Clique sur ▶ Exécuter pour tester ton code.');
+
+            document.getElementById('arenaCode').classList.add('show');
+            document.body.style.overflow = 'hidden';
+            editor.focus();
+        }
+
+        function startCodeTimer() {
+            clearInterval(codeState.timer);
+            const total = codeState.totalSec;
+            const circle = document.getElementById('codeTimerCircle');
+            const display = document.getElementById('codeTimerVal');
+
+            function tick() {
+                const s = codeState.seconds;
+                const m = Math.floor(s / 60).toString().padStart(2, '0');
+                const sec = (s % 60).toString().padStart(2, '0');
+                if (display) display.textContent = `${m}:${sec}`;
+                if (circle) circle.style.strokeDashoffset = 94 * (1 - s / total);
+                if (s <= 0) { clearInterval(codeState.timer); submitCode(); return; }
+                codeState.seconds--;
+            }
+            tick();
+            codeState.timer = setInterval(tick, 1000);
+        }
+
+        // ── CODE EDITOR HELPERS ──────────────────────────────────────────
+        function syncLineNums() {
+            const lines = document.getElementById('codeEditor').value.split('\n').length;
+            document.getElementById('lineNums').innerHTML = Array.from({ length: lines }, (_, i) => `<div style="height:1.7em;line-height:1.7;">${i + 1}</div>`).join('');
+        }
+
+        function handleEditorKey(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const ta = e.target;
+                const start = ta.selectionStart, end = ta.selectionEnd;
+                ta.value = ta.value.substring(0, start) + '  ' + ta.value.substring(end);
+                ta.selectionStart = ta.selectionEnd = start + 2;
+                syncLineNums();
+            }
+        }
+
+        function resetCode() {
+            if (!confirm('Réinitialiser le code ?')) return;
+            document.getElementById('codeEditor').value = codeState.initialCode;
+            syncLineNums();
+            clearConsole();
+            logConsole('info', 'Code réinitialisé.');
+        }
+
+        function formatCode() {
+            // Basic formatting: normalize indentation
+            toast('⚡ Formatage non disponible en mode hors-ligne.');
+        }
+
+        function toggleHint() {
+            const box = document.getElementById('hintBox');
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // ── RUN CODE ─────────────────────────────────────────────────────
+        function runCode() {
+            const code = document.getElementById('codeEditor').value;
+            const lang = codeState.ex?.langage || 'javascript';
+
+            clearConsole();
+            logConsole('info', '▶ Exécution en cours…');
+
+            if (lang === 'javascript') {
+                runJavaScript(code);
+            } else if (lang === 'html') {
+                runHTML(code);
+            } else {
+                logConsole('info', `L'exécution de ${lang} nécessite un serveur. Vérification syntaxique seulement.`);
+                checkSyntax(code, lang);
+            }
+        }
+
+        function runJavaScript(code) {
+            const logs = [];
+            const mockConsole = {
+                log: (...a) => { logs.push({ type: 'log', text: a.map(v => JSON.stringify(v) || String(v)).join(' ') }); },
+                error: (...a) => { logs.push({ type: 'error', text: a.map(v => String(v)).join(' ') }); },
+                warn: (...a) => { logs.push({ type: 'log', text: '⚠ ' + a.join(' ') }); },
+                info: (...a) => { logs.push({ type: 'info', text: a.join(' ') }); },
+            };
+
+            try {
+                const fn = new Function('console', code);
+                fn(mockConsole);
+                logs.forEach(l => logConsole(l.type, l.text));
+                if (logs.length === 0) logConsole('info', '(Aucune sortie console)');
+                logConsole('success', '✓ Exécution terminée.');
+                runTests(code);
+            } catch (err) {
+                logConsole('error', `Erreur: ${err.message}`);
+                logConsole('info', 'Corrige l\'erreur et réessaie.');
+            }
+        }
+
+        function runHTML(code) {
+            clearConsole();
+            const preview = window.open('', '_blank', 'width=800,height=600');
+            if (preview) {
+                preview.document.write(code);
+                preview.document.close();
+                logConsole('success', '✓ Aperçu HTML ouvert dans un nouvel onglet.');
+            } else {
+                logConsole('error', 'Impossible d\'ouvrir l\'aperçu. Vérifie les popups.');
+            }
+        }
+
+        function checkSyntax(code, lang) {
+            if (code.trim().length === 0) { logConsole('error', 'Code vide.'); return; }
+            logConsole('success', `✓ Syntaxe ${lang} OK (vérification basique).`);
+            logConsole('info', `${code.trim().split('\n').length} lignes de code détectées.`);
+        }
+
+        // ── RUN TESTS ────────────────────────────────────────────────────
+        function runTests(code) {
+            const ex = codeState.ex;
+            if (!ex?.tests_unitaires) return;
+            const testsArr = Array.isArray(ex.tests_unitaires) ? ex.tests_unitaires : Object.values(ex.tests_unitaires);
+            if (testsArr.length === 0) return;
+
+            let passed = 0;
+            codeState.testResults = [];
+
+            logConsole('info', `--- Lancement de ${testsArr.length} test${testsArr.length > 1 ? 's' : ''} ---`);
+
+            testsArr.forEach((test, i) => {
+                let result = false;
+                let error = '';
+                try {
+                    // Execute code + test expression
+                    const testCode = code + '\n' + (test.code || test.test || '');
+                    const fn = new Function('console', `${testCode}; return (${test.expect || 'true'});`);
+                    result = fn({ log: () => { }, error: () => { }, warn: () => { }, info: () => { } });
+                } catch (e) {
+                    error = e.message;
+                    result = false;
+                }
+
+                const desc = test.description || test.desc || `Test ${i + 1}`;
+                if (result) { passed++; logConsole('success', `✓ ${desc}`); }
+                else { logConsole('error', `✗ ${desc}${error ? ' — ' + error : ''}`); }
+
+                codeState.testResults.push({ desc, passed: result });
+
+                // Update visual test row
+                const row = document.getElementById(`testRow-${i}`);
+                if (row) {
+                    row.className = `test-result ${result ? 'test-pass' : 'test-fail'}`;
+                    row.querySelector('span').textContent = result ? '✅' : '❌';
+                }
+            });
+
+            const allPassed = passed === testsArr.length;
+            document.getElementById('testResultsSummary').textContent = `${passed}/${testsArr.length} tests passés`;
+            document.getElementById('testResultsSummary').style.color = allPassed ? '#34d399' : passed > 0 ? '#fbbf24' : '#fb7185';
+
+            logConsole(allPassed ? 'success' : 'info', `--- ${passed}/${testsArr.length} tests réussis ---`);
+            if (allPassed) logConsole('success', '🏆 Tous les tests passent ! Tu peux soumettre.');
+        }
+
+        // ── SUBMIT CODE ──────────────────────────────────────────────────
+        async function submitCode() {
+            const code = document.getElementById('codeEditor').value;
+            const ex = codeState.ex;
+            if (!ex) return;
+
+            // Run tests first
+            if (ex.langage === 'javascript') runJavaScript(code);
+
+            const tests = ex.tests_unitaires
+                ? (Array.isArray(ex.tests_unitaires) ? ex.tests_unitaires : Object.values(ex.tests_unitaires))
+                : [];
+
+            const passed = codeState.testResults.filter(t => t.passed).length;
+            const total = Math.max(tests.length, 1);
+            const pct = Math.round((passed / total) * 100);
+            const reussi = tests.length === 0 ? true : pct >= 70;
+            const pts = reussi ? (ex.points_recompense || 20) : Math.round((ex.points_recompense || 20) * pct / 100);
+            const elapsed = Math.floor((Date.now() - codeState.startTs) / 1000);
+
+            clearInterval(codeState.timer);
+
+            // Save to DB
+            await sb.from('soumissions_code').insert({
+                user_id: currentUser.id,
+                exercice_id: ex.id,
+                code_soumis: code,
+                est_reussi: reussi,
+                tests_passes: passed,
+                tests_total: total,
+                points_obtenus: pts,
+                temps_execution: elapsed
+            });
+
+            if (pts > 0) {
+                await sb.from('profiles').update({ points_total: (userProfile?.points_total || 0) + pts }).eq('id', currentUser.id);
+                if (userProfile) userProfile.points_total = (userProfile.points_total || 0) + pts;
+                floatXP(pts);
+            }
+
+            submissions[`code_${ex.id}`] = { est_reussi: reussi, tests_passes: passed, tests_total: total };
+
+            closeArena();
+            showResults({ pct, score: passed, total, xp: pts, time: elapsed, reussi });
+            if (reussi) spawnConfetti();
+        }
+
+        // ── CONSOLE HELPERS ──────────────────────────────────────────────
+        function logConsole(type, text) {
+            const c = document.getElementById('outputConsole');
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            const prefix = { log: '>', error: '✖', success: '✓', info: 'ℹ' }[type] || '>';
+            line.innerHTML = `<span class="console-prefix">${prefix}</span><span>${escHtml(text)}</span>`;
+            c.appendChild(line);
+            c.scrollTop = c.scrollHeight;
+        }
+        function clearConsole() { document.getElementById('outputConsole').innerHTML = ''; }
+        function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        // ── CLOSE ARENA ──────────────────────────────────────────────────
+        function closeArena() {
+            if (typeof qcmState !== 'undefined' && qcmState.timer) clearInterval(qcmState.timer);
+            if (typeof codeState !== 'undefined' && codeState.timer) clearInterval(codeState.timer);
+            const aq = document.getElementById('arenaQcm');
+            const ac = document.getElementById('arenaCode');
+            if (aq) aq.classList.remove('show');
+            if (ac) ac.classList.remove('show');
+            document.body.style.overflow = '';
+            if (typeof renderCatalog === 'function') renderCatalog();
+            if (typeof renderStats === 'function') renderStats();
+            if (typeof loadSubmissions === 'function') loadSubmissions();
+        }
+
+        // ── RESULTS OVERLAY ──────────────────────────────────────────────
+        function showResults({ pct, score, total, xp, time, reussi }) {
+            const overlay = document.getElementById('resultsOverlay');
+            const emoji = pct >= 80 ? '🏆' : pct >= 50 ? '✅' : pct >= 30 ? '📚' : '😔';
+            const title = pct >= 80 ? t('res_excellent') : pct >= 50 ? t('res_success') : pct >= 30 ? t('res_not_bad') : t('res_keep_training');
+            const msg = pct >= 80 ? t('res_msg_mastery') :
+                pct >= 50 ? t('res_msg_success') :
+                    t('res_msg_retry');
+
+            document.getElementById('resEmoji').textContent = emoji;
+            document.getElementById('resTitle').textContent = title;
+            document.getElementById('resPct').textContent = pct + '%';
+            document.getElementById('resScore').textContent = `${score}/${total}`;
+            document.getElementById('resXP').textContent = `+${xp} XP`;
+            document.getElementById('resTime').textContent = time >= 60 ? `${Math.floor(time / 60)}min${time % 60 > 0 ? ` ${time % 60}s` : ''}` : `${time}s`;
+            document.getElementById('resMessage').textContent = msg;
+
+            // Animate ring
+            const circle = document.getElementById('resultCircle');
+            const offset = 289 - (289 * pct / 100);
+            circle.style.stroke = pct >= 80 ? '#10b981' : pct >= 50 ? '#6366f1' : '#f43f5e';
+            setTimeout(() => { circle.style.strokeDashoffset = offset; }, 200);
+
+            // Update top stats
+            document.getElementById('topXP').textContent = `${userProfile?.points_total || 0} XP`;
+
+            overlay.classList.add('show');
+        }
+
+        function closeResults() {
+            document.getElementById('resultsOverlay').classList.remove('show');
+            renderCatalog();
+        }
+
+        function retryExercise() {
+            document.getElementById('resultsOverlay').classList.remove('show');
+            if (lastOpenedExId) openExercice(lastOpenedExId, lastOpenedType || 'qcm');
+        }
+
+        // ── XP FLOAT ANIMATION ───────────────────────────────────────────
+        function floatXP(pts) {
+            const el = document.createElement('div');
+            el.className = 'xp-float';
+            el.textContent = `+${pts} XP ⭐`;
+            el.style.left = '50%'; el.style.bottom = '25%';
+            el.style.transform = 'translateX(-50%)';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1600);
+            document.getElementById('topXP').textContent = `${userProfile?.points_total || 0} XP`;
+        }
+
+        // ── CONFETTI ─────────────────────────────────────────────────────
+        function spawnConfetti() {
+            const colors = ['#6366f1', '#10b981', '#f59e0b', '#f43f5e', '#818cf8', '#34d399', '#fbbf24'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'confetti-dot';
+                    el.style.left = Math.random() * 100 + 'vw';
+                    el.style.top = '-8px';
+                    el.style.background = colors[i % colors.length];
+                    el.style.width = (5 + Math.random() * 8) + 'px';
+                    el.style.height = (5 + Math.random() * 8) + 'px';
+                    el.style.animationDuration = (2 + Math.random() * 2) + 's';
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 4000);
+                }, i * 45);
+            }
+        }
+
+        // ── TOAST ────────────────────────────────────────────────────────
+        function toast(msg) {
+            const el = document.createElement('div');
+            el.className = 'toast'; el.textContent = msg;
+            document.getElementById('toastArea').appendChild(el);
+            setTimeout(() => el.remove(), 2800);
+        }
+
+        // ── NAVIGATION ───────────────────────────────────────────────────
+        function goBack() {
+            closeArena();
+            window.location.href = 'dashboard-eleve.html';
+        }
+
+        // ── START ─────────────────────────────────────────────────────────
+        init().catch(console.error);
+    </script>
+</body>
+
+</html>

@@ -9,6 +9,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <script src="auth-check.js"></script>
+    <script>
+        // Si déjà connecté, rediriger vers le bon espace
+        AuthCheck.resolveUserRoleAndRedirect();
+    </script>
     <style>
         * {
             font-family: 'Outfit', sans-serif;
@@ -329,16 +334,20 @@
         }
 
         // Redirection logic
-        async function redirectToDashboard(userId) {
+        async function redirectToDashboard(userId, retryCount = 0) {
             try {
-                const { data: profile } = await supabase
+                const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('type_parcours')
                     .eq('id', userId)
                     .single();
 
+                if (profileError) throw profileError;
+
                 if (!profile) {
                     await supabase.auth.signOut();
+                    showMessage("Profil introuvable. Veuillez vous réinscrire.", "error");
+                    setTimeout(() => window.location.href = 'auth.html?mode=register', 2000);
                     return;
                 }
 
@@ -351,6 +360,15 @@
                 window.location.href = dashboards[profile.type_parcours] || 'index.html';
             } catch (error) {
                 console.error('Error redirecting:', error);
+
+                // Handle specific lock errors from Supabase/Auth competition
+                if ((error.message?.includes('Lock') || error.name === 'AbortError' || error.message?.includes('broken')) && retryCount < 3) {
+                    console.warn(`🔒 Conflit de session détecté (Essai ${retryCount + 1}/3). Nouvelle tentative...`);
+                    await new Promise(r => setTimeout(r, 800));
+                    return redirectToDashboard(userId, retryCount + 1);
+                }
+
+                showMessage("Erreur lors de la redirection. Veuillez rafraîchir la page.", "error");
             }
         }
 

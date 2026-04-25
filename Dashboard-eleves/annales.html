@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Annales — KMERSCHOOL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg: #060b16;
+            --surf: #0d1526;
+            --surf2: #0a0f1e;
+            --border: rgba(255, 255, 255, .07);
+            --indigo: #6366f1;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --rose: #f43f5e;
+            --sidebar: 268px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: #cbd5e1;
+            min-height: 100vh;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, .3);
+            border-radius: 3px;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 200;
+            height: 56px;
+            background: var(--surf2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.15rem;
+            background: linear-gradient(135deg, #818cf8, #34d399);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ── LAYOUT ── */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 56px;
+        }
+
+        /* ── FILTER SIDEBAR ── */
+        .filter-sidebar {
+            width: var(--sidebar);
+            flex-shrink: 0;
+            background: var(--surf2);
+            border-right: 1px solid var(--border);
+            padding: 1.25rem .875rem;
+            position: sticky;
+            top: 56px;
+            height: calc(100vh - 56px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .filter-section-label {
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: #334155;
+            margin-bottom: .5rem;
+        }
+
+        .f-btn {
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            padding: .5rem .8rem;
+            border-radius: .5rem;
+            width: 100%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: .8rem;
+            font-weight: 500;
+            color: #64748b;
+            transition: all .15s;
+            text-align: left;
+        }
+
+        .f-btn:hover {
+            background: rgba(255, 255, 255, .05);
+            color: #94a3b8;
+        }
+
+        .f-btn.active {
+            background: rgba(99, 102, 241, .14);
+            color: #a5b4fc;
+            border-left: 2px solid var(--indigo);
+            padding-left: calc(.8rem - 2px);
+        }
+
+        .f-count {
+            margin-left: auto;
+            font-size: .62rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, .07);
+            color: #475569;
+            padding: .1rem .38rem;
+            border-radius: 99px;
+            flex-shrink: 0;
+        }
+
+        .f-btn.active .f-count {
+            background: rgba(99, 102, 241, .2);
+            color: #818cf8;
+        }
+
+        /* ── MAIN ── */
+        .main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── CONTENT HEADER ── */
+        .content-top {
+            padding: 1.5rem 2rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* ── SEARCH ── */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            border-radius: .6rem;
+            padding: .5rem 1rem;
+            transition: border-color .2s;
+            flex: 1;
+            max-width: 380px;
+        }
+
+        .search-bar:focus-within {
+            border-color: rgba(99, 102, 241, .4);
+        }
+
+        .search-bar input {
+            background: none;
+            border: none;
+            outline: none;
+            color: #e2e8f0;
+            font-size: .85rem;
+            width: 100%;
+        }
+
+        .search-bar input::placeholder {
+            color: #475569;
+        }
+
+        /* ── VIEW TOGGLE ── */
+        .view-toggle {
+            display: flex;
+            gap: .25rem;
+        }
+
+        .vtBtn {
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            border-radius: .45rem;
+            padding: .4rem .6rem;
+            cursor: pointer;
+            color: #475569;
+            font-size: .85rem;
+            transition: all .15s;
+        }
+
+        .vtBtn.active {
+            background: rgba(99, 102, 241, .15);
+            border-color: rgba(99, 102, 241, .3);
+            color: #818cf8;
+        }
+
+        /* ── STATS STRIP ── */
+        .stats-strip {
+            display: flex;
+            gap: .75rem;
+            padding: 1rem 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-chip {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            background: var(--surf);
+            border: 1px solid var(--border);
+            border-radius: .55rem;
+            padding: .45rem .85rem;
+            font-size: .78rem;
+        }
+
+        /* ── CATALOG GRID ── */
+        .catalog {
+            padding: 1.25rem 2rem 3rem;
+        }
+
+        .grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 1rem;
+        }
+
+        .list-view {
+            display: flex;
+            flex-direction: column;
+            gap: .65rem;
+        }
+
+        /* ── ANNALE CARD (GRID) ── */
+        .ann-card {
+            background: var(--surf);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform .2s, border-color .2s, box-shadow .2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ann-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(99, 102, 241, .28);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .35);
+        }
+
+        .card-color-band {
+            height: 4px;
+        }
+
+        .card-body {
+            padding: 1.1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: .55rem;
+        }
+
+        .card-footer {
+            padding: .75rem 1.1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+            flex-wrap: wrap;
+        }
+
+        /* ── ANNALE ROW (LIST) ── */
+        .ann-row {
+            background: var(--surf);
+            border: 1px solid var(--border);
+            border-radius: .75rem;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: border-color .2s, background .15s;
+        }
+
+        .ann-row:hover {
+            border-color: rgba(99, 102, 241, .3);
+            background: rgba(99, 102, 241, .04);
+        }
+
+        .row-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: .6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        /* ── BADGES ── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+            padding: .18rem .6rem;
+            border-radius: 99px;
+            font-size: .67rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .badge-type {
+            background: rgba(99, 102, 241, .14);
+            color: #818cf8;
+        }
+
+        .badge-free {
+            background: rgba(16, 185, 129, .12);
+            color: #34d399;
+        }
+
+        .badge-premium {
+            background: rgba(245, 158, 11, .12);
+            color: #fbbf24;
+        }
+
+        .badge-official {
+            background: rgba(59, 130, 246, .12);
+            color: #60a5fa;
+        }
+
+        .badge-year {
+            background: rgba(255, 255, 255, .07);
+            color: #94a3b8;
+        }
+
+        .badge-diff-f {
+            background: rgba(16, 185, 129, .12);
+            color: #34d399;
+        }
+
+        .badge-diff-m {
+            background: rgba(245, 158, 11, .12);
+            color: #fbbf24;
+        }
+
+        .badge-diff-d {
+            background: rgba(244, 63, 94, .1);
+            color: #fb7185;
+        }
+
+        /* ── MATIERE COLOR MAP ── */
+        /* defined in JS */
+
+        /* ── VIEWER OVERLAY ── */
+        .viewer {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: #040810;
+            flex-direction: column;
+        }
+
+        .viewer.show {
+            display: flex;
+        }
+
+        .viewer-header {
+            height: 56px;
+            flex-shrink: 0;
+            background: var(--surf2);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.25rem;
+            gap: .75rem;
+        }
+
+        .viewer-tabs {
+            display: flex;
+            gap: 0;
+            background: var(--surf2);
+            border-bottom: 1px solid var(--border);
+            padding: 0 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .vtab {
+            padding: .65rem 1.1rem;
+            font-size: .82rem;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all .15s;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+        }
+
+        .vtab:hover {
+            color: #94a3b8;
+        }
+
+        .vtab.active {
+            color: #818cf8;
+            border-color: var(--indigo);
+        }
+
+        .vtab:disabled,
+        .vtab.disabled {
+            opacity: .35;
+            pointer-events: none;
+            cursor: default;
+        }
+
+        .viewer-body {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* PDF PANEL */
+        .pdf-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pdf-toolbar {
+            background: #070d1a;
+            border-bottom: 1px solid var(--border);
+            padding: .5rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            flex-wrap: wrap;
+        }
+
+        .pdf-frame {
+            flex: 1;
+            border: none;
+            background: #111;
+        }
+
+        /* VIDEO PANEL */
+        .video-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            gap: 1.5rem;
+        }
+
+        .video-embed {
+            width: 100%;
+            max-width: 900px;
+            aspect-ratio: 16/9;
+            border-radius: .75rem;
+            overflow: hidden;
+        }
+
+        .video-embed iframe,
+        .video-embed video {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* INFO PANEL (side) */
+        .info-side {
+            width: 300px;
+            flex-shrink: 0;
+            background: var(--surf2);
+            border-left: 1px solid var(--border);
+            padding: 1.25rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .info-meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .45rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .04);
+            font-size: .8rem;
+        }
+
+        .info-meta-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #475569;
+        }
+
+        .info-value {
+            color: #94a3b8;
+            font-weight: 600;
+            text-align: right;
+            max-width: 160px;
+        }
+
+        /* ── EMPTY / LOADING ── */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+            color: #475569;
+        }
+
+        .skel {
+            background: linear-gradient(90deg, rgba(255, 255, 255, .04) 25%, rgba(255, 255, 255, .08) 50%, rgba(255, 255, 255, .04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: .4rem;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .info-side {
+                display: none !important;
+            }
+            .viewer-tabs {
+                justify-content: center;
+                overflow-x: auto;
+            }
+            .vtab {
+                padding: .65rem .8rem;
+                flex-shrink: 0;
+            }
+        }
+
+        /* ── BUTTONS ── */
+        .btn {
+            border: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all .15s;
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            border-radius: .6rem;
+            padding: .5rem 1.1rem;
+            font-size: .8rem;
+        }
+
+        .btn-primary:hover {
+            opacity: .9;
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            color: #94a3b8;
+            border-radius: .6rem;
+            padding: .45rem .9rem;
+            font-size: .8rem;
+        }
+
+        .btn-ghost:hover {
+            border-color: rgba(99, 102, 241, .3);
+            color: #c7d2fe;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: .6rem;
+            padding: .45rem .9rem;
+            font-size: .78rem;
+        }
+
+        .btn-success:hover {
+            opacity: .9;
+        }
+
+        .btn-amber {
+            background: rgba(245, 158, 11, .15);
+            border: 1px solid rgba(245, 158, 11, .25);
+            color: #fbbf24;
+            border-radius: .6rem;
+            padding: .45rem .9rem;
+            font-size: .78rem;
+        }
+
+        .btn-sm {
+            padding: .3rem .7rem;
+            font-size: .75rem;
+        }
+
+        .btn-icon {
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            color: #94a3b8;
+            border-radius: .5rem;
+            padding: .38rem .55rem;
+            font-size: .82rem;
+        }
+
+        .btn-icon:hover {
+            background: rgba(255, 255, 255, .09);
+        }
+
+        /* ── TOAST ── */
+        .toast-area {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 600;
+            display: flex;
+            flex-direction: column;
+            gap: .4rem;
+            align-items: center;
+        }
+
+        .toast {
+            background: var(--surf);
+            border: 1px solid rgba(99, 102, 241, .25);
+            border-radius: .7rem;
+            padding: .55rem 1.25rem;
+            font-size: .82rem;
+            font-weight: 500;
+            white-space: nowrap;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .4);
+            animation: toastIn .25s ease both;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .filter-sidebar {
+                display: none;
+            }
+
+            .info-side {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .grid-view {
+                grid-template-columns: 1fr;
+            }
+
+            .content-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* ── SPINNER ── */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #F5B800;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-sm { width: 14px; height: 14px; border-width: 1.5px; }
+        .spinner-lg { width: 40px; height: 40px; border-width: 3px; }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══ TOPBAR ═══ -->
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:.85rem;">
+            <button onclick="goBack()" class="btn btn-ghost btn-sm" data-i18n="nav_back">← Retour</button>
+            <div class="logo">KMERSCHOOL</div>
+            <span style="color:#475569;font-size:.75rem;" data-i18n="title">/ Annales</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem;">
+            <div
+                style="display:flex;align-items:center;gap:.4rem;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);padding:.3rem .8rem;border-radius:99px;">
+                <span style="font-size:.8rem;">📋</span>
+                <span id="topCount" style="font-size:.78rem;font-weight:700;color:#a5b4fc;">0 annales</span>
+            </div>
+            <div
+                style="display:flex;align-items:center;gap:.4rem;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);padding:.3rem .8rem;border-radius:99px;">
+                <span style="font-size:.8rem;">🆓</span>
+                <span id="topFree" style="font-size:.78rem;font-weight:700;color:#34d399;">0 gratuits</span>
+            </div>
+            <div id="userAvatar" onclick="window.location.href='profil.html'"
+                style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#10b981);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;color:white;cursor:pointer;margin-left:.5rem">
+                ?</div>
+        </div>
+    </header>
+
+    <!-- ═══ LAYOUT ═══ -->
+    <div class="layout">
+
+        <!-- FILTER SIDEBAR -->
+        <aside class="filter-sidebar">
+
+            <div style="display:none">
+                <div class="filter-section-label" data-i18n="filter_sys">Sous-système</div>
+                <button class="f-btn active" onclick="setF('sys','all')" id="fs-all">🌍 <span data-i18n="f_all">Tous</span></button>
+                <button class="f-btn" onclick="setF('sys','francophone')" id="fs-francophone">🇫🇷 Francophone</button>
+                <button class="f-btn" onclick="setF('sys','anglophone')" id="fs-anglophone">🇬🇧 Anglophone</button>
+            </div>
+
+            <div>
+                <div class="filter-section-label" data-i18n="filter_type">Type d'examen</div>
+                <button class="f-btn active" onclick="setF('type','all')" id="ft-all">🗂 <span data-i18n="f_all">Tous</span></button>
+                <button class="f-btn" onclick="setF('type','BEPC')" id="ft-BEPC">📋 BEPC</button>
+                <button class="f-btn" onclick="setF('type','Probatoire')" id="ft-Probatoire">📋 Probatoire</button>
+                <button class="f-btn" onclick="setF('type','BAC')" id="ft-BAC">🎓 BAC</button>
+                <button class="f-btn" onclick="setF('type','GCE_O')" id="ft-GCE_O">📋 GCE O-Level</button>
+                <button class="f-btn" onclick="setF('type','GCE_A')" id="ft-GCE_A">🎓 GCE A-Level</button>
+            </div>
+
+            <div>
+                <div class="filter-section-label" data-i18n="filter_mat">Matière</div>
+                <button class="f-btn active" onclick="setF('mat','all')" id="fm-all"><span>📚</span> <span data-i18n="f_all_mat">Toutes</span></button>
+                <div id="matiereFilterBtns"></div>
+            </div>
+
+            <div>
+                <div class="filter-section-label" data-i18n="filter_year">Année</div>
+                <button class="f-btn active" onclick="setF('annee','all')" id="fa-all"><span>🗓</span> <span data-i18n="f_all_year">Toutes</span></button>
+                <div id="anneeFilterBtns"></div>
+            </div>
+
+            <div>
+                <div class="filter-section-label" data-i18n="filter_access">Accès</div>
+                <button class="f-btn active" onclick="setF('acces','all')" id="fac-all">🌐 <span data-i18n="f_all">Tous</span></button>
+                <button class="f-btn" onclick="setF('acces','gratuit')" id="fac-gratuit">🆓 <span data-i18n="f_free">Gratuits</span></button>
+                <button class="f-btn" onclick="setF('acces','officiel')" id="fac-officiel">✅ <span data-i18n="f_official">Officiels</span></button>
+                <button class="f-btn" onclick="setF('acces','correction')" id="fac-correction">📝 <span data-i18n="f_correction">Avec
+                    correction</span></button>
+                <button class="f-btn" onclick="setF('acces','video')" id="fac-video">🎥 <span data-i18n="f_video">Avec vidéo</span></button>
+            </div>
+
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main">
+
+            <div class="content-top">
+                <div>
+                    <h2 style="font-size:1.3rem;font-weight:800;color:#f1f5f9;" data-i18n="title">📋 Annales d'examens</h2>
+                    <p id="subLabel" style="font-size:.82rem;color:#475569;margin-top:.2rem;" data-i18n="loading"><div class="spinner spinner-sm"></div></p>
+                </div>
+                <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+                    <div class="search-bar">
+                        <svg width="14" height="14" fill="none" stroke="#475569" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                        </svg>
+                        <input id="searchInput" type="text" data-i18n-placeholder="search_placeholder" placeholder="Matière, titre, année…" />
+                    </div>
+                    <!-- Sort -->
+                    <select id="sortSelect" onchange="render()"
+                        style="background:var(--surf);border:1px solid var(--border);color:#94a3b8;border-radius:.55rem;padding:.45rem .75rem;font-size:.78rem;outline:none;cursor:pointer;">
+                        <option value="annee_desc" data-i18n="sort_year_desc">Année ↓</option>
+                        <option value="annee_asc" data-i18n="sort_year_asc">Année ↑</option>
+                        <option value="vues" data-i18n="sort_views">Plus vues</option>
+                        <option value="dl" data-i18n="sort_dls">Plus téléchargés</option>
+                        <option value="titre" data-i18n="sort_title">Titre A-Z</option>
+                    </select>
+                    <!-- View toggle -->
+                    <div class="view-toggle">
+                        <button class="vtBtn active" onclick="setView('grid')" id="vt-grid" title="Grille">⊞</button>
+                        <button class="vtBtn" onclick="setView('list')" id="vt-list" title="Liste">☰</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats strip -->
+            <div class="stats-strip" id="statsStrip">
+                <div class="spinner spinner-sm"></div>
+            </div>
+
+            <!-- Catalog -->
+            <div class="catalog">
+                <div id="catalogContainer" class="grid-view" style="display:flex;justify-content:center;padding:4rem;">
+                    <div class="spinner spinner-lg"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+     VIEWER OVERLAY
+═══════════════════════════════════════════════════ -->
+    <div class="viewer" id="viewerOverlay">
+
+        <!-- Header -->
+        <div class="viewer-header">
+            <div style="display:flex;align-items:center;gap:.85rem;min-width:0;">
+                <button onclick="closeViewer()" class="btn btn-ghost btn-sm">✕ Fermer</button>
+                <div style="min-width:0;">
+                    <div id="vTitle"
+                        style="font-family:'Outfit',sans-serif;font-weight:700;font-size:.9rem;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:500px;">
+                        —</div>
+                    <div id="vSub" style="font-size:.7rem;color:#475569;margin-top:.1rem;">—</div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0;">
+                <button id="btnDlSujet" onclick="dlSujet()" class="btn btn-primary btn-sm" style="display:none;">↓
+                    Sujet</button>
+                <button id="btnDlCorr" onclick="dlCorr()" class="btn btn-success btn-sm" style="display:none;">↓
+                    Correction</button>
+                <button onclick="shareAnnale()" class="btn btn-icon btn-sm" title="Partager">🔗</button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="viewer-tabs">
+            <div class="vtab active" onclick="switchVTab('sujet')" id="vt-sujet">📄 Sujet</div>
+            <div class="vtab disabled" onclick="switchVTab('correction')" id="vt-correction">📝 Correction</div>
+            <div class="vtab disabled" onclick="switchVTab('video')" id="vt-video">🎥 Corrigé vidéo</div>
+            <div class="vtab" onclick="switchVTab('infos')" id="vt-infos">ℹ️ Infos</div>
+        </div>
+
+        <!-- Body -->
+        <div class="viewer-body" id="viewerBody">
+
+            <!-- SUJET PANEL -->
+            <div id="panelSujet" class="pdf-panel">
+                <div class="pdf-toolbar">
+                    <span style="font-size:.75rem;color:#64748b;" id="pdfSujetLabel">📄 Sujet PDF</span>
+                    <div style="margin-left:auto;display:flex;gap:.5rem;">
+                        <button onclick="dlSujet()" class="btn btn-primary btn-sm">↓ Télécharger</button>
+                        <button onclick="openExternal('sujet')" class="btn btn-ghost btn-sm">↗ Ouvrir</button>
+                    </div>
+                </div>
+                <iframe id="sujetFrame" class="pdf-frame" src="about:blank"></iframe>
+            </div>
+
+            <!-- CORRECTION PANEL -->
+            <div id="panelCorrection" class="pdf-panel" style="display:none;">
+                <div class="pdf-toolbar">
+                    <span style="font-size:.75rem;color:#64748b;">📝 Correction PDF</span>
+                    <div style="margin-left:auto;display:flex;gap:.5rem;">
+                        <button onclick="dlCorr()" class="btn btn-success btn-sm">↓ Télécharger</button>
+                        <button onclick="openExternal('correction')" class="btn btn-ghost btn-sm">↗ Ouvrir</button>
+                    </div>
+                </div>
+                <iframe id="corrFrame" class="pdf-frame" src="about:blank"></iframe>
+            </div>
+
+            <!-- VIDEO PANEL -->
+            <div id="panelVideo" class="video-panel" style="display:none;">
+                <div style="text-align:center;margin-bottom:.5rem;">
+                    <div style="font-size:.8rem;font-weight:600;color:#94a3b8;margin-bottom:.25rem;" id="videoLabel">
+                        Corrigé vidéo</div>
+                    <div style="font-size:.72rem;color:#475569;">Regarde la correction pas à pas</div>
+                </div>
+                <div class="video-embed" id="videoEmbed"></div>
+            </div>
+
+            <!-- INFOS PANEL (full width on mobile) -->
+            <div id="panelInfos" style="display:none;flex:1;overflow-y:auto;padding:1.75rem 2rem;max-width:700px;">
+                <div id="infosContent"></div>
+            </div>
+
+            <!-- INFO SIDE (always visible on desktop when PDF open) -->
+            <div class="info-side" id="infoSide">
+                <div>
+                    <div
+                        style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#334155;margin-bottom:.85rem;">
+                        Détails</div>
+                    <div id="sideMetaContent"></div>
+                </div>
+
+                <!-- Tags -->
+                <div id="sideTagsSection" style="display:none;">
+                    <div id="sideTagsHeader"
+                        style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#334155;margin-bottom:.6rem;">
+                        Tags</div>
+                    <div id="sideTags" style="display:flex;flex-wrap:wrap;gap:.35rem;"></div>
+                </div>
+
+                <!-- Related annales -->
+                <div>
+                    <div id="sideRelatedTitle"
+                        style="font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#334155;margin-bottom:.75rem;">
+                        Annales similaires</div>
+                    <div id="sideRelated"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast-area" id="toastArea"></div>
+
+    <!-- ═════════════════════════ JAVASCRIPT ═════════════════════════ -->
+    <script>
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ── STATE ──────────────────────────────────────────────────────
+        let allAnnales = [];
+        let currentUser = null, userProfile = null;
+        let filters = { sys: 'all', type: 'all', mat: 'all', annee: 'all', acces: 'all', q: '' };
+        let viewMode = 'grid';
+        let currentAnnale = null;
+        let activeVTab = 'sujet';
+
+        // ── MATIERE COLORS ──────────────────────────────────────────────
+        const MAT_COLORS = {
+            'mathematiques': { bg: 'rgba(99,102,241,.15)', c: '#818cf8', band: '#6366f1' },
+            'physique': { bg: 'rgba(16,185,129,.12)', c: '#34d399', band: '#10b981' },
+            'chimie': { bg: 'rgba(245,158,11,.12)', c: '#fbbf24', band: '#f59e0b' },
+            'svt': { bg: 'rgba(132,204,22,.12)', c: '#a3e635', band: '#84cc16' },
+            'francais': { bg: 'rgba(59,130,246,.12)', c: '#60a5fa', band: '#3b82f6' },
+            'anglais': { bg: 'rgba(168,85,247,.12)', c: '#c084fc', band: '#a855f7' },
+            'histoire': { bg: 'rgba(244,63,94,.12)', c: '#fb7185', band: '#f43f5e' },
+            'geographie': { bg: 'rgba(20,184,166,.12)', c: '#2dd4bf', band: '#14b8a6' },
+            'philosophie': { bg: 'rgba(251,146,60,.12)', c: '#fb923c', band: '#f97316' },
+            'economie': { bg: 'rgba(34,211,238,.12)', c: '#67e8f9', band: '#06b6d4' },
+            'informatique': { bg: 'rgba(99,102,241,.12)', c: '#818cf8', band: '#6366f1' },
+            'default': { bg: 'rgba(255,255,255,.06)', c: '#64748b', band: '#334155' },
+        };
+        function getMat(nom) {
+            if (!nom) return MAT_COLORS.default;
+            const k = nom.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+            for (const key in MAT_COLORS) { if (k.includes(key)) return MAT_COLORS[key]; }
+            return MAT_COLORS.default;
+        }
+
+        // Exam type display map
+        const TYPE_DISPLAY = {
+            'BAC': { labelKey: 'lbl_bac', icon: '🎓', color: 'rgba(245,158,11,.15)', tc: '#fbbf24' },
+            'BEPC': { labelKey: 'lbl_bepc', icon: '📋', color: 'rgba(99,102,241,.12)', tc: '#818cf8' },
+            'Probatoire': { labelKey: 'lbl_prob', icon: '📋', color: 'rgba(59,130,246,.12)', tc: '#60a5fa' },
+            'GCE_A': { labelKey: 'lbl_gcea', icon: '🎓', color: 'rgba(244,63,94,.1)', tc: '#fb7185' },
+            'GCE_O': { labelKey: 'lbl_gceo', icon: '📋', color: 'rgba(16,185,129,.12)', tc: '#34d399' },
+            'default': { labelKey: 'lbl_exam', icon: '📝', color: 'rgba(255,255,255,.06)', tc: '#64748b' },
+        };
+        function getType(tCode) { 
+            const cfg = TYPE_DISPLAY[tCode] || TYPE_DISPLAY.default;
+            return { ...cfg, label: t(cfg.labelKey) };
+        }
+
+        /* ── I18N (TRADUCTION) ── */
+        const I18N = {
+            fr: {
+                title: "Annales",
+                nav_back: "← Retour",
+                annales_count: "{0} annales",
+                gratuits_count: "{0} gratuits",
+                filter_sys: "Sous-système",
+                filter_type: "Type d'examen",
+                filter_mat: "Matière",
+                filter_year: "Année",
+                filter_access: "Accès",
+                f_all: "Tous",
+                f_all_mat: "Toutes",
+                f_all_year: "Toutes",
+                f_free: "Gratuits",
+                f_official: "Officiels",
+                f_correction: "Avec correction",
+                f_video: "Avec vidéo",
+                search_placeholder: "Rechercher...",
+                sort_year_desc: "Récent",
+                sort_year_asc: "Ancien",
+                sort_views: "Vues",
+                sort_dls: "Télécharg.",
+                sort_title: "Titre A-Z",
+                btn_open: "Ouvrir →",
+                btn_dl_sujet: "📄 Télécharger le sujet",
+                btn_dl_corr: "📝 Télécharger la correction",
+                btn_video: "🎥 Voir le corrigé vidéo",
+                stat_annales: "annales",
+                stat_with_corr: "avec correction",
+                stat_with_video: "avec vidéo",
+                stat_free: "gratuits",
+                stat_years: "années couvertes",
+                empty_msg: "Aucune annale trouvée",
+                empty_sub: "Essaie d'autres filtres ou une autre recherche.",
+                lbl_bac: "BAC",
+                lbl_bepc: "BEPC",
+                lbl_prob: "Probatoire",
+                lbl_gcea: "GCE A-Level",
+                lbl_gceo: "GCE O-Level",
+                lbl_exam: "Examen",
+                badge_official: "✅ Officiel",
+                badge_free: "🆓 Gratuit",
+                badge_premium: "💎 Premium",
+                viewer_sujet: "📄 Sujet",
+                viewer_corr: "📝 Correction",
+                viewer_video: "🎥 Vidéo",
+                viewer_infos: "ℹ️ Infos",
+                meta_type: "Type",
+                meta_year: "Année",
+                meta_session: "Session",
+                meta_mat: "Matière",
+                meta_level: "Niveau",
+                meta_serie: "Série",
+                meta_sys: "Système",
+                meta_duration: "Durée",
+                meta_total: "Barème",
+                meta_qs: "Questions",
+                meta_diff: "Difficulté",
+                meta_avg: "Note moy.",
+                meta_source: "Source",
+                meta_views: "Vues",
+                meta_dls: "Télécharg.",
+                meta_access: "Accès",
+                meta_author: "✍️ Correction par:",
+                btn_dl_sujet_label: "📄 Télécharger le sujet",
+                btn_dl_corr_label: "📝 Télécharger la correction",
+                btn_video_label: "🎥 Voir le corrigé vidéo",
+                related_title: "Annales similaires",
+                no_related: "Aucune annale similaire.",
+                tags_title: "Mots-clés",
+                msg_dl_sujet: "📄 Téléchargement du sujet…",
+                msg_dl_corr: "📝 Téléchargement de la correction…",
+                msg_link_copied: "🔗 Lien copié !"
+            },
+            en: {
+                title: "Past Papers",
+                nav_back: "← Back",
+                annales_count: "{0} papers",
+                gratuits_count: "{0} free",
+                filter_sys: "Sub-system",
+                filter_type: "Exam Type",
+                filter_mat: "Subject",
+                filter_year: "Year",
+                filter_access: "Access",
+                f_all: "All",
+                f_all_mat: "All",
+                f_all_year: "All",
+                f_free: "Free",
+                f_official: "Official",
+                f_correction: "With correction",
+                f_video: "With video",
+                search_placeholder: "Search...",
+                sort_year_desc: "Newest",
+                sort_year_asc: "Oldest",
+                sort_views: "Views",
+                sort_dls: "Downloads",
+                sort_title: "Title A-Z",
+                btn_open: "Open →",
+                btn_dl_sujet: "📄 Download subject",
+                btn_dl_corr: "📝 Download correction",
+                btn_video: "🎥 Watch video correction",
+                stat_annales: "papers",
+                stat_with_corr: "with correction",
+                stat_with_video: "with video",
+                stat_free: "free",
+                stat_years: "years covered",
+                empty_msg: "No past papers found",
+                empty_sub: "Try other filters or another search.",
+                lbl_bac: "BAC",
+                lbl_bepc: "BEPC",
+                lbl_prob: "Probatoire",
+                lbl_gcea: "GCE A-Level",
+                lbl_gceo: "GCE O-Level",
+                lbl_exam: "Exam",
+                badge_official: "✅ Official",
+                badge_free: "🆓 Free",
+                badge_premium: "💎 Premium",
+                viewer_sujet: "📄 Subject",
+                viewer_corr: "📝 Correction",
+                viewer_video: "🎥 Video",
+                viewer_infos: "ℹ️ Infos",
+                meta_type: "Type",
+                meta_year: "Year",
+                meta_session: "Session",
+                meta_mat: "Subject",
+                meta_level: "Level",
+                meta_serie: "Series",
+                meta_sys: "System",
+                meta_duration: "Duration",
+                meta_total: "Scale",
+                meta_qs: "Questions",
+                meta_diff: "Difficulty",
+                meta_avg: "Avg. grade",
+                meta_source: "Source",
+                meta_views: "Views",
+                meta_dls: "Downloads",
+                meta_access: "Access",
+                meta_author: "✍️ Correction by:",
+                btn_dl_sujet_label: "📄 Download subject",
+                btn_dl_corr_label: "📝 Download correction",
+                btn_video_label: "🎥 Watch video correction",
+                related_title: "Similar papers",
+                no_related: "No similar papers found.",
+                tags_title: "Tags",
+                msg_dl_sujet: "📄 Downloading subject…",
+                msg_dl_corr: "📝 Downloading correction…",
+                msg_link_copied: "🔗 Link copied !"
+            }
+        };
+
+        function t(key, ...args) {
+            let __userId = typeof currentUser !== 'undefined' && currentUser ? currentUser.id : '';
+            let __sysCode = typeof userProfile !== 'undefined' && userProfile && userProfile.sous_systeme ? userProfile.sous_systeme.code : '';
+            const storeKey = __userId ? `kmer_eleve_settings_${__userId}` : 'kmer_eleve_settings';
+            const st = JSON.parse(localStorage.getItem(storeKey) || '{}');
+            let lang = st.lang;
+            if (!lang && __sysCode) lang = (__sysCode === 'anglophone' || __sysCode === 'EN' || __sysCode === 'en') ? 'en' : 'fr';
+            lang = lang || 'fr';
+            let str = (I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : (I18N['fr'][key] || key);
+            args.forEach((a, i) => { str = str.replace(`{${i}}`, a); });
+            return str;
+        }
+
+        function applyTranslations() {
+            let __userId = typeof currentUser !== 'undefined' && currentUser ? currentUser.id : '';
+            let __sysCode = typeof userProfile !== 'undefined' && userProfile && userProfile.sous_systeme ? userProfile.sous_systeme.code : '';
+            const storeKey = __userId ? `kmer_eleve_settings_${__userId}` : 'kmer_eleve_settings';
+            const st = JSON.parse(localStorage.getItem(storeKey) || '{}');
+            let lang = st.lang;
+            if (!lang && __sysCode) lang = (__sysCode === 'anglophone' || __sysCode === 'EN' || __sysCode === 'en') ? 'en' : 'fr';
+            lang = lang || 'fr';
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                el.textContent = t(key);
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                el.placeholder = t(key);
+            });
+            
+            document.title = `${t('title')} — KMERSCHOOL`;
+        }
+
+        // ── INIT ───────────────────────────────────────────────────────
+        async function init() {
+            const { data: { user } } = await sb.auth.getUser();
+            if (!user) { window.location.href = 'onboarding_cameroun.html'; return; }
+            currentUser = user;
+
+            const { data: prof } = await sb.from('profiles').select('nom,avatar_url,sous_systeme_id,serie_id,niveau_scolaire_id').eq('id', user.id).single();
+            userProfile = prof;
+
+            // Update Avatar
+            const av = document.getElementById('userAvatar');
+            if (prof?.avatar_url) {
+                av.innerHTML = `<img src="${prof.avatar_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`;
+            } else if (prof?.nom) {
+                av.textContent = prof.nom[0].toUpperCase();
+            }
+
+            // Pre-load subsystem for translations, but don't force filter
+            if (prof?.sous_systeme_id) {
+                const { data: ss } = await sb.from('sous_systemes').select('code').eq('id', prof.sous_systeme_id).single();
+                if (ss) { 
+                    prof.sous_systeme = ss; 
+                }
+            }
+
+            // Apply translations after profile subsystem is populated
+            applyTranslations();
+
+            await loadAnnales();
+            buildDynamicFilters();
+            render();
+            bindSearch();
+        }
+
+        // ── LOAD ──────────────────────────────────────────────────────
+        async function loadAnnales() {
+            let query = sb.from('annales')
+                .select(`*, matiere:matieres(nom,slug,couleur), niveau:niveaux_scolaires(nom_fr,nom_court,code,type_examen), serie:series_specialites(nom_court,code,nom_fr), sous_systeme:sous_systemes(code,nom_fr)`)
+                .eq('est_publie', true);
+
+            // Removed strict DB filtering by sous_systeme_id and niveau_id 
+            // to allow students to browse the entire annales catalog.
+
+            try {
+                const { data, error } = await query.order('annee', { ascending: false });
+                if (error) throw error;
+                allAnnales = data || [];
+            } catch (err) {
+                console.error('Erreur chargement annales:', err);
+                const isNetworkError = !navigator.onLine || err.message?.includes('fetch') || err.code === 'PGRST301';
+                showToast(isNetworkError ? "Réseau instable" : "Erreur de chargement", "error");
+                allAnnales = [];
+            }
+
+            // Update top counts
+            document.getElementById('topCount').textContent = t('annales_count', allAnnales.length);
+            document.getElementById('topFree').textContent = t('gratuits_count', allAnnales.filter(a => a.est_gratuit).length);
+        }
+
+        // ── DYNAMIC FILTERS ───────────────────────────────────────────
+        function buildDynamicFilters() {
+            // Matières
+            const mats = [...new Set(allAnnales.map(a => a.matiere?.nom).filter(Boolean))].sort();
+            const matContainer = document.getElementById('matiereFilterBtns');
+            matContainer.innerHTML = mats.map(m => {
+                const mc = getMat(m);
+                return `<button class="f-btn" onclick="setF('mat',${JSON.stringify(m)})" id="fm-${m.replace(/\s/g, '_')}">
+      <span style="width:8px;height:8px;border-radius:50%;background:${mc.band};flex-shrink:0;"></span> ${m}
+    </button>`;
+            }).join('');
+
+            // Années
+            const annees = [...new Set(allAnnales.map(a => a.annee))].sort((a, b) => b - a);
+            const anneeContainer = document.getElementById('anneeFilterBtns');
+            anneeContainer.innerHTML = annees.slice(0, 12).map(y => `
+    <button class="f-btn" onclick="setF('annee',${y})" id="fa-${y}">
+      <span>📅</span> ${y}
+    </button>`).join('');
+        }
+
+        // ── FILTERS ───────────────────────────────────────────────────
+        function setF(dim, val, doRender = true) {
+            filters[dim] = val;
+
+            // Update button states
+            const groups = {
+                sys: ['all', 'francophone', 'anglophone'],
+                type: ['all', 'BEPC', 'Probatoire', 'BAC', 'GCE_O', 'GCE_A'],
+                acces: ['all', 'gratuit', 'officiel', 'correction', 'video'],
+            };
+
+            if (groups[dim]) {
+                groups[dim].forEach(v => {
+                    const el = document.getElementById(`f${dim[0]}-${v}`);
+                    if (el) el.classList.toggle('active', v === val);
+                });
+            }
+
+            // Mat + annee: clear all, set one
+            if (dim === 'mat') {
+                document.querySelectorAll('[id^="fm-"]').forEach(el => el.classList.remove('active'));
+                const el = document.getElementById(`fm-${val === 'all' ? 'all' : val.replace(/\s/g, '_')}`);
+                if (el) el.classList.add('active');
+            }
+            if (dim === 'annee') {
+                document.querySelectorAll('[id^="fa-"]').forEach(el => el.classList.remove('active'));
+                const el = document.getElementById(val === 'all' ? 'fa-all' : `fa-${val}`);
+                if (el) el.classList.add('active');
+            }
+
+            if (doRender) render();
+        }
+
+        function bindSearch() {
+            document.getElementById('searchInput').addEventListener('input', e => {
+                filters.q = e.target.value.toLowerCase().trim();
+                render();
+            });
+        }
+
+        // ── FILTER + SORT ─────────────────────────────────────────────
+        function getFiltered() {
+            let list = [...allAnnales];
+
+            if (filters.sys !== 'all') list = list.filter(a => !a.sous_systeme || !a.sous_systeme.code || a.sous_systeme.code === filters.sys);
+            if (filters.type !== 'all') list = list.filter(a => a.type_examen === filters.type);
+            if (filters.mat !== 'all') list = list.filter(a => a.matiere?.nom === filters.mat);
+            if (filters.annee !== 'all') list = list.filter(a => a.annee == filters.annee);
+
+            if (filters.acces === 'gratuit') list = list.filter(a => a.est_gratuit);
+            if (filters.acces === 'officiel') list = list.filter(a => a.est_officiel);
+            if (filters.acces === 'correction') list = list.filter(a => !!a.correction_pdf_url);
+            if (filters.acces === 'video') list = list.filter(a => !!a.corrige_video_url);
+
+            if (filters.q) list = list.filter(a =>
+                a.titre?.toLowerCase().includes(filters.q) ||
+                a.matiere?.nom?.toLowerCase().includes(filters.q) ||
+                String(a.annee).includes(filters.q) ||
+                a.type_examen?.toLowerCase().includes(filters.q) ||
+                a.niveau?.nom_fr?.toLowerCase().includes(filters.q)
+            );
+
+            // Sort
+            const sort = document.getElementById('sortSelect').value;
+            if (sort === 'annee_desc') list.sort((a, b) => b.annee - a.annee);
+            if (sort === 'annee_asc') list.sort((a, b) => a.annee - b.annee);
+            if (sort === 'vues') list.sort((a, b) => (b.nombre_vues || 0) - (a.nombre_vues || 0));
+            if (sort === 'dl') list.sort((a, b) => (b.nombre_telechargements || 0) - (a.nombre_telechargements || 0));
+            if (sort === 'titre') list.sort((a, b) => a.titre?.localeCompare(b.titre));
+
+            return list;
+        }
+
+        // ── RENDER ────────────────────────────────────────────────────
+        function render() {
+            const list = getFiltered();
+            const container = document.getElementById('catalogContainer');
+            if (container) container.className = viewMode === 'grid' ? 'grid-view' : 'list-view';
+
+            document.getElementById('subLabel').textContent = t('annales_count', list.length);
+
+            renderStats(list);
+
+            if (list.length === 0) {
+                container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <div style="font-size:3.5rem;margin-bottom:1rem;">📋</div>
+      <div style="font-weight:700;color:#64748b;margin-bottom:.4rem;">${t('empty_msg')}</div>
+      <div style="font-size:.82rem;">${t('empty_sub')}</div>
+    </div>`;
+                return;
+            }
+
+            container.innerHTML = viewMode === 'grid'
+                ? list.map(a => renderGridCard(a)).join('')
+                : list.map(a => renderListRow(a)).join('');
+        }
+
+        function renderStats(list) {
+            const avecCorr = list.filter(a => !!a.correction_pdf_url).length;
+            const avecVideo = list.filter(a => !!a.corrige_video_url).length;
+            const gratuits = list.filter(a => a.est_gratuit).length;
+            const annees = [...new Set(list.map(a => a.annee))].length;
+
+            document.getElementById('statsStrip').innerHTML = [
+                { icon: '📋', val: list.length, label: t('stat_annales') },
+                { icon: '📝', val: avecCorr, label: t('stat_with_corr') },
+                { icon: '🎥', val: avecVideo, label: t('stat_with_video') },
+                { icon: '🆓', val: gratuits, label: t('stat_free') },
+                { icon: '🗓', val: annees, label: t('stat_years') },
+            ].map(s => `<div class="stat-chip"><span>${s.icon}</span> <span style="font-weight:700;color:#f1f5f9;">${s.val}</span> <span style="color:#64748b;">${s.label}</span></div>`).join('');
+        }
+
+        // ── GRID CARD ─────────────────────────────────────────────────
+        function renderGridCard(a) {
+            const mc = getMat(a.matiere?.nom);
+            const tc = getType(a.type_examen);
+            const hasC = !!a.correction_pdf_url;
+            const hasV = !!a.corrige_video_url;
+            const hasP = !!a.sujet_pdf_url;
+
+            return `
+  <div class="ann-card" onclick="openViewer(${a.id})">
+    <div class="card-color-band" style="background:${mc.band};"></div>
+    <div class="card-body">
+      <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;">
+        <span class="badge badge-type" style="background:${tc.color};color:${tc.tc};">${tc.icon} ${tc.label}</span>
+        <span class="badge badge-year">📅 ${a.annee}</span>
+        ${a.session ? `<span class="badge" style="background:rgba(255,255,255,.05);color:#64748b;">${a.session}</span>` : ''}
+        ${a.est_officiel ? `<span class="badge badge-official">${t('badge_official')}</span>` : ''}
+      </div>
+      <div style="font-family:'Outfit',sans-serif;font-weight:700;font-size:.92rem;color:#f1f5f9;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${a.titre}</div>
+      <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+        ${a.matiere?.nom ? `<span style="font-size:.75rem;font-weight:600;color:${mc.c};">${a.matiere.nom}</span>` : ''}
+        ${a.niveau?.nom_court ? `<span style="font-size:.72rem;color:#475569;">· ${a.niveau.nom_court}</span>` : ''}
+        ${a.serie?.nom_court ? `<span style="font-size:.72rem;color:#475569;">· ${a.serie.nom_court}</span>` : ''}
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem;margin-top:.1rem;flex-wrap:wrap;">
+        ${hasP ? `<span style="font-size:.7rem;background:rgba(99,102,241,.1);color:#818cf8;padding:.1rem .5rem;border-radius:99px;">${t('viewer_sujet')}</span>` : ''}
+        ${hasC ? `<span style="font-size:.7rem;background:rgba(16,185,129,.1);color:#34d399;padding:.1rem .5rem;border-radius:99px;">${t('viewer_corr')}</span>` : ''}
+        ${hasV ? `<span style="font-size:.7rem;background:rgba(244,63,94,.1);color:#fb7185;padding:.1rem .5rem;border-radius:99px;">${t('viewer_video')}</span>` : ''}
+      </div>
+    </div>
+    <div class="card-footer">
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        ${a.est_gratuit ? `<span class="badge badge-free">${t('badge_free')}</span>` : `<span class="badge badge-premium">${t('badge_premium')}</span>`}
+        ${a.duree_examen ? `<span style="font-size:.7rem;color:#475569;">⏱ ${a.duree_examen}min</span>` : ''}
+        ${a.bareme_total ? `<span style="font-size:.7rem;color:#475569;">/${a.bareme_total}</span>` : ''}
+      </div>
+      <div style="display:flex;align-items:center;gap:.6rem;">
+        <span style="font-size:.7rem;color:#334155;">👁 ${a.nombre_vues || 0}</span>
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openViewer(${a.id})">${t('btn_open')}</button>
+      </div>
+    </div>
+  </div>`;
+        }
+
+        // ── LIST ROW ──────────────────────────────────────────────────
+        function renderListRow(a) {
+            const mc = getMat(a.matiere?.nom);
+            const tc = getType(a.type_examen);
+            const hasC = !!a.correction_pdf_url;
+            const hasV = !!a.corrige_video_url;
+
+            return `
+  <div class="ann-row" onclick="openViewer(${a.id})">
+    <div class="row-icon" style="background:${mc.bg};">
+      <span>${tc.icon}</span>
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.25rem;">
+        <span class="badge badge-type" style="background:${tc.color};color:${tc.tc};">${tc.label}</span>
+        <span class="badge badge-year">${a.annee}</span>
+        ${a.session ? `<span class="badge" style="background:rgba(255,255,255,.05);color:#64748b;">${a.session}</span>` : ''}
+      </div>
+      <div style="font-weight:700;font-size:.88rem;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.titre}</div>
+      <div style="font-size:.75rem;color:#475569;margin-top:.15rem;">
+        ${a.matiere?.nom || '—'} ${a.niveau?.nom_court ? '· ' + a.niveau.nom_court : ''} ${a.serie?.nom_court ? '· ' + a.serie.nom_court : ''}
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:.4rem;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;">
+      ${hasC ? '<span style="font-size:.7rem;background:rgba(16,185,129,.1);color:#34d399;padding:.15rem .5rem;border-radius:99px;">📝</span>' : ''}
+      ${hasV ? '<span style="font-size:.7rem;background:rgba(244,63,94,.1);color:#fb7185;padding:.15rem .5rem;border-radius:99px;">🎥</span>' : ''}
+      ${a.est_gratuit ? `<span class="badge badge-free">${t('badge_free')}</span>` : `<span class="badge badge-premium">${t('badge_premium')}</span>`}
+      <span style="font-size:.7rem;color:#334155;">👁 ${a.nombre_vues || 0}</span>
+      <button class="btn btn-primary btn-sm">→</button>
+    </div>
+  </div>`;
+        }
+
+        // ── OPEN VIEWER ───────────────────────────────────────────────
+        async function openViewer(id) {
+            const a = allAnnales.find(x => x.id === id);
+            if (!a) return;
+            currentAnnale = a;
+
+            // Increment vues
+            sb.from('annales').update({ nombre_vues: (a.nombre_vues || 0) + 1 }).eq('id', id);
+            a.nombre_vues = (a.nombre_vues || 0) + 1;
+
+            // Update header
+            document.getElementById('vTitle').textContent = a.titre;
+            const mc = getMat(a.matiere?.nom);
+            document.getElementById('vSub').textContent =
+                [a.type_examen, a.annee, a.session, a.matiere?.nom, a.niveau?.nom_short].filter(Boolean).join(' · ');
+
+            // Download buttons
+            document.getElementById('btnDlSujet').style.display = a.sujet_pdf_url ? 'flex' : 'none';
+            document.getElementById('btnDlCorr').style.display = a.correction_pdf_url ? 'flex' : 'none';
+
+            // Tabs availability
+            const tCo = document.getElementById('vt-correction');
+            const tVi = document.getElementById('vt-video');
+            tCo.classList.toggle('disabled', !a.correction_pdf_url);
+            tVi.classList.toggle('disabled', !a.corrige_video_url);
+
+            tCo.innerHTML = `📝 ${t('viewer_corr')}`;
+            tVi.innerHTML = `🎥 ${t('viewer_video')}`;
+            document.getElementById('vt-sujet').innerHTML = `📄 ${t('viewer_sujet')}`;
+            document.getElementById('vt-infos').innerHTML = `ℹ️ ${t('viewer_infos')}`;
+
+            // Load side meta
+            buildSideMeta(a);
+            buildSideRelated(a);
+
+            // Show overlay, default to sujet
+            document.getElementById('viewerOverlay').classList.add('show');
+            document.body.style.overflow = 'hidden';
+
+            if (a.sujet_pdf_url) {
+                switchVTab('sujet');
+            } else if (a.correction_pdf_url) {
+                switchVTab('correction');
+            } else {
+                switchVTab('infos');
+            }
+        }
+
+        function switchVTab(tab) {
+            activeVTab = tab;
+            ['sujet', 'correction', 'video', 'infos'].forEach(t => {
+                document.getElementById(`vt-${t}`)?.classList.toggle('active', t === tab);
+                document.getElementById(`panel${t.charAt(0).toUpperCase() + t.slice(1)}`)?.style && (document.getElementById(`panel${t.charAt(0).toUpperCase() + t.slice(1)}`).style.display = 'none');
+            });
+
+            const a = currentAnnale;
+            if (!a) return;
+
+            if (tab === 'sujet' && a.sujet_pdf_url) {
+                document.getElementById('panelSujet').style.display = 'flex';
+                document.getElementById('infoSide').style.display = '';
+                // Load PDF
+                const frame = document.getElementById('sujetFrame');
+                if (frame.src === 'about:blank' || !frame.src.includes(a.sujet_pdf_url)) {
+                    frame.src = a.sujet_pdf_url;
+                }
+                document.getElementById('pdfSujetLabel').textContent = `${t('viewer_sujet')} — ${a.titre}`;
+            } else if (tab === 'correction' && a.correction_pdf_url) {
+                document.getElementById('panelCorrection').style.display = 'flex';
+                document.getElementById('infoSide').style.display = '';
+                const frame = document.getElementById('corrFrame');
+                if (frame.src === 'about:blank' || !frame.src.includes(a.correction_pdf_url)) {
+                    frame.src = a.correction_pdf_url;
+                }
+            } else if (tab === 'video' && a.corrige_video_url) {
+                document.getElementById('panelVideo').style.display = 'flex';
+                document.getElementById('infoSide').style.display = 'none';
+                document.getElementById('videoLabel').textContent = `Corrigé vidéo — ${a.titre}`;
+                document.getElementById('videoEmbed').innerHTML = buildVideoEmbed(a.corrige_video_url);
+            } else if (tab === 'infos') {
+                document.getElementById('panelInfos').style.display = 'block';
+                document.getElementById('infoSide').style.display = 'none';
+                buildInfosPanel(a);
+            }
+        }
+
+        function buildVideoEmbed(url) {
+            const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+            if (yt) return `<iframe src="https://www.youtube.com/embed/${yt[1]}?rel=0&modestbranding=1" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="width:100%;height:100%;border-radius:.75rem;"></iframe>`;
+            return `<video controls src="${url}" style="width:100%;height:100%;border-radius:.75rem;background:#000;"></video>`;
+        }
+
+        function buildSideMeta(a) {
+            const rows = [
+                { label: t('meta_type'), value: a.type_examen || '—' },
+                { label: t('meta_year'), value: a.annee || '—' },
+                { label: t('meta_session'), value: a.session || '—' },
+                { label: t('meta_mat'), value: a.matiere?.nom || '—' },
+                { label: t('meta_level'), value: a.niveau?.nom_fr || a.niveau?.nom_court || '—' },
+                { label: t('meta_serie'), value: a.serie ? `${a.serie.nom_court} — ${a.serie.nom_fr || ''}` : '—' },
+                { label: t('meta_sys'), value: a.sous_systeme?.nom_fr || '—' },
+                { label: t('meta_duration'), value: a.duree_examen ? `${a.duree_examen} min` : '—' },
+                { label: t('meta_total'), value: a.bareme_total ? `/${a.bareme_total}` : '—' },
+                { label: t('meta_qs'), value: a.nombre_questions || '—' },
+                { label: t('meta_diff'), value: a.difficulte || '—' },
+                { label: t('meta_avg'), value: a.note_moyenne ? `${a.note_moyenne}/20` : '—' },
+                { label: t('meta_source'), value: a.source || '—' },
+                { label: t('meta_views'), value: `👁 ${a.nombre_vues || 0}` },
+                { label: t('meta_dls'), value: `↓ ${a.nombre_telechargements || 0}` },
+                { label: t('meta_access'), value: a.est_gratuit ? t('badge_free') : t('badge_premium') },
+            ].filter(r => r.value !== '—');
+
+            document.getElementById('sideMetaContent').innerHTML = rows.map(r => `
+    <div class="info-meta-row">
+      <span class="info-label">${r.label}</span>
+      <span class="info-value">${r.value}</span>
+    </div>`).join('');
+
+            // Tags
+            if (a.tags?.length) {
+                document.getElementById('sideTagsHeader').textContent = t('tags_title');
+                document.getElementById('sideTagsSection').style.display = 'block';
+                document.getElementById('sideTags').innerHTML = a.tags.map(t =>
+                    `<span style="background:rgba(255,255,255,.06);border:1px solid var(--border);color:#64748b;padding:.15rem .55rem;border-radius:99px;font-size:.68rem;">${t}</span>`
+                ).join('');
+            }
+        }
+
+        function buildSideRelated(a) {
+            const related = allAnnales
+                .filter(x => x.id !== a.id && (x.matiere_id === a.matiere_id || x.type_examen === a.type_examen))
+                .slice(0, 4);
+            
+            document.getElementById('sideRelatedTitle').textContent = t('related_title');
+            document.getElementById('sideRelated').innerHTML = related.length
+                ? related.map(r => `
+      <div onclick="openViewer(${r.id})" style="display:flex;align-items:center;gap:.65rem;padding:.55rem;border-radius:.6rem;cursor:pointer;transition:background .15s;"
+           onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background='transparent'">
+        <div style="width:36px;height:36px;border-radius:.45rem;background:${getMat(r.matiere?.nom).bg};display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;">${getType(r.type_examen).icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:.78rem;font-weight:600;color:#94a3b8;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${r.titre}</div>
+          <div style="font-size:.68rem;color:#475569;">${r.annee}</div>
+        </div>
+      </div>`).join('')
+                : `<div style="font-size:.78rem;color:#475569;">${t('no_related')}</div>`;
+        }
+
+        function buildInfosPanel(a) {
+            const mc = getMat(a.matiere?.nom);
+            const tc = getType(a.type_examen);
+            document.getElementById('infosContent').innerHTML = `
+    <div style="max-width:600px;">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+        <div style="width:52px;height:52px;border-radius:.75rem;background:${mc.bg};display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;">${tc.icon}</div>
+        <div>
+          <div style="font-family:'Outfit',sans-serif;font-size:1.1rem;font-weight:800;color:#f1f5f9;">${a.titre}</div>
+          <div style="font-size:.78rem;color:#64748b;margin-top:.2rem;">${a.type_examen || ''} ${a.annee || ''} ${a.session ? '— ' + a.session : ''}</div>
+        </div>
+      </div>
+
+      ${a.description ? `<div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:.75rem;padding:1rem;font-size:.85rem;line-height:1.7;color:#94a3b8;margin-bottom:1.25rem;">${a.description}</div>` : ''}
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1.5rem;">
+        ${[
+                    { label: t('meta_mat'), value: a.matiere?.nom || '—', icon: '📚' },
+                    { label: t('meta_level'), value: a.niveau?.nom_fr || '—', icon: '🎓' },
+                    { label: t('meta_serie'), value: a.serie?.nom_court || '—', icon: '🎯' },
+                    { label: t('meta_duration'), value: a.duree_examen ? a.duree_examen + 'min' : '—', icon: '⏱' },
+                    { label: t('meta_total'), value: a.bareme_total ? '/' + a.bareme_total : '—', icon: '📊' },
+                    { label: t('meta_qs'), value: a.nombre_questions || '—', icon: '❓' },
+                ].map(m => `
+          <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:.65rem;padding:.85rem;">
+            <div style="font-size:.68rem;color:#475569;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.25rem;">${m.icon} ${m.label}</div>
+            <div style="font-size:.88rem;font-weight:700;color:#94a3b8;">${m.value}</div>
+          </div>`).join('')}
+      </div>
+
+      ${a.auteur_correction ? `<div style="font-size:.78rem;color:#64748b;margin-bottom:1rem;">${t('meta_author')} <span style="color:#94a3b8;font-weight:600;">${a.auteur_correction}</span></div>` : ''}
+
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
+        ${a.sujet_pdf_url ? `<button onclick="dlSujet()" class="btn btn-primary">${t('btn_dl_sujet_label')}</button>` : ''}
+        ${a.correction_pdf_url ? `<button onclick="dlCorr()" class="btn btn-success">${t('btn_dl_corr_label')}</button>` : ''}
+        ${a.corrige_video_url ? `<button onclick="switchVTab('video')" class="btn btn-amber">${t('btn_video_label')}</button>` : ''}
+      </div>
+    </div>`;
+        }
+
+        function closeViewer() {
+            document.getElementById('viewerOverlay').classList.remove('show');
+            document.body.style.overflow = '';
+            // Stop video
+            document.getElementById('videoEmbed').innerHTML = '';
+            // Reset PDF frames
+            document.getElementById('sujetFrame').src = 'about:blank';
+            document.getElementById('corrFrame').src = 'about:blank';
+            currentAnnale = null;
+            render(); // refresh counts
+        }
+
+        // ── DOWNLOAD HELPERS ──────────────────────────────────────────
+        async function dlSujet() {
+            const a = currentAnnale;
+            if (!a?.sujet_pdf_url) return;
+            toast(t('msg_dl_sujet'));
+            // Increment counter
+            await sb.from('annales').update({ nombre_telechargements: (a.nombre_telechargements || 0) + 1 }).eq('id', a.id);
+            a.nombre_telechargements = (a.nombre_telechargements || 0) + 1;
+            triggerDownload(a.sujet_pdf_url, `Sujet_${a.titre}_${a.annee}.pdf`);
+        }
+
+        async function dlCorr() {
+            const a = currentAnnale;
+            if (!a?.correction_pdf_url) return;
+            toast(t('msg_dl_corr'));
+            await sb.from('annales').update({ nombre_telechargements: (a.nombre_telechargements || 0) + 1 }).eq('id', a.id);
+            a.nombre_telechargements = (a.nombre_telechargements || 0) + 1;
+            triggerDownload(a.correction_pdf_url, `Correction_${a.titre}_${a.annee}.pdf`);
+        }
+
+        function triggerDownload(url, filename) {
+            const link = document.createElement('a');
+            link.href = url; link.download = filename;
+            link.target = '_blank'; link.rel = 'noopener';
+            document.body.appendChild(link); link.click(); link.remove();
+        }
+
+        function openExternal(type) {
+            const a = currentAnnale;
+            if (!a) return;
+            const url = type === 'sujet' ? a.sujet_pdf_url : a.correction_pdf_url;
+            if (url) window.open(url, '_blank', 'noopener');
+        }
+
+        function shareAnnale() {
+            const a = currentAnnale;
+            if (!a) return;
+            const text = `${a.titre} — ${a.annee} | KMERSCHOOL`;
+            if (navigator.share) {
+                navigator.share({ title: text, url: window.location.href });
+            } else {
+                navigator.clipboard?.writeText(text).then(() => toast(t('msg_link_copied')));
+            }
+        }
+
+        // ── VIEW MODE ─────────────────────────────────────────────────
+        function setView(mode) {
+            viewMode = mode;
+            document.getElementById('vt-grid').classList.toggle('active', mode === 'grid');
+            document.getElementById('vt-list').classList.toggle('active', mode === 'list');
+            render();
+        }
+
+        // ── TOAST ────────────────────────────────────────────────────
+        function toast(msg) {
+            const el = document.createElement('div');
+            el.className = 'toast'; el.textContent = msg;
+            document.getElementById('toastArea').appendChild(el);
+            setTimeout(() => el.remove(), 2800);
+        }
+
+        // ── NAV ──────────────────────────────────────────────────────
+        function goBack() {
+            window.location.href = 'dashboard-eleve.html';
+        }
+
+        // ── KEYBOARD ─────────────────────────────────────────────────
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && currentAnnale) closeViewer();
+        });
+
+        // ── START ─────────────────────────────────────────────────────
+        init().catch(console.error);
+    </script>
+</body>
+
+</html>

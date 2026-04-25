@@ -25,6 +25,8 @@ const Navigation = {
             if (espace === 'cours' || espace === 'eleves') {
                 // ✅ CORRIGÉ : Initialiser pour cours ET eleves
                 this.initCoursSpace();
+            } else if (espace === 'professeurs' && window.professeursView) {
+                window.professeursView.render();
             }
         } else {
             console.error(`❌ Écran non trouvé: screen-${espace}`);
@@ -37,15 +39,8 @@ const Navigation = {
      */
     initCoursSpace() {
         console.log('📚 Initialisation espace cours/élèves...');
-
-        // Par défaut sur le français
-        this.switchLanguageTab('fr');
-
-        // ✅ IMPORTANT : Charger les niveaux FR au démarrage
-        DataLoader.loadNiveaux('francophone', 'classeFr');
-
-        // Charger la liste des cours FR
-        CoursManager.loadCoursList({ sous_systeme_code: 'francophone' }, 'coursListFr');
+        // Par défaut sur le dashboard
+        this.switchSection('dashboard');
     },
 
     /**
@@ -113,12 +108,46 @@ const Navigation = {
         );
         if (activeItem) activeItem.classList.add('active');
 
-        // Note: Pour l'instant on gère principalement la section "cours" 
-        // car c'est celle qui a été implémentée visuellement.
-        if (section === 'cours') {
-            // Déjà affiché par défaut dans espaceEleves pour l'instant
+        // Masquer tous les headers et sections principales
+        document.querySelectorAll('.section-header').forEach(h => h.style.display = 'none');
+        document.querySelectorAll('.main-section').forEach(s => s.style.display = 'none');
+
+        // Afficher la section demandée
+        const header = document.getElementById(`header-${section}`);
+        if (header) header.style.display = 'block';
+
+        const sectionDiv = document.getElementById(`${section}Section`);
+        if (sectionDiv) {
+            sectionDiv.style.display = 'block';
+
+            // Initialisation spécifique par section
+            if (section === 'dashboard' && window.dashboardView) {
+                window.dashboardView.render();
+            } else if (section === 'eleves' && window.ElevesManager) {
+                window.ElevesManager.loadSection();
+            } else if (section === 'exercices' && window.exercicesView) {
+                window.exercicesView.render();
+            } else if (section === 'exercices-code' && window.exercicesCodeView) {
+                window.exercicesCodeView.render();
+            } else if (section === 'annales' && window.annalesView) {
+                window.annalesView.render();
+            } else if (section === 'examens' && window.examensView) {
+                window.examensView.render();
+            } else if (section === 'matieres' && window.matieresView) {
+                window.matieresView.render();
+            } else if (section === 'systeme' && window.systemeView) {
+                window.systemeView.render();
+            }
+            if (window.lucide) lucide.createIcons();
         } else {
-            Utils.showToast(`Section ${section} en cours de développement`, 'info');
+            // Fallback pour sections non encore migrées
+            if (section === 'cours') {
+                const coursSect = document.getElementById('coursSection');
+                if (coursSect) coursSect.style.display = 'block';
+            } else {
+                Utils.showToast(`Section "${section}" en cours de développement`, 'info');
+            }
+            if (window.lucide) lucide.createIcons();
         }
     },
 
@@ -300,7 +329,7 @@ const App = {
         // Réinitialiser l'UI du bouton
         const submitBtn = document.getElementById('submitBtnFr');
         if (submitBtn) {
-            submitBtn.innerHTML = '💾 Enregistrer le Cours';
+            submitBtn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Enregistrer le Cours';
             submitBtn.classList.add('btn-primary');
             submitBtn.classList.remove('bg-emerald-600');
         }
@@ -331,7 +360,7 @@ const App = {
         // Réinitialiser l'UI du bouton
         const submitBtn = document.getElementById('submitBtnAn');
         if (submitBtn) {
-            submitBtn.innerHTML = '💾 Save Course';
+            submitBtn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Save Course';
             submitBtn.classList.add('btn-primary');
             submitBtn.classList.remove('bg-emerald-600');
         }
@@ -362,10 +391,12 @@ window.formatTextDark = (lang, command) => Utils.formatText(command, lang);
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('📱 KMERSCHOOL Admin Dashboard Ready');
 
-    // Vérifier l'authentification
-    const user = await Auth.init();
+    // Vérifier l'authentification Admin de manière robuste
+    const authData = await AdminAuth.checkSession();
 
-    if (user) {
+    if (authData) {
+        console.log('✅ Dashboard prêt pour:', authData.admin.nom);
+
         // Charger les statistiques globales
         DataLoader.loadGlobalStats();
 
@@ -374,5 +405,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Par défaut sur le dashboard
         Navigation.openEspace('dashboard');
+        if (window.lucide) lucide.createIcons();
+    } else {
+        console.warn('⚠️ Session non valide, redirection...');
     }
 });

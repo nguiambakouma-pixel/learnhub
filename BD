@@ -15,6 +15,41 @@ CREATE TABLE public.admins (
   CONSTRAINT admins_pkey PRIMARY KEY (id),
   CONSTRAINT admins_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
+CREATE TABLE public.annales (
+  id integer NOT NULL DEFAULT nextval('annales_id_seq'::regclass),
+  titre character varying NOT NULL,
+  type_examen character varying,
+  annee integer NOT NULL,
+  session character varying,
+  matiere_id integer,
+  niveau_id uuid,
+  serie_id uuid,
+  sous_systeme_id uuid,
+  description text,
+  duree_examen integer,
+  bareme_total integer DEFAULT 20,
+  sujet_pdf_url text,
+  correction_pdf_url text,
+  corrige_video_url text,
+  nombre_questions integer,
+  difficulte character varying,
+  tags ARRAY,
+  nombre_telechargements integer DEFAULT 0,
+  nombre_vues integer DEFAULT 0,
+  note_moyenne numeric,
+  est_publie boolean DEFAULT true,
+  est_gratuit boolean DEFAULT true,
+  est_officiel boolean DEFAULT true,
+  source character varying,
+  auteur_correction character varying,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT annales_pkey PRIMARY KEY (id),
+  CONSTRAINT annales_matiere_id_fkey FOREIGN KEY (matiere_id) REFERENCES public.matieres(id),
+  CONSTRAINT annales_niveau_id_fkey FOREIGN KEY (niveau_id) REFERENCES public.niveaux_scolaires(id),
+  CONSTRAINT annales_serie_id_fkey FOREIGN KEY (serie_id) REFERENCES public.series_specialites(id),
+  CONSTRAINT annales_sous_systeme_id_fkey FOREIGN KEY (sous_systeme_id) REFERENCES public.sous_systemes(id)
+);
 CREATE TABLE public.badges (
   id integer NOT NULL DEFAULT nextval('badges_id_seq'::regclass),
   nom character varying NOT NULL,
@@ -51,6 +86,16 @@ CREATE TABLE public.chapitres (
   CONSTRAINT chapitres_classe_id_fkey FOREIGN KEY (classe_id) REFERENCES public.classes(id),
   CONSTRAINT chapitres_sous_systeme_id_fkey FOREIGN KEY (sous_systeme_id) REFERENCES public.sous_systemes(id),
   CONSTRAINT chapitres_serie_id_fkey FOREIGN KEY (serie_id) REFERENCES public.series_specialites(id)
+);
+CREATE TABLE public.choix_reponses (
+  id integer NOT NULL DEFAULT nextval('choix_reponses_id_seq'::regclass),
+  question_id integer NOT NULL,
+  texte_choix text NOT NULL,
+  est_correct boolean DEFAULT false,
+  ordre integer NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT choix_reponses_pkey PRIMARY KEY (id),
+  CONSTRAINT choix_reponses_question_id_fkey FOREIGN KEY (question_id) REFERENCES public.questions_examen(id)
 );
 CREATE TABLE public.classes (
   id integer NOT NULL DEFAULT nextval('classes_id_seq'::regclass),
@@ -140,10 +185,14 @@ CREATE TABLE public.cours (
   matiere text,
   chapitre text,
   pdf_url text CHECK (pdf_url IS NULL OR pdf_url ~~ 'http://%'::text OR pdf_url ~~ 'https://%'::text),
+  niveau_scolaire_id uuid,
+  soumis_par uuid,
   CONSTRAINT cours_pkey PRIMARY KEY (id),
   CONSTRAINT cours_chapitre_id_fkey FOREIGN KEY (chapitre_id) REFERENCES public.chapitres(id),
   CONSTRAINT cours_sous_systeme_id_fkey FOREIGN KEY (sous_systeme_id) REFERENCES public.sous_systemes(id),
-  CONSTRAINT cours_serie_id_fkey FOREIGN KEY (serie_id) REFERENCES public.series_specialites(id)
+  CONSTRAINT cours_serie_id_fkey FOREIGN KEY (serie_id) REFERENCES public.series_specialites(id),
+  CONSTRAINT cours_niveau_scolaire_id_fkey FOREIGN KEY (niveau_scolaire_id) REFERENCES public.niveaux_scolaires(id),
+  CONSTRAINT cours_soumis_par_fkey FOREIGN KEY (soumis_par) REFERENCES auth.users(id)
 );
 CREATE TABLE public.cycles (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -170,6 +219,62 @@ CREATE TABLE public.design_projects (
   CONSTRAINT design_projects_pkey PRIMARY KEY (id),
   CONSTRAINT design_projects_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
 );
+CREATE TABLE public.documents_verification (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  prof_id uuid NOT NULL,
+  type_document character varying NOT NULL CHECK (type_document::text = ANY (ARRAY['diplome'::character varying, 'carte_identite'::character varying, 'attestation'::character varying, 'carte_professeur'::character varying, 'autre'::character varying]::text[])),
+  nom_fichier character varying NOT NULL,
+  url_fichier text NOT NULL,
+  taille_octets bigint,
+  mime_type character varying,
+  statut character varying NOT NULL DEFAULT 'soumis'::character varying CHECK (statut::text = ANY (ARRAY['soumis'::character varying, 'valide'::character varying, 'rejete'::character varying, 'expire'::character varying]::text[])),
+  commentaire_admin text,
+  verifie_par uuid,
+  verifie_le timestamp without time zone,
+  soumis_le timestamp without time zone NOT NULL DEFAULT now(),
+  updated_at timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT documents_verification_pkey PRIMARY KEY (id),
+  CONSTRAINT documents_verification_prof_id_fkey FOREIGN KEY (prof_id) REFERENCES public.professeurs(id),
+  CONSTRAINT documents_verification_verifie_par_fkey FOREIGN KEY (verifie_par) REFERENCES public.admins(id)
+);
+CREATE TABLE public.examens (
+  id integer NOT NULL DEFAULT nextval('examens_id_seq'::regclass),
+  titre character varying NOT NULL,
+  description text,
+  type_examen character varying CHECK (type_examen::text = ANY (ARRAY['evaluation'::character varying, 'controle'::character varying, 'devoir'::character varying, 'composition'::character varying, 'examen_blanc'::character varying, 'test'::character varying]::text[])),
+  matiere_id integer,
+  chapitre_id integer,
+  cours_id integer,
+  niveau_id uuid,
+  serie_id uuid,
+  sous_systeme_id uuid,
+  duree_minutes integer NOT NULL,
+  note_totale integer DEFAULT 20,
+  note_passage numeric DEFAULT 10.0,
+  nombre_questions integer DEFAULT 0,
+  questions_aleatoires boolean DEFAULT false,
+  choix_aleatoires boolean DEFAULT false,
+  date_debut timestamp without time zone,
+  date_fin timestamp without time zone,
+  nombre_tentatives_max integer DEFAULT 1,
+  delai_entre_tentatives integer,
+  afficher_correction boolean DEFAULT true,
+  afficher_note boolean DEFAULT true,
+  afficher_corrige_apres boolean DEFAULT true,
+  est_publie boolean DEFAULT false,
+  est_actif boolean DEFAULT true,
+  createur_id uuid,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT examens_pkey PRIMARY KEY (id),
+  CONSTRAINT examens_matiere_id_fkey FOREIGN KEY (matiere_id) REFERENCES public.matieres(id),
+  CONSTRAINT examens_chapitre_id_fkey FOREIGN KEY (chapitre_id) REFERENCES public.chapitres(id),
+  CONSTRAINT examens_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id),
+  CONSTRAINT examens_niveau_id_fkey FOREIGN KEY (niveau_id) REFERENCES public.niveaux_scolaires(id),
+  CONSTRAINT examens_serie_id_fkey FOREIGN KEY (serie_id) REFERENCES public.series_specialites(id),
+  CONSTRAINT examens_sous_systeme_id_fkey FOREIGN KEY (sous_systeme_id) REFERENCES public.sous_systemes(id),
+  CONSTRAINT examens_createur_id_fkey FOREIGN KEY (createur_id) REFERENCES public.admins(id)
+);
 CREATE TABLE public.exercices (
   id integer NOT NULL DEFAULT nextval('exercices_id_seq'::regclass),
   chapitre_id integer,
@@ -190,11 +295,13 @@ CREATE TABLE public.exercices (
   est_actif boolean DEFAULT true,
   sous_systeme_id uuid,
   serie_id uuid,
+  niveau_scolaire_id uuid,
   CONSTRAINT exercices_pkey PRIMARY KEY (id),
   CONSTRAINT exercices_chapitre_id_fkey FOREIGN KEY (chapitre_id) REFERENCES public.chapitres(id),
   CONSTRAINT exercices_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id),
   CONSTRAINT exercices_sous_systeme_id_fkey FOREIGN KEY (sous_systeme_id) REFERENCES public.sous_systemes(id),
-  CONSTRAINT exercices_serie_id_fkey FOREIGN KEY (serie_id) REFERENCES public.series_specialites(id)
+  CONSTRAINT exercices_serie_id_fkey FOREIGN KEY (serie_id) REFERENCES public.series_specialites(id),
+  CONSTRAINT exercices_niveau_scolaire_id_fkey FOREIGN KEY (niveau_scolaire_id) REFERENCES public.niveaux_scolaires(id)
 );
 CREATE TABLE public.exercices_code (
   id bigint NOT NULL DEFAULT nextval('exercices_code_id_seq'::regclass),
@@ -211,8 +318,10 @@ CREATE TABLE public.exercices_code (
   est_actif boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
+  soumis_par uuid,
   CONSTRAINT exercices_code_pkey PRIMARY KEY (id),
-  CONSTRAINT exercices_code_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id)
+  CONSTRAINT exercices_code_cours_id_fkey FOREIGN KEY (cours_id) REFERENCES public.cours(id),
+  CONSTRAINT exercices_code_soumis_par_fkey FOREIGN KEY (soumis_par) REFERENCES auth.users(id)
 );
 CREATE TABLE public.favoris (
   id integer NOT NULL DEFAULT nextval('favoris_id_seq'::regclass),
@@ -302,6 +411,26 @@ CREATE TABLE public.notifications (
   CONSTRAINT notifications_pkey PRIMARY KEY (id),
   CONSTRAINT notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
 );
+CREATE TABLE public.paiements_professeurs (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  prof_id uuid NOT NULL,
+  admin_id uuid,
+  montant numeric NOT NULL CHECK (montant > 0::numeric),
+  devise character varying NOT NULL DEFAULT 'XAF'::character varying,
+  mode_paiement character varying NOT NULL CHECK (mode_paiement::text = ANY (ARRAY['mtn_mobile_money'::character varying, 'orange_money'::character varying, 'virement_bancaire'::character varying, 'especes'::character varying, 'autre'::character varying]::text[])),
+  numero_compte character varying,
+  reference character varying UNIQUE,
+  note_admin text,
+  statut character varying NOT NULL DEFAULT 'en_attente'::character varying CHECK (statut::text = ANY (ARRAY['en_attente'::character varying, 'traite'::character varying, 'confirme'::character varying, 'echoue'::character varying, 'annule'::character varying]::text[])),
+  soumissions_ids ARRAY DEFAULT '{}'::uuid[],
+  periode_debut date,
+  periode_fin date,
+  date_paiement timestamp without time zone NOT NULL DEFAULT now(),
+  updated_at timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT paiements_professeurs_pkey PRIMARY KEY (id),
+  CONSTRAINT paiements_professeurs_prof_id_fkey FOREIGN KEY (prof_id) REFERENCES public.professeurs(id),
+  CONSTRAINT paiements_professeurs_admin_id_fkey FOREIGN KEY (admin_id) REFERENCES public.admins(id)
+);
 CREATE TABLE public.parcours_cours (
   id integer NOT NULL DEFAULT nextval('parcours_cours_id_seq'::regclass),
   parcours_id integer,
@@ -326,6 +455,64 @@ CREATE TABLE public.parcours_personnalises (
   CONSTRAINT parcours_personnalises_pkey PRIMARY KEY (id),
   CONSTRAINT parcours_personnalises_createur_id_fkey FOREIGN KEY (createur_id) REFERENCES public.profiles(id)
 );
+CREATE TABLE public.passages_examen (
+  id integer NOT NULL DEFAULT nextval('passages_examen_id_seq'::regclass),
+  examen_id integer NOT NULL,
+  user_id uuid NOT NULL,
+  numero_tentative integer DEFAULT 1,
+  date_debut timestamp without time zone DEFAULT now(),
+  date_fin timestamp without time zone,
+  duree_reelle integer,
+  note_obtenue numeric,
+  note_totale numeric,
+  pourcentage numeric,
+  est_reussi boolean DEFAULT false,
+  statut character varying DEFAULT 'en_cours'::character varying CHECK (statut::text = ANY (ARRAY['en_cours'::character varying, 'termine'::character varying, 'abandonne'::character varying, 'temps_ecoule'::character varying]::text[])),
+  reponses jsonb,
+  ip_address inet,
+  user_agent text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT passages_examen_pkey PRIMARY KEY (id),
+  CONSTRAINT passages_examen_examen_id_fkey FOREIGN KEY (examen_id) REFERENCES public.examens(id),
+  CONSTRAINT passages_examen_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.professeurs (
+  id uuid NOT NULL,
+  nom character varying NOT NULL,
+  prenom character varying NOT NULL,
+  email character varying NOT NULL UNIQUE,
+  telephone character varying,
+  specialites ARRAY DEFAULT '{}'::text[],
+  sous_systemes ARRAY DEFAULT '{}'::text[],
+  niveaux_enseignes ARRAY DEFAULT '{}'::text[],
+  annees_experience integer DEFAULT 0,
+  etablissement character varying,
+  bio text,
+  avatar_url text,
+  statut character varying NOT NULL DEFAULT 'en_attente'::character varying CHECK (statut::text = ANY (ARRAY['en_attente'::character varying, 'en_revision'::character varying, 'approuve'::character varying, 'suspendu'::character varying, 'rejete'::character varying]::text[])),
+  motif_rejet text,
+  est_verifie boolean NOT NULL DEFAULT false,
+  est_actif boolean NOT NULL DEFAULT true,
+  verifie_par uuid,
+  verifie_le timestamp without time zone,
+  modele_remuneration character varying NOT NULL DEFAULT 'forfait'::character varying CHECK (modele_remuneration::text = ANY (ARRAY['forfait'::character varying, 'par_passage'::character varying, 'hybride'::character varying]::text[])),
+  tarif_par_epreuve numeric DEFAULT 5000.00,
+  tarif_par_passage numeric DEFAULT 50.00,
+  gains_total numeric NOT NULL DEFAULT 0.00,
+  gains_en_attente numeric NOT NULL DEFAULT 0.00,
+  gains_verses numeric NOT NULL DEFAULT 0.00,
+  epreuves_soumises integer NOT NULL DEFAULT 0,
+  epreuves_validees integer NOT NULL DEFAULT 0,
+  taux_acceptation numeric NOT NULL DEFAULT 0.00,
+  derniere_connexion timestamp without time zone,
+  created_at timestamp without time zone NOT NULL DEFAULT now(),
+  updated_at timestamp without time zone NOT NULL DEFAULT now(),
+  langue_interface character varying NOT NULL DEFAULT 'fr'::character varying CHECK (langue_interface::text = ANY (ARRAY['fr'::character varying, 'en'::character varying]::text[])),
+  CONSTRAINT professeurs_pkey PRIMARY KEY (id),
+  CONSTRAINT professeurs_verifie_par_fkey FOREIGN KEY (verifie_par) REFERENCES public.admins(id),
+  CONSTRAINT professeurs_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+);
 CREATE TABLE public.profiles (
   id uuid NOT NULL,
   nom character varying NOT NULL,
@@ -345,6 +532,7 @@ CREATE TABLE public.profiles (
   niveau_scolaire_id uuid,
   serie_id uuid,
   annee_scolaire character varying,
+  est_bloque boolean DEFAULT false,
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
@@ -388,6 +576,20 @@ CREATE TABLE public.questions (
   CONSTRAINT questions_pkey PRIMARY KEY (id),
   CONSTRAINT questions_exercice_id_fkey FOREIGN KEY (exercice_id) REFERENCES public.exercices(id)
 );
+CREATE TABLE public.questions_examen (
+  id integer NOT NULL DEFAULT nextval('questions_examen_id_seq'::regclass),
+  examen_id integer NOT NULL,
+  question_texte text NOT NULL,
+  type_question character varying DEFAULT 'qcm_unique'::character varying CHECK (type_question::text = ANY (ARRAY['qcm_unique'::character varying, 'qcm_multiple'::character varying, 'vrai_faux'::character varying, 'texte_court'::character varying, 'texte_long'::character varying]::text[])),
+  points numeric DEFAULT 1.0,
+  ordre integer NOT NULL,
+  image_url text,
+  video_url text,
+  explication text,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT questions_examen_pkey PRIMARY KEY (id),
+  CONSTRAINT questions_examen_examen_id_fkey FOREIGN KEY (examen_id) REFERENCES public.examens(id)
+);
 CREATE TABLE public.reponses (
   id integer NOT NULL DEFAULT nextval('reponses_id_seq'::regclass),
   question_id integer,
@@ -397,6 +599,20 @@ CREATE TABLE public.reponses (
   created_at timestamp without time zone DEFAULT now(),
   CONSTRAINT reponses_pkey PRIMARY KEY (id),
   CONSTRAINT reponses_question_id_fkey FOREIGN KEY (question_id) REFERENCES public.questions(id)
+);
+CREATE TABLE public.reponses_eleve (
+  id integer NOT NULL DEFAULT nextval('reponses_eleve_id_seq'::regclass),
+  passage_id integer NOT NULL,
+  question_id integer NOT NULL,
+  choix_ids ARRAY,
+  reponse_texte text,
+  est_correct boolean,
+  points_obtenus numeric DEFAULT 0.0,
+  temps_reponse integer,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT reponses_eleve_pkey PRIMARY KEY (id),
+  CONSTRAINT reponses_eleve_passage_id_fkey FOREIGN KEY (passage_id) REFERENCES public.passages_examen(id),
+  CONSTRAINT reponses_eleve_question_id_fkey FOREIGN KEY (question_id) REFERENCES public.questions_examen(id)
 );
 CREATE TABLE public.ressources (
   id integer NOT NULL DEFAULT nextval('ressources_id_seq'::regclass),
@@ -440,6 +656,37 @@ CREATE TABLE public.soumissions_code (
   CONSTRAINT soumissions_code_pkey PRIMARY KEY (id),
   CONSTRAINT soumissions_code_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id),
   CONSTRAINT soumissions_code_exercice_id_fkey FOREIGN KEY (exercice_id) REFERENCES public.exercices_code(id)
+);
+CREATE TABLE public.soumissions_epreuves (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  prof_id uuid NOT NULL,
+  titre character varying NOT NULL,
+  type_examen character varying NOT NULL CHECK (type_examen::text = ANY (ARRAY['evaluation'::character varying, 'controle'::character varying, 'devoir'::character varying, 'composition'::character varying, 'examen_blanc'::character varying, 'test'::character varying]::text[])),
+  matiere character varying NOT NULL,
+  sous_systeme_code character varying NOT NULL,
+  niveau_code character varying,
+  serie_code character varying,
+  duree_minutes integer NOT NULL DEFAULT 60,
+  note_totale integer NOT NULL DEFAULT 20,
+  description text,
+  contenu_json jsonb NOT NULL DEFAULT '{"questions": []}'::jsonb,
+  statut character varying NOT NULL DEFAULT 'brouillon'::character varying CHECK (statut::text = ANY (ARRAY['brouillon'::character varying, 'soumis'::character varying, 'en_revision'::character varying, 'valide'::character varying, 'rejete'::character varying, 'retire'::character varying]::text[])),
+  commentaire_admin text,
+  examen_id integer,
+  valide_par uuid,
+  valide_le timestamp without time zone,
+  soumis_le timestamp without time zone,
+  remuneration_due numeric NOT NULL DEFAULT 0.00,
+  remuneration_versee boolean NOT NULL DEFAULT false,
+  paiement_id uuid,
+  nombre_passages integer NOT NULL DEFAULT 0,
+  created_at timestamp without time zone NOT NULL DEFAULT now(),
+  updated_at timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT soumissions_epreuves_pkey PRIMARY KEY (id),
+  CONSTRAINT soumissions_epreuves_prof_id_fkey FOREIGN KEY (prof_id) REFERENCES public.professeurs(id),
+  CONSTRAINT soumissions_epreuves_examen_id_fkey FOREIGN KEY (examen_id) REFERENCES public.examens(id),
+  CONSTRAINT soumissions_epreuves_valide_par_fkey FOREIGN KEY (valide_par) REFERENCES public.admins(id),
+  CONSTRAINT soumissions_epreuves_paiement_id_fkey FOREIGN KEY (paiement_id) REFERENCES public.paiements_professeurs(id)
 );
 CREATE TABLE public.soumissions_exercices (
   id integer NOT NULL DEFAULT nextval('soumissions_exercices_id_seq'::regclass),
@@ -494,6 +741,32 @@ CREATE TABLE public.statistiques_journalieres (
   points_gagnes integer DEFAULT 0,
   CONSTRAINT statistiques_journalieres_pkey PRIMARY KEY (id),
   CONSTRAINT statistiques_journalieres_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.telechargements_annales (
+  id integer NOT NULL DEFAULT nextval('telechargements_annales_id_seq'::regclass),
+  user_id uuid,
+  annale_id integer,
+  type_fichier character varying,
+  downloaded_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT telechargements_annales_pkey PRIMARY KEY (id),
+  CONSTRAINT telechargements_annales_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id),
+  CONSTRAINT telechargements_annales_annale_id_fkey FOREIGN KEY (annale_id) REFERENCES public.annales(id)
+);
+CREATE TABLE public.tentatives_annales (
+  id integer NOT NULL DEFAULT nextval('tentatives_annales_id_seq'::regclass),
+  user_id uuid,
+  annale_id integer,
+  note_obtenue numeric,
+  note_max numeric,
+  pourcentage_reussite numeric,
+  temps_passe integer,
+  date_debut timestamp without time zone,
+  date_fin timestamp without time zone,
+  est_termine boolean DEFAULT false,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT tentatives_annales_pkey PRIMARY KEY (id),
+  CONSTRAINT tentatives_annales_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id),
+  CONSTRAINT tentatives_annales_annale_id_fkey FOREIGN KEY (annale_id) REFERENCES public.annales(id)
 );
 CREATE TABLE public.user_badges (
   id integer NOT NULL DEFAULT nextval('user_badges_id_seq'::regclass),

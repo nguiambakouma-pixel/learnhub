@@ -18,6 +18,33 @@ const CoursManager = {
             const ids = await this.getRequiredIds(coursData);
             if (!ids) return null;
 
+            // --- VÉRIFIER / CRÉER LA MATIÈRE AUTOMATIQUEMENT ---
+            if (coursData.matiere) {
+                try {
+                    // Vérifier si la matière existe déjà (insensible à la casse)
+                    const { data: existingMatieres } = await supabaseClient
+                        .from('matieres')
+                        .select('id')
+                        .ilike('nom', coursData.matiere);
+                        
+                    if (!existingMatieres || existingMatieres.length === 0) {
+                        // Créer la matière si elle n'existe pas
+                        await supabaseClient
+                            .from('matieres')
+                            .insert([{
+                                nom: coursData.matiere.trim(),
+                                slug: this.generateSlug(coursData.matiere.trim()),
+                                couleur: '#6366F1', // Couleur par défaut
+                                type_parcours: 'eleve', // Parcours par défaut
+                                ordre: 0
+                            }]);
+                        console.log('Nouvelle matière enregistrée automatiquement:', coursData.matiere);
+                    }
+                } catch (e) {
+                    console.warn('Erreur silencieuse lors de la création auto de la matière:', e);
+                }
+            }
+
             // Préparer les données du cours
             const finalCoursData = {
                 titre: coursData.titre,
@@ -48,7 +75,7 @@ const CoursManager = {
 
             if (error) throw error;
 
-            Utils.showToast('✅ Cours créé avec succès !', 'success');
+            Utils.showToast('Cours créé avec succès !', 'success');
             return data[0];
 
         } catch (error) {
@@ -166,6 +193,7 @@ const CoursManager = {
 
             // Afficher les cours
             this.displayCoursList(cours, container);
+            if (window.lucide) lucide.createIcons();
 
         } catch (error) {
             console.error('Erreur chargement cours:', error);
@@ -184,44 +212,44 @@ const CoursManager = {
                         ${c.image_url ? `<img src="${c.image_url}" class="w-16 h-16 object-cover rounded-lg mb-2">` : ''}
                         <div class="flex flex-wrap items-center gap-2 mb-2">
                             <span class="badge ${c.sous_systeme?.code === 'francophone' ? 'badge-fr' : 'badge-an'} px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
-                                ${c.sous_systeme?.code === 'francophone' ? '🇫🇷 FR' : '🇬🇧 EN'}
+                                ${c.sous_systeme?.code === 'francophone' ? 'FR' : 'EN'}
                             </span>
                             
-                            <!-- Classe & Série (Plus visible) -->
-                            <span class="bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded text-xs font-semibold border border-indigo-500/30">
-                                🎓 ${c.serie?.niveau?.nom_court || 'Classe N/A'}
+                            <span class="bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded text-xs font-semibold border border-indigo-500/30 flex items-center gap-1">
+                                <i data-lucide="graduation-cap" class="w-3 h-3"></i> ${c.serie?.niveau?.nom_court || 'Classe N/A'}
                             </span>
                             
                             ${c.serie ? `
-                                <span class="bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded text-xs font-semibold border border-emerald-500/30">
-                                    🎯 ${c.serie.nom_court}
+                                <span class="bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded text-xs font-semibold border border-emerald-500/30 flex items-center gap-1">
+                                    <i data-lucide="target" class="w-3 h-3"></i> ${c.serie.nom_court}
                                 </span>
                             ` : ''}
 
                             ${c.matiere ? `
-                                <span class="bg-slate-700 text-slate-300 px-2 py-1 rounded text-xs border border-slate-600">
-                                    📖 ${c.matiere}
+                                <span class="bg-slate-700 text-slate-300 px-2 py-1 rounded text-xs border border-slate-600 flex items-center gap-1">
+                                    <i data-lucide="book-open" class="w-3 h-3"></i> ${c.matiere}
                                 </span>
                             ` : ''}
                         </div>
                         <h3 class="font-bold text-lg text-white mb-1">${c.titre}</h3>
-                        ${c.chapitre ? `<p class="text-sm text-gray-400 mb-2">📑 ${c.chapitre}</p>` : ''}
+                        ${c.chapitre ? `<p class="text-sm text-gray-400 mb-2 flex items-center gap-1"><i data-lucide="file-text" class="w-3.5 h-3.5 text-gray-500"></i> ${c.chapitre}</p>` : ''}
                         <div class="flex items-center space-x-3 text-xs text-gray-500">
-                            ${c.video_url ? '<span>🎥 Vidéo</span>' : ''}
-                            ${c.pdf_url ? '<span>📄 PDF</span>' : ''}
-                            ${c.duree_lecture ? `<span>⏱️ ${c.duree_lecture} min</span>` : ''}
-                            <span>🏆 ${c.points_recompense} XP</span>
-                            <span class="${c.est_publie ? 'text-green-400' : 'text-orange-400'}">
-                                ${c.est_publie ? '✅ Publié' : '⏸️ Brouillon'}
+                            ${c.video_url ? '<span class="flex items-center gap-1"><i data-lucide="video" class="w-3 h-3"></i> Vidéo</span>' : ''}
+                            ${c.pdf_url ? '<span class="flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> PDF</span>' : ''}
+                            ${c.duree_lecture ? `<span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${c.duree_lecture} min</span>` : ''}
+                            <span class="flex items-center gap-1"><i data-lucide="award" class="w-3 h-3"></i> ${c.points_recompense} XP</span>
+                            <span class="${c.est_publie ? 'text-green-400' : 'text-orange-400'} flex items-center gap-1">
+                                <i data-lucide="${c.est_publie ? 'check-circle' : 'pause-circle'}" class="w-3 h-3"></i>
+                                ${c.est_publie ? 'Publié' : 'Brouillon'}
                             </span>
                         </div>
                     </div>
                     <div class="flex space-x-2">
-                        <button onclick="CoursManager.editCours('${c.id}')" class="p-2 text-blue-400 hover:bg-blue-500/10 rounded-lg" title="Modifier">
-                            ✏️
+                        <button onclick="CoursManager.editCours('${c.id}')" class="p-2 text-blue-400 hover:bg-blue-500/10 rounded-lg flex items-center justify-center transition-colors" title="Modifier">
+                            <i data-lucide="edit-2" class="w-4 h-4"></i>
                         </button>
-                        <button onclick="CoursManager.deleteCours('${c.id}')" class="p-2 text-red-400 hover:bg-red-500/10 rounded-lg" title="Supprimer">
-                            🗑️
+                        <button onclick="CoursManager.deleteCours('${c.id}')" class="p-2 text-red-400 hover:bg-red-500/10 rounded-lg flex items-center justify-center transition-colors" title="Supprimer">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
                 </div>
@@ -302,7 +330,7 @@ const CoursManager = {
             // 6. Mettre à jour l'UI du bouton
             const submitBtn = document.getElementById(`submitBtn${suffix}`);
             if (submitBtn) {
-                submitBtn.innerHTML = lang === 'fr' ? '🆙 Mettre à jour le Cours' : '🆙 Update Course';
+                submitBtn.innerHTML = lang === 'fr' ? '<i data-lucide="upload-cloud" class="w-4 h-4"></i> Mettre à jour le Cours' : '<i data-lucide="upload-cloud" class="w-4 h-4"></i> Update Course';
                 submitBtn.classList.remove('btn-primary');
                 submitBtn.classList.add('bg-emerald-600');
             }
@@ -330,6 +358,33 @@ const CoursManager = {
             const ids = await this.getRequiredIds(coursData);
             if (!ids) return null;
 
+            // --- VÉRIFIER / CRÉER LA MATIÈRE AUTOMATIQUEMENT ---
+            if (coursData.matiere) {
+                try {
+                    // Vérifier si la matière existe déjà (insensible à la casse)
+                    const { data: existingMatieres } = await supabaseClient
+                        .from('matieres')
+                        .select('id')
+                        .ilike('nom', coursData.matiere);
+                        
+                    if (!existingMatieres || existingMatieres.length === 0) {
+                        // Créer la matière si elle n'existe pas
+                        await supabaseClient
+                            .from('matieres')
+                            .insert([{
+                                nom: coursData.matiere.trim(),
+                                slug: this.generateSlug(coursData.matiere.trim()),
+                                couleur: '#6366F1', // Couleur par défaut
+                                type_parcours: 'eleve', // Parcours par défaut
+                                ordre: 0
+                            }]);
+                        console.log('Nouvelle matière enregistrée automatiquement (update):', coursData.matiere);
+                    }
+                } catch (e) {
+                    console.warn('Erreur silencieuse lors de la création auto de la matière:', e);
+                }
+            }
+
             // Préparer les données de mise à jour
             const updateData = {
                 titre: coursData.titre,
@@ -356,7 +411,7 @@ const CoursManager = {
 
             if (error) throw error;
 
-            Utils.showToast('✅ Cours mis à jour !', 'success');
+            Utils.showToast('Cours mis à jour !', 'success');
             return data[0];
 
         } catch (error) {
@@ -382,7 +437,7 @@ const CoursManager = {
 
             if (error) throw error;
 
-            Utils.showToast('✅ Cours supprimé', 'success');
+            Utils.showToast('Cours supprimé', 'success');
             this.loadCoursList();
         } catch (error) {
             console.error('Erreur suppression:', error);

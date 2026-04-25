@@ -2,26 +2,1248 @@
 <html lang="fr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Élève - KMERSCHOOL</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mon Espace – KMERSCHOOL</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+        rel="stylesheet" />
+
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+
     <style>
-        * {
-            font-family: 'Inter', sans-serif;
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        :root {
+            --bg-base: #080c14;
+            --bg-surface: #0e1420;
+            --bg-raised: #141b2d;
+            --bg-hover: #1a2340;
+            --border: rgba(255, 255, 255, 0.07);
+            --border-lit: rgba(255, 255, 255, 0.14);
+            --gold: #F5B800;
+            --gold-muted: rgba(245, 184, 0, 0.12);
+            --emerald: #10B981;
+            --emerald-muted: rgba(16, 185, 129, 0.12);
+            --rose: #F43F5E;
+            --blue: #3B82F6;
+            --blue-muted: rgba(59, 130, 246, 0.12);
+            --violet: #8B5CF6;
+            --text-primary: #F0F4FF;
+            --text-muted: #8892A4;
+            --text-faint: #4A5568;
+            --sidebar-w: 260px;
+            --topbar-h: 64px;
+            --radius: 14px;
+            --radius-sm: 8px;
         }
 
-        @keyframes slideIn {
+        html,
+        body {
+            height: 100%;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-base);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Syne', sans-serif;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        img {
+            display: block;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-w);
+            min-height: 100vh;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            padding: 24px 20px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-mark {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            background: linear-gradient(135deg, var(--gold), #FDE68A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-profile {
+            margin: 16px 16px 0;
+            padding: 14px;
+            background: var(--gold-muted);
+            border: 1px solid rgba(245, 184, 0, 0.2);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-avatar-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            object-fit: cover;
+            background: var(--bg-raised);
+        }
+
+        .avatar-online {
+            width: 10px;
+            height: 10px;
+            background: var(--emerald);
+            border-radius: 50%;
+            border: 2px solid var(--bg-surface);
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+
+        .profile-info {
+            min-width: 0;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .profile-level {
+            font-size: 11px;
+            color: var(--gold);
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        .sidebar-xp {
+            margin: 10px 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .xp-bar-wrap {
+            flex: 1;
+            height: 4px;
+            background: var(--bg-raised);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .xp-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), #FDE68A);
+            border-radius: 2px;
+            transition: width .8s ease;
+        }
+
+        .xp-label {
+            font-size: 11px;
+            color: var(--gold);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 10px;
+        }
+
+        .nav-section-label {
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-faint);
+            padding: 0 10px;
+            margin: 12px 0 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all .15s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-raised);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--gold-muted);
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 3px;
+            background: var(--gold);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .nav-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+            background: var(--bg-raised);
+        }
+
+        .nav-item.active .nav-icon {
+            background: rgba(245, 184, 0, 0.15);
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--rose);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .sidebar-streak {
+            margin: 0 16px 16px;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(244, 63, 94, 0.15), rgba(251, 113, 133, 0.08));
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .streak-fire {
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .streak-count {
+            font-family: 'Syne', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: #FB923C;
+            line-height: 1;
+        }
+
+        .streak-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: var(--topbar-h);
+            border-bottom: 1px solid var(--border);
+            background: rgba(8, 12, 20, 0.85);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .topbar-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .topbar-badge {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .badge-fr {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60A5FA;
+        }
+
+        .badge-an {
+            background: rgba(251, 191, 36, 0.15);
+            color: #FCD34D;
+        }
+
+        .topbar-search {
+            flex: 1;
+            max-width: 400px;
+            margin-left: auto;
+            position: relative;
+        }
+
+        .topbar-search input {
+            width: 100%;
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 9px 16px 9px 40px;
+            color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border .15s;
+        }
+
+        .topbar-search input::placeholder {
+            color: var(--text-faint);
+        }
+
+        .topbar-search input:focus {
+            border-color: var(--gold);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-faint);
+            font-size: 15px;
+            pointer-events: none;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            color: var(--text-muted);
+            position: relative;
+            transition: all .15s;
+            cursor: pointer;
+        }
+
+        .icon-btn:hover {
+            border-color: var(--border-lit);
+            color: var(--text-primary);
+        }
+
+        .notif-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--rose);
+            border-radius: 50%;
+            border: 2px solid var(--bg-base);
+            position: absolute;
+            top: 4px;
+            right: 4px;
+        }
+
+        .topbar-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 2px solid var(--gold);
+            object-fit: cover;
+            cursor: pointer;
+            background: var(--bg-raised);
+        }
+
+        .page-content {
+            flex: 1;
+            padding: 28px;
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        /* WELCOME HERO */
+        .welcome-hero {
+            position: relative;
+            border-radius: var(--radius);
+            padding: 32px 36px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0D1B38, #0B2040 60%, #0C1528);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .hero-bg-orbs {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: rgba(245, 184, 0, 0.12);
+            top: -100px;
+            right: -50px;
+        }
+
+        .orb-2 {
+            width: 200px;
+            height: 200px;
+            background: rgba(59, 130, 246, 0.15);
+            bottom: -80px;
+            left: 30%;
+        }
+
+        .orb-3 {
+            width: 150px;
+            height: 150px;
+            background: rgba(16, 185, 129, 0.1);
+            top: 0;
+            left: -30px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .hero-greeting {
+            font-size: 13px;
+            color: var(--gold);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .hero-title {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .hero-title span {
+            color: var(--gold);
+        }
+
+        .hero-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .hero-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .hero-tag {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .tag-class {
+            border-color: rgba(59, 130, 246, 0.4);
+            color: #93C5FD;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .tag-sys {
+            border-color: rgba(16, 185, 129, 0.4);
+            color: #6EE7B7;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .tag-year {
+            border-color: rgba(255, 255, 255, 0.15);
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .hero-right {
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .hero-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            object-fit: cover;
+            background: var(--bg-raised);
+            margin: 0 auto 10px;
+            box-shadow: 0 0 0 6px rgba(245, 184, 0, 0.1);
+        }
+
+        .hero-points {
+            font-family: 'Syne', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--gold);
+        }
+
+        .hero-points-label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* STATS */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: border .2s, transform .2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-lit);
+            transform: translateY(-2px);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .si-gold {
+            background: var(--gold-muted);
+        }
+
+        .si-fire {
+            background: rgba(251, 113, 133, 0.12);
+        }
+
+        .si-green {
+            background: var(--emerald-muted);
+        }
+
+        .si-blue {
+            background: var(--blue-muted);
+        }
+
+        .stat-trend {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .trend-up {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--emerald);
+        }
+
+        .trend-n {
+            background: var(--bg-raised);
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* MAIN GRID */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 310px;
+            gap: 20px;
+        }
+
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 18px 20px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-action {
+            font-size: 12px;
+            color: var(--gold);
+            font-weight: 600;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: background .15s;
+        }
+
+        .card-action:hover {
+            background: var(--gold-muted);
+        }
+
+        .card-body {
+            padding: 16px 20px;
+        }
+
+        /* COURS ITEMS */
+        .cours-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cours-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px;
+            background: var(--bg-raised);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            transition: all .15s;
+            cursor: pointer;
+        }
+
+        .cours-item:hover {
+            border-color: var(--gold);
+            background: rgba(245, 184, 0, 0.05);
+        }
+
+        .cours-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            background: var(--bg-surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+
+        .cours-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cours-matiere-tag {
+            font-size: 11px;
+            color: var(--gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .cours-titre {
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 8px;
+        }
+
+        .prog-bar {
+            height: 4px;
+            background: var(--bg-surface);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .prog-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s ease;
+        }
+
+        .pct-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .btn-continue {
+            flex-shrink: 0;
+            padding: 8px 16px;
+            background: var(--gold-muted);
+            border: 1px solid rgba(245, 184, 0, 0.3);
+            border-radius: 8px;
+            color: var(--gold);
+            font-size: 12px;
+            font-weight: 700;
+            transition: all .15s;
+        }
+
+        .btn-continue:hover {
+            background: var(--gold);
+            color: var(--bg-base);
+        }
+
+        /* MATIERES */
+        .matieres-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .matiere-card {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .matiere-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--border-lit);
+        }
+
+        .mat-icon {
+            font-size: 28px;
+            margin: 0 auto 8px;
+        }
+
+        .mat-name {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .mat-count {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        /* RIGHT CARDS */
+        .obj-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 16px 20px;
+        }
+
+        .obj-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+        }
+
+        .obj-step.done {
+            border-color: rgba(16, 185, 129, 0.3);
+            background: rgba(16, 185, 129, 0.07);
+        }
+
+        .step-check {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid var(--border-lit);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+            color: var(--text-faint);
+        }
+
+        .obj-step.done .step-check {
+            background: var(--emerald);
+            border-color: var(--emerald);
+            color: white;
+        }
+
+        .step-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            flex: 1;
+        }
+
+        .obj-step.done .step-text {
+            color: var(--text-primary);
+        }
+
+        .step-pts {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gold);
+            background: var(--gold-muted);
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .rank-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .rank-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+        }
+
+        .rank-item.is-me {
+            background: var(--gold-muted);
+            border-color: rgba(245, 184, 0, 0.3);
+        }
+
+        .rank-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 800;
+            width: 22px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .rank-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+            color: var(--text-muted);
+        }
+
+        .rank-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .rank-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .rank-pts {
+            font-size: 11px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .badge-item {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .badge-item:hover {
+            border-color: var(--border-lit);
+            transform: scale(1.05);
+        }
+
+        .badge-item.locked {
+            opacity: 0.4;
+            filter: grayscale(1);
+        }
+
+        .badge-icon {
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+
+        .badge-name {
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        /* COURS CATALOG */
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .page-header p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            transition: all .15s;
+            cursor: pointer;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--gold-muted);
+            border-color: rgba(245, 184, 0, 0.3);
+            color: var(--gold);
+        }
+
+        .cours-catalog {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .catalog-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: all .2s;
+            cursor: pointer;
+        }
+
+        .catalog-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-3px);
+        }
+
+        .catalog-thumb {
+            width: 100%;
+            height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .catalog-body {
+            padding: 14px 16px;
+        }
+
+        .catalog-matiere {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .catalog-titre {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .catalog-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .catalog-prog {
+            height: 3px;
+            background: var(--bg-raised);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .catalog-prog-fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        /* PROFIL */
+        .profil-hero {
+            background: linear-gradient(135deg, var(--bg-surface), var(--bg-raised));
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            margin-bottom: 24px;
+        }
+
+        .profil-avatar-big {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid var(--gold);
+            object-fit: cover;
+            background: var(--bg-raised);
+            box-shadow: 0 0 0 8px rgba(245, 184, 0, 0.1);
+        }
+
+        .profil-name {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .profil-stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .profil-stat {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .profil-stat-val {
+            font-family: 'Syne', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--gold);
+        }
+
+        .profil-stat-lbl {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* NOTIF PANEL */
+        .notif-panel {
+            position: fixed;
+            top: var(--topbar-h);
+            right: 20px;
+            width: 340px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            display: none;
+        }
+
+        .notif-panel.open {
+            display: block;
+            animation: slideDown .2s ease;
+        }
+
+        @keyframes slideDown {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(-10px);
             }
 
             to {
@@ -30,1368 +1252,1726 @@
             }
         }
 
-        .animate-slide-in {
-            animation: slideIn 0.4s ease-out;
+        .notif-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .confetti {
+        .notif-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .notif-clear {
+            font-size: 12px;
+            color: var(--gold);
+            cursor: pointer;
+        }
+
+        .notif-list {
+            max-height: 360px;
+            overflow-y: auto;
+        }
+
+        .notif-item {
+            display: flex;
+            gap: 12px;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            transition: background .1s;
+        }
+
+        .notif-item:hover {
+            background: var(--bg-raised);
+        }
+
+        .notif-item.unread {
+            border-left: 3px solid var(--gold);
+        }
+
+        .notif-icon-wrap {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            background: var(--bg-raised);
+        }
+
+        .notif-text {
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .notif-time {
+            font-size: 11px;
+            color: var(--text-faint);
+            margin-top: 3px;
+        }
+
+        /* TOAST */
+        .toast-container {
             position: fixed;
-            width: 10px;
-            height: 10px;
-            background: #f0f;
-            position: absolute;
-            animation: confetti-fall 3s linear;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        @keyframes confetti-fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
+        .toast {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-lit);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            animation: slideInRight .3s ease;
+            min-width: 240px;
+            transition: all .3s;
+        }
+
+        @keyframes slideInRight {
+            from {
                 opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
             }
         }
 
-        @keyframes scaleIn {
+        .toast.success {
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .toast.info {
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        /* SKELETON */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-raised) 25%, var(--bg-hover) 50%, var(--bg-raised) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 6px;
+        }
+
+        @keyframes shimmer {
             0% {
-                transform: scale(0.8);
-                opacity: 0;
+                background-position: 200% 0;
             }
 
             100% {
-                transform: scale(1);
-                opacity: 1;
+                background-position: -200% 0;
             }
         }
 
-        .animate-scale-in {
-            animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        /* ANIMATIONS */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+        .fade-up {
+            opacity: 0;
+            animation: fadeUp .5s ease forwards;
         }
 
-        .student-badge {
+        .d1 {
+            animation-delay: .05s;
+        }
+
+        .d2 {
+            animation-delay: .1s;
+        }
+
+        .d3 {
+            animation-delay: .15s;
+        }
+
+        .d4 {
+            animation-delay: .2s;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .btn-primary {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 13px;
-            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--gold);
+            color: var(--bg-base);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all .15s;
+            cursor: pointer;
+            border: none;
         }
 
-        .student-badge .flag {
-            font-size: 20px;
+        .btn-primary:hover {
+            background: #FDE68A;
         }
+
+        /* WIP */
+        .wip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            flex-direction: column;
+            gap: 12px;
+            color: var(--text-muted);
+        }
+
+        .wip-icon {
+            font-size: 64px;
+        }
+
+        @media (max-width: 1200px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .right-col {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .profil-stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ══════════════
+           SETTINGS UI
+        ══════════════ */
+        .st-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 800px;
+        }
+
+        .st-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .st-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .st-info {
+            flex: 1;
+            padding-right: 20px;
+        }
+
+        .st-label {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .st-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .st-select {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+            min-width: 140px;
+        }
+
+        .st-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .st-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .st-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--bg-raised);
+            border: 1px solid var(--border);
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .st-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-muted);
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .st-slider {
+            background-color: rgba(16, 185, 129, 0.2);
+            border-color: var(--emerald);
+        }
+
+        input:checked + .st-slider:before {
+            transform: translateX(20px);
+            background-color: var(--emerald);
+        }
+
+        /* ── SPINNER ── */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-sm { width: 14px; height: 14px; border-width: 1.5px; }
+        .spinner-lg { width: 40px; height: 40px; border-width: 3px; }
     </style>
 </head>
 
-<body class="bg-gray-50">
+<body>
+    <!-- GLOBAL LOADER -->
+    <div id="globalLoader" style="position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg-base);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.5s ease;">
+        <div class="spinner spinner-lg" style="border-top-color:var(--gold);"></div>
+        <div style="margin-top:20px;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:rgba(255,255,255,0.7);letter-spacing:1px;animation:pulse 1.5s infinite;">Chargement de votre espace...</div>
+        <style>@keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }</style>
+    </div>
 
-    <!-- Navbar -->
-    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-3">
-                    <img src="../assets/logo/LOGO.png" alt="KMERSCHOOL"
-                        class="h-20 w-auto object-contain bg-white rounded-lg p-1">
-                    <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Élève</span>
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-mark" data-i18n="app_name">KMERSCHOOL</div>
+                <div class="logo-sub" data-i18n="app_sub">Espace Élève</div>
+            </div>
+
+            <div class="sidebar-profile">
+                <div class="profile-avatar-wrap">
+                    <img class="profile-avatar" id="sidebarAvatar" src="" alt="Avatar" />
+                    <div class="avatar-online"></div>
                 </div>
+                <div class="profile-info">
+                    <div class="profile-name" id="sidebarName"><div class="spinner spinner-sm"></div></div>
+                    <div class="profile-level" id="sidebarLevel">✦ Niveau 1</div>
+                </div>
+            </div>
 
-                <div class="flex items-center space-x-4">
-                    <button class="p-2 hover:bg-gray-100 rounded-lg relative" onclick="toggleNotifications()">
-                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
-                            </path>
-                        </svg>
-                        <span id="notifBadge"
-                            class="hidden absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+            <div class="sidebar-xp" style="padding:0 16px;margin-top:10px;">
+                <span style="font-size:11px;color:var(--text-faint);">XP</span>
+                <div class="xp-bar-wrap">
+                    <div class="xp-bar-fill" id="xpBar" style="width:0%"></div>
+                </div>
+                <span class="xp-label" id="sidebarXP">0 pts</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label" data-i18n="nav_main">Principal</div>
+                <div class="nav-item active" onclick="navigate('dashboard')">
+                    <div class="nav-icon">🏠</div><span data-i18n="menu_dashboard">Tableau de bord</span>
+                </div>
+                <div class="nav-item" onclick="navigate('cours')">
+                    <div class="nav-icon">📚</div><span data-i18n="menu_courses">Mes Cours</span>
+                </div>
+                <div class="nav-item" onclick="window.location.href='exercices.html'">
+                    <div class="nav-icon">✏️</div><span data-i18n="menu_exercises">Exercices</span><span class="nav-badge" id="exBadge"
+                        style="display:none">0</span>
+                </div>
+                <div class="nav-item" onclick="window.location.href='chatbot-ia.html'">
+                    <div class="nav-icon">🤖</div><span>KmerAI</span>
+                </div>
+                <div class="nav-item" onclick="window.location.href='examens.html'">
+                    <div class="nav-icon">📝</div><span data-i18n="menu_exams">Examens</span>
+                </div>
+                <div class="nav-item" onclick="window.location.href='annales.html'">
+                    <div class="nav-icon">📄</div><span data-i18n="menu_annales">Annales</span>
+                </div>
+                <div class="nav-section-label" data-i18n="nav_community">Communauté</div>
+                <div class="nav-item" onclick="navigate('classement')">
+                    <div class="nav-icon">🏆</div><span data-i18n="menu_ranking">Classement</span>
+                </div>
+                <div class="nav-item" onclick="navigate('favoris')">
+                    <div class="nav-icon">❤️</div><span data-i18n="menu_favorites">Favoris</span>
+                </div>
+                <div class="nav-section-label" data-i18n="nav_account">Compte</div>
+                <div class="nav-item" onclick="window.location.href='profil.html'">
+                    <div class="nav-icon">👤</div><span data-i18n="menu_profile">Mon Profil</span>
+                </div>
+                <div class="nav-item" onclick="navigate('parametres')">
+                    <div class="nav-icon">⚙️</div><span data-i18n="menu_settings">Paramètres</span>
+                </div>
+            </nav>
+
+            <div class="sidebar-streak">
+                <div class="streak-fire">🔥</div>
+                <div>
+                    <div class="streak-count" id="sidebarStreak">0</div>
+                    <div class="streak-label" data-i18n="streak_days">jours de suite</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-title" id="topbarTitle" data-i18n="menu_dashboard">Tableau de bord</div>
+                <div class="topbar-badge badge-fr" id="topbarBadge">🇫🇷 Francophone</div>
+                <div class="topbar-search">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Rechercher un cours, matière..." data-i18n-placeholder="search_placeholder" id="searchInput"
+                        oninput="handleSearch(this.value)" />
+                </div>
+                <div class="topbar-actions">
+                    <button class="icon-btn" id="notifBtn" onclick="toggleNotifPanel()">
+                        🔔
+                        <div class="notif-dot" id="notifDot"></div>
                     </button>
-                    <div class="flex items-center space-x-3">
-                        <img id="userAvatar" class="w-10 h-10 rounded-full border-2 border-blue-200" src=""
-                            alt="Avatar">
-                        <div class="hidden md:block">
-                            <div class="flex items-center space-x-2">
-                                <p id="userName" class="text-sm font-semibold text-gray-900">Chargement...</p>
-                                <div id="studentBadgeHeader" class="scale-75 origin-left"></div>
-                            </div>
-                            <p id="userLevel" class="text-xs text-gray-500">Niveau</p>
-                        </div>
-                    </div>
-                    <button onclick="logout()"
-                        class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition">
-                        Déconnexion
-                    </button>
+                    <img class="topbar-avatar" id="topbarAvatar" src="" alt="Avatar"
+                        onclick="window.location.href='profil.html'" />
                 </div>
-            </div>
-        </div>
-    </nav>
+            </header>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        <!-- Welcome Section -->
-        <div
-            class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white mb-8 animate-slide-in relative overflow-hidden">
-            <div class="relative z-10">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h1 class="text-3xl font-bold mb-2">Bon retour, <span id="welcomeName">Élève</span> ! 👋</h1>
-                        <p class="text-blue-100">Continue ton apprentissage et atteins tes objectifs</p>
+            <!-- DASHBOARD -->
+            <section class="page-content active" id="page-dashboard">
+                <div class="welcome-hero fade-up">
+                    <div class="hero-bg-orbs">
+                        <div class="orb orb-1"></div>
+                        <div class="orb orb-2"></div>
+                        <div class="orb orb-3"></div>
                     </div>
-                    <div id="studentBadge" class="student-badge"></div>
-                </div>
-                <div class="mt-4 flex items-center space-x-4">
-                    <div class="flex items-center space-x-2">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                            </path>
-                        </svg>
-                        <span id="totalPointsHeader">0 points</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-orange-300">🔥</span>
-                        <span id="streakHeader">0 jours de suite</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-gray-600 text-sm">Points Total</span>
-                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                                </path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p id="totalPoints" class="text-2xl font-bold text-gray-900">0</p>
-                    <p id="pointsToNextLevel" class="text-xs text-gray-500 mt-1">50 pour le prochain niveau</p>
-                </div>
-
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
-                    style="animation-delay: 0.1s">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-gray-600 text-sm">Série de jours</span>
-                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p id="streakDays" class="text-2xl font-bold text-gray-900">0 jours</p>
-                    <p class="text-xs text-gray-500 mt-1">Record: <span id="streakRecord">0</span> jours</p>
-                </div>
-
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
-                    style="animation-delay: 0.2s">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-gray-600 text-sm">Cours complétés</span>
-                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                                <path fill-rule="evenodd"
-                                    d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p id="coursCompleted" class="text-2xl font-bold text-gray-900">0</p>
-                    <p id="coursTotal" class="text-xs text-gray-500 mt-1">sur 0 disponibles</p>
-                </div>
-
-                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 animate-slide-in"
-                    style="animation-delay: 0.3s">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-gray-600 text-sm">Temps d'étude</span>
-                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p id="studyTime" class="text-2xl font-bold text-gray-900">0h</p>
-                    <p class="text-xs text-gray-500 mt-1">Cette semaine</p>
-                </div>
-            </div>
-
-            <!-- Main Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                <!-- Left Column -->
-                <div class="lg:col-span-2 space-y-6">
-
-                    <!-- Matières disponibles -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-xl font-bold text-gray-900">📚 Mes Matières</h2>
-                            <button onclick="refreshMatieres()" class="text-sm text-blue-600 hover:text-blue-800">
-                                🔄 Actualiser
-                            </button>
-                        </div>
-                        <div id="matieresGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
-                            <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
-                            <div class="animate-pulse bg-gray-100 rounded-lg h-24"></div>
-                        </div>
-                    </div>
-
-                    <!-- Progression récente -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-xl font-bold text-gray-900 mb-4">📖 Continuer l'apprentissage</h2>
-                        <div id="progressionList" class="space-y-3">
-                            <p class="text-gray-500 text-center py-8">Aucune progression en cours</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column -->
-                <div class="space-y-6">
-
-                    <!-- Objectif du jour -->
-                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-100">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">🎯 Objectif du jour</h3>
-                        <div class="space-y-3">
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="text-gray-700">Progression</span>
-                                <span class="font-semibold text-blue-600" id="dailyProgress">0/3 cours</span>
-                            </div>
-                            <div class="w-full bg-white rounded-full h-3">
-                                <div id="dailyProgressBar"
-                                    class="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full transition-all duration-500"
-                                    style="width: 0%"></div>
-                            </div>
-                            <p class="text-xs text-gray-600 mt-2">Continue ! Complète 3 cours aujourd'hui pour gagner
-                                <span class="font-bold text-blue-600">+50 points</span> 🎁
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Badges récents -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">🏆 Badges</h3>
-                        <div id="badgesList" class="grid grid-cols-3 gap-3">
-                            <!-- Chargement dynamique -->
-                        </div>
-                        <button onclick="showAllBadges()"
-                            class="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-semibold">
-                            Voir tous les badges →
-                        </button>
-                    </div>
-
-                    <!-- Classement -->
-                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">📊 Classement</h3>
-                        <div class="text-center py-4">
-                            <p class="text-4xl font-bold text-gray-900" id="userRank">-</p>
-                            <p class="text-sm text-gray-500 mt-1">Ta position</p>
-                            <p class="text-xs text-gray-400 mt-2">sur <span id="totalUsers">0</span> élèves</p>
-                        </div>
-                        <button onclick="showLeaderboard()"
-                            class="w-full mt-4 px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold rounded-lg hover:shadow-lg transition">
-                            Voir le classement complet
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Toast Notifications -->
-        <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
-
-        <!-- Modal Cours -->
-        <div id="coursModal"
-            class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white z-10">
-                    <div class="flex items-center justify-between">
-                        <h3 id="coursModalTitle" class="text-2xl font-bold">Titre du cours</h3>
-                        <button onclick="closeCoursModal()" class="text-white hover:text-gray-200">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="mt-4 flex items-center space-x-4 text-sm">
-                        <span id="coursModalDuration">⏱️ 15 min</span>
-                        <span id="coursModalPoints">🏆 +10 points</span>
-                    </div>
-                </div>
-
-                <div class="p-6">
-                    <!-- Vidéo si disponible -->
-                    <div id="coursVideoContainer" class="hidden mb-6">
-                        <div class="aspect-video bg-gray-900 rounded-lg overflow-hidden">
-                            <iframe id="coursVideoFrame" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
-                        </div>
-                    </div>
-
-                    <!-- Contenu du cours -->
-                    <div id="coursContent" class="prose max-w-none mb-6">
-                        <!-- Contenu chargé dynamiquement -->
-                    </div>
-
-                    <!-- Bouton de complétion -->
-                    <div class="sticky bottom-0 bg-white pt-4 border-t border-gray-200">
-                        <button id="completeCourseBtn" onclick="completeCours()"
-                            class="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-lg hover:shadow-lg transition transform hover:scale-105">
-                            ✅ Marquer comme terminé et gagner <span id="btnPoints">+10</span> points
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="celebrationModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
-
-            <div
-                class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center animate-scale-in overflow-hidden">
-                <!-- Decorative background elements -->
-                <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-blue-50 to-transparent -z-10"></div>
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-purple-100 rounded-full blur-3xl opacity-50"></div>
-                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
-
-                <!-- Content -->
-                <div class="text-6xl mb-6 animate-bounce">🎉</div>
-
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Félicitations !</h2>
-                <p class="text-gray-600 mb-6 text-lg">Tu as terminé le cours avec succès !</p>
-
-                <div
-                    class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-6 mb-8 transform hover:scale-105 transition duration-300">
-                    <p class="text-sm text-gray-500 mb-1">Points gagnés</p>
-                    <div class="flex justify-center items-baseline space-x-2">
-                        <span
-                            class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600"
-                            id="celebrationPoints">+50</span>
-                        <span class="text-xl text-blue-600">XP</span>
-                    </div>
-                </div>
-
-                <button onclick="closeCelebrationModal()"
-                    class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all duration-200 text-lg">
-                    Continuer l'aventure 🚀
-                </button>
-            </div>
-        </div>
-
-        <script type="module">
-            const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-            // ⭐ NOUVEAU: Vérifier que l'onboarding est fait
-            async function verifierOnboarding() {
-                const { data: { user } } = await supabase.auth.getUser();
-
-                if (!user) {
-                    window.location.href = '../auth.html';
-                    return false;
-                }
-
-                // Vérifier si l'élève a complété l'onboarding
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('sous_systeme_id, niveau_scolaire_id, type_parcours')
-                    .eq('id', user.id)
-                    .single();
-
-                // Si pas de section/classe ET que c'est un élève, rediriger
-                if (profile.type_parcours === 'eleve' && (!profile.sous_systeme_id || !profile.niveau_scolaire_id)) {
-                    window.location.href = 'onboarding_cameroun.html';
-                    return false;
-                }
-
-                return true;
-            }
-
-            async function chargerCours() {
-                try {
-                    // 1. Récupérer le profil de l'élève avec section/niveau/série
-                    const { data: { user } } = await supabase.auth.getUser();
-
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select(`
-                        sous_systeme_id,
-                        niveau_scolaire_id,
-                        serie_id
-                    `)
-                        .eq('id', user.id)
-                        .single();
-
-                    // 2. Charger SEULEMENT les cours de sa section/niveau
-                    let query = supabase
-                        .from('cours')
-                        .select('*, chapitres(*, matieres(*))')
-                        .eq('est_publie', true);
-
-                    // Filtrer par sous-système si l'info existe
-                    if (profile?.sous_systeme_id) {
-                        query = query.eq('sous_systeme_id', profile.sous_systeme_id);
-                    }
-
-                    // Filtrer par série: cours généraux OU cours de sa série
-                    if (profile?.serie_id) {
-                        query = query.or(`serie_id.is.null,serie_id.eq.${profile.serie_id}`);
-                    }
-
-                    const { data: cours, error } = await query;
-                    if (error) throw error;
-
-                    // Note: La fonction afficherCours peut être implémentée pour afficher ces cours
-                    if (typeof afficherCours === 'function') {
-                        afficherCours(cours);
-                    } else {
-                        console.log('📚 Cours chargés et filtrés pour l\'élève:', cours);
-                        return cours;
-                    }
-                } catch (error) {
-                    console.error('❌ Erreur chargerCours:', error);
-                }
-            }
-
-            let currentUser = null
-            let currentCours = null
-            let coursStartTime = null
-
-            // ==========================================
-            // INITIALISATION
-            // ==========================================
-            async function init() {
-                console.log('🚀 Initialisation du dashboard élève...')
-
-                // Vérifier l'onboarding avant tout
-                const onboardingOK = await verifierOnboarding();
-                if (!onboardingOK) return;
-
-                const { data: { user } } = await supabase.auth.getUser()
-
-                if (!user) {
-                    console.log('❌ Utilisateur non connecté')
-                    window.location.href = '../auth.html'
-                    return
-                }
-
-                currentUser = user
-                console.log('✅ Utilisateur connecté:', user.id)
-
-                await loadUserProfile()
-                await loadMatieres()
-                await loadProgressions()
-                await loadStats()
-                await loadBadges()
-                await checkDailyStreak()
-                await afficherBadgeEleve()
-            }
-
-            // ==========================================
-            // PROFIL UTILISATEUR
-            // ==========================================
-            async function loadUserProfile() {
-                try {
-                    const { data: profile, error } = await supabase
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', currentUser.id)
-                        .single()
-
-                    if (error) throw error
-                    if (!profile) {
-                        console.error('❌ Profil non trouvé')
-                        return
-                    }
-
-                    console.log('✅ Profil chargé:', profile)
-
-                    // Vérifier que c'est bien un élève
-                    if (profile.type_parcours !== 'eleve') {
-                        redirectToDashboard(profile.type_parcours)
-                        return
-                    }
-
-                    // Afficher les infos
-                    document.getElementById('userName').textContent = profile.nom
-                    document.getElementById('welcomeName').textContent = profile.nom
-                    document.getElementById('userLevel').textContent = profile.niveau_actuel || 'Niveau 1'
-
-                    const points = profile.points_total || 0
-                    document.getElementById('totalPoints').textContent = points
-                    document.getElementById('totalPointsHeader').textContent = `${points} points`
-
-                    const streak = profile.streak_jours || 0
-                    document.getElementById('streakDays').textContent = `${streak} jours`
-                    document.getElementById('streakHeader').textContent = `${streak} jours de suite`
-
-                    // Avatar
-                    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.nom)}&background=667eea&color=fff&size=128`
-                    document.getElementById('userAvatar').src = avatarUrl
-
-                } catch (error) {
-                    console.error('❌ Erreur chargement profil:', error)
-                    showToast('Erreur de chargement du profil', 'error')
-                }
-            }
-
-            async function afficherBadgeEleve() {
-                const { data: { user } } = await supabase.auth.getUser();
-
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select(`
-                    sous_systeme:sous_systemes(code, nom_fr),
-                    niveau:niveaux_scolaires(nom_court),
-                    serie:series_specialites(nom_court)
-                `)
-                    .eq('id', user.id)
-                    .single();
-
-                if (!profile.sous_systeme) return;
-
-                const flag = profile.sous_systeme.code === 'francophone' ? '🇫🇷' : '🇬🇧';
-                const niveau = profile.niveau?.nom_court || '';
-                const serie = profile.serie?.nom_court || '';
-
-                const badgeHTML = `
-                <span class="flag">${flag}</span>
-                <span>${niveau} ${serie}</span>
-            `;
-
-                if (document.getElementById('studentBadge')) {
-                    document.getElementById('studentBadge').innerHTML = badgeHTML;
-                }
-                if (document.getElementById('studentBadgeHeader')) {
-                    document.getElementById('studentBadgeHeader').innerHTML = badgeHTML;
-                }
-            }
-
-            // ==========================================
-            // MATIÈRES
-            // ==========================================
-            async function loadMatieres() {
-                console.log('📚 Chargement des matières...')
-
-                try {
-                    // Requête corrigée pour éviter l'erreur 406
-                    const { data: matieres, error } = await supabase
-                        .from('matieres')
-                        .select(`
-                        id,
-                        nom,
-                        description,
-                        icone_url,
-                        couleur,
-                        type_parcours,
-                        ordre
-                    `)
-                        .in('type_parcours', ['eleve', 'commun'])
-                        .order('ordre')
-
-                    if (error) {
-                        console.error('❌ Erreur SQL:', error)
-                        throw error
-                    }
-
-                    console.log('✅ Matières chargées:', matieres?.length || 0)
-
-                    const grid = document.getElementById('matieresGrid')
-
-                    if (!matieres || matieres.length === 0) {
-                        grid.innerHTML = '<p class="col-span-3 text-center text-gray-500 py-8">Aucune matière disponible pour le moment</p>'
-                        return
-                    }
-
-                    // Compter les chapitres pour chaque matière
-                    const matieresAvecChapitres = await Promise.all(matieres.map(async (matiere) => {
-                        const { count } = await supabase
-                            .from('chapitres')
-                            .select('*', { count: 'exact', head: true })
-                            .eq('matiere_id', matiere.id)
-                            .eq('est_publie', true)
-
-                        return { ...matiere, chapitres_count: count || 0 }
-                    }))
-
-                    grid.innerHTML = matieresAvecChapitres.map(matiere => {
-                        const couleur = matiere.couleur || '#667eea'
-                        const icone = matiere.icone_url || '📚'
-
-                        return `
-                        <div onclick="openMatiere(${matiere.id}, '${matiere.nom.replace(/'/g, "\\'")}')" 
-                             class="bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 border-2 hover:shadow-lg transition cursor-pointer transform hover:scale-105 duration-200"
-                             style="border-color: ${couleur}30;">
-                            <div class="text-3xl mb-2">${icone}</div>
-                            <h3 class="font-bold text-gray-900 mb-1">${matiere.nom}</h3>
-                            <p class="text-xs text-gray-600">${matiere.chapitres_count} chapitre${matiere.chapitres_count > 1 ? 's' : ''}</p>
-                            <div class="mt-2 flex items-center text-xs" style="color: ${couleur};">
-                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                </svg>
-                                Commencer
+                    <div class="hero-content">
+                        <div>
+                            <div class="hero-greeting" id="heroGreeting" data-i18n="greet_morning">Bonjour ☀️</div>
+                            <h1 class="hero-title"><span id="heroHello" data-i18n="hello">Bonjour</span>, <span id="heroName">Élève</span> !</h1>
+                            <p class="hero-desc" data-i18n="hero_desc">Continue ton apprentissage et atteins tes objectifs du jour.</p>
+                            <div class="hero-tags">
+                                <span class="hero-tag tag-class" id="heroClasse">—</span>
+                                <span class="hero-tag tag-sys" id="heroSys">—</span>
+                                <span class="hero-tag tag-year" id="heroYear">—</span>
                             </div>
                         </div>
-                    `
-                    }).join('')
-
-                } catch (error) {
-                    console.error('❌ Erreur chargement matières:', error)
-                    const grid = document.getElementById('matieresGrid')
-                    grid.innerHTML = `
-                    <div class="col-span-3 text-center py-8">
-                        <p class="text-red-500 mb-2">Erreur de chargement</p>
-                        <button onclick="loadMati// ==========================================
-// SUITE DU SCRIPT DASHBOARD ÉLÈVE
-// À ajouter après le script précédent
-// ==========================================
-
-eres()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            Réessayer
-                        </button>
+                        <div class="hero-right">
+                            <img class="hero-avatar" id="heroAvatar" src="" alt="Avatar" />
+                            <div class="hero-points" id="heroPoints">0</div>
+                            <div class="hero-points-label" data-i18n="xp_points">points XP</div>
+                        </div>
                     </div>
-                `
-                }
-            }
+                </div>
 
-            // ==========================================
-            // PROGRESSIONS
-            // ==========================================
-            async function loadProgressions() {
-                try {
-                    const { data: progressions, error } = await supabase
-                        .from('progressions_cours')
-                        .select(`
-                        *,
-                        cours:cours(
-                            id,
-                            titre,
-                            duree_lecture,
-                            points_recompense,
-                            chapitre_id,
-                            chapitres:chapitres(
-                                titre,
-                                matieres:matieres(nom, icone_url, couleur)
-                            )
-                        )
-                    `)
-                        .eq('user_id', currentUser.id)
-                        .eq('est_termine', false)
-                        .order('updated_at', { ascending: false })
-                        .limit(5)
+                <div class="stats-row">
+                    <div class="stat-card fade-up d1">
+                        <div class="stat-header">
+                            <div class="stat-icon si-gold">⭐</div><span class="stat-trend trend-up" id="stPtTrend">+20
+                                auj.</span>
+                        </div>
+                        <div class="stat-value" id="stPoints">0</div>
+                        <div class="stat-label" data-i18n="stat_xp">Points XP</div>
+                    </div>
+                    <div class="stat-card fade-up d2">
+                        <div class="stat-header">
+                            <div class="stat-icon si-fire">🔥</div><span class="stat-trend trend-up" data-i18n="stat_active">Actif !</span>
+                        </div>
+                        <div class="stat-value" id="stStreak">0</div>
+                        <div class="stat-label" data-i18n="streak_days">Jours de suite</div>
+                    </div>
+                    <div class="stat-card fade-up d3">
+                        <div class="stat-header">
+                            <div class="stat-icon si-green">✅</div><span class="stat-trend trend-n"
+                                id="stCoursTrend">sur — dispo</span>
+                        </div>
+                        <div class="stat-value" id="stCours">0</div>
+                        <div class="stat-label" data-i18n="stat_completed">Cours terminés</div>
+                    </div>
+                    <div class="stat-card fade-up d4">
+                        <div class="stat-header">
+                            <div class="stat-icon si-blue">⏱️</div><span class="stat-trend trend-n" data-i18n="stat_month">Ce mois</span>
+                        </div>
+                        <div class="stat-value" id="stTemps">0h</div>
+                        <div class="stat-label" data-i18n="stat_time">Temps d'étude</div>
+                    </div>
+                </div>
 
-                    if (error) throw error
+                <div class="main-grid">
+                    <div class="left-col">
+                        <div class="card fade-up d2">
+                            <div class="card-header">
+                                <div class="card-title" data-i18n="card_continue">▶ Continuer l'apprentissage</div>
+                                <div class="card-action" onclick="navigate('cours')" data-i18n="card_see_all">Voir tout →</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="cours-list" id="progressionList">
+                                </div>
+                            </div>
+                        </div>
 
-                    const list = document.getElementById('progressionList')
+                        <div class="card fade-up d3">
+                            <div class="card-header">
+                                <div class="card-title" data-i18n="card_subjects">📖 Mes Matières</div>
+                                <div class="card-action" onclick="navigate('cours')" data-i18n="card_browse">Parcourir →</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="matieres-grid" id="matieresGrid"></div>
+                            </div>
+                        </div>
+                    </div>
 
-                    if (!progressions || progressions.length === 0) {
-                        list.innerHTML = '<p class="text-gray-500 text-center py-8">Aucune progression en cours. Commence un cours !</p>'
-                        return
-                    }
-
-                    list.innerHTML = progressions.map(prog => {
-                        const cours = prog.cours
-                        const matiere = cours?.chapitres?.matieres
-                        const progression = prog.progression_pourcentage || 0
-
-                        return `
-                        <div onclick="openCours(${cours.id})" 
-                             class="bg-white border-2 border-gray-100 rounded-xl p-4 hover:shadow-md transition cursor-pointer hover:border-blue-300">
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-2xl">${matiere?.icone_url || '📚'}</span>
-                                    <div>
-                                        <h4 class="font-bold text-gray-900">${cours.titre}</h4>
-                                        <p class="text-xs text-gray-500">${matiere?.nom || 'Matière'} • ${cours.chapitres?.titre || 'Chapitre'}</p>
+                    <div class="right-col">
+                        <div class="card fade-up d1"
+                            style="background:linear-gradient(135deg,#0D1B38,#0B1E35);border:1px solid rgba(245,184,0,0.2)">
+                            <div class="card-header">
+                                <div class="card-title" data-i18n="card_goal">🎯 Objectif du jour</div>
+                                <span style="font-size:11px;color:var(--gold);font-weight:700;" id="objDone">0/3</span>
+                            </div>
+                            <div style="padding:10px 20px 0;display:flex;align-items:center;gap:10px;">
+                                <div
+                                    style="flex:1;height:6px;background:var(--bg-raised);border-radius:3px;overflow:hidden;">
+                                    <div id="objBar"
+                                        style="height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),#FDE68A);width:0%;transition:width 1s ease">
                                     </div>
                                 </div>
-                                <span class="text-sm font-semibold text-blue-600">${progression}%</span>
+                                <span style="font-size:12px;color:var(--text-muted);" id="objPct">0%</span>
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full transition-all" 
-                                     style="width: ${progression}%"></div>
+                            <div class="obj-steps" id="objSteps"></div>
+                        </div>
+
+                        <div class="card fade-up d2">
+                            <div class="card-header">
+                                <div class="card-title" data-i18n="card_ranking">🏆 Classement</div>
+                                <div class="card-action" onclick="navigate('classement')" data-i18n="card_full">Complet →</div>
+                            </div>
+                            <div class="card-body" style="padding-top:12px;">
+                                <div class="rank-list" id="rankList"></div>
                             </div>
                         </div>
-                    `
-                    }).join('')
 
-                } catch (error) {
-                    console.error('❌ Erreur chargement progressions:', error)
-                }
-            }
-
-            // ==========================================
-            // STATISTIQUES
-            // ==========================================
-            async function loadStats() {
-                try {
-                    // Cours terminés
-                    const { data: progressions } = await supabase
-                        .from('progressions_cours')
-                        .select('temps_passe, est_termine')
-                        .eq('user_id', currentUser.id)
-
-                    const coursCompletes = progressions?.filter(p => p.est_termine).length || 0
-                    const tempsTotal = progressions?.reduce((acc, p) => acc + (p.temps_passe || 0), 0) || 0
-                    const heures = Math.floor(tempsTotal / 3600)
-                    const minutes = Math.floor((tempsTotal % 3600) / 60)
-
-                    document.getElementById('coursCompleted').textContent = coursCompletes
-                    document.getElementById('studyTime').textContent = heures > 0 ? `${heures}h${minutes}m` : `${minutes}m`
-
-                    // Total de cours disponibles
-                    const { count: totalCours } = await supabase
-                        .from('cours')
-                        .select('*', { count: 'exact', head: true })
-                        .eq('est_publie', true)
-
-                    document.getElementById('coursTotal').textContent = `sur ${totalCours || 0} disponibles`
-
-                    // Statistiques du jour
-                    const today = new Date().toISOString().split('T')[0]
-                    const { data: dailyStats } = await supabase
-                        .from('statistiques_journalieres')
-                        .select('cours_completes')
-                        .eq('user_id', currentUser.id)
-                        .eq('date', today)
-                        .single()
-
-                    const coursToday = dailyStats?.cours_completes || 0
-                    const dailyGoal = 3
-                    const dailyPercent = Math.min((coursToday / dailyGoal) * 100, 100)
-
-                    document.getElementById('dailyProgress').textContent = `${coursToday}/${dailyGoal} cours`
-                    document.getElementById('dailyProgressBar').style.width = `${dailyPercent}%`
-
-                } catch (error) {
-                    console.error('❌ Erreur chargement stats:', error)
-                }
-            }
-
-            // ==========================================
-            // BADGES
-            // ==========================================
-            async function loadBadges() {
-                try {
-                    const { data: userBadges } = await supabase
-                        .from('user_badges')
-                        .select(`
-                        *,
-                        badges:badges(nom, icone_url, description)
-                    `)
-                        .eq('user_id', currentUser.id)
-                        .limit(6)
-
-                    const badgesList = document.getElementById('badgesList')
-
-                    if (!userBadges || userBadges.length === 0) {
-                        badgesList.innerHTML = Array(6).fill(0).map(() => `
-                        <div class="text-center">
-                            <div class="w-12 h-12 bg-gray-100 rounded-full mx-auto flex items-center justify-center">
-                                <span class="text-2xl">🔒</span>
+                        <div class="card fade-up d3">
+                            <div class="card-header">
+                                <div class="card-title" data-i18n="card_badges">🥇 Mes Badges</div>
+                                <div class="card-action" onclick="navigate('profil')" data-i18n="card_see">Voir →</div>
                             </div>
-                            <p class="text-xs text-gray-400 mt-1">À débloquer</p>
+                            <div class="card-body">
+                                <div class="badges-grid" id="badgesGrid"></div>
+                            </div>
                         </div>
-                    `).join('')
-                        return
-                    }
-
-                    badgesList.innerHTML = userBadges.map(ub => `
-                    <div class="text-center" title="${ub.badges.description}">
-                        <div class="w-12 h-12 bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full mx-auto flex items-center justify-center animate-bounce">
-                            <span class="text-2xl">${ub.badges.icone_url || '🏆'}</span>
-                        </div>
-                        <p class="text-xs text-gray-700 mt-1 font-medium">${ub.badges.nom}</p>
                     </div>
-                `).join('')
-
-                } catch (error) {
-                    console.error('❌ Erreur chargement badges:', error)
-                }
-            }
-
-            // ==========================================
-            // STREAK (SÉRIE DE JOURS)
-            // ==========================================
-            async function checkDailyStreak() {
-                try {
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('derniere_connexion, streak_jours')
-                        .eq('id', currentUser.id)
-                        .single()
-
-                    const now = new Date()
-                    const lastConnection = profile.derniere_connexion ? new Date(profile.derniere_connexion) : null
-
-                    let newStreak = profile.streak_jours || 0
-
-                    if (lastConnection) {
-                        const daysDiff = Math.floor((now - lastConnection) / (1000 * 60 * 60 * 24))
-
-                        if (daysDiff === 1) {
-                            // Connexion le jour suivant : +1 streak
-                            newStreak++
-                            showToast(`🔥 Série de ${newStreak} jours ! Continue comme ça !`, 'success')
-                        } else if (daysDiff > 1) {
-                            // Série cassée
-                            if (newStreak > 0) {
-                                showToast(`😢 Ta série de ${newStreak} jours s'est arrêtée`, 'warning')
-                            }
-                            newStreak = 1
-                        }
-                        // Si daysDiff === 0, c'est la même journée, on ne change rien
-                    } else {
-                        // Première connexion
-                        newStreak = 1
-                    }
-
-                    // Mise à jour
-                    await supabase
-                        .from('profiles')
-                        .update({
-                            derniere_connexion: now.toISOString(),
-                            streak_jours: newStreak
-                        })
-                        .eq('id', currentUser.id)
-
-                    document.getElementById('streakDays').textContent = `${newStreak} jours`
-                    document.getElementById('streakHeader').textContent = `${newStreak} jours de suite`
-
-                } catch (error) {
-                    console.error('❌ Erreur streak:', error)
-                }
-            }
-
-            // ==========================================
-            // OUVRIR UN COURS
-            // ==========================================
-            async function openCours(coursId) {
-                try {
-                    console.log('📖 Ouverture du cours:', coursId)
-
-                    const { data: cours, error } = await supabase
-                        .from('cours')
-                        .select(`
-                        *,
-                        chapitres:chapitres(
-                            titre,
-                            matieres:matieres(nom)
-                        )
-                    `)
-                        .eq('id', coursId)
-                        .single()
-
-                    if (error) throw error
-                    if (!cours) throw new Error('Cours non trouvé')
-
-                    currentCours = cours
-                    coursStartTime = Date.now()
-
-                    // Afficher le modal
-                    document.getElementById('coursModalTitle').textContent = cours.titre
-                    document.getElementById('coursModalDuration').textContent = `⏱️ ${cours.duree_lecture || 15} min`
-                    document.getElementById('coursModalPoints').textContent = `🏆 +${cours.points_recompense || 10} points`
-                    document.getElementById('btnPoints').textContent = `+${cours.points_recompense || 10}`
-
-                    // Vidéo
-                    if (cours.video_url) {
-                        const videoContainer = document.getElementById('coursVideoContainer')
-                        const videoFrame = document.getElementById('coursVideoFrame')
-
-                        if (cours.video_url.includes('youtube.com') || cours.video_url.includes('youtu.be')) {
-                            const videoId = cours.video_url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/watch\?.+&v=))([^&\n?#]+)/)?.[1]
-                            if (videoId) {
-                                videoFrame.src = `https://www.youtube.com/embed/${videoId}`
-                                videoContainer.classList.remove('hidden')
-                            }
-                        }
-                    }
-
-                    // Contenu (convertir Markdown basique)
-                    const content = cours.contenu
-                        .replace(/^# (.+)$/gm, '<h1 class="text-3xl font-bold mb-4 text-gray-900">$1</h1>')
-                        .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold mb-3 text-gray-800">$1</h2>')
-                        .replace(/^### (.+)$/gm, '<h3 class="text-xl font-bold mb-2 text-gray-700">$1</h3>')
-                        .replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold">$1</strong>')
-                        .replace(/\*(.+?)\*/g, '<em class="italic">$1</em>')
-                        .replace(/^- (.+)$/gm, '<li class="ml-6 mb-1">$1</li>')
-                        .replace(/\n\n/g, '</p><p class="mb-4">')
-
-                    document.getElementById('coursContent').innerHTML = `<p class="mb-4">${content}</p>`
-
-                    // Créer ou mettre à jour la progression
-                    await createOrUpdateProgression(coursId)
-
-                    document.getElementById('coursModal').classList.remove('hidden')
-
-                } catch (error) {
-                    console.error('❌ Erreur ouverture cours:', error)
-                    showToast('Erreur lors du chargement du cours', 'error')
-                }
-            }
-
-            // ==========================================
-            // CRÉER OU METTRE À JOUR PROGRESSION
-            // ==========================================
-            async function createOrUpdateProgression(coursId) {
-                try {
-                    const { data: existing } = await supabase
-                        .from('progressions_cours')
-                        .select('*')
-                        .eq('user_id', currentUser.id)
-                        .eq('cours_id', coursId)
-                        .single()
-
-                    if (!existing) {
-                        await supabase
-                            .from('progressions_cours')
-                            .insert({
-                                user_id: currentUser.id,
-                                cours_id: coursId,
-                                progression_pourcentage: 0,
-                                temps_passe: 0,
-                                date_debut: new Date().toISOString()
-                            })
-                    }
-                } catch (error) {
-                    console.error('❌ Erreur progression:', error)
-                }
-            }
-
-            // ==========================================
-            // COMPLÉTER UN COURS
-            // ==========================================
-            async function completeCours() {
-                if (!currentCours) return
-
-                try {
-                    const btn = document.getElementById('completeCourseBtn')
-                    btn.disabled = true
-                    btn.innerHTML = '<span class="animate-pulse">⏳ Enregistrement...</span>'
-
-                    const tempsEcoule = Math.floor((Date.now() - coursStartTime) / 1000)
-                    const points = currentCours.points_recompense || 10
-
-                    // Mettre à jour la progression
-                    const { error: progError } = await supabase
-                        .from('progressions_cours')
-                        .update({
-                            est_termine: true,
-                            progression_pourcentage: 100,
-                            temps_passe: tempsEcoule,
-                            date_fin: new Date().toISOString()
-                        })
-                        .eq('user_id', currentUser.id)
-                        .eq('cours_id', currentCours.id)
-
-                    if (progError) throw progError
-
-                    // Ajouter les points
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('points_total')
-                        .eq('id', currentUser.id)
-                        .single()
-
-                    const newPoints = (profile.points_total || 0) + points
-
-                    await supabase
-                        .from('profiles')
-                        .update({ points_total: newPoints })
-                        .eq('id', currentUser.id)
-
-                    // Mettre à jour les statistiques journalières
-                    const today = new Date().toISOString().split('T')[0]
-                    const { data: dailyStats } = await supabase
-                        .from('statistiques_journalieres')
-                        .select('*')
-                        .eq('user_id', currentUser.id)
-                        .eq('date', today)
-                        .single()
-
-                    if (dailyStats) {
-                        await supabase
-                            .from('statistiques_journalieres')
-                            .update({
-                                cours_completes: (dailyStats.cours_completes || 0) + 1,
-                                temps_apprentissage: (dailyStats.temps_apprentissage || 0) + tempsEcoule,
-                                points_gagnes: (dailyStats.points_gagnes || 0) + points
-                            })
-                            .eq('id', dailyStats.id)
-                    } else {
-                        await supabase
-                            .from('statistiques_journalieres')
-                            .insert({
-                                user_id: currentUser.id,
-                                date: today,
-                                cours_completes: 1,
-                                temps_apprentissage: tempsEcoule,
-                                points_gagnes: points
-                            })
-                    }
-
-                    // Vérifier si on débloque un badge
-                    await checkForNewBadges()
-
-                    // Animation de succès (NOUVEAU MODAL)
-                    showCelebrationModal(points)
-
-                } catch (error) {
-                    console.error('❌ Erreur complétion cours:', error)
-                    showToast('Erreur lors de l\'enregistrement', 'error')
-                    document.getElementById('completeCourseBtn').disabled = false
-                }
-            }
-
-            // ==========================================
-            // CELEBRATION MODAL
-            // ==========================================
-            function showCelebrationModal(points) {
-                // Fermer le modal de cours d'abord (ou le cacher)
-                document.getElementById('coursModal').classList.add('hidden')
-
-                // Configurer le modal de célébration
-                document.getElementById('celebrationPoints').textContent = `+${points}`
-                document.getElementById('celebrationModal').classList.remove('hidden')
-
-                // Lancer les confettis
-                const duration = 3000
-                const end = Date.now() + duration
-
-                const frame = () => {
-                    confetti({
-                        particleCount: 5,
-                        angle: 60,
-                        spread: 55,
-                        origin: { x: 0, y: 0.8 }
-                    })
-                    confetti({
-                        particleCount: 5,
-                        angle: 120,
-                        spread: 55,
-                        origin: { x: 1, y: 0.8 }
-                    })
-
-                    if (Date.now() < end) {
-                        requestAnimationFrame(frame)
-                    }
-                }
-                frame()
-
-                // Son de succès (optionnel, léger blip)
-                // const audio = new Audio('../assets/success.mp3'); // Si dispo
-                // audio.play().catch(() => {}); 
-            }
-
-            function closeCelebrationModal() {
-                document.getElementById('celebrationModal').classList.add('hidden')
-
-                // Rafraîchir les données
-                loadUserProfile()
-                loadProgressions()
-                loadStats()
-
-                // Reset cours modal state
-                document.getElementById('coursVideoContainer').classList.add('hidden')
-                document.getElementById('coursVideoFrame').src = ''
-                currentCours = null
-                coursStartTime = null
-            }
-
-            // ==========================================
-            // VÉRIFIER NOUVEAUX BADGES
-            // ==========================================
-            async function checkForNewBadges() {
-                try {
-                    // Badge "Premier Cours"
-                    const { count: coursCount } = await supabase
-                        .from('progressions_cours')
-                        .select('*', { count: 'exact', head: true })
-                        .eq('user_id', currentUser.id)
-                        .eq('est_termine', true)
-
-                    if (coursCount === 1) {
-                        await awardBadge('Premier Cours', '🎓', 'Complète ton premier cours')
-                    }
-
-                    // Badge "5 Cours"
-                    if (coursCount === 5) {
-                        await awardBadge('Apprenant Assidu', '📚', 'Complète 5 cours')
-                    }
-
-                    // Badge "10 Cours"
-                    if (coursCount === 10) {
-                        await awardBadge('Expert', '🏆', 'Complète 10 cours')
-                    }
-
-                    // Badge "Série 7 jours"
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('streak_jours')
-                        .eq('id', currentUser.id)
-                        .single()
-
-                    if (profile.streak_jours === 7) {
-                        await awardBadge('Semaine Parfaite', '🔥', 'Connecte-toi 7 jours de suite')
-                    }
-
-                } catch (error) {
-                    console.error('❌ Erreur vérification badges:', error)
-                }
-            }
-
-            // ==========================================
-            // ATTRIBUER UN BADGE
-            // ==========================================
-            async function awardBadge(nom, icone, description) {
-                try {
-                    // Vérifier si le badge existe
-                    let { data: badge } = await supabase
-                        .from('badges')
-                        .select('*')
-                        .eq('nom', nom)
-                        .single()
-
-                    if (!badge) {
-                        // Créer le badge
-                        const { data: newBadge } = await supabase
-                            .from('badges')
-                            .insert({
-                                nom,
-                                icone_url: icone,
-                                description,
-                                points_bonus: 50
-                            })
-                            .select()
-                            .single()
-                        badge = newBadge
-                    }
-
-                    // Vérifier si l'utilisateur a déjà ce badge
-                    const { data: existing } = await supabase
-                        .from('user_badges')
-                        .select('*')
-                        .eq('user_id', currentUser.id)
-                        .eq('badge_id', badge.id)
-                        .single()
-
-                    if (!existing) {
-                        // Attribuer le badge
-                        await supabase
-                            .from('user_badges')
-                            .insert({
-                                user_id: currentUser.id,
-                                badge_id: badge.id
-                            })
-
-                        // Ajouter les points bonus
-                        await supabase.rpc('increment_points', {
-                            user_id: currentUser.id,
-                            points: badge.points_bonus
-                        }).catch(() => {
-                            // Si la fonction n'existe pas, faire manuellement
-                            supabase
-                                .from('profiles')
-                                .select('points_total')
-                                .eq('id', currentUser.id)
-                                .single()
-                                .then(({ data }) => {
-                                    supabase
-                                        .from('profiles')
-                                        .update({ points_total: (data.points_total || 0) + badge.points_bonus })
-                                        .eq('id', currentUser.id)
-                                })
-                        })
-
-                        showBadgeNotification(nom, icone, badge.points_bonus)
-                    }
-
-                } catch (error) {
-                    console.error('❌ Erreur attribution badge:', error)
-                }
-            }
-
-            // ==========================================
-            // ANIMATIONS
-            // ==========================================
-            function showSuccessAnimation(points) {
-                // DEPRECATED - Used by showCelebrationModal internally or kept for other small successes
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 }
-                })
-
-                showToast(`🎉 Bravo ! Tu as gagné ${points} points !`, 'success')
-            }
-
-            function showBadgeNotification(nom, icone, points) {
-                const toast = document.createElement('div')
-                toast.className = 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-4 rounded-lg shadow-2xl animate-slide-in flex items-center space-x-3'
-                toast.innerHTML = `
-                <span class="text-3xl">${icone}</span>
-                <div>
-                    <p class="font-bold">Nouveau badge débloqué !</p>
-                    <p class="text-sm">${nom} (+${points} points)</p>
                 </div>
-            `
-                document.getElementById('toastContainer').appendChild(toast)
-                setTimeout(() => toast.remove(), 5000)
+            </section>
 
-                confetti({
-                    particleCount: 150,
-                    spread: 100,
-                    origin: { y: 0.4 }
-                })
-            }
+            <!-- COURS PAGE -->
+            <section class="page-content" id="page-cours">
+                <div class="page-header">
+                    <h1 data-i18n="page_courses_title">📚 Mes Cours</h1>
+                    <p data-i18n="page_courses_desc">Explore et continue ton apprentissage par matière</p>
+                </div>
+                <div class="filters-row">
+                    <button class="filter-btn active" onclick="filterCours('all',this)" data-i18n="filter_all">Tous</button>
+                    <button class="filter-btn" onclick="filterCours('en_cours',this)" data-i18n="filter_prog">🔄 En cours</button>
+                    <button class="filter-btn" onclick="filterCours('termine',this)" data-i18n="filter_done">✅ Terminés</button>
+                    <button class="filter-btn" onclick="filterCours('nouveau',this)" data-i18n="filter_new">🆕 Nouveaux</button>
+                </div>
+                <div class="cours-catalog" id="coursCatalog"></div>
+            </section>
 
-            // ==========================================
-            // UTILITAIRES
-            // ==========================================
-            function showToast(message, type = 'info') {
-                const colors = {
-                    success: 'bg-green-500',
-                    error: 'bg-red-500',
-                    warning: 'bg-yellow-500',
-                    info: 'bg-blue-500'
+            <!-- EXERCICES / ANNALES redirigés -->
+            <section class="page-content" id="page-examens">
+                <div class="page-header">
+                    <h1 data-i18n="page_exams_title">📝 Examens</h1>
+                    <p data-i18n="page_exams_desc">Tests officiels et évaluations</p>
+                </div>
+                <div class="wip">
+                    <div class="wip-icon">🚧</div>
+                    <p style="font-size:15px;font-weight:600;" data-i18n="wip">Bientôt disponible</p>
+                </div>
+            </section>
+            <section class="page-content" id="page-classement">
+                <div class="page-header">
+                    <h1 data-i18n="page_ranking_title">🏆 Classement</h1>
+                    <p data-i18n="page_ranking_desc">Ta position parmi les élèves de ta classe</p>
+                </div>
+                <div class="wip">
+                    <div class="wip-icon">🚧</div>
+                    <p style="font-size:15px;font-weight:600;" data-i18n="wip">Bientôt disponible</p>
+                </div>
+            </section>
+            <section class="page-content" id="page-favoris">
+                <div class="page-header">
+                    <h1 data-i18n="page_fav_title">❤️ Favoris</h1>
+                    <p data-i18n="page_fav_desc">Cours et ressources sauvegardés</p>
+                </div>
+                <div class="cours-catalog" id="favorisCatalog">
+                    <div style="grid-column: 1/-1;text-align:center;padding:3rem;color:var(--text-muted)" data-i18n="loading_fav">
+                        <div class="spinner spinner-lg"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page-content" id="page-parametres">
+                <div class="page-header">
+                    <h1 data-i18n="page_settings_title">⚙️ Paramètres</h1>
+                    <p data-i18n="page_settings_desc">Gérez vos préférences de compte, l'affichage et la sécurité.</p>
+                </div>
+                <div class="st-grid">
+                    <!-- PRÉFÉRENCES & INTERFACE -->
+                    <div class="card fade-up d1">
+                        <div class="card-header">
+                            <div class="card-title" data-i18n="st_interface">🎨 Interface & Affichage</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="st-row">
+                                <div class="st-info">
+                                    <div class="st-label" data-i18n="st_theme">Mode d'affichage</div>
+                                    <div class="st-sub" data-i18n="st_theme_desc">Choisissez entre un thème clair ou sombre (Le thème sombre est recommandé).</div>
+                                </div>
+                                <select id="stTheme" class="st-select" onchange="saveSettingsLocal()">
+                                    <option value="dark" data-i18n="st_theme_dark">Sombre (Défaut)</option>
+                                    <option value="light" data-i18n="st_theme_light">Clair</option>
+                                    <option value="system" data-i18n="st_theme_sys">Système</option>
+                                </select>
+                            </div>
+                            <div class="st-row">
+                                <div class="st-info">
+                                    <div class="st-label" data-i18n="st_lang">Langue de l'interface</div>
+                                    <div class="st-sub" data-i18n="st_lang_desc">La langue principale du tableau de bord.</div>
+                                </div>
+                                <select id="stLang" class="st-select" onchange="saveSettingsLocal()">
+                                    <option value="fr">Français</option>
+                                    <option value="en">Anglais</option>
+                                </select>
+                            </div>
+                            <div class="st-row">
+                                <div class="st-info">
+                                    <div class="st-label" data-i18n="st_anim">Désactiver animations de page</div>
+                                    <div class="st-sub" data-i18n="st_anim_desc">Si coché, réduit les mouvements pour des appareils lents.</div>
+                                </div>
+                                <label class="st-switch">
+                                    <input type="checkbox" id="stAnim" onchange="saveSettingsLocal()" />
+                                    <span class="st-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NOTIFICATIONS -->
+                    <div class="card fade-up d2">
+                        <div class="card-header">
+                            <div class="card-title" data-i18n="st_notif_title">🔔 Notifications (Bêta)</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="st-row">
+                                <div class="st-info">
+                                    <div class="st-label" data-i18n="st_notif_course">Mises à jour des cours</div>
+                                    <div class="st-sub" data-i18n="st_notif_course_desc">Être averti lorsqu'un nouveau cours de votre classe est ajouté.</div>
+                                </div>
+                                <label class="st-switch">
+                                    <input type="checkbox" id="stNotifCours" onchange="saveSettingsLocal()" checked />
+                                    <span class="st-slider"></span>
+                                </label>
+                            </div>
+                            <div class="st-row">
+                                <div class="st-info">
+                                    <div class="st-label" data-i18n="st_notif_rem">Rappels de révision</div>
+                                    <div class="st-sub" data-i18n="st_notif_rem_desc">Notifications pour étudier ou s'entraîner aux examens.</div>
+                                </div>
+                                <label class="st-switch">
+                                    <input type="checkbox" id="stNotifRappel" onchange="saveSettingsLocal()" checked />
+                                    <span class="st-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SÉCURITÉ -->
+                    <div class="card fade-up d3">
+                        <div class="card-header">
+                            <div class="card-title" data-i18n="st_sec">🔐 Sécurité du Compte</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="st-row">
+                                <div class="st-info">
+                                    <div class="st-label" data-i18n="st_pwd">Mot de passe</div>
+                                    <div class="st-sub" data-i18n="st_pwd_desc">Nous vous enverrons un email sécurisé avec un lien pour configurer un nouveau mot de passe.</div>
+                                </div>
+                                <button class="btn-primary" style="background:var(--rose);color:white" onclick="demandResetPassword()" data-i18n="st_pwd_btn">Réinitialiser le mot de passe</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PROFIL PAGE -->
+            <section class="page-content" id="page-profil">
+                <div class="profil-hero">
+                    <img class="profil-avatar-big" id="profilAvatar" src="" alt="Avatar" />
+                    <div>
+                        <div class="profil-name" id="profilName">—</div>
+                        <div style="font-size:14px;color:var(--text-muted);margin-bottom:12px;" id="profilEmail">—</div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <span class="hero-tag tag-class" id="profilClasse">—</span>
+                            <span class="hero-tag tag-sys" id="profilSys">—</span>
+                            <span class="hero-tag tag-year" id="profilYear">—</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profil-stats-row">
+                    <div class="profil-stat">
+                        <div class="profil-stat-val" id="pStPoints">0</div>
+                        <div class="profil-stat-lbl" data-i18n="stat_xp">Points XP</div>
+                    </div>
+                    <div class="profil-stat">
+                        <div class="profil-stat-val" id="pStStreak">0</div>
+                        <div class="profil-stat-lbl" data-i18n="streak_days_short">Streak jours</div>
+                    </div>
+                    <div class="profil-stat">
+                        <div class="profil-stat-val" id="pStCours">0</div>
+                        <div class="profil-stat-lbl" data-i18n="stat_completed">Cours terminés</div>
+                    </div>
+                    <div class="profil-stat">
+                        <div class="profil-stat-val" id="pStBadges">0</div>
+                        <div class="profil-stat-lbl" data-i18n="stat_badges">Badges</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" data-i18n="card_all_badges">🥇 Tous mes Badges</div>
+                    </div>
+                    <div class="card-body">
+                        <div id="profilBadgesGrid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;">
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notif Panel -->
+    <div class="notif-panel" id="notifPanel">
+        <div class="notif-header">
+            <div class="notif-title" data-i18n="notif_title">🔔 Notifications</div><span class="notif-clear" onclick="clearNotifs()" data-i18n="notif_clear">Tout
+                marquer lu</span>
+        </div>
+        <div class="notif-list" id="notifList"></div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ── SUPABASE CONFIG ──
+        const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A';
+        let sb = null;
+        try {
+            sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) { console.error("Supabase init error:", e); }
+
+        // State global
+        const STATE = {
+            profile: null,
+            progressions: [],
+            matieres: [],
+            badges: [],
+            classement: [],
+            notifications: [],
+            objectifs: [],
+            catalog: []
+        };
+
+
+
+        // ── NAVIGATION ──
+        const TITLES = { dashboard: 'Tableau de bord', cours: 'Mes Cours', exercices: 'Exercices', examens: 'Examens', annales: 'Annales', classement: 'Classement', favoris: 'Favoris', profil: 'Mon Profil', parametres: 'Paramètres' };
+        let currentFilter = 'all';
+        let currentMatiereFilter = null;
+
+        function navigate(page, mat = null) {
+            if (page === 'exercices') { window.location.href = 'exercices.html'; return; }
+            if (page === 'annales') { window.location.href = 'annales.html'; return; }
+            if (page === 'chatbot') { window.location.href = 'chatbot-ia.html'; return; }
+            if (page === 'examens') { window.location.href = 'examens.html'; return; }
+            currentMatiereFilter = mat;
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const el = document.getElementById('page-' + page);
+            if (el) el.classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => { if (n.getAttribute('onclick')?.includes("'" + page + "'")) n.classList.add('active'); });
+            document.getElementById('topbarTitle').textContent = TITLES[page] || page;
+            document.getElementById('notifPanel').classList.remove('open');
+            if (page === 'cours') renderCatalog();
+            if (page === 'profil') renderProfil();
+            if (page === 'favoris') loadFavoris();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ── INIT ──
+        async function init() {
+            try {
+                // 1. Authentification
+                const { data: { user } } = await sb.auth.getUser();
+                if (!user) {
+                    window.location.href = 'onboarding_cameroun.html';
+                    return;
                 }
 
-                const toast = document.createElement('div')
-                toast.className = `${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in`
-                toast.textContent = message
+                // 2. Fetch Profile basic data
+                const { data: profile, error: pError } = await sb
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
 
-                document.getElementById('toastContainer').appendChild(toast)
-                setTimeout(() => toast.remove(), 4000)
-            }
+                if (pError) throw pError;
 
-            function closeCoursModal() {
-                document.getElementById('coursModal').classList.add('hidden')
-                document.getElementById('coursVideoContainer').classList.add('hidden')
-                document.getElementById('coursVideoFrame').src = ''
-                currentCours = null
-                coursStartTime = null
-            }
+                // 2b. Fetch related data manually (FKs might be missing in schema for automatic joins)
+                const [ssRes, nvRes, srRes] = await Promise.all([
+                    profile.sous_systeme_id ? sb.from('sous_systemes').select('id, nom:nom_fr, code').eq('id', profile.sous_systeme_id).single() : null,
+                    profile.niveau_scolaire_id ? sb.from('niveaux_scolaires').select('id, nom:nom_fr, nom_court, code').eq('id', profile.niveau_scolaire_id).single() : null,
+                    profile.serie_id ? sb.from('series_specialites').select('id, nom:nom_fr, code').eq('id', profile.serie_id).single() : null
+                ]);
 
-            function redirectToDashboard(parcours) {
-                const dashboards = {
-                    'dev-web': '../Dashboard-Dev/dashboard-dev.html',
-                    'designer': '../Dashboard-designer/dashboard-designer.html',
-                    'eleve': 'dashboard-eleve.html'
+                if (ssRes?.data) profile.sous_systeme = ssRes.data;
+                if (nvRes?.data) profile.niveau = nvRes.data;
+                if (srRes?.data) profile.serie = srRes.data;
+
+                STATE.profile = profile;
+
+                // 3. Fetch Progressions
+                const { data: progressions, error: prError } = await sb
+                    .from('progressions_cours')
+                    .select(`
+                        *,
+                        cours(*)
+                    `)
+                    .eq('user_id', user.id)
+                    .order('date_debut', { ascending: false });
+
+                STATE.progressions = progressions || [];
+
+                // 4. Fetch Catalog (filtered by level/section)
+                let query = sb
+                    .from('cours')
+                    .select('*')
+                    .eq('est_publie', true);
+
+                if (profile.sous_systeme_id) query = query.eq('sous_systeme_id', profile.sous_systeme_id);
+                // if (profile.niveau_scolaire_id) query = query.eq('niveau_scolaire_id', profile.niveau_scolaire_id);
+
+                if (profile.serie_id) {
+                    query = query.or(`serie_id.eq.${profile.serie_id},serie_id.is.null`);
                 }
-                window.location.href = dashboards[parcours] || '../index.html'
-            }
 
-            // ==========================================
-            // FONCTIONS GLOBALES
-            // ==========================================
-            window.openMatiere = async function (matiereId, matiereNom) {
-                // Rediriger vers une page de chapitre/cours
-                window.location.href = `matiere.html?id=${matiereId}&nom=${encodeURIComponent(matiereNom)}`
-            }
+                // Also fetch all matieres to link them manually
+                const [catRes, matRes] = await Promise.all([
+                    query.limit(50),
+                    sb.from('matieres').select('id, nom, icone:icone_url, couleur')
+                ]);
 
-            window.openCours = openCours
-            window.completeCours = completeCours
-            window.closeCoursModal = closeCoursModal
+                if (catRes.error) throw catRes.error;
 
-            window.refreshMatieres = async function () {
-                showToast('Actualisation...', 'info')
-                await loadMatieres()
-            }
+                const catalog = catRes.data || [];
+                const allMatieres = matRes.data || [];
+                const matInfoMap = {};
+                allMatieres.forEach(m => matInfoMap[m.nom] = m);
 
-            window.showAllBadges = function () {
-                showToast('Fonctionnalité en développement', 'info')
-            }
+                // Inject mat info into catalog items
+                catalog.forEach(c => {
+                    if (c.matiere && matInfoMap[c.matiere]) {
+                        c.mat = matInfoMap[c.matiere];
+                    }
+                });
 
-            window.showLeaderboard = function () {
-                showToast('Classement bientôt disponible !', 'info')
-            }
+                STATE.catalog = catalog;
 
-            window.toggleNotifications = function () {
-                showToast('Aucune notification', 'info')
-            }
+                // 5. Build Matieres list from catalog
+                const matMap = {};
+                STATE.catalog.forEach(c => {
+                    const mName = c.mat?.nom || c.matiere;
+                    if (!mName) return;
+                    if (!matMap[mName]) {
+                        matMap[mName] = {
+                            id: c.mat?.id || null,
+                            nom: mName,
+                            icone: c.mat?.icone || '📚',
+                            couleur: c.mat?.couleur || '#4F46E5',
+                            nb_cours: 0
+                        };
+                    }
+                    matMap[mName].nb_cours++;
+                });
+                STATE.matieres = Object.values(matMap);
 
-            window.logout = async function () {
-                if (confirm('Veux-tu vraiment te déconnecter ?')) {
-                    await supabase.auth.signOut()
-                    window.location.href = '../index.html'
+                // 6. Ranking (Top 10)
+                const { data: ranking } = await sb
+                    .from('profiles')
+                    .select('nom, points_total')
+                    .eq('type_parcours', 'eleve')
+                    .order('points_total', { ascending: false })
+                    .limit(10);
+
+                STATE.classement = (ranking || []).map((r, i) => ({
+                    rank: i + 1,
+                    nom: r.nom,
+                    initials: r.nom ? r.nom.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '??',
+                    points: r.points_total || 0,
+                    isMe: r.nom === profile.nom
+                }));
+
+                // 7. Fetch Badges
+                const { data: ubData } = await sb
+                    .from('user_badges')
+                    .select('*, badge:badges(nom, icone_url)')
+                    .eq('user_id', user.id);
+
+                if (ubData) {
+                    STATE.badges = ubData.map(ub => ({
+                        nom: ub.badge?.nom || 'Badge',
+                        icone: ub.badge?.icone_url || '🌟',
+                        unlocked: true
+                    }));
                 }
-            }
 
-            // ==========================================
-            // CONFETTI (Animation)
-            // ==========================================
-            function confetti(options) {
-                const defaults = {
-                    particleCount: 50,
-                    spread: 60,
-                    origin: { y: 0.7 }
-                }
-                const opts = { ...defaults, ...options }
+                // 8. Fetch Exercise Counts
+                let qEx = sb.from('exercices').select('id', { count: 'exact', head: true }).eq('est_publie', true).eq('est_actif', true);
+                if (profile.sous_systeme_id) qEx = qEx.or(`sous_systeme_id.eq.${profile.sous_systeme_id},sous_systeme_id.is.null`);
+                if (profile.niveau_scolaire_id) qEx = qEx.or(`niveau_scolaire_id.eq.${profile.niveau_scolaire_id},niveau_scolaire_id.is.null`);
+                if (profile.serie_id) qEx = qEx.or(`serie_id.eq.${profile.serie_id},serie_id.is.null`);
 
-                for (let i = 0; i < opts.particleCount; i++) {
-                    createConfetti(opts)
-                }
-            }
+                const { count: exCount } = await qEx;
+                STATE.exCount = exCount || 0;
 
-            function createConfetti(opts) {
-                const confetti = document.createElement('div')
-                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff']
+                // Settings init
+                loadSettingsLocal();
 
-                confetti.style.cssText = `
-                position: fixed;
-                width: 10px;
-                height: 10px;
-                background: ${colors[Math.floor(Math.random() * colors.length)]};
-                left: ${(opts.origin.x || 0.5) * 100}%;
-                top: ${(opts.origin.y || 0.5) * 100}%;
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: 9999;
-            `
-
-                document.body.appendChild(confetti)
-
-                const angle = Math.random() * opts.spread - opts.spread / 2
-                const velocity = Math.random() * 5 + 5
-                const gravity = 0.5
-                let x = 0, y = 0, vy = -velocity
-
-                const animate = () => {
-                    x += Math.sin(angle * Math.PI / 180) * 2
-                    y += vy
-                    vy += gravity
-
-                    confetti.style.transform = `translate(${x}px, ${y}px) rotate(${y * 2}deg)`
-                    confetti.style.opacity = Math.max(0, 1 - y / 500)
-
-                    if (y < 500) {
-                        requestAnimationFrame(animate)
+                // 2c. Force language from profile if no preference saved
+                const userIdProfile = profile.id;
+                const keyProfile = userIdProfile ? `kmer_eleve_settings_${userIdProfile}` : 'kmer_eleve_settings';
+                if (!localStorage.getItem(keyProfile)) {
+                    const code = profile.sous_systeme?.code;
+                    if (code === 'anglophone' || code === 'EN' || code === 'en') {
+                        if (document.getElementById('stLang')) {
+                            document.getElementById('stLang').value = 'en';
+                            saveSettingsLocal();
+                        }
                     } else {
-                        confetti.remove()
+                        if (document.getElementById('stLang')) {
+                            document.getElementById('stLang').value = 'fr';
+                            saveSettingsLocal();
+                        }
                     }
                 }
 
-                requestAnimationFrame(animate)
+                // Update UI
+                updateUI();
+                
+                // Final translation apply
+                applyTranslations();
+
+                // REMOVE LOADER SAFELY
+                const loader = document.getElementById('globalLoader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
+
+            } catch (err) {
+                console.error("Initialization error:", err);
+                const isNetworkError = !navigator.onLine || err.message?.includes('fetch') || err.code === 'PGRST301';
+                const msgError = isNetworkError ? "Connexion réseau instable ou perdue." : "Impossible de charger votre tableau de bord.";
+                showToast(msgError, "error");
+
+                const loader = document.getElementById('globalLoader');
+                if (loader) {
+                    loader.innerHTML = `
+                        <div style="text-align:center; padding: 20px;">
+                            <div style="font-size:54px; margin-bottom:15px;">🔌</div>
+                            <h2 style="font-family:'Syne', sans-serif; color:#F43F5E; margin-bottom:10px;">Oups ! Un problème est survenu.</h2>
+                            <p style="color:#8892A4; margin-bottom:25px; max-width: 400px; line-height:1.5;">${msgError}<br>Assurez-vous d'avoir une bonne connexion internet et réessayez.</p>
+                            <button onclick="window.location.reload()" style="padding:12px 24px; background:#F43F5E; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Actualiser la page</button>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function updateUI() {
+            const p = STATE.profile;
+            if (!p) return;
+
+            const av = p.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(p.nom || 'User')}&background=1a2340&color=F5B800&size=160`;
+            const terminated = STATE.progressions.filter(x => x.est_termine).length;
+            const totalTime = STATE.progressions.reduce((a, x) => a + (x.temps_passe || 0), 0);
+
+            // Greeting
+            const h = new Date().getHours();
+            document.getElementById('heroGreeting').textContent = h < 12 ? t('greet_morning') : h < 18 ? t('greet_after') : t('greet_evening');
+            document.getElementById('heroHello').textContent = t('hello');
+
+            // Hero
+            document.getElementById('heroName').textContent = (p.nom || t('student')).split(' ')[0];
+            document.getElementById('heroAvatar').src = av;
+            document.getElementById('heroPoints').textContent = (p.points_total || 0).toLocaleString('fr-FR');
+            document.getElementById('heroClasse').textContent = p.niveau?.nom || '—';
+            document.getElementById('heroSys').textContent = (p.sous_systeme?.flag || '🎓') + ' ' + (p.sous_systeme?.nom || '—');
+            document.getElementById('heroYear').textContent = p.annee_scolaire || '2024-2025';
+
+            // Sidebar
+            document.getElementById('sidebarAvatar').src = av;
+            document.getElementById('topbarAvatar').src = av;
+            document.getElementById('profilAvatar').src = av;
+            document.getElementById('sidebarName').textContent = (p.nom || t('student')).split(' ')[0];
+            document.getElementById('sidebarLevel').textContent = '✦ ' + t('lvl') + ' ' + (p.niveau?.nom || '1');
+            document.getElementById('sidebarStreak').textContent = p.streak_jours || 0;
+            document.getElementById('sidebarXP').textContent = (p.points_total || 0) + ' pts';
+            const xpPct = Math.min(((p.points_total || 0) / 2000) * 100, 100);
+            setTimeout(() => { document.getElementById('xpBar').style.width = xpPct + '%'; }, 500);
+
+            // Topbar badge
+            document.getElementById('topbarBadge').textContent = (p.sous_systeme?.flag || '🎓') + ' ' + (p.sous_systeme?.nom || '—');
+
+            // Stats
+            animateCount('stPoints', 0, p.points_total || 0, 1200);
+            animateCount('stStreak', 0, p.streak_jours || 0, 600);
+            animateCount('stCours', 0, terminated, 800);
+            document.getElementById('stTemps').textContent = Math.floor(totalTime / 3600) + t('hours');
+            document.getElementById('stCoursTrend').textContent = t('available', STATE.catalog.length);
+
+            renderProgressions();
+            renderMatieres();
+            renderObjectif();
+            renderRanking();
+            renderBadges();
+            renderNotifs();
+            renderProfil();
+
+            // Update Exercise Badge
+            const exBadge = document.getElementById('exBadge');
+            if (exBadge && STATE.exCount > 0) {
+                exBadge.textContent = STATE.exCount;
+                exBadge.style.display = 'block';
+            } else if (exBadge) {
+                exBadge.style.display = 'none';
+            }
+        }
+
+        function animateCount(id, from, to, dur) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const s = performance.now();
+            const step = now => {
+                const t = Math.min((now - s) / dur, 1);
+                const e = 1 - Math.pow(1 - t, 3);
+                el.textContent = Math.round(from + (to - from) * e).toLocaleString('fr-FR');
+                if (t < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+        }
+
+        function renderProgressions() {
+            const list = document.getElementById('progressionList');
+            const progs = STATE.progressions.filter(p => !p.est_termine);
+            if (!progs.length) {
+                list.innerHTML = `<div class="empty-state"><div class="empty-icon">📖</div><p class="empty-text">${t('empty_prog')}</p><button class="btn-primary" onclick="navigate('cours')">${t('btn_explore')}</button></div>`;
+                return;
+            }
+            const barColors = ['linear-gradient(90deg,#F5B800,#FDE68A)', 'linear-gradient(90deg,#10B981,#6EE7B7)', 'linear-gradient(90deg,#3B82F6,#93C5FD)'];
+            list.innerHTML = progs.map((p, i) => {
+                const c = p.cours;
+                return `<div class="cours-item" onclick="openCours(${c.id})">
+      <div class="cours-thumb">📚</div>
+      <div class="cours-info">
+        <div class="cours-matiere-tag" style="color:var(--gold)">${c.matiere || t('subject')}</div>
+        <div class="cours-titre">${c.titre}</div>
+        <div class="prog-bar"><div class="prog-bar-fill" style="width:${p.progression_pourcentage}%;background:${barColors[i % 3]}"></div></div>
+        <div class="pct-text">${t('pct_done', p.progression_pourcentage)}</div>
+      </div>
+      <button class="btn-continue">${t('btn_continue')}</button>
+    </div>`;
+            }).join('');
+        }
+
+        function renderMatieres() {
+            const grid = document.getElementById('matieresGrid');
+            if (!STATE.matieres.length) {
+                grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--text-muted)">${t('no_subject')}</p>`;
+                return;
+            }
+            grid.innerHTML = STATE.matieres.map(m => {
+                const clickAction = `navigate('cours', '${m.nom.replace(/'/g, "\\'")}')`;
+                return `
+    <div class="matiere-card" onclick="${clickAction}" style="border-color:${m.couleur}22">
+      <div style="width:100%;height:3px;background:${m.couleur};border-radius:2px;margin-bottom:10px;opacity:0.6"></div>
+      <div class="mat-icon">${m.icone}</div>
+      <div class="mat-name">${m.nom}</div>
+      <div class="mat-count">${t('courses_count', m.nb_cours)}</div>
+    </div>`;
+            }).join('');
+        }
+
+        function renderObjectif() {
+            const steps = STATE.objectifs.length ? STATE.objectifs : [
+                { text: t('obj_1'), done: STATE.progressions.length > 0, pts: 20 },
+                { text: t('obj_2'), done: STATE.progressions.some(p => p.est_termine), pts: 30 },
+                { text: t('obj_3'), done: true, pts: 10 }
+            ];
+            const done = steps.filter(s => s.done).length;
+            const pct = steps.length ? Math.round(done / steps.length * 100) : 0;
+            document.getElementById('objDone').textContent = done + '/' + steps.length;
+            document.getElementById('objPct').textContent = pct + '%';
+            setTimeout(() => { document.getElementById('objBar').style.width = pct + '%'; }, 400);
+            document.getElementById('objSteps').innerHTML = steps.map(s => `
+    <div class="obj-step ${s.done ? 'done' : ''}">
+      <div class="step-check">${s.done ? '✓' : ''}</div>
+      <div class="step-text">${s.text}</div>
+      <div class="step-pts">+${s.pts} XP</div>
+    </div>`).join('');
+        }
+
+        function renderRanking() {
+            const nums = ['🥇', '🥈', '🥉', '4'];
+            document.getElementById('rankList').innerHTML = STATE.classement.map((r, i) => `
+    <div class="rank-item ${r.isMe ? 'is-me' : ''}">
+      <div class="rank-num">${nums[i] || r.rank}</div>
+      <div class="rank-avatar">${r.initials}</div>
+      <div class="rank-info">
+        <div class="rank-name">${r.nom || t('unnamed')}${r.isMe ? t('me') : ''}</div>
+        <div class="rank-pts">${(r.points || 0).toLocaleString('fr-FR')} pts</div>
+      </div>
+    </div>`).join('');
+        }
+
+        function renderBadges() {
+            const badges = STATE.badges.length ? STATE.badges : [
+                { nom: 'Premier Pas', icone: '🌟', unlocked: true },
+                { nom: 'Semaine de Feu', icone: '🔥', unlocked: STATE.streak_jours >= 7 },
+                { nom: 'Matheux', icone: '📐', unlocked: STATE.progressions.some(p => p.cours?.matiere === 'Mathématiques') }
+            ];
+            document.getElementById('badgesGrid').innerHTML = badges.map(b => `
+    <div class="badge-item ${b.unlocked ? '' : 'locked'}">
+      <div class="badge-icon">${b.icone}</div>
+      <div class="badge-name">${b.nom}</div>
+    </div>`).join('');
+            return badges;
+        }
+
+        function renderNotifs() {
+            const unread = (STATE.notifications || []).filter(n => n.unread).length;
+            document.getElementById('notifDot').style.display = unread > 0 ? 'block' : 'none';
+            const icons = { cours: '📚', badge: '🏅', points: '⭐', exam: '📝' };
+            const list = document.getElementById('notifList');
+            if (!STATE.notifications || !STATE.notifications.length) {
+                list.innerHTML = `<p style="padding:20px;text-align:center;color:var(--text-muted)">${t('empty_notif')}</p>`;
+                return;
+            }
+            list.innerHTML = STATE.notifications.map(n => `
+    <div class="notif-item ${n.unread ? 'unread' : ''}">
+      <div class="notif-icon-wrap">${icons[n.type] || '🔔'}</div>
+      <div><div class="notif-text">${n.texte}</div><div class="notif-time">${n.temps}</div></div>
+    </div>`).join('');
+        }
+
+        function renderCatalog() {
+            const c = document.getElementById('coursCatalog');
+            let items = STATE.catalog;
+
+            if (currentMatiereFilter) {
+                items = items.filter(x => x.matiere === currentMatiereFilter);
             }
 
-            // INITIALISER
-            init()
-        </script>
+            // Map progress to catalog items
+            items = items.map(item => {
+                const prog = STATE.progressions.find(p => p.cours_id === item.id);
+                return {
+                    ...item,
+                    pct: prog ? prog.progression_pourcentage : 0,
+                    color: '#4F46E5', // Default color
+                    icone: '📚'
+                };
+            });
+
+            if (currentFilter === 'en_cours') items = items.filter(x => x.pct > 0 && x.pct < 100);
+            else if (currentFilter === 'termine') items = items.filter(x => x.pct === 100);
+            else if (currentFilter === 'nouveau') items = items.filter(x => x.pct === 0);
+
+            if (!items.length) {
+                c.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🔍</div><p class="empty-text">${t('empty_catalog')}</p><button class="btn-primary" onclick="currentMatiereFilter=null;renderCatalog()">${t('card_see_all')}</button></div>`;
+                return;
+            }
+
+            c.innerHTML = items.map(x => {
+                const label = x.pct === 100 ? t('label_done') : x.pct > 0 ? t('label_prog', x.pct) : t('label_new');
+                const mName = x.mat?.nom || x.matiere || t('subject');
+                const mColor = x.mat?.couleur || '#4F46E5';
+                const mIcon = x.mat?.icone || '📚';
+
+                return `<div class="catalog-card" onclick="openCours(${x.id})">
+      <div class="catalog-thumb" style="background:linear-gradient(135deg,${mColor}22,${mColor}11)">${mIcon}</div>
+      <div class="catalog-body">
+        <div class="catalog-matiere" style="color:${mColor}">${mName}</div>
+        <div class="catalog-titre">${x.titre}</div>
+        <div class="catalog-meta"><span>⏱ ${x.duree_lecture || '—'} min</span><span>${x.type_contenu === 'video' ? '🎬' : '📖'}</span><span>${label}</span></div>
+        <div class="catalog-prog"><div class="catalog-prog-fill" style="width:${x.pct}%;background:${mColor}"></div></div>
+      </div>
+    </div>`;
+            }).join('');
+        }
+
+        function filterCours(f, btn) {
+            currentFilter = f;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderCatalog();
+        }
+
+        function renderProfil() {
+            const p = STATE.profile;
+            if (!p) return;
+            const t = STATE.progressions.filter(x => x.est_termine).length;
+            const av = p.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(p.nom || 'User')}&background=1a2340&color=F5B800&size=160`;
+            const badges = renderBadges(); // Get virtual badges
+
+            document.getElementById('profilAvatar').src = av;
+            document.getElementById('profilName').textContent = p.nom;
+            document.getElementById('profilEmail').textContent = p.email;
+            document.getElementById('profilClasse').textContent = p.niveau?.nom || '—';
+            document.getElementById('profilSys').textContent = (p.sous_systeme?.flag || '🎓') + ' ' + (p.sous_systeme?.nom || '—');
+            document.getElementById('profilYear').textContent = p.annee_scolaire || '2024-2025';
+            document.getElementById('pStPoints').textContent = (p.points_total || 0).toLocaleString('fr-FR');
+            document.getElementById('pStStreak').textContent = p.streak_jours || 0;
+            document.getElementById('pStCours').textContent = t;
+            document.getElementById('pStBadges').textContent = badges.filter(b => b.unlocked).length;
+
+            document.getElementById('profilBadgesGrid').innerHTML = badges.map(b => `
+    <div class="badge-item ${b.unlocked ? '' : 'locked'}" style="padding:14px">
+      <div class="badge-icon" style="font-size:32px;margin-bottom:8px">${b.icone}</div>
+      <div class="badge-name" style="font-size:11px">${b.nom}</div>
+      ${!b.unlocked ? '<div style="font-size:10px;color:var(--text-faint);margin-top:3px">🔒 Verrouillé</div>' : ''}
+    </div>`).join('');
+        }
+
+        function toggleNotifPanel() {
+            document.getElementById('notifPanel').classList.toggle('open');
+        }
+
+        function clearNotifs() {
+            if (STATE.notifications) {
+                STATE.notifications.forEach(n => n.unread = false);
+            }
+            document.getElementById('notifDot').style.display = 'none';
+            renderNotifs();
+            showToast(t('toast_notif_read'), 'success');
+        }
+
+        function openCours(id) { window.location.href = `cours.html?id=${id}`; }
+        function handleSearch(v) { if (v.trim().length > 2) showToast('Recherche : "' + v + '"', 'info'); }
+
+        // ── I18N (TRADUCTION) ──
+        const I18N = {
+            fr: {
+                app_name: 'KMERSCHOOL',
+                app_sub: 'Espace Élève',
+                nav_main: 'Principal',
+                menu_dashboard: 'Tableau de bord',
+                menu_courses: 'Mes Cours',
+                menu_exercises: 'Exercices',
+                menu_exams: 'Examens',
+                menu_annales: 'Annales',
+                nav_community: 'Communauté',
+                menu_ranking: 'Classement',
+                menu_favorites: 'Favoris',
+                nav_account: 'Compte',
+                menu_profile: 'Mon Profil',
+                menu_settings: 'Paramètres',
+
+                streak_days: 'jours de suite',
+                search_placeholder: 'Rechercher un cours, matière...',
+                hero_desc: 'Continue ton apprentissage et atteins tes objectifs du jour.',
+                xp_points: 'points XP',
+                stat_xp: 'Points XP',
+                stat_active: 'Actif !',
+                stat_completed: 'Cours terminés',
+                stat_month: 'Ce mois',
+                stat_time: "Temps d'étude",
+                
+                card_continue: "▶ Continuer l'apprentissage",
+                card_see_all: "Voir tout →",
+                card_subjects: "📖 Mes Matières",
+                card_browse: "Parcourir →",
+                card_goal: "🎯 Objectif du jour",
+                card_ranking: "🏆 Classement",
+                card_full: "Complet →",
+                card_badges: "🥇 Mes Badges",
+                card_see: "Voir →",
+
+                page_courses_title: "📚 Mes Cours",
+                page_courses_desc: "Explore et continue ton apprentissage par matière",
+                filter_all: "Tous",
+                filter_prog: "🔄 En cours",
+                filter_done: "✅ Terminés",
+                filter_new: "🆕 Nouveaux",
+
+                page_exams_title: "📝 Examens",
+                page_exams_desc: "Tests officiels et évaluations",
+                test_official: "Tests officiels et évaluations",
+                wip: "Bientôt disponible",
+                page_ranking_title: "🏆 Classement",
+                page_ranking_desc: "Ta position parmi les élèves de ta classe",
+                
+                page_fav_title: "❤️ Favoris",
+                page_fav_desc: "Cours et ressources sauvegardés",
+                loading_fav: "Chargement de vos favoris...",
+                
+                toast_settings_saved: "Paramètres sauvegardés",
+                toast_error_send: "Erreur d'envoi",
+                toast_email_reset: "Email de réinitialisation envoyé à ",
+                toast_fav_removed: "Favori retiré",
+                toast_error_del: "Erreur lors de la suppression",
+                toast_notif_read: "Notifications marquées comme lues ✓",
+
+                page_settings_title: "⚙️ Paramètres",
+                page_settings_desc: "Gérez vos préférences de compte, l'affichage et la sécurité.",
+                st_interface: "🎨 Interface & Affichage",
+                st_theme: "Mode d'affichage",
+                st_theme_desc: "Choisissez entre un thème clair ou sombre (Le thème sombre est recommandé).",
+                st_theme_dark: "Sombre (Défaut)",
+                st_theme_light: "Clair",
+                st_theme_sys: "Système",
+                st_lang: "Langue de l'interface",
+                st_lang_desc: "La langue principale du tableau de bord.",
+                st_anim: "Désactiver animations de page",
+                st_anim_desc: "Si coché, réduit les mouvements pour des appareils lents.",
+                
+                st_notif_title: "🔔 Notifications (Bêta)",
+                st_notif_course: "Mises à jour des cours",
+                st_notif_course_desc: "Être averti lorsqu'un nouveau cours de votre classe est ajouté.",
+                st_notif_rem: "Rappels de révision",
+                st_notif_rem_desc: "Notifications pour étudier ou s'entraîner aux examens.",
+                
+                st_sec: "🔐 Sécurité du Compte",
+                st_pwd: "Mot de passe",
+                st_pwd_desc: "Nous vous enverrons un email sécurisé avec un lien pour configurer un nouveau mot de passe.",
+                st_pwd_btn: "Réinitialiser le mot de passe",
+
+                streak_days_short: "Streak jours",
+                stat_badges: "Badges",
+                card_all_badges: "🥇 Tous mes Badges",
+                notif_title: "🔔 Notifications",
+                notif_clear: "Tout marquer lu",
+
+                // Dynamic strings
+                greet_morning: "Bon matin ☀️",
+                greet_after: "Bon après-midi 🌤️",
+                greet_evening: "Bonsoir 🌙",
+                hello: "Bonjour",
+                student: "Élève",
+                lvl: "Niveau",
+                available: "sur {0} dispo",
+                hours: "h",
+                empty_prog: "Aucun cours en cours.",
+                btn_explore: "Explorer les cours",
+                subject: "Matière",
+                pct_done: "{0}% terminé",
+                btn_continue: "Continuer →",
+                no_subject: "Aucune matière trouvée.",
+                courses_count: "{0} cours",
+                obj_1: "S'inscrire à un cours",
+                obj_2: "Compléter un chapitre",
+                obj_3: "Explorer le catalogue",
+                unnamed: "Sans nom",
+                me: " (moi)",
+                empty_notif: "Aucune notification",
+                empty_catalog: "Aucun cours trouvé dans cette catégorie.",
+                label_done: "✅ Terminé",
+                label_new: "🆕 Nouveau",
+                empty_fav: "Vous n'avez aucun cours dans vos favoris pour le moment.",
+                loading_error: "Erreur de chargement"
+            },
+            en: {
+                app_name: 'KMERSCHOOL',
+                app_sub: 'Student Area',
+                nav_main: 'Main',
+                menu_dashboard: 'Dashboard',
+                menu_courses: 'My Courses',
+                menu_exercises: 'Exercises',
+                menu_exams: 'Exams',
+                menu_annales: 'Past Papers',
+                nav_community: 'Community',
+                menu_ranking: 'Ranking',
+                menu_favorites: 'Favorites',
+                nav_account: 'Account',
+                menu_profile: 'My Profile',
+                menu_settings: 'Settings',
+
+                streak_days: 'days streak',
+                search_placeholder: 'Search for a course, subject...',
+                hero_desc: 'Continue learning and reach your daily goals.',
+                xp_points: 'XP points',
+                stat_xp: 'XP Points',
+                stat_active: 'Active !',
+                stat_completed: 'Courses completed',
+                stat_month: 'This month',
+                stat_time: "Study time",
+
+                card_continue: "▶ Continue learning",
+                card_see_all: "See all →",
+                card_subjects: "📖 My Subjects",
+                card_browse: "Browse →",
+                card_goal: "🎯 Daily Goal",
+                card_ranking: "🏆 Ranking",
+                card_full: "Full →",
+                card_badges: "🥇 My Badges",
+                card_see: "See →",
+
+                page_courses_title: "📚 My Courses",
+                page_courses_desc: "Explore and continue learning by subject",
+                filter_all: "All",
+                filter_prog: "🔄 In progress",
+                filter_done: "✅ Completed",
+                filter_new: "🆕 New",
+
+                page_exams_title: "📝 Exams",
+                page_exams_desc: "Official tests and evaluations",
+                test_official: "Official tests and evaluations",
+                wip: "Coming soon",
+                page_ranking_title: "🏆 Ranking",
+                page_ranking_desc: "Your position among students in your class",
+
+                page_fav_title: "❤️ Favorites",
+                page_fav_desc: "Saved courses and resources",
+                loading_fav: "Loading your favorites...",
+
+                toast_settings_saved: "Settings saved",
+                toast_error_send: "Sending error",
+                toast_email_reset: "Reset email sent to ",
+                toast_fav_removed: "Favorite removed",
+                toast_error_del: "Error during deletion",
+                toast_notif_read: "Notifications marked as read ✓",
+
+                page_settings_title: "⚙️ Settings",
+                page_settings_desc: "Manage your account preferences, display and security.",
+                st_interface: "🎨 Interface & Display",
+                st_theme: "Display Mode",
+                st_theme_desc: "Choose between light or dark theme (Dark theme is recommended).",
+                st_theme_dark: "Dark (Default)",
+                st_theme_light: "Light",
+                st_theme_sys: "System",
+                st_lang: "Interface Language",
+                st_lang_desc: "The main language of the dashboard.",
+                st_anim: "Disable page animations",
+                st_anim_desc: "If checked, reduces movement for slower devices.",
+
+                st_notif_title: "🔔 Notifications (Beta)",
+                st_notif_course: "Course Updates",
+                st_notif_course_desc: "Be notified when a new course is added for your class.",
+                st_notif_rem: "Study Reminders",
+                st_notif_rem_desc: "Notifications to study or practice for exams.",
+
+                st_sec: "🔐 Account Security",
+                st_pwd: "Password",
+                st_pwd_desc: "We will send you a secure email with a link to set a new password.",
+                st_pwd_btn: "Reset password",
+
+                streak_days_short: "Days streak",
+                stat_badges: "Badges",
+                card_all_badges: "🥇 All my Badges",
+                notif_title: "🔔 Notifications",
+                notif_clear: "Mark all as read",
+
+                // Dynamic strings
+                greet_morning: "Good morning ☀️",
+                greet_after: "Good afternoon 🌤️",
+                greet_evening: "Good evening 🌙",
+                hello: "Hello",
+                student: "Student",
+                lvl: "Level",
+                available: "out of {0}",
+                hours: "h",
+                empty_prog: "No courses in progress.",
+                btn_explore: "Explore courses",
+                subject: "Subject",
+                pct_done: "{0}% completed",
+                btn_continue: "Continue →",
+                no_subject: "No subjects found.",
+                courses_count: "{0} courses",
+                obj_1: "Enroll in a course",
+                obj_2: "Complete a chapter",
+                obj_3: "Explore the catalog",
+                unnamed: "Unnamed",
+                me: " (me)",
+                empty_notif: "No notifications",
+                empty_catalog: "No courses found in this category.",
+                label_done: "✅ Completed",
+                label_new: "🆕 New",
+                empty_fav: "You have no favorited courses at the moment.",
+                loading_error: "Loading Error"
+            }
+        };
+
+        let isTranslating = false;
+        
+        function t(key, ...args) {
+            const lang = document.getElementById('stLang').value || 'fr';
+            let str = (I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : (I18N['fr'][key] || key);
+            args.forEach((a, i) => { str = str.replace(`{${i}}`, a); });
+            return str;
+        }
+
+        function applyTranslations() {
+            const lang = document.getElementById('stLang').value || 'fr';
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (I18N[lang] && I18N[lang][key]) {
+                    el.innerHTML = I18N[lang][key];
+                }
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (I18N[lang] && I18N[lang][key]) {
+                    el.placeholder = I18N[lang][key];
+                }
+            });
+            
+            // Update page titles if dictionary matches
+            const activePage = document.querySelector('.page-content.active');
+            if(activePage) {
+                const pageId = activePage.id.replace('page-', '');
+                const tkey = 'menu_' + pageId;
+                if(I18N[lang] && I18N[lang][tkey]) {
+                    document.getElementById('topbarTitle').textContent = I18N[lang][tkey];
+                }
+            }
+
+            // Mettre à jour les parties dynamiques JS
+            if (STATE && STATE.profile && !isTranslating) {
+                isTranslating = true;
+                updateUI();
+                isTranslating = false;
+            }
+        }
+
+        // ── PARAMÈTRES (SETTINGS) ──
+        function loadSettingsLocal() {
+            const userId = STATE.profile ? STATE.profile.id : '';
+            const key = userId ? `kmer_eleve_settings_${userId}` : 'kmer_eleve_settings';
+            const st = JSON.parse(localStorage.getItem(key) || '{}');
+            
+            // Auto detection if no lang preference saved
+            if (!st.lang && STATE.profile && STATE.profile.sous_systeme) {
+                const code = STATE.profile.sous_systeme.code;
+                if (code === 'anglophone' || code === 'EN' || code === 'en') {
+                    st.lang = 'en';
+                } else {
+                    st.lang = 'fr';
+                }
+            }
+            
+            if(st.theme) document.getElementById('stTheme').value = st.theme;
+            if(st.lang) document.getElementById('stLang').value = st.lang;
+            if(st.anim !== undefined) document.getElementById('stAnim').checked = st.anim;
+            if(st.notifCours !== undefined) document.getElementById('stNotifCours').checked = st.notifCours;
+            if(st.notifRappel !== undefined) document.getElementById('stNotifRappel').checked = st.notifRappel;
+
+            // Appliquer la traduction au chargement
+            applyTranslations();
+        }
+
+        function saveSettingsLocal() {
+            const st = {
+                theme: document.getElementById('stTheme').value,
+                lang: document.getElementById('stLang').value,
+                anim: document.getElementById('stAnim').checked,
+                notifCours: document.getElementById('stNotifCours').checked,
+                notifRappel: document.getElementById('stNotifRappel').checked
+            };
+            const userId = STATE.profile ? STATE.profile.id : '';
+            const key = userId ? `kmer_eleve_settings_${userId}` : 'kmer_eleve_settings';
+            localStorage.setItem(key, JSON.stringify(st));
+            applyTranslations(); // Appliquer instantanément
+            showToast(t('toast_settings_saved'), 'success');
+        }
+
+        async function demandResetPassword() {
+            const p = STATE.profile;
+            if (!p || !p.user_id) {
+                // S'il manque user_id on prend directement du auth getUser()
+                const { data: { user } } = await sb.auth.getUser();
+                if(user && user.email) {
+                    const { error } = await sb.auth.resetPasswordForEmail(user.email, {
+                        redirectTo: window.location.origin + window.location.pathname.replace('dashboard-eleve', 'onboarding_cameroun')
+                    });
+                    if (error) showToast(t('toast_error_send'), "error");
+                    else showToast(t('toast_email_reset') + user.email, "success");
+                }
+                return;
+            }
+        }
+
+        // ── FAVORIS ──
+        let currentFavoris = [];
+        async function loadFavoris() {
+            const cat = document.getElementById('favorisCatalog');
+            cat.innerHTML = `<div style="grid-column: 1/-1;text-align:center;padding:3rem;color:var(--text-muted)">${t('loading_fav')}</div>`;
+            try {
+                const { data: { user } } = await sb.auth.getUser();
+                if (!user) return;
+                const { data, error } = await sb.from('favoris')
+                    .select('id, cours_id, cours:cours_id(*)')
+                    .eq('user_id', user.id);
+                
+                if (error) throw error;
+                currentFavoris = data || [];
+                renderFavoris();
+            } catch (err) {
+                console.error("Favoris init error:", err);
+                cat.innerHTML = `<div style="grid-column: 1/-1;text-align:center;color:#ef4444">${t('loading_error')}</div>`;
+            }
+        }
+
+        function renderFavoris() {
+            const c = document.getElementById('favorisCatalog');
+            if (!currentFavoris.length) {
+                c.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">❤️</div><p class="empty-text">${t('empty_fav')}</p><button class="btn-primary" onclick="navigate('cours')">${t('btn_explore')}</button></div>`;
+                return;
+            }
+
+            c.innerHTML = currentFavoris.map(fav => {
+                const x = fav.cours;
+                if (!x) return ''; 
+                const pInfo = STATE.progressions.find(p => p.cours_id === x.id);
+                let pct = pInfo ? pInfo.progression_pourcentage : 0;
+                const label = pct === 100 ? t('label_done') : pct > 0 ? t('label_prog', pct) : t('label_new');
+                
+                // fallback mat info
+                let mColor = '#4F46E5';
+                let mIcon = '📚';
+                let mName = x.matiere || t('subject');
+
+                return `<div class="catalog-card" style="position:relative;">
+      <div class="catalog-thumb" style="background:linear-gradient(135deg,${mColor}22,${mColor}11)" onclick="openCours(${x.id})">${mIcon}</div>
+      <button onclick="removeFavori(${fav.id})" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.5);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:#ef4444;font-size:16px;z-index:2;cursor:pointer;border:none" title="Retirer">❤️</button>
+      <div class="catalog-body" onclick="openCours(${x.id})">
+        <div class="catalog-matiere" style="color:${mColor}">${mName}</div>
+        <div class="catalog-titre">${x.titre}</div>
+        <div class="catalog-meta"><span>⏱ ${x.duree_lecture || '—'} min</span><span>${x.type_contenu === 'video' ? '🎬' : '📖'}</span><span>${label}</span></div>
+        <div class="catalog-prog"><div class="catalog-prog-fill" style="width:${pct}%;background:${mColor}"></div></div>
+      </div>
+    </div>`;
+            }).join('');
+        }
+
+        async function removeFavori(id) {
+            try {
+                const { error } = await sb.from('favoris').delete().eq('id', id);
+                if (error) throw error;
+                currentFavoris = currentFavoris.filter(f => f.id !== id);
+                renderFavoris();
+                showToast(t('toast_fav_removed'), "success");
+            } catch(e) {
+                console.error(e);
+                showToast(t('toast_error_del'), "error");
+            }
+        }
+
+        function showToast(msg, type = 'info') {
+            const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = 'toast ' + type;
+            t.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${msg}</span>`;
+            c.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(20px)'; setTimeout(() => t.remove(), 300); }, 3500);
+        }
+
+        document.addEventListener('click', e => {
+            const p = document.getElementById('notifPanel');
+            if (!p.contains(e.target) && !document.getElementById('notifBtn').contains(e.target)) p.classList.remove('open');
+        });
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 
 </html>

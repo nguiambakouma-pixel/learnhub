@@ -7,16 +7,26 @@
     <title>Dashboard Admin - KMERSCHOOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <!-- MODULES DASHBOARD (dans l'ordre) -->
+    <script src="js/secrets.js"></script>
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/data.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/cours.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/exercices-manager.js"></script>
+    <script src="js/eleves.js"></script>
+    <script type="module" src="js/exercices.js?v=1.0.1"></script>
+    <script type="module" src="js/exercices-code.js?v=1.0.1"></script>
+    <script type="module" src="js/annales.js?v=1.0.1"></script>
+    <script type="module" src="js/examens.js?v=1.0.1"></script>
+    <script type="module" src="js/matieres.js?v=1.0.1"></script>
+    <script type="module" src="js/systeme.js?v=1.0.1"></script>
+    <script type="module" src="js/dashboard.js?v=1.0.1"></script>
+    <script type="module" src="js/professeurs.js?v=1.0.1"></script>
+    <script src="js/app.js?v=1.0.1"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
@@ -122,6 +132,11 @@
             color: rgba(255, 255, 255, 0.4);
         }
 
+        .bg-dark-card {
+            background: #1E293B;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
         .btn-primary {
             background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
             transition: all 0.3s ease;
@@ -218,8 +233,48 @@
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(99, 102, 241, 0.8);
         }
+
+        .icon-svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2.5px;
+        }
+
+        .icon-lg {
+            width: 48px;
+            height: 48px;
+            stroke-width: 2px;
+        }
     </style>
 </head>
+<script>
+    // Attacher les listeners une fois que les modules sont chargés
+    document.addEventListener('DOMContentLoaded', () => {
+        const listeners = [
+            { id: 'addNewExamenBtn', view: 'examensView', name: 'Examens' },
+            { id: 'addNewBtn', view: 'exercicesCodeView', name: 'Exercices' },
+            { id: 'addNewAnnaleBtn', view: 'annalesView', name: 'Annales' }
+        ];
+
+        listeners.forEach(l => {
+            const btn = document.getElementById(l.id);
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    if (window[l.view]) {
+                        window[l.view].openModal();
+                    } else {
+                        console.warn(`Le module ${l.name} (${l.view}) n'est pas encore prêt.`);
+                        // Réessayer après un court délai
+                        setTimeout(() => {
+                            if (window[l.view]) window[l.view].openModal();
+                            else alert(`Le module ${l.name} met du temps à charger. Veuillez rafraîchir la page si le problème persiste.`);
+                        }, 500);
+                    }
+                });
+            }
+        });
+    });
+</script>
 
 <body class="text-gray-100">
 
@@ -248,28 +303,31 @@
                 </div>
             </div>
 
-            <!-- 3 Cards Élégantes -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                <!-- CARD ÉLÈVES -->
+            <!-- 4 Cards Élégantes -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
                 <div onclick="Navigation.openEspace('eleves')"
-                    class="dashboard-card rounded-2xl p-8 text-center relative overflow-hidden">
-                    <div class="absolute top-0 right-0 text-9xl opacity-5">📚</div>
+                    class="dashboard-card rounded-2xl p-8 text-center relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <i data-lucide="graduation-cap" class="w-32 h-32"></i>
+                    </div>
                     <div class="relative z-10">
-                        <div class="text-6xl mb-4">📚</div>
-                        <h2 class="text-2xl font-bold mb-2">GESTION ÉLÈVES</h2>
+                        <div class="flex justify-center mb-4">
+                            <i data-lucide="graduation-cap" class="icon-lg text-indigo-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-2 uppercase tracking-tight">Gestion Élèves</h2>
                         <p class="text-gray-400 mb-6">Système éducatif camerounais</p>
                         <div class="space-y-2">
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-400">🇫🇷 Francophone</span>
+                                <span class="text-gray-400">Francophone</span>
                                 <span class="font-bold text-blue-400" id="statElevesFr">---</span>
                             </div>
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-400">🇬🇧 Anglophone</span>
+                                <span class="text-gray-400">Anglophone</span>
                                 <span class="font-bold text-orange-400" id="statElevesAn">---</span>
                             </div>
                         </div>
                         <button
-                            class="mt-6 px-6 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg font-semibold transition">
+                            class="mt-6 px-6 py-2 bg-indigo-500/20 hover:bg-indigo-500 text-indigo-300 hover:text-white border border-indigo-500/30 rounded-lg font-semibold transition">
                             Ouvrir →
                         </button>
                     </div>
@@ -277,24 +335,28 @@
 
                 <!-- CARD DEV-WEB -->
                 <div onclick="Navigation.openEspace('dev')"
-                    class="dashboard-card rounded-2xl p-8 text-center relative overflow-hidden">
-                    <div class="absolute top-0 right-0 text-9xl opacity-5">💻</div>
+                    class="dashboard-card rounded-2xl p-8 text-center relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <i data-lucide="code" class="w-32 h-32"></i>
+                    </div>
                     <div class="relative z-10">
-                        <div class="text-6xl mb-4">💻</div>
-                        <h2 class="text-2xl font-bold mb-2">GESTION DEV-WEB</h2>
+                        <div class="flex justify-center mb-4">
+                            <i data-lucide="code" class="icon-lg text-emerald-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-2 uppercase tracking-tight">Gestion Dev-Web</h2>
                         <p class="text-gray-400 mb-6">Développement & Programmation</p>
                         <div class="space-y-2">
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-400">📚 Cours</span>
+                                <span class="text-gray-400">Cours</span>
                                 <span class="font-bold text-emerald-400" id="statCoursdev">---</span>
                             </div>
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-400">👥 Apprenants</span>
+                                <span class="text-gray-400">Apprenants</span>
                                 <span class="font-bold text-emerald-400" id="statApprenantsdev">---</span>
                             </div>
                         </div>
                         <button
-                            class="mt-6 px-6 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-lg font-semibold transition">
+                            class="mt-6 px-6 py-2 bg-emerald-500/20 hover:bg-emerald-500 text-emerald-300 hover:text-white border border-emerald-500/30 rounded-lg font-semibold transition">
                             Ouvrir →
                         </button>
                     </div>
@@ -302,24 +364,57 @@
 
                 <!-- CARD DESIGNER -->
                 <div onclick="Navigation.openEspace('designer')"
-                    class="dashboard-card rounded-2xl p-8 text-center relative overflow-hidden">
-                    <div class="absolute top-0 right-0 text-9xl opacity-5">🎨</div>
+                    class="dashboard-card rounded-2xl p-8 text-center relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <i data-lucide="palette" class="w-32 h-32"></i>
+                    </div>
                     <div class="relative z-10">
-                        <div class="text-6xl mb-4">🎨</div>
-                        <h2 class="text-2xl font-bold mb-2">GESTION DESIGNER</h2>
+                        <div class="flex justify-center mb-4">
+                            <i data-lucide="palette" class="icon-lg text-purple-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-2 uppercase tracking-tight">Gestion Designer</h2>
                         <p class="text-gray-400 mb-6">Design & Créativité</p>
                         <div class="space-y-2">
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-400">📚 Cours</span>
+                                <span class="text-gray-400">Cours</span>
                                 <span class="font-bold text-purple-400" id="statCoursDesign">---</span>
                             </div>
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-400">👥 Créatifs</span>
+                                <span class="text-gray-400">Créatifs</span>
                                 <span class="font-bold text-purple-400" id="statCreatifs">---</span>
                             </div>
                         </div>
                         <button
-                            class="mt-6 px-6 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg font-semibold transition">
+                            class="mt-6 px-6 py-2 bg-purple-500/20 hover:bg-purple-500 text-purple-300 hover:text-white border border-purple-500/30 rounded-lg font-semibold transition">
+                            Ouvrir →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CARD PROFESSEUR -->
+                <div onclick="Navigation.openEspace('professeurs')"
+                    class="dashboard-card rounded-2xl p-8 text-center relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <i data-lucide="presentation" class="w-32 h-32"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="flex justify-center mb-4">
+                            <i data-lucide="presentation" class="icon-lg text-blue-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-2 uppercase tracking-tight">Gestion Professeurs</h2>
+                        <p class="text-gray-400 mb-6">Validation & Encadrement</p>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-400">Approuvés</span>
+                                <span class="font-bold text-emerald-400" id="statProfApprouves">---</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-gray-400">En attente</span>
+                                <span class="font-bold text-orange-400" id="statProfEnAttente">---</span>
+                            </div>
+                        </div>
+                        <button
+                            class="mt-6 px-6 py-2 bg-blue-500/20 hover:bg-blue-500 text-blue-300 hover:text-white border border-blue-500/30 rounded-lg font-semibold transition">
                             Ouvrir →
                         </button>
                     </div>
@@ -377,44 +472,59 @@
                 <nav class="space-y-2">
                     <div onclick="Navigation.switchSection('dashboard')"
                         class="sidebar-item active px-4 py-3 rounded-lg cursor-pointer">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-xl">📊</span>
+                        <div class="flex items-center space-x-3 text-gray-400 group-hover:text-white">
+                            <i data-lucide="bar-chart-3" class="icon-svg"></i>
                             <span class="font-medium">Tableau de bord</span>
                         </div>
                     </div>
                     <div onclick="Navigation.switchSection('cours')"
                         class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-xl">📚</span>
+                        <div class="flex items-center space-x-3 text-gray-400">
+                            <i data-lucide="book-open" class="icon-svg"></i>
                             <span class="font-medium">Gestion Cours</span>
                         </div>
                     </div>
                     <div onclick="Navigation.switchSection('eleves')"
                         class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-xl">👥</span>
+                        <div class="flex items-center space-x-3 text-gray-400">
+                            <i data-lucide="users" class="icon-svg"></i>
                             <span class="font-medium">Liste Élèves</span>
                         </div>
                     </div>
-                    <div onclick="Navigation.switchSection('matieres')"
-                        class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-xl">📖</span>
-                            <span class="font-medium">Matières</span>
-                        </div>
-                    </div>
+
                     <div onclick="Navigation.switchSection('examens')"
                         class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-xl">📝</span>
+                        <div class="flex items-center space-x-3 text-gray-400">
+                            <i data-lucide="clipboard-check" class="icon-svg"></i>
                             <span class="font-medium">Examens</span>
                         </div>
                     </div>
                     <div onclick="Navigation.switchSection('annales')"
                         class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
-                        <div class="flex items-center space-x-3">
-                            <span class="text-xl">📄</span>
+                        <div class="flex items-center space-x-3 text-gray-400">
+                            <i data-lucide="library" class="icon-svg"></i>
                             <span class="font-medium">Annales</span>
+                        </div>
+                    </div>
+                    <div onclick="Navigation.switchSection('exercices')"
+                        class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3 text-gray-400">
+                            <i data-lucide="pencil-line" class="icon-svg"></i>
+                            <span class="font-medium">Exercices</span>
+                        </div>
+                    </div>
+                    <div onclick="Navigation.switchSection('exercices-code')"
+                        class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3 text-gray-400">
+                            <i data-lucide="code" class="icon-svg"></i>
+                            <span class="font-medium">Exercices Code</span>
+                        </div>
+                    </div>
+                    <div onclick="Navigation.switchSection('systeme')"
+                        class="sidebar-item px-4 py-3 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3 text-gray-400">
+                            <i data-lucide="settings" class="icon-svg"></i>
+                            <span class="font-medium">Gestion Système</span>
                         </div>
                     </div>
                 </nav>
@@ -444,448 +554,1641 @@
             </div>
 
             <!-- MAIN CONTENT -->
-            <div class="flex-1 p-8">
+            <div class="flex-1 p-8" id="elevesMainContent">
                 <!-- Header -->
-                <div class="mb-8">
+                <div id="header-dashboard" class="section-header mb-8">
+                    <h1 class="text-3xl font-bold mb-2">Tableau de Bord</h1>
+                    <p class="text-gray-400">Vue d'ensemble des statistiques et performance de l'établissement</p>
+                </div>
+
+                <div id="header-cours" class="section-header mb-8" style="display: none;">
                     <h1 class="text-3xl font-bold mb-2">Gestion des Cours</h1>
                     <p class="text-gray-400">Créer et gérer les cours pour le système éducatif camerounais</p>
                 </div>
 
-                <!-- TABS FRANCOPHONE / ANGLOPHONE -->
-                <div class="mb-6">
-                    <div class="flex space-x-4">
-                        <button onclick="Navigation.switchLanguageTab('fr')"
-                            class="tab-button active px-8 py-3 rounded-lg font-semibold text-white">
-                            🇫🇷 SECTION FRANCOPHONE
-                        </button>
-                        <button onclick="Navigation.switchLanguageTab('an')"
-                            class="tab-button px-8 py-3 rounded-lg font-semibold text-gray-400 bg-slate-800">
-                            🇬🇧 SECTION ANGLOPHONE
-                        </button>
+                <div id="header-exercices" class="section-header mb-8 flex justify-between items-center"
+                    style="display: none;">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">Gestion des Exercices</h1>
+                        <p class="text-gray-400">Créer et gérer les exercices (QCM, Vrai/Faux, etc.)</p>
+                    </div>
+                    <button id="addNewExerciceBtn" onclick="exercicesView.openModal()"
+                        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all flex items-center gap-2">
+                        <span>➕ Ajouter</span>
+                    </button>
+                </div>
+
+                <div id="header-eleves" class="section-header mb-8" style="display: none;">
+                    <h1 class="text-3xl font-bold mb-2">Gestion des Élèves</h1>
+                    <p class="text-gray-400">Suivre et gérer les inscriptions et la progression des élèves</p>
+                </div>
+
+                <div id="header-exercices-code" class="section-header mb-8 flex justify-between items-center"
+                    style="display: none;">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2" id="pageTitle">Exercices de Code</h1>
+                        <p class="text-gray-400" id="pageSubtitle">Gestion des exercices pratiques pour développeurs</p>
+                    </div>
+                    <button id="addNewBtn"
+                        class="hidden px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all flex items-center gap-2">
+                        <span>➕ Ajouter</span>
+                    </button>
+                </div>
+
+                <div id="header-examens" class="section-header mb-8 flex justify-between items-center"
+                    style="display: none;">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">Examens en ligne</h1>
+                        <p class="text-gray-400">Créer et gérer les évaluations pour vos élèves</p>
+                    </div>
+                    <button id="addNewExamenBtn"
+                        class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all flex items-center gap-2">
+                        <span>➕ Ajouter</span>
+                    </button>
+                </div>
+
+                <div id="header-annales" class="section-header mb-8 flex justify-between items-center"
+                    style="display: none;">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">Gestion des Annales</h1>
+                        <p class="text-gray-400">Créer et gérer les annales d'examens (BEPC, BAC, GCE, etc.)</p>
+                    </div>
+                    <button id="addNewAnnaleBtn"
+                        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:scale-105 transition-all flex items-center gap-2">
+                        <span>➕ Ajouter</span>
+                    </button>
+                </div>
+
+                <div id="header-systeme" class="section-header mb-8 flex justify-between items-center"
+                    style="display: none;">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">Gestion Système</h1>
+                        <p class="text-gray-400">Gérer les infrastructures : Classes, Séries et Matières</p>
                     </div>
                 </div>
 
-                <!-- CONTENU FRANCOPHONE -->
-                <div id="contentFr" class="animate-slide-in">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- FORMULAIRE DE CRÉATION -->
-                        <div class="lg:col-span-2">
-                            <div class="glass-card rounded-2xl p-6">
-                                <h2 class="text-xl font-bold mb-6">➕ Créer un Nouveau Cours</h2>
 
-                                <form id="coursFormFr" class="space-y-6">
-                                    <!-- Matière & Chapitre -->
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-2">📖 Matière *</label>
-                                            <input type="text" id="matiereFr" list="matieresFrList"
-                                                placeholder="Ex: Mathématiques"
-                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
-                                            <datalist id="matieresFrList">
-                                                <option value="Mathématiques">
-                                                <option value="Physique-Chimie">
-                                                <option value="SVT">
-                                                <option value="Français">
-                                                <option value="Philosophie">
-                                                <option value="Histoire-Géographie">
-                                                <option value="Anglais">
-                                                <option value="Espagnol">
-                                            </datalist>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-2">📑 Chapitre *</label>
-                                            <input type="text" id="chapitreFr" placeholder="Ex: Les fonctions"
-                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
-                                        </div>
-                                    </div>
 
-                                    <!-- Classe & Série -->
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-2">🎓 Classe *</label>
-                                            <select id="classeFr" onchange="loadSeriesFr()"
-                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
-                                                <option value="">Sélectionner...</option>
-                                            </select>
-                                        </div>
-                                        <div id="serieFrContainer" style="display: none;">
-                                            <label class="block text-sm font-semibold mb-2">🎯 Série</label>
-                                            <select id="serieFr" class="input-dark w-full px-4 py-3 rounded-lg">
-                                                <option value="">Toutes les séries</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                <!-- SECTION DASHBOARD -->
+                <div id="dashboardSection" class="main-section">
+                    <div id="dashboardContentArea" class="space-y-6">
+                        <!-- Le contenu sera injecté ici par JavaScript -->
+                    </div>
+                </div>
 
-                                    <!-- Titre du cours -->
-                                    <div>
-                                        <label class="block text-sm font-semibold mb-2">✏️ Titre du cours *</label>
-                                        <input type="text" id="titreFr" placeholder="Ex: Les limites de fonctions"
-                                            class="input-dark w-full px-4 py-3 rounded-lg" required>
-                                    </div>
+                <!-- SECTION EXERCICES (QCM) -->
+                <div id="exercicesSection" class="main-section" style="display: none;">
+                    <div id="exercicesContentArea" class="space-y-6">
+                        <!-- Le contenu sera injecté ici par JavaScript -->
+                    </div>
+                </div>
 
-                                    <!-- Image du cours -->
-                                    <div>
-                                        <label class="block text-sm font-semibold mb-2">🖼️ Image du cours *</label>
-                                        <div class="upload-zone-dark rounded-lg p-6 cursor-pointer"
-                                            onclick="document.getElementById('imageFr').click()">
-                                            <input type="file" id="imageFr" accept="image/*" style="display: none;"
-                                                onchange="handleImageUpload(event, 'fr')">
-                                            <div id="imagePreviewFr" class="text-center">
-                                                <div class="text-4xl mb-2">📷</div>
-                                                <p class="text-gray-400">Cliquez pour choisir une image</p>
-                                                <p class="text-xs text-gray-500 mt-2">JPG, PNG (Max 5 MB)</p>
+
+
+                <!-- SECTION COURS -->
+                <div id="coursSection" class="main-section">
+
+                    <!-- TABS FRANCOPHONE / ANGLOPHONE -->
+                    <div class="mb-6">
+                        <div class="flex space-x-4">
+                            <button onclick="Navigation.switchLanguageTab('fr')"
+                                class="tab-button active px-8 py-3 rounded-lg font-semibold text-white">
+                                🇫🇷 SECTION FRANCOPHONE
+                            </button>
+                            <button onclick="Navigation.switchLanguageTab('an')"
+                                class="tab-button px-8 py-3 rounded-lg font-semibold text-gray-400 bg-slate-800">
+                                🇬🇧 SECTION ANGLOPHONE
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CONTENU FRANCOPHONE -->
+                    <div id="contentFr" class="animate-slide-in">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- FORMULAIRE DE CRÉATION -->
+                            <div class="lg:col-span-2">
+                                <div class="glass-card rounded-2xl p-6">
+                                    <h2 class="text-xl font-bold mb-6">➕ Créer un Nouveau Cours</h2>
+
+                                    <form id="coursFormFr" class="space-y-6">
+                                        <!-- Matière & Chapitre -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-2">📖 Matière *</label>
+                                                <input type="text" id="matiereFr" list="matieresFrList"
+                                                    placeholder="Ex: Mathématiques"
+                                                    class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                                <datalist id="matieresFrList">
+                                                    <option value="Mathématiques">
+                                                    <option value="Physique-Chimie">
+                                                    <option value="SVT">
+                                                    <option value="Français">
+                                                    <option value="Philosophie">
+                                                    <option value="Histoire-Géographie">
+                                                    <option value="Anglais">
+                                                    <option value="Espagnol">
+                                                </datalist>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-2">📑 Chapitre *</label>
+                                                <input type="text" id="chapitreFr" placeholder="Ex: Les fonctions"
+                                                    class="input-dark w-full px-4 py-3 rounded-lg" required>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Contenu du cours -->
-                                    <div>
-                                        <label class="block text-sm font-semibold mb-2">📝 Contenu du cours *</label>
-                                        <div class="editor-toolbar-dark rounded-t-lg p-2 flex space-x-2">
-                                            <button type="button" onclick="Utils.formatText('bold', 'fr')"
-                                                class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
-                                                <strong>B</strong>
-                                            </button>
-                                            <button type="button" onclick="Utils.formatText('italic', 'fr')"
-                                                class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
-                                                <em>I</em>
-                                            </button>
-                                            <button type="button" onclick="Utils.formatText('underline', 'fr')"
-                                                class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
-                                                <u>U</u>
-                                            </button>
-                                        </div>
-                                        <div id="contenuFr" class="editor-content-dark rounded-b-lg"
-                                            contenteditable="true"
-                                            data-placeholder="Rédigez le contenu du cours ici..."></div>
-                                    </div>
-
-                                    <!-- Vidéo -->
-                                    <div>
-                                        <label class="block text-sm font-semibold mb-2">🎥 Vidéo (optionnel)</label>
-                                        <input type="url" id="videoFr" placeholder="https://youtube.com/watch?v=..."
-                                            class="input-dark w-full px-4 py-3 rounded-lg">
-                                    </div>
-
-                                    <!-- PDF -->
-                                    <div>
-                                        <label class="block text-sm font-semibold mb-2">📄 PDF (optionnel)</label>
-                                        <div class="upload-zone-dark rounded-lg p-4 cursor-pointer"
-                                            onclick="document.getElementById('pdfFr').click()">
-                                            <input type="file" id="pdfFr" accept=".pdf" style="display: none;"
-                                                onchange="handlePdfUpload(event, 'fr')">
-                                            <div id="pdfPreviewFr" class="text-center">
-                                                <p class="text-gray-400">📎 Cliquez pour choisir un PDF</p>
+                                        <!-- Classe & Série -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-2">🎓 Classe *</label>
+                                                <select id="classeFr" onchange="loadSeriesFr()"
+                                                    class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                                    <option value="">Sélectionner...</option>
+                                                </select>
+                                            </div>
+                                            <div id="serieFrContainer" style="display: none;">
+                                                <label class="block text-sm font-semibold mb-2">🎯 Série</label>
+                                                <select id="serieFr" class="input-dark w-full px-4 py-3 rounded-lg">
+                                                    <option value="">Toutes les séries</option>
+                                                </select>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Métadonnées -->
-                                    <div class="grid grid-cols-2 gap-4">
+                                        <!-- Titre du cours -->
                                         <div>
-                                            <label class="block text-sm font-semibold mb-2">⏱️ Durée (min)</label>
-                                            <input type="number" id="dureeFr" placeholder="45"
+                                            <label class="block text-sm font-semibold mb-2">✏️ Titre du cours *</label>
+                                            <input type="text" id="titreFr" placeholder="Ex: Les limites de fonctions"
+                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                        </div>
+
+                                        <!-- Image du cours -->
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">🖼️ Image du cours *</label>
+                                            <div class="upload-zone-dark rounded-lg p-6 cursor-pointer"
+                                                onclick="document.getElementById('imageFr').click()">
+                                                <input type="file" id="imageFr" accept="image/*" style="display: none;"
+                                                    onchange="handleImageUpload(event, 'fr')">
+                                                <div id="imagePreviewFr" class="text-center">
+                                                    <div class="text-4xl mb-2">📷</div>
+                                                    <p class="text-gray-400">Cliquez pour choisir une image</p>
+                                                    <p class="text-xs text-gray-500 mt-2">JPG, PNG (Max 5 MB)</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Contenu du cours -->
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">📝 Contenu du cours
+                                                *</label>
+                                            <div class="editor-toolbar-dark rounded-t-lg p-2 flex space-x-2">
+                                                <button type="button" onclick="Utils.formatText('bold', 'fr')"
+                                                    class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                                                    <strong>B</strong>
+                                                </button>
+                                                <button type="button" onclick="Utils.formatText('italic', 'fr')"
+                                                    class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                                                    <em>I</em>
+                                                </button>
+                                                <button type="button" onclick="Utils.formatText('underline', 'fr')"
+                                                    class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                                                    <u>U</u>
+                                                </button>
+                                            </div>
+                                            <div id="contenuFr" class="editor-content-dark rounded-b-lg"
+                                                contenteditable="true"
+                                                data-placeholder="Rédigez le contenu du cours ici..."></div>
+                                        </div>
+
+                                        <!-- Vidéo -->
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">🎥 Vidéo (optionnel)</label>
+                                            <input type="url" id="videoFr" placeholder="https://youtube.com/watch?v=..."
                                                 class="input-dark w-full px-4 py-3 rounded-lg">
                                         </div>
+
+                                        <!-- PDF -->
                                         <div>
-                                            <label class="block text-sm font-semibold mb-2">🏆 Points XP</label>
-                                            <input type="number" id="pointsFr" value="20"
-                                                class="input-dark w-full px-4 py-3 rounded-lg">
+                                            <label class="block text-sm font-semibold mb-2">📄 PDF (optionnel)</label>
+                                            <div class="upload-zone-dark rounded-lg p-4 cursor-pointer"
+                                                onclick="document.getElementById('pdfFr').click()">
+                                                <input type="file" id="pdfFr" accept=".pdf" style="display: none;"
+                                                    onchange="handlePdfUpload(event, 'fr')">
+                                                <div id="pdfPreviewFr" class="text-center">
+                                                    <p class="text-gray-400">📎 Cliquez pour choisir un PDF</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Métadonnées -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-2">⏱️ Durée (min)</label>
+                                                <input type="number" id="dureeFr" placeholder="45"
+                                                    class="input-dark w-full px-4 py-3 rounded-lg">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-2">🏆 Points XP</label>
+                                                <input type="number" id="pointsFr" value="20"
+                                                    class="input-dark w-full px-4 py-3 rounded-lg">
+                                            </div>
+                                        </div>
+
+                                        <!-- Publier -->
+                                        <div class="flex items-center space-x-3">
+                                            <input type="checkbox" id="publieFr" checked class="w-5 h-5">
+                                            <label class="font-semibold">✅ Publier immédiatement</label>
+                                        </div>
+
+                                        <!-- Actions -->
+                                        <div class="flex flex-wrap gap-3">
+                                            <button type="submit" id="submitBtnFr"
+                                                class="btn-primary flex-1 min-w-[200px] px-6 py-3 rounded-lg font-semibold text-white">
+                                                💾 Enregistrer le Cours
+                                            </button>
+                                            <button type="button" id="cancelEditBtnFr" style="display: none;"
+                                                onclick="App.cancelEdit('fr')"
+                                                class="px-6 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-semibold transition">
+                                                ✖️ Annuler
+                                            </button>
+                                            <button type="button" onclick="resetFormFr()"
+                                                class="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition">
+                                                🔄 Réinitialiser
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+
+                            <!-- STATS & RECENT -->
+                            <div class="space-y-6">
+                                <!-- Stats Rapides -->
+                                <div class="glass-card rounded-xl p-6">
+                                    <h3 class="font-bold mb-4">📊 Statistiques FR</h3>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-400">Total cours</span>
+                                            <span class="font-bold text-blue-400" id="statCoursFr">0</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-400">Chapitres</span>
+                                            <span class="font-bold text-emerald-400" id="statChapitresFr">0</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-400">Matières</span>
+                                            <span class="font-bold text-purple-400" id="statMatieresFr">0</span>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <!-- Publier -->
-                                    <div class="flex items-center space-x-3">
-                                        <input type="checkbox" id="publieFr" checked class="w-5 h-5">
-                                        <label class="font-semibold">✅ Publier immédiatement</label>
-                                    </div>
-
-                                    <!-- Actions -->
-                                    <div class="flex flex-wrap gap-3">
-                                        <button type="submit" id="submitBtnFr"
-                                            class="btn-primary flex-1 min-w-[200px] px-6 py-3 rounded-lg font-semibold text-white">
-                                            💾 Enregistrer le Cours
+                                <!-- Actions Rapides -->
+                                <div class="glass-card rounded-xl p-6">
+                                    <h3 class="font-bold mb-4">⚡ Actions Rapides</h3>
+                                    <div class="space-y-2">
+                                        <button
+                                            class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                                            📚 Voir tous les cours
                                         </button>
-                                        <button type="button" id="cancelEditBtnFr" style="display: none;"
-                                            onclick="App.cancelEdit('fr')"
-                                            class="px-6 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-semibold transition">
-                                            ✖️ Annuler
+                                        <button
+                                            class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                                            📝 Créer un examen
                                         </button>
-                                        <button type="button" onclick="resetFormFr()"
-                                            class="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition">
-                                            🔄 Réinitialiser
+                                        <button
+                                            class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                                            📄 Ajouter une annale
                                         </button>
                                     </div>
-                                </form>
+                                </div>
                             </div>
                         </div>
 
-
-                        <!-- STATS & RECENT -->
-                        <div class="space-y-6">
-                            <!-- Stats Rapides -->
-                            <div class="glass-card rounded-xl p-6">
-                                <h3 class="font-bold mb-4">📊 Statistiques FR</h3>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-400">Total cours</span>
-                                        <span class="font-bold text-blue-400" id="statCoursFr">0</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-400">Chapitres</span>
-                                        <span class="font-bold text-emerald-400" id="statChapitresFr">0</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-400">Matières</span>
-                                        <span class="font-bold text-purple-400" id="statMatieresFr">0</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Actions Rapides -->
-                            <div class="glass-card rounded-xl p-6">
-                                <h3 class="font-bold mb-4">⚡ Actions Rapides</h3>
-                                <div class="space-y-2">
-                                    <button
-                                        class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
-                                        📚 Voir tous les cours
-                                    </button>
-                                    <button
-                                        class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
-                                        📝 Créer un examen
-                                    </button>
-                                    <button
-                                        class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
-                                        📄 Ajouter une annale
-                                    </button>
-                                </div>
+                        <!-- Liste des cours -->
+                        <div class="mt-8 glass-card rounded-2xl p-6">
+                            <h2 class="text-xl font-bold mb-6">📚 Cours Existants - Section Francophone</h2>
+                            <div id="coursListFr" class="space-y-3">
+                                <p class="text-gray-500 text-center py-8">Aucun cours pour le moment</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Liste des cours -->
-                    <div class="mt-8 glass-card rounded-2xl p-6">
-                        <h2 class="text-xl font-bold mb-6">📚 Cours Existants - Section Francophone</h2>
-                        <div id="coursListFr" class="space-y-3">
-                            <p class="text-gray-500 text-center py-8">Aucun cours pour le moment</p>
+                    <!-- CONTENU ANGLOPHONE -->
+                    <div id="contentAn" style="display: none;" class="animate-slide-in">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- CREATION FORM -->
+                            <div class="lg:col-span-2">
+                                <div class="glass-card rounded-2xl p-6">
+                                    <h2 class="text-xl font-bold mb-6">➕ Create a New Course</h2>
+
+                                    <form id="coursFormAn" class="space-y-6">
+                                        <!-- Subject & Chapter -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-2">📖 Subject *</label>
+                                                <input type="text" id="matiereAn" list="matieresAnList"
+                                                    placeholder="Ex: Mathematics"
+                                                    class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                                <datalist id="matieresAnList">
+                                                    <option value="Mathematics">
+                                                    <option value="Physics">
+                                                    <option value="Chemistry">
+                                                    <option value="Biology/SVT">
+                                                    <option value="English">
+                                                    <option value="French">
+                                                    <option value="Philosophy">
+                                                    <option value="History">
+                                                    <option value="Geography">
+                                                </datalist>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-2">📑 Chapter *</label>
+                                                <input type="text" id="chapitreAn" placeholder="Ex: Functions"
+                                                    class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                            </div>
+                                        </div>
+
+                                        <!-- Class & Series -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-2">🎓 Class *</label>
+                                                <select id="classeAn" onchange="loadSeriesAn()"
+                                                    class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                                    <option value="">Select...</option>
+                                                </select>
+                                            </div>
+                                            <div id="serieAnContainer" style="display: none;">
+                                                <label class="block text-sm font-semibold mb-2">🎯 Series</label>
+                                                <select id="serieAn" class="input-dark w-full px-4 py-3 rounded-lg">
+                                                    <option value="">All series</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Course Title -->
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">✏️ Course Title *</label>
+                                            <input type="text" id="titreAn" placeholder="Ex: Limits of functions"
+                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
+                                        </div>
+
+                                        <!-- Course Image -->
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">🖼️ Course Image *</label>
+                                            <div class="upload-zone-dark rounded-lg p-6 cursor-pointer"
+                                                onclick="document.getElementById('imageAn').click()">
+                                                <input type="file" id="imageAn" accept="image/*" style="display: none;"
+                                                    onchange="handleImageUpload(event, 'an')">
+                                                <div id="imagePreviewAn" class="text-center">
+                                                    <div class="text-4xl mb-2">📷</div>
+                                                    <p class="text-gray-400">Click to choose an image</p>
+                                                    <p class="text-xs text-gray-500 mt-2">JPG, PNG (Max 5 MB)</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Course Content -->
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">📝 Course Content *</label>
+                                            <div class="editor-toolbar-dark rounded-t-lg p-2 flex space-x-2">
+                                                <button type="button" onclick="Utils.formatText('bold', 'an')"
+                                                    class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                                                    <strong>B</strong>
+                                                </button>
+                                                <button type="button" onclick="Utils.formatText('italic', 'an')"
+                                                    class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                                                    <em>I</em>
+                                                </button>
+                                                <button type="button" onclick="Utils.formatText('underline', 'an')"
+                                                    class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
+                                                    <u>U</u>
+                                                </button>
+                                            </div>
+                                            <div id="contenuAn" class="editor-content-dark rounded-b-lg"
+                                                contenteditable="true" data-placeholder="Write course content here...">
+                                            </div>
+                                        </div>
+
+                                        <!-- Video -->
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">🎥 Video (optional)</label>
+                                            <input type="url" id="videoAn" placeholder="https://youtube.com/watch?v=..."
+                                                class="input-dark w-full px-4 py-3 rounded-lg">
+                                        </div>
+
+                                        <!-- PDF -->
+                                        <div>
+                                            <label class="block text-sm font-semibold mb-2">📄 PDF (optional)</label>
+                                            <div class="upload-zone-dark rounded-lg p-4 cursor-pointer"
+                                                onclick="document.getElementById('pdfAn').click()">
+                                                <input type="file" id="pdfAn" accept=".pdf" style="display: none;"
+                                                    onchange="handlePdfUpload(event, 'an')">
+                                                <div id="pdfPreviewAn" class="text-center">
+                                                    <p class="text-gray-400">📎 Click to choose a PDF</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Metadata -->
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-2">⏱️ Duration
+                                                    (min)</label>
+                                                <input type="number" id="dureeAn" placeholder="45"
+                                                    class="input-dark w-full px-4 py-3 rounded-lg">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold mb-2">🏆 XP Points</label>
+                                                <input type="number" id="pointsAn" value="20"
+                                                    class="input-dark w-full px-4 py-3 rounded-lg">
+                                            </div>
+                                        </div>
+
+                                        <!-- Publish -->
+                                        <div class="flex items-center space-x-3">
+                                            <input type="checkbox" id="publieAn" checked class="w-5 h-5">
+                                            <label class="font-semibold">✅ Publish immediately</label>
+                                        </div>
+
+                                        <!-- Actions -->
+                                        <div class="flex flex-wrap gap-3">
+                                            <button type="submit" id="submitBtnAn"
+                                                class="btn-primary flex-1 min-w-[200px] px-6 py-3 rounded-lg font-semibold text-white">
+                                                💾 Save Course
+                                            </button>
+                                            <button type="button" id="cancelEditBtnAn" style="display: none;"
+                                                onclick="App.cancelEdit('an')"
+                                                class="px-6 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-semibold transition">
+                                                ✖️ Cancel
+                                            </button>
+                                            <button type="button" onclick="resetFormAn()"
+                                                class="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition">
+                                                🔄 Reset
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- STATS & RECENT -->
+                            <div class="space-y-6">
+                                <!-- Quick Stats -->
+                                <div class="glass-card rounded-xl p-6">
+                                    <h3 class="font-bold mb-4">📊 Statistics EN</h3>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-400">Total courses</span>
+                                            <span class="font-bold text-orange-400" id="statCoursAn">0</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-400">Chapters</span>
+                                            <span class="font-bold text-emerald-400" id="statChapitresAn">0</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-400">Subjects</span>
+                                            <span class="font-bold text-purple-400" id="statMatieresAn">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Actions -->
+                                <div class="glass-card rounded-xl p-6">
+                                    <h3 class="font-bold mb-4">⚡ Quick Actions</h3>
+                                    <div class="space-y-2">
+                                        <button
+                                            class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                                            📚 View all courses
+                                        </button>
+                                        <button
+                                            class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                                            📝 Create an exam
+                                        </button>
+                                        <button
+                                            class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                                            📄 Add past questions
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Course list -->
+                        <div class="mt-8 glass-card rounded-2xl p-6">
+                            <h2 class="text-xl font-bold mb-6">📚 Existing Courses - Anglophone Section</h2>
+                            <div id="coursListAn" class="space-y-3">
+                                <p class="text-gray-500 text-center py-8">No courses yet</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- CONTENU ANGLOPHONE -->
-                <div id="contentAn" style="display: none;" class="animate-slide-in">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- CREATION FORM -->
-                        <div class="lg:col-span-2">
-                            <div class="glass-card rounded-2xl p-6">
-                                <h2 class="text-xl font-bold mb-6">➕ Create a New Course</h2>
+                <!-- Modal Exercice QCM -->
+                <div id="exerciceModal"
+                    class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+                    <div
+                        class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
 
-                                <form id="coursFormAn" class="space-y-6">
-                                    <!-- Subject & Chapter -->
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-2">📖 Subject *</label>
-                                            <input type="text" id="matiereAn" list="matieresAnList"
-                                                placeholder="Ex: Mathematics"
-                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
-                                            <datalist id="matieresAnList">
-                                                <option value="Mathematics">
-                                                <option value="Physics">
-                                                <option value="Chemistry">
-                                                <option value="Biology/SVT">
-                                                <option value="English">
-                                                <option value="French">
-                                                <option value="Philosophy">
-                                                <option value="History">
-                                                <option value="Geography">
-                                            </datalist>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-2">📑 Chapter *</label>
-                                            <input type="text" id="chapitreAn" placeholder="Ex: Functions"
-                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
-                                        </div>
-                                    </div>
-
-                                    <!-- Class & Series -->
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-2">🎓 Class *</label>
-                                            <select id="classeAn" onchange="loadSeriesAn()"
-                                                class="input-dark w-full px-4 py-3 rounded-lg" required>
-                                                <option value="">Select...</option>
-                                            </select>
-                                        </div>
-                                        <div id="serieAnContainer" style="display: none;">
-                                            <label class="block text-sm font-semibold mb-2">🎯 Series</label>
-                                            <select id="serieAn" class="input-dark w-full px-4 py-3 rounded-lg">
-                                                <option value="">All series</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <!-- Course Title -->
-                                    <div>
-                                        <label class="block text-sm font-semibold mb-2">✏️ Course Title *</label>
-                                        <input type="text" id="titreAn" placeholder="Ex: Limits of functions"
-                                            class="input-dark w-full px-4 py-3 rounded-lg" required>
-                                    </div>
-
-                                    <!-- Course Image -->
-                                    <div>
-                                        <label class="block text-sm font-semibold mb-2">🖼️ Course Image *</label>
-                                        <div class="upload-zone-dark rounded-lg p-6 cursor-pointer"
-                                            onclick="document.getElementById('imageAn').click()">
-                                            <input type="file" id="imageAn" accept="image/*" style="display: none;"
-                                                onchange="handleImageUpload(event, 'an')">
-                                            <div id="imagePreviewAn" class="text-center">
-                                                <div class="text-4xl mb-2">📷</div>
-                                                <p class="text-gray-400">Click to choose an image</p>
-                                                <p class="text-xs text-gray-500 mt-2">JPG, PNG (Max 5 MB)</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Course Content -->
-                                    <div>
-                                        <label class="block text-sm font-semibold mb-2">📝 Course Content *</label>
-                                        <div class="editor-toolbar-dark rounded-t-lg p-2 flex space-x-2">
-                                            <button type="button" onclick="Utils.formatText('bold', 'an')"
-                                                class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
-                                                <strong>B</strong>
-                                            </button>
-                                            <button type="button" onclick="Utils.formatText('italic', 'an')"
-                                                class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
-                                                <em>I</em>
-                                            </button>
-                                            <button type="button" onclick="Utils.formatText('underline', 'an')"
-                                                class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
-                                                <u>U</u>
-                                            </button>
-                                        </div>
-                                        <div id="contenuAn" class="editor-content-dark rounded-b-lg"
-                                            contenteditable="true" data-placeholder="Write course content here...">
-                                        </div>
-                                    </div>
-
-                                    <!-- Video -->
-                                    <div>
-                                        <label class="block text-sm font-semibold mb-2">🎥 Video (optional)</label>
-                                        <input type="url" id="videoAn" placeholder="https://youtube.com/watch?v=..."
-                                            class="input-dark w-full px-4 py-3 rounded-lg">
-                                    </div>
-
-                                    <!-- PDF -->
-                                    <div>
-                                        <label class="block text-sm font-semibold mb-2">📄 PDF (optional)</label>
-                                        <div class="upload-zone-dark rounded-lg p-4 cursor-pointer"
-                                            onclick="document.getElementById('pdfAn').click()">
-                                            <input type="file" id="pdfAn" accept=".pdf" style="display: none;"
-                                                onchange="handlePdfUpload(event, 'an')">
-                                            <div id="pdfPreviewAn" class="text-center">
-                                                <p class="text-gray-400">📎 Click to choose a PDF</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Metadata -->
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-2">⏱️ Duration (min)</label>
-                                            <input type="number" id="dureeAn" placeholder="45"
-                                                class="input-dark w-full px-4 py-3 rounded-lg">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-semibold mb-2">🏆 XP Points</label>
-                                            <input type="number" id="pointsAn" value="20"
-                                                class="input-dark w-full px-4 py-3 rounded-lg">
-                                        </div>
-                                    </div>
-
-                                    <!-- Publish -->
-                                    <div class="flex items-center space-x-3">
-                                        <input type="checkbox" id="publieAn" checked class="w-5 h-5">
-                                        <label class="font-semibold">✅ Publish immediately</label>
-                                    </div>
-
-                                    <!-- Actions -->
-                                    <div class="flex flex-wrap gap-3">
-                                        <button type="submit" id="submitBtnAn"
-                                            class="btn-primary flex-1 min-w-[200px] px-6 py-3 rounded-lg font-semibold text-white">
-                                            💾 Save Course
-                                        </button>
-                                        <button type="button" id="cancelEditBtnAn" style="display: none;"
-                                            onclick="App.cancelEdit('an')"
-                                            class="px-6 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-semibold transition">
-                                            ✖️ Cancel
-                                        </button>
-                                        <button type="button" onclick="resetFormAn()"
-                                            class="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition">
-                                            🔄 Reset
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
+                        <!-- Header du Modal -->
+                        <div
+                            class="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-800/50">
+                            <h3 id="exerciceModalTitle" class="text-xl font-bold text-white">Nouvel exercice QCM</h3>
+                            <button type="button" onclick="exercicesView.closeModal()"
+                                class="text-gray-400 hover:text-white text-3xl leading-none transition">&times;</button>
                         </div>
 
-                        <!-- STATS & RECENT -->
-                        <div class="space-y-6">
-                            <!-- Quick Stats -->
-                            <div class="glass-card rounded-xl p-6">
-                                <h3 class="font-bold mb-4">📊 Statistics EN</h3>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-400">Total courses</span>
-                                        <span class="font-bold text-orange-400" id="statCoursAn">0</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-400">Chapters</span>
-                                        <span class="font-bold text-emerald-400" id="statChapitresAn">0</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-400">Subjects</span>
-                                        <span class="font-bold text-purple-400" id="statMatieresAn">0</span>
-                                    </div>
+                        <!-- Formulaire -->
+                        <form id="exerciceForm" class="p-6 space-y-6" onsubmit="exercicesView.save(event)">
+
+                            <!-- ========================================
+                 COURS ASSOCIÉ
+                 ======================================== -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Cours associé *</label>
+                                <select id="exerciceCours" required class="input-dark w-full px-4 py-3 rounded-lg">
+                                    <option value="">Sélectionner un cours...</option>
+                                </select>
+                            </div>
+
+                            <!-- ========================================
+                 TYPE ET DIFFICULTÉ
+                 ======================================== -->
+                            <div class="grid grid-cols-3 gap-4">
+                                <!-- Type de question -->
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-400 mb-2">Type de question
+                                        *</label>
+                                    <select id="exerciceType" required class="input-dark w-full px-4 py-3 rounded-lg">
+                                        <option value="qcm_unique">Choix unique</option>
+                                        <option value="qcm_multiple">Choix multiples</option>
+                                        <option value="vrai_faux">Vrai/Faux</option>
+                                    </select>
+                                </div>
+
+                                <!-- Difficulté -->
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-400 mb-2">Difficulté *</label>
+                                    <select id="exerciceDifficulte" required
+                                        class="input-dark w-full px-4 py-3 rounded-lg">
+                                        <option value="facile">⭐ Facile</option>
+                                        <option value="moyen" selected>⭐⭐ Moyen</option>
+                                        <option value="difficile">⭐⭐⭐ Difficile</option>
+                                    </select>
+                                </div>
+
+                                <!-- Points -->
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-400 mb-2">Points *</label>
+                                    <input type="number" id="exercicePoints" min="1" max="100" value="10" required
+                                        class="input-dark w-full px-4 py-3 rounded-lg">
                                 </div>
                             </div>
 
-                            <!-- Quick Actions -->
-                            <div class="glass-card rounded-xl p-6">
-                                <h3 class="font-bold mb-4">⚡ Quick Actions</h3>
-                                <div class="space-y-2">
-                                    <button
-                                        class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
-                                        📚 View all courses
-                                    </button>
-                                    <button
-                                        class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
-                                        📝 Create an exam
-                                    </button>
-                                    <button
-                                        class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
-                                        📄 Add past questions
+                            <!-- ========================================
+                 QUESTION
+                 ======================================== -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Question *</label>
+                                <textarea id="exerciceQuestion" rows="3" required
+                                    class="input-dark w-full px-4 py-3 rounded-lg resize-none"
+                                    placeholder="Ex: Quelle est la formule de l'eau ?"></textarea>
+                            </div>
+
+                            <!-- ========================================
+                 CHOIX DE RÉPONSES
+                 ======================================== -->
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <label class="text-sm font-semibold text-gray-700">
+                                        Choix de réponses *
+                                        <span class="text-xs font-normal text-gray-500">(Cochez la ou les bonnes
+                                            réponses)</span>
+                                    </label>
+                                    <button type="button" onclick="exercicesView.addChoix()"
+                                        class="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition">
+                                        + Ajouter un choix
                                     </button>
                                 </div>
+                                <div id="choixContainer" class="space-y-3">
+                                    <!-- Les choix seront ajoutés dynamiquement ici -->
+                                </div>
                             </div>
+
+                            <!-- ========================================
+                 EXPLICATION (OPTIONNEL)
+                 ======================================== -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    Explication (optionnel)
+                                </label>
+                                <textarea id="exerciceExplication" rows="2"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
+                                    placeholder="Expliquez pourquoi c'est la bonne réponse..."></textarea>
+                            </div>
+
+                            <!-- ========================================
+                 BOUTONS D'ACTION
+                 ======================================== -->
+                            <div class="flex gap-3 pt-6 shrink-0 mt-auto">
+                                <button type="submit"
+                                    class="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all">
+                                    💾 Enregistrer l'exercice
+                                </button>
+                                <button type="button" onclick="exercicesView.closeModal()"
+                                    class="px-6 py-3 bg-slate-800 border-2 border-slate-700 text-gray-300 font-semibold rounded-lg hover:bg-slate-700 hover:text-white transition-all">
+                                    Annuler
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+                <div id="exercices-codeSection" class="main-section" style="display: none;">
+                    <div id="exercicesCodeContentArea"></div>
+                </div>
+
+                <!-- SECTION ÉLÈVES -->
+                <div id="elevesSection" class="main-section" style="display: none;">
+                    <div id="contentEleves"></div>
+                </div>
+
+                <!-- SECTION ANNALES -->
+                <div id="annalesSection" class="main-section" style="display: none;">
+                    <div id="annalesContentArea" class="space-y-6"></div>
+                </div>
+
+                <!-- SECTION EXAMENS -->
+                <div id="examensSection" class="main-section" style="display: none;">
+                    <div id="examensContentArea" class="space-y-6"></div>
+                </div>
+
+                <!-- SECTION SYSTÈME (Infrastructures) -->
+                <div id="systemeSection" class="main-section" style="display: none;">
+                    <div class="mb-6">
+                        <div class="flex space-x-4 border-b border-slate-700">
+                            <button onclick="systemeView.switchTab('classes')" id="tab-classes"
+                                class="systeme-tab px-6 py-3 font-semibold text-gray-400 hover:text-white transition-all border-b-2 border-transparent">
+                                🏫 Classes (Niveaux)
+                            </button>
+                            <button onclick="systemeView.switchTab('series')" id="tab-series"
+                                class="systeme-tab px-6 py-3 font-semibold text-gray-400 hover:text-white transition-all border-b-2 border-transparent">
+                                🎯 Séries / Spécialités
+                            </button>
+                            <button onclick="systemeView.switchTab('matieres')" id="tab-matieres"
+                                class="systeme-tab px-6 py-3 font-semibold text-gray-400 hover:text-white transition-all border-b-2 border-transparent">
+                                📖 Matières
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Course list -->
-                    <div class="mt-8 glass-card rounded-2xl p-6">
-                        <h2 class="text-xl font-bold mb-6">📚 Existing Courses - Anglophone Section</h2>
-                        <div id="coursListAn" class="space-y-3">
-                            <p class="text-gray-500 text-center py-8">No courses yet</p>
+                    <div id="systemeContentArea">
+                        <div id="classesContent" class="systeme-tab-content">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold">Liste des Classes (Niveaux)</h3>
+                                <button onclick="systemeView.openNiveauModal()"
+                                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-500 transition-all flex items-center gap-2">
+                                    <span>➕ Ajouter</span>
+                                </button>
+                            </div>
+                            <div id="classesListArea" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            </div>
+                        </div>
+                        <div id="seriesContent" class="systeme-tab-content" style="display:none;">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold">Liste des Séries / Spécialités</h3>
+                                <button onclick="systemeView.openSerieModal()"
+                                    class="px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-500 transition-all flex items-center gap-2">
+                                    <span>➕ Ajouter</span>
+                                </button>
+                            </div>
+                            <div id="seriesListArea" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                        </div>
+                        <div id="matieresContent" class="systeme-tab-content" style="display:none;">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold">Gestion des Matières</h3>
+                                <button onclick="matieresView.openModal()"
+                                    class="px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-500 transition-all flex items-center gap-2">
+                                    <span>➕ Ajouter</span>
+                                </button>
+                            </div>
+                            <div id="matieresContentArea" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Toast Container -->
+        <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+        <!-- MODAL DÉTAIL ÉLÈVE -->
+        <div id="eleveDetailModal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+            <div
+                class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+                <!-- Header -->
+                <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+                    <h2 class="text-lg font-bold text-white">🎓 Fiche Élève</h2>
+                    <button onclick="ElevesManager.closeDetailModal()"
+                        class="text-gray-400 hover:text-white text-2xl leading-none transition">&times;</button>
+                </div>
+                <!-- Body scrollable -->
+                <div id="eleveDetailBody" class="overflow-y-auto p-6 flex-1">
+                    <div class="text-center py-12 text-gray-400">Chargement...</div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal Exercice Code -->
+        <div id="exerciceCodeModal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+            <div
+                class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+
+                <!-- Header du Modal -->
+                <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-800/50">
+                    <h3 id="exerciceCodeModalTitle" class="text-xl font-bold text-white">Nouvel exercice de code</h3>
+                    <button type="button" onclick="exercicesCodeView.closeModal()"
+                        class="text-gray-400 hover:text-white text-3xl leading-none transition">&times;</button>
+                </div>
+
+                <!-- Formulaire -->
+                <form id="exerciceCodeForm" class="p-6 space-y-6" onsubmit="exercicesCodeView.save(event)">
+
+                    <!-- ========================================
+                 COURS ASSOCIÉ
+                 ======================================== -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Cours associé *</label>
+                        <select id="exerciceCodeCours" required class="input-dark w-full px-4 py-3 rounded-lg">
+                            <option value="">Sélectionner un cours...</option>
+                        </select>
+                    </div>
+
+                    <!-- ========================================
+                 TITRE
+                 ======================================== -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Titre de l'exercice *</label>
+                        <input type="text" id="exerciceCodeTitre" required
+                            class="input-dark w-full px-4 py-3 rounded-lg" placeholder="Ex: Créer une fonction de tri">
+                    </div>
+
+                    <!-- ========================================
+                 DESCRIPTION / CONSIGNE
+                 ======================================== -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Description / Consigne</label>
+                        <textarea id="exerciceCodeDescription" rows="3"
+                            class="input-dark w-full px-4 py-3 rounded-lg resize-none"
+                            placeholder="Décrivez l'exercice et les objectifs..."></textarea>
+                    </div>
+
+                    <!-- ========================================
+                 LANGAGE, DIFFICULTÉ, POINTS
+                 ======================================== -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <!-- Langage -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Langage *</label>
+                            <select id="exerciceCodeLangage" required class="input-dark w-full px-4 py-3 rounded-lg">
+                                <option value="javascript">🟨 JavaScript</option>
+                                <option value="python">🐍 Python</option>
+                                <option value="html">🌐 HTML</option>
+                                <option value="css">🎨 CSS</option>
+                                <option value="sql">🗄️ SQL</option>
+                                <option value="php">🐘 PHP</option>
+                            </select>
+                        </div>
+
+                        <!-- Difficulté -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Difficulté *</label>
+                            <select id="exerciceCodeDifficulte" required class="input-dark w-full px-4 py-3 rounded-lg">
+                                <option value="facile">⭐ Facile</option>
+                                <option value="moyen" selected>⭐⭐ Moyen</option>
+                                <option value="difficile">⭐⭐⭐ Difficile</option>
+                            </select>
+                        </div>
+
+                        <!-- Points -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Points *</label>
+                            <input type="number" id="exerciceCodePoints" min="10" max="100" value="20" required
+                                class="input-dark w-full px-4 py-3 rounded-lg">
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                 CODE INITIAL (TEMPLATE)
+                 ======================================== -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Code initial (template)</label>
+                        <textarea id="exerciceCodeInitial" rows="8"
+                            class="input-dark w-full px-4 py-3 rounded-lg font-mono text-sm resize-none"
+                            placeholder="// Code de départ pour l'élève&#10;function maFonction() {&#10;  // À compléter&#10;}"></textarea>
+                    </div>
+
+                    <!-- ========================================
+                 CODE SOLUTION
+                 ======================================== -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Code solution *</label>
+                        <textarea id="exerciceCodeSolution" rows="8" required
+                            class="input-dark w-full px-4 py-3 rounded-lg font-mono text-sm resize-none"
+                            placeholder="// Solution de référence&#10;function maFonction() {&#10;  return 'Hello World';&#10;}"></textarea>
+                    </div>
+
+                    <!-- ========================================
+                 TESTS UNITAIRES (JSON)
+                 ======================================== -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Tests unitaires (JSON)</label>
+                        <textarea id="exerciceCodeTests" rows="6"
+                            class="input-dark w-full px-4 py-3 rounded-lg font-mono text-sm resize-none"
+                            placeholder='[&#10;  {&#10;    "input": [1, 2],&#10;    "expected": 3,&#10;    "description": "Addition de 1 et 2"&#10;  }&#10;]'></textarea>
+                        <p class="text-xs text-gray-500 mt-1">Format JSON pour tester automatiquement le code</p>
+                    </div>
+
+                    <!-- ========================================
+                 STATUT ACTIF/INACTIF
+                 ======================================== -->
+                    <div
+                        class="flex items-center space-x-4 p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="exerciceCodeActif" checked
+                                class="w-5 h-5 accent-indigo-500 bg-slate-800 border-slate-600 rounded">
+                            <span class="ml-2 text-sm font-semibold text-gray-300">Exercice actif et visible pour les
+                                élèves</span>
+                        </label>
+                    </div>
+
+                    <!-- ========================================
+                 BOUTONS D'ACTION
+                 ======================================== -->
+                    <div class="flex gap-3 pt-6 shrink-0 mt-auto">
+                        <button type="submit"
+                            class="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all">
+                            💾 Enregistrer
+                        </button>
+                        <button type="button" onclick="exercicesCodeView.closeModal()"
+                            class="px-6 py-3 bg-slate-800 border-2 border-slate-700 text-gray-300 font-semibold rounded-lg hover:bg-slate-700 hover:text-white transition-all">
+                            Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ========================================
+     MODAL ANNALES D'EXAMENS
+     ======================================== 
+     À copier/coller dans admin-dashbord/index.html
+     AVANT la balise fermante </body>
+     ======================================== -->
+
+        <!-- Modal Annales -->
+        <div id="annaleModal"
+            class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+            <div
+                class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto flex flex-col">
+
+                <!-- Header du Modal -->
+                <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-800/50">
+                    <h3 id="annaleModalTitle" class="text-xl font-bold text-white">Nouvelle annale d'examen</h3>
+                    <button type="button" onclick="annalesView.closeModal()"
+                        class="text-gray-400 hover:text-white text-3xl leading-none transition">&times;</button>
+                </div>
+
+                <!-- Formulaire -->
+                <form id="annaleForm" class="p-6 space-y-6" onsubmit="annalesView.save(event)">
+
+                    <!-- ========================================
+                 TITRE
+                 ======================================== -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Titre de l'annale *</label>
+                        <input type="text" id="annaleTitre" required class="input-dark w-full px-4 py-3 rounded-lg"
+                            placeholder="Ex: Baccalauréat Mathématiques Série C 2023">
+                    </div>
+
+                    <!-- ========================================
+                 TYPE, ANNÉE, SESSION
+                 ======================================== -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <!-- Type d'examen -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Type d'examen *</label>
+                            <select id="annaleType" required class="input-dark w-full px-4 py-3 rounded-lg">
+                                <option value="">Sélectionner...</option>
+                                <option value="bepc">📘 BEPC (Brevet)</option>
+                                <option value="probatoire">📗 Probatoire</option>
+                                <option value="bac">📕 BAC (Baccalauréat)</option>
+                                <option value="gce_olevel">📙 GCE O-Level</option>
+                                <option value="gce_alevel">📔 GCE A-Level</option>
+                                <option value="cep">📓 CEP (Primaire)</option>
+                                <option value="concours">🎯 Concours</option>
+                                <option value="autre">📚 Autre</option>
+                            </select>
+                        </div>
+
+                        <!-- Année -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Année *</label>
+                            <input type="number" id="annaleAnnee" required min="2000" max="2100"
+                                class="input-dark w-full px-4 py-3 rounded-lg" placeholder="2024">
+                        </div>
+
+                        <!-- Session -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Session</label>
+                            <select id="annaleSession" class="input-dark w-full px-4 py-3 rounded-lg">
+                                <option value="">Non spécifiée</option>
+                                <option value="normale">Session normale</option>
+                                <option value="rattrapage">Session rattrapage</option>
+                                <option value="unique">Session unique</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                 COURS, SÉRIE, CLASSE
+                 ======================================== -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <!-- Cours -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Cours (Matière) *</label>
+                            <select id="annaleMatiere" required class="input-dark w-full px-4 py-3 rounded-lg">
+                                <option value="">Sélectionner un cours...</option>
+                            </select>
+                        </div>
+
+                        <!-- Série -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Série / Spécialité</label>
+                            <select id="annaleSerie" class="input-dark w-full px-4 py-3 rounded-lg">
+                                <option value="">Sélectionner une série...</option>
+                            </select>
+                        </div>
+
+                        <!-- Classe -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Classe / Niveau *</label>
+                            <select id="annaleClasse" required class="input-dark w-full px-4 py-3 rounded-lg">
+                                <option value="">Sélectionner une classe...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                 DESCRIPTION
+                 ======================================== -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Description</label>
+                        <textarea id="annaleDescription" rows="3"
+                            class="input-dark w-full px-4 py-3 rounded-lg resize-none"
+                            placeholder="Décrivez le contenu de l'examen, les chapitres concernés, etc."></textarea>
+                    </div>
+
+                    <!-- ========================================
+                 DURÉE, BARÈME, DIFFICULTÉ
+                 ======================================== -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <!-- Durée -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Durée (minutes)</label>
+                            <input type="number" id="annaleDuree" min="30" max="480"
+                                class="input-dark w-full px-4 py-3 rounded-lg" placeholder="180">
+                        </div>
+
+                        <!-- Barème -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Barème total</label>
+                            <input type="number" id="annaleBareme" min="10" max="100" value="20"
+                                class="input-dark w-full px-4 py-3 rounded-lg" placeholder="20">
+                        </div>
+
+                        <!-- Difficulté -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Difficulté</label>
+                            <select id="annaleDifficulte" class="input-dark w-full px-4 py-3 rounded-lg">
+                                <option value="">Non spécifiée</option>
+                                <option value="facile">⭐ Facile</option>
+                                <option value="moyen" selected>⭐⭐ Moyen</option>
+                                <option value="difficile">⭐⭐⭐ Difficile</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                 FICHIERS (UPLOADS)
+                 ======================================== -->
+                    <div class="bg-indigo-500/5 p-6 rounded-lg border border-indigo-500/20 space-y-4">
+                        <h4 class="text-base font-bold text-white mb-2">📁 Fichiers</h4>
+
+                        <!-- Sujet PDF -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">
+                                📄 Sujet d'examen (PDF)
+                            </label>
+                            <input type="file" id="annaleSujetFile" accept=".pdf"
+                                class="input-dark w-full px-4 py-2 rounded-lg text-sm">
+                            <p class="text-xs text-gray-500 mt-1">Fichier PDF du sujet d'examen</p>
+                        </div>
+
+                        <!-- Correction PDF -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">
+                                ✅ Correction (PDF)
+                            </label>
+                            <input type="file" id="annaleCorrectionFile" accept=".pdf"
+                                class="input-dark w-full px-4 py-2 rounded-lg text-sm">
+                            <p class="text-xs text-gray-500 mt-1">Fichier PDF du corrigé détaillé</p>
+                        </div>
+
+                        <!-- Vidéo correction -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">
+                                🎥 Correction vidéo (URL YouTube)
+                            </label>
+                            <input type="url" id="annaleVideoUrl" class="input-dark w-full px-4 py-3 rounded-lg"
+                                placeholder="https://www.youtube.com/watch?v=...">
+                            <p class="text-xs text-gray-500 mt-1">Lien vers une vidéo de correction (optionnel)</p>
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                 SOURCE ET AUTEUR
+                 ======================================== -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Source -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Source officielle</label>
+                            <input type="text" id="annaleSource" class="input-dark w-full px-4 py-3 rounded-lg"
+                                placeholder="Ex: Ministère des Enseignements Secondaires">
+                        </div>
+
+                        <!-- Auteur correction -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Auteur de la
+                                correction</label>
+                            <input type="text" id="annaleAuteur" class="input-dark w-full px-4 py-3 rounded-lg"
+                                placeholder="Ex: Prof. KAMENI Jean">
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                 OPTIONS
+                 ======================================== -->
+                    <div class="flex flex-col space-y-3 bg-indigo-500/10 p-4 rounded-lg border border-indigo-500/20">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="annaleEstPublie" checked
+                                class="w-5 h-5 accent-indigo-500 bg-slate-800 border-slate-600 rounded">
+                            <span class="ml-2 text-sm font-semibold text-gray-300">Publier l'annale</span>
+                        </label>
+
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="annaleEstGratuit" checked
+                                class="w-5 h-5 accent-indigo-500 bg-slate-800 border-slate-600 rounded">
+                            <span class="ml-2 text-sm font-semibold text-gray-300">Accès gratuit</span>
+                        </label>
+
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="annaleEstOfficiel" checked
+                                class="w-5 h-5 accent-indigo-500 bg-slate-800 border-slate-600 rounded">
+                            <span class="ml-2 text-sm font-semibold text-gray-300">Sujet officiel (non sujet
+                                type)</span>
+                        </label>
+                    </div>
+
+                    <!-- ========================================
+                 BOUTONS D'ACTION
+                 ======================================== -->
+                    <div class="flex gap-3 pt-6 shrink-0 mt-auto">
+                        <button type="submit"
+                            class="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
+                            💾 Enregistrer l'annale
+                        </button>
+                        <button type="button" id="cancelAnnaleModal" onclick="annalesView.closeModal()"
+                            class="px-6 py-3 bg-slate-800 border-2 border-slate-700 text-gray-300 font-semibold rounded-lg hover:bg-slate-700 hover:text-white transition-all">
+                            Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ========================================
+     MODAL EXAMENS EN LIGNE
+     ======================================== 
+     À copier/coller dans admin-dashbord/index.html
+     AVANT la balise fermante </body>
+     ======================================== -->
+
+        <!-- Modal Examens -->
+        <div id="examenModal"
+            class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+            <div
+                class="bg-dark-card rounded-2xl shadow-2xl max-w-5xl w-full max-h-[95vh] overflow-y-auto my-4 border border-slate-800">
+
+                <!-- Header du Modal -->
+                <div class="sticky top-0 z-10 bg-gradient-to-r from-indigo-600 to-blue-700 p-6 text-white shadow-lg">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 id="examenModalTitle" class="text-2xl font-bold">Nouvel examen en ligne</h3>
+                            <p class="text-sm opacity-90 mt-1">Créez une évaluation immersive pour vos élèves</p>
+                        </div>
+                        <button type="button" onclick="ui.closeModal('examenModal')"
+                            class="p-2 hover:bg-white/10 rounded-full transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Formulaire -->
+                <form id="examenForm" class="p-6 space-y-8" onsubmit="examensView.save(event)">
+
+                    <!-- ========================================
+                         INFORMATIONS DE BASE
+                         ======================================== -->
+                    <div class="bg-indigo-500/5 rounded-xl p-6 border border-indigo-500/20 shadow-inner">
+                        <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                            <span class="p-2 bg-indigo-500/20 rounded-lg">📋</span> Informations de base
+                        </h4>
+
+                        <div class="space-y-6">
+                            <!-- Titre -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Titre de l'examen
+                                    *</label>
+                                <input type="text" id="examenTitre" required
+                                    class="input-dark w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                                    placeholder="Ex: Évaluation Mathématiques - Équations">
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Description</label>
+                                <textarea id="examenDescription" rows="2"
+                                    class="input-dark w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all resize-none"
+                                    placeholder="Décrivez les chapitres concernés, les objectifs..."></textarea>
+                            </div>
+
+                            <!-- Type d'examen -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Type d'examen *</label>
+                                <select id="examenType" required
+                                    class="input-dark w-full px-4 py-3 rounded-lg outline-none cursor-pointer">
+                                    <option value="">Sélectionner un type...</option>
+                                    <option value="evaluation">📋 Évaluation</option>
+                                    <option value="controle">📝 Contrôle</option>
+                                    <option value="devoir">✍️ Devoir</option>
+                                    <option value="composition">📚 Composition</option>
+                                    <option value="examen_blanc">🎯 Examen blanc</option>
+                                    <option value="test">⚡ Test rapide</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                         NIVEAU ET MATIÈRE
+                         ======================================== -->
+                    <div class="bg-emerald-500/5 rounded-xl p-6 border border-emerald-500/20">
+                        <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                            <span class="p-2 bg-emerald-500/20 rounded-lg">🎓</span> Niveau et matière
+                        </h4>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Matière -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Matière</label>
+                                <select id="examenMatiere"
+                                    class="input-dark w-full px-4 py-3 rounded-lg outline-none cursor-pointer">
+                                    <option value="">Sélectionner une matière...</option>
+                                </select>
+                            </div>
+
+                            <!-- Niveau -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Niveau</label>
+                                <select id="examenNiveau"
+                                    class="input-dark w-full px-4 py-3 rounded-lg outline-none cursor-pointer">
+                                    <option value="">Sélectionner un niveau...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                         CONFIGURATION
+                         ======================================== -->
+                    <div class="bg-purple-500/5 rounded-xl p-6 border border-purple-500/20">
+                        <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                            <span class="p-2 bg-purple-500/20 rounded-lg">⚙️</span> Configuration
+                        </h4>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <!-- Durée -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Durée (min) *</label>
+                                <input type="number" id="examenDuree" min="5" max="300" value="60" required
+                                    class="input-dark w-full px-4 py-3 rounded-lg outline-none">
+                            </div>
+
+                            <!-- Note totale -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Note totale *</label>
+                                <input type="number" id="examenNoteTotal" min="10" max="100" value="20" required
+                                    class="input-dark w-full px-4 py-3 rounded-lg outline-none">
+                            </div>
+
+                            <!-- Note de passage -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Note passage *</label>
+                                <input type="number" id="examenNotePassage" min="0" max="100" step="0.5" value="10"
+                                    required class="input-dark w-full px-4 py-3 rounded-lg outline-none">
+                            </div>
+
+                            <!-- Tentatives -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Tentatives max</label>
+                                <input type="number" id="examenTentativesMax" min="1" max="10" value="1"
+                                    class="input-dark w-full px-4 py-3 rounded-lg outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                         DATES ET DISPONIBILITÉ
+                         ======================================== -->
+                    <div class="bg-amber-500/5 rounded-xl p-6 border border-amber-500/20">
+                        <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                            <span class="p-2 bg-amber-500/20 rounded-lg">📅</span> Dates et disponibilité
+                        </h4>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Date d'ouverture -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Date d'ouverture</label>
+                                <input type="datetime-local" id="examenDateDebut"
+                                    class="input-dark w-full px-4 py-3 rounded-lg outline-none">
+                                <p class="text-xs text-gray-500 mt-2 italic">Laisser vide pour ouvrir immédiatement</p>
+                            </div>
+
+                            <!-- Date de fermeture -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Date de fermeture</label>
+                                <input type="datetime-local" id="examenDateFin"
+                                    class="input-dark w-full px-4 py-3 rounded-lg outline-none">
+                                <p class="text-xs text-gray-500 mt-2 italic">Laisser vide pour laisser ouvert
+                                    indéfiniment</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                         OPTIONS AVANCÉES
+                         ======================================== -->
+                    <div class="bg-pink-500/5 rounded-xl p-6 border border-pink-500/20">
+                        <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                            <span class="p-2 bg-pink-500/20 rounded-lg">🎲</span> Options avancées
+                        </h4>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label
+                                class="flex items-center p-3 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
+                                <input type="checkbox" id="examenQuestionsAleatoires"
+                                    class="w-5 h-5 text-indigo-600 border-slate-600 rounded focus:ring-indigo-500 bg-slate-800">
+                                <span
+                                    class="ml-3 text-sm font-semibold text-gray-400 group-hover:text-gray-200 transition-colors">
+                                    Mélanger l'ordre des questions
+                                </span>
+                            </label>
+
+                            <label
+                                class="flex items-center p-3 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
+                                <input type="checkbox" id="examenChoixAleatoires"
+                                    class="w-5 h-5 text-indigo-600 border-slate-600 rounded focus:ring-indigo-500 bg-slate-800">
+                                <span
+                                    class="ml-3 text-sm font-semibold text-gray-400 group-hover:text-gray-200 transition-colors">
+                                    Mélanger l'ordre des choix
+                                </span>
+                            </label>
+
+                            <label
+                                class="flex items-center p-3 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
+                                <input type="checkbox" id="examenAfficherCorrection" checked
+                                    class="w-5 h-5 text-indigo-600 border-slate-600 rounded focus:ring-indigo-500 bg-slate-800">
+                                <span
+                                    class="ml-3 text-sm font-semibold text-gray-400 group-hover:text-gray-200 transition-colors">
+                                    Afficher la correction après soumission
+                                </span>
+                            </label>
+
+                            <label
+                                class="flex items-center p-3 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
+                                <input type="checkbox" id="examenEstPublie" checked
+                                    class="w-5 h-5 text-indigo-600 border-slate-600 rounded focus:ring-indigo-500 bg-slate-800">
+                                <span
+                                    class="ml-3 text-sm font-semibold text-gray-400 group-hover:text-gray-200 transition-colors">
+                                    Publier l'examen (visible par les élèves)
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                         QUESTIONS
+                         ======================================== -->
+                    <div class="bg-slate-800/40 rounded-xl p-6 border border-slate-700">
+                        <div class="flex items-center justify-between mb-6">
+                            <h4 class="text-lg font-bold text-white flex items-center gap-2">
+                                <span class="p-2 bg-slate-700 rounded-lg">❓</span> Questions
+                            </h4>
+                            <span class="text-xs font-semibold px-3 py-1 bg-slate-700 text-gray-300 rounded-full">Après
+                                création</span>
+                        </div>
+
+                        <div id="questionsContainer"
+                            class="min-h-[120px] bg-slate-900/50 rounded-lg border-2 border-dashed border-slate-700 flex items-center justify-center">
+                            <div class="text-center p-6 text-gray-500">
+                                <div class="text-3xl mb-2">🔒</div>
+                                <p class="text-sm">Sauvegardez d'abord l'examen pour activer la gestion des questions
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ========================================
+                         BOUTONS D'ACTION
+                         ======================================== -->
+                    <div class="flex flex-col md:flex-row gap-4 pt-6 border-t border-slate-800">
+                        <button type="submit"
+                            class="flex-1 py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold rounded-xl hover:shadow-[0_0_20px_rgba(79,70,229,0.4)] transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2">
+                            <span>💾</span> Enregistrer l'examen
+                        </button>
+                        <button type="button" onclick="ui.closeModal('examenModal')"
+                            class="px-8 py-4 bg-slate-800 text-gray-300 font-bold rounded-xl border border-slate-700 hover:bg-slate-700 hover:text-white transition-all transform hover:-translate-y-0.5 active:scale-95">
+                            Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========================================
+     FIN DU MODAL
+     ======================================== -->
+        <!-- Modal Matière -->
+        <div id="matiereModal" class="modal fixed inset-0 z-[100] hidden overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="modal-overlay absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+                    onclick="ui.closeModal('matiereModal')"></div>
+
+                <div class="glass-card w-full max-w-lg rounded-3xl p-8 relative z-10 animate-slide-in">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 id="matiereModalTitle" class="text-2xl font-bold text-white">Nouvelle Matière</h3>
+                        <button onclick="ui.closeModal('matiereModal')"
+                            class="text-gray-400 hover:text-white transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <form id="matiereForm" onsubmit="matieresView.save(event)" class="space-y-6">
+                        <!-- Nom -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Nom de la matière *</label>
+                            <input type="text" id="matiereNom" name="nom" required placeholder="ex: Mathématiques"
+                                class="input-dark w-full px-4 py-3 rounded-lg text-white">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Couleur -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Couleur (Hex) *</label>
+                                <div class="flex gap-2">
+                                    <input type="color" id="matiereCouleurPicker"
+                                        oninput="document.getElementById('matiereCouleur').value = this.value"
+                                        class="h-11 w-12 bg-transparent border-none cursor-pointer">
+                                    <input type="text" id="matiereCouleur" name="couleur" required placeholder="#6366F1"
+                                        class="input-dark flex-1 px-4 py-3 rounded-lg text-white">
+                                </div>
+                            </div>
+
+                            <!-- Ordre -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Ordre d'affichage</label>
+                                <input type="number" id="matiereOrdre" name="ordre" value="0"
+                                    class="input-dark w-full px-4 py-3 rounded-lg text-white">
+                            </div>
+                        </div>
+
+                        <!-- Type de parcours -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Type de parcours *</label>
+                                <select id="matiereTypeParcours" name="type_parcours" required
+                                    class="input-dark w-full px-4 py-3 rounded-lg text-white">
+                                    <option value="eleve">Éducation (Élève)</option>
+                                    <option value="dev-web">Développement Web</option>
+                                    <option value="designer">Design & Graphisme</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Sous-système (Optionnel)</label>
+                                <select id="matiereSousSysteme" name="sous_systeme_id"
+                                    onchange="matieresView.loadNiveauxForModal(this.value)"
+                                    class="input-dark w-full px-4 py-3 rounded-lg text-white">
+                                    <option value="">Tous</option>
+                                    <!-- Sera peuplé par JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Classe -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Classe (Optionnel)</label>
+                                <select id="matiereNiveau" name="niveau_id"
+                                    onchange="matieresView.loadSeriesForModal(this.value)"
+                                    class="input-dark w-full px-4 py-3 rounded-lg text-white">
+                                    <option value="">Toutes les classes</option>
+                                    <!-- Sera peuplé par JS -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Série/Spécialité (Optionnel)</label>
+                                <select id="matiereSerie" name="serie_id"
+                                    class="input-dark w-full px-4 py-3 rounded-lg text-white">
+                                    <option value="">Toutes les séries</option>
+                                    <!-- Sera peuplé par JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Icône -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-2">Icône (Emoji ou URL)</label>
+                            <input type="text" id="matiereIcone" name="icone_url" placeholder="ex: 📖 ou /img/icon.png"
+                                class="input-dark w-full px-4 py-3 rounded-lg text-white">
+                        </div>
+
+                        <div class="flex justify-end gap-4 pt-4 border-t border-white/10">
+                            <button type="button" onclick="ui.closeModal('matiereModal')"
+                                class="px-6 py-2 text-gray-400 font-semibold hover:text-white transition">
+                                Annuler
+                            </button>
+                            <button type="submit"
+                                class="px-8 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-indigo-500/30 transition">
+                                Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Toast Container -->
-    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+    <!-- ========================================= -->
+    <!-- ESPACE PROFESSEURS - INTERFACE COMPLÈTE -->
+    <!-- ========================================= -->
+    <div id="screen-professeurs" style="display: none;" class="screen min-h-screen">
+        <div class="flex">
+            <!-- SIDEBAR -->
+            <div class="w-64 bg-slate-900 border-r border-slate-800 min-h-screen p-4">
+                <!-- Logo -->
+                <div class="mb-8">
+                    <div
+                        class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent mb-1">
+                        KMERSCHOOL
+                    </div>
+                    <div class="text-xs text-gray-500">Gestion Professeurs</div>
+                </div>
 
+                <!-- Navigation -->
+                <nav class="space-y-2">
+                    <div class="sidebar-item active px-4 py-3 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xl">🧑‍🏫</span>
+                            <span class="font-medium">Gestion Professeurs</span>
+                        </div>
+                    </div>
+                </nav>
 
+                <div class="section-divider my-6"></div>
+
+                <!-- Back Button -->
+                <button onclick="Navigation.backToHome()"
+                    class="mt-8 w-full px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
+                    ← Retour accueil
+                </button>
+            </div>
+
+            <!-- MAIN CONTENT -->
+            <div class="flex-1 p-8" id="professeursMainContent">
+                <!-- Dashboard Content loaded dynamically -->
+                <!-- SECTION PROFESSEURS -->
+                <div id="professeursSection" class="main-section">
+                    <div id="professeursContentArea" class="space-y-6">
+                        <!-- Le contenu sera injecté ici par js/professeurs.js -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Classes (Niveaux) -->
+        <div id="niveauModal" class="hidden fixed inset-0 bg-black/70 z-[101] flex items-center justify-center p-4">
+            <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg p-6 animate-slide-in">
+                <h2 id="niveauModalTitle" class="text-xl font-bold mb-6 text-white text-center">Ajouter une Classe</h2>
+                <form id="niveauForm" onsubmit="systemeView.saveNiveau(event)" class="space-y-4">
+                    <input type="hidden" id="niveauId">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-1">Code *</label>
+                        <input type="text" id="niveauCodeInput" name="code" required
+                            class="input-dark w-full px-4 py-2 rounded-lg" placeholder="ex: terminale-c">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-1">Nom (Fr) *</label>
+                        <input type="text" id="niveauNomFr" name="nom_fr" required
+                            class="input-dark w-full px-4 py-2 rounded-lg" placeholder="ex: Terminale C">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-1">Ordre</label>
+                            <input type="number" id="niveauOrdre" name="ordre"
+                                class="input-dark w-full px-4 py-2 rounded-lg" value="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-1">Classe d'examen ?</label>
+                            <select id="niveauEstExamen" name="est_classe_examen"
+                                class="input-dark w-full px-4 py-2 rounded-lg">
+                                <option value="false">Non</option>
+                                <option value="true">Oui</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-1">Cycle (Code) *</label>
+                        <select id="niveauCycleCode" name="cycle_id" required
+                            class="input-dark w-full px-4 py-2 rounded-lg">
+                            <option value="">Chargement cycles...</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end gap-3 pt-6 border-t border-slate-800">
+                        <button type="button" onclick="ui.closeModal('niveauModal')"
+                            class="px-4 py-2 text-gray-400 hover:text-white transition font-semibold">Annuler</button>
+                        <button type="submit"
+                            class="px-8 py-2 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-600/20 hover:scale-105 transition-all">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Séries -->
+        <div id="serieModal" class="hidden fixed inset-0 bg-black/70 z-[101] flex items-center justify-center p-4">
+            <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg p-6 animate-slide-in">
+                <h2 id="serieModalTitle" class="text-xl font-bold mb-6 text-white text-center">Ajouter une Série</h2>
+                <form id="serieForm" onsubmit="systemeView.saveSerie(event)" class="space-y-4">
+                    <input type="hidden" id="serieId">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-1">Classe parente *</label>
+                        <select id="serieNiveauId" name="niveau_id" required
+                            class="input-dark w-full px-4 py-2 rounded-lg">
+                            <option value="">Sélectionner...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-1">Code *</label>
+                        <input type="text" id="serieCodeInput" name="code" required
+                            class="input-dark w-full px-4 py-2 rounded-lg" placeholder="ex: C">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-1">Nom Court *</label>
+                            <input type="text" id="serieNomCourt" name="nom_court" required
+                                class="input-dark w-full px-4 py-2 rounded-lg" placeholder="ex: C">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-400 mb-1">Ordre</label>
+                            <input type="number" id="serieOrdre" name="ordre"
+                                class="input-dark w-full px-4 py-2 rounded-lg" value="0">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-1">Nom Complet (Fr) *</label>
+                        <input type="text" id="serieNomFr" name="nom_fr" required
+                            class="input-dark w-full px-4 py-2 rounded-lg"
+                            placeholder="ex: Série C : Mathématiques & Sciences">
+                    </div>
+                    <div class="flex justify-end gap-3 pt-6 border-t border-slate-800">
+                        <button type="button" onclick="ui.closeModal('serieModal')"
+                            class="px-4 py-2 text-gray-400 hover:text-white transition font-semibold">Annuler</button>
+                        <button type="submit"
+                            class="px-8 py-2 bg-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-600/20 hover:scale-105 transition-all">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 </body>
 
 </html>

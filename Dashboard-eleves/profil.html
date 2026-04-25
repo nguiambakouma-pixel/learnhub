@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon Profil — KMERSCHOOL</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@500;600;700&family=Bricolage+Grotesque:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* ══════════════════════════════════════════
+       DESIGN: Luxury editorial dark
+       Typographie: Clash Display (headings) +
+       Bricolage Grotesque (body)
+       Accents: gradient indigo→emerald avec
+       touches subtiles vert/rouge Cameroun
+    ══════════════════════════════════════════ */
+    :root {
+      --bg: #050911;
+      --bg2: #07101e;
+      --surf: #0c1628;
+      --surf2: #0a1220;
+      --b: rgba(255, 255, 255, .07);
+      --b2: rgba(255, 255, 255, .04);
+      --b3: rgba(255, 255, 255, .02);
+      --indigo: #6366f1;
+      --violet: #8b5cf6;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --cyan: #06b6d4;
+      --t1: #f1f5f9;
+      --t2: #94a3b8;
+      --t3: #475569;
+      --t4: #1e293b;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      background: var(--bg);
+      color: var(--t2);
+      min-height: 100vh;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      font-family: 'Clash Display', sans-serif;
+      color: var(--t1);
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, .25);
+      border-radius: 2px;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 56px;
+      padding: 0 2rem;
+      background: rgba(5, 9, 17, .85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--b);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      background: linear-gradient(135deg, #818cf8, #34d399);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ── BTN ── */
+    .btn {
+      border: none;
+      cursor: pointer;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 600;
+      transition: all .15s;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: white;
+      border-radius: .65rem;
+      padding: .55rem 1.25rem;
+      font-size: .82rem;
+      box-shadow: 0 0 20px rgba(99, 102, 241, .25);
+    }
+
+    .btn-primary:hover {
+      opacity: .9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 24px rgba(99, 102, 241, .4);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid var(--b);
+      color: var(--t2);
+      border-radius: .6rem;
+      padding: .5rem 1rem;
+      font-size: .8rem;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, .09);
+      color: var(--t1);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border-radius: .65rem;
+      padding: .55rem 1.25rem;
+      font-size: .82rem;
+    }
+
+    .btn-success:hover {
+      opacity: .9;
+    }
+
+    .btn-danger {
+      background: rgba(244, 63, 94, .12);
+      border: 1px solid rgba(244, 63, 94, .25);
+      color: #fb7185;
+      border-radius: .6rem;
+      padding: .45rem .9rem;
+      font-size: .78rem;
+    }
+
+    .btn-danger:hover {
+      background: rgba(244, 63, 94, .2);
+    }
+
+    .btn-sm {
+      padding: .35rem .75rem !important;
+      font-size: .75rem !important;
+    }
+
+    /* ── SPINNER ── */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #F5B800;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner-sm { width: 14px; height: 14px; border-width: 1.5px; }
+    .spinner-lg { width: 40px; height: 40px; border-width: 3px; }
+
+    /* ── PAGE LAYOUT ── */
+    .page {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem 5rem;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      grid-template-rows: auto;
+      gap: 1.5rem;
+    }
+
+    /* ── LEFT COLUMN (sticky) ── */
+    .left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      grid-column: 1;
+    }
+
+    /* ── RIGHT COLUMN ── */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      grid-column: 2;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surf);
+      border: 1px solid var(--b);
+      border-radius: 1.25rem;
+      overflow: hidden;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem .75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--b2);
+    }
+
+    .section-title {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--t3);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    /* ══════════════
+       HERO CARD
+    ══════════════ */
+    .hero-card {
+      background: linear-gradient(145deg, #0c1628, #080f1e);
+      border: 1px solid var(--b);
+      border-radius: 1.25rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      left: -60px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, .12), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-card::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      right: -40px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(16, 185, 129, .08), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      padding: 1.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* XP RING */
+    .xp-ring-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .xp-ring-svg {
+      position: absolute;
+      inset: 0;
+      transform: rotate(-90deg);
+    }
+
+    .xp-ring-track {
+      fill: none;
+      stroke: rgba(255, 255, 255, .07);
+      stroke-width: 4;
+    }
+
+    .xp-ring-fill {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke: url(#xpGrad);
+      stroke-dasharray: 339;
+      stroke-dashoffset: 339;
+      transition: stroke-dashoffset 1.2s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .avatar-wrap {
+      position: absolute;
+      inset: 10px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid rgba(99, 102, 241, .2);
+      background: linear-gradient(135deg, #1e1b4b, #0f172a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .avatar-initials {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #818cf8, #34d399);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .avatar-edit-btn {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--indigo);
+      border: 2px solid var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .7rem;
+      cursor: pointer;
+      z-index: 2;
+      transition: transform .15s;
+    }
+
+    .avatar-edit-btn:hover {
+      transform: scale(1.15);
+    }
+
+    /* Level badge */
+    .level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: rgba(99, 102, 241, .12);
+      border: 1px solid rgba(99, 102, 241, .25);
+      border-radius: 99px;
+      padding: .2rem .7rem;
+      font-size: .72rem;
+      font-weight: 700;
+      color: #a5b4fc;
+    }
+
+    /* XP Bar */
+    .xp-bar-wrap {
+      width: 100%;
+      background: rgba(255, 255, 255, .06);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .xp-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #6366f1, #10b981);
+      transition: width 1s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    /* Sys badge */
+    .sys-badge {
+      padding: .22rem .65rem;
+      border-radius: 99px;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+
+    .sys-fr {
+      background: rgba(59, 130, 246, .12);
+      color: #60a5fa;
+    }
+
+    .sys-en {
+      background: rgba(244, 63, 94, .1);
+      color: #fb7185;
+    }
+
+    /* ══════════════
+       STAT CARDS
+    ══════════════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .75rem;
+    }
+
+    .stat-card {
+      background: var(--surf2);
+      border: 1px solid var(--b2);
+      border-radius: 1rem;
+      padding: 1rem .875rem;
+      display: flex;
+      flex-direction: column;
+      gap: .35rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(99, 102, 241, .2);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+    }
+
+    .stat-card.indigo::before {
+      background: linear-gradient(90deg, #6366f1, transparent);
+    }
+
+    .stat-card.emerald::before {
+      background: linear-gradient(90deg, #10b981, transparent);
+    }
+
+    .stat-card.amber::before {
+      background: linear-gradient(90deg, #f59e0b, transparent);
+    }
+
+    .stat-card.violet::before {
+      background: linear-gradient(90deg, #8b5cf6, transparent);
+    }
+
+    .stat-card.cyan::before {
+      background: linear-gradient(90deg, #06b6d4, transparent);
+    }
+
+    .stat-card.rose::before {
+      background: linear-gradient(90deg, #f43f5e, transparent);
+    }
+
+    .stat-icon {
+      font-size: 1.2rem;
+    }
+
+    .stat-val {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--t1);
+      line-height: 1;
+    }
+
+    .stat-lbl {
+      font-size: .7rem;
+      color: var(--t3);
+      font-weight: 500;
+    }
+
+    .stat-delta {
+      font-size: .65rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: .2rem;
+    }
+
+    .stat-delta.up {
+      color: #34d399;
+    }
+
+    .stat-delta.neutral {
+      color: var(--t3);
+    }
+
+    /* ══════════════
+       ACTIVITY CHART
+    ══════════════ */
+    .chart-wrap {
+      padding: 1.25rem 1.5rem 1rem;
+    }
+
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: .4rem;
+      height: 80px;
+    }
+
+    .chart-bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .3rem;
+    }
+
+    .chart-bar-track {
+      width: 100%;
+      background: rgba(255, 255, 255, .05);
+      border-radius: 4px 4px 0 0;
+      height: 72px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+
+    .chart-bar-fill {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(to top, #6366f1, #34d399);
+      transition: height .8s cubic-bezier(.4, 0, .2, 1);
+      min-height: 2px;
+    }
+
+    .chart-bar-fill.empty {
+      background: rgba(255, 255, 255, .05);
+    }
+
+    .chart-day {
+      font-size: .62rem;
+      color: var(--t3);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .chart-today .chart-day {
+      color: #818cf8;
+    }
+
+    .chart-today .chart-bar-fill {
+      background: linear-gradient(to top, #818cf8, #34d399);
+    }
+
+    .chart-legend {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding-top: .75rem;
+      border-top: 1px solid var(--b2);
+      margin-top: .75rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .72rem;
+      color: var(--t3);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    /* ══════════════
+       BADGES
+    ══════════════ */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: .75rem;
+      padding: 1rem 1.5rem 1.5rem;
+    }
+
+    .badge-item {
+      background: var(--surf2);
+      border: 1px solid var(--b2);
+      border-radius: .875rem;
+      padding: .875rem .75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .5rem;
+      text-align: center;
+      transition: all .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .badge-item:hover {
+      transform: translateY(-2px);
+      border-color: rgba(99, 102, 241, .25);
+    }
+
+    .badge-item.locked {
+      opacity: .35;
+      filter: grayscale(1);
+    }
+
+    .badge-icon {
+      font-size: 1.75rem;
+    }
+
+    .badge-name {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--t1);
+      line-height: 1.2;
+    }
+
+    .badge-desc {
+      font-size: .62rem;
+      color: var(--t3);
+      line-height: 1.3;
+    }
+
+    .badge-rarity {
+      position: absolute;
+      top: .45rem;
+      right: .45rem;
+      font-size: .58rem;
+      font-weight: 700;
+      padding: .1rem .35rem;
+      border-radius: 99px;
+      letter-spacing: .05em;
+    }
+
+    .rarity-commun {
+      background: rgba(100, 116, 139, .15);
+      color: #64748b;
+    }
+
+    .rarity-rare {
+      background: rgba(59, 130, 246, .15);
+      color: #60a5fa;
+    }
+
+    .rarity-epique {
+      background: rgba(168, 85, 247, .15);
+      color: #c084fc;
+    }
+
+    .rarity-legendaire {
+      background: rgba(245, 158, 11, .15);
+      color: #fbbf24;
+      box-shadow: 0 0 8px rgba(245, 158, 11, .2);
+    }
+
+    /* ══════════════
+       RECENT COURSES
+    ══════════════ */
+    .course-row {
+      display: flex;
+      align-items: center;
+      gap: .875rem;
+      padding: .85rem 1.5rem;
+      border-bottom: 1px solid var(--b2);
+      transition: background .15s;
+      cursor: pointer;
+    }
+
+    .course-row:hover {
+      background: rgba(255, 255, 255, .02);
+    }
+
+    .course-row:last-child {
+      border-bottom: none;
+    }
+
+    .course-dot {
+      width: 38px;
+      height: 38px;
+      border-radius: .6rem;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .course-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .course-title {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--t1);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .course-sub {
+      font-size: .7rem;
+      color: var(--t3);
+      margin-top: .1rem;
+    }
+
+    .course-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    /* Progress mini-bar */
+    .mini-bar {
+      height: 3px;
+      background: rgba(255, 255, 255, .06);
+      border-radius: 99px;
+      margin-top: .3rem;
+      overflow: hidden;
+    }
+
+    .mini-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #6366f1, #10b981);
+    }
+
+    /* ══════════════
+       EDIT DRAWER
+    ══════════════ */
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      background: rgba(0, 0, 0, .7);
+      backdrop-filter: blur(6px);
+    }
+
+    .drawer-overlay.show {
+      display: block;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: -540px;
+      bottom: 0;
+      z-index: 401;
+      width: 100%;
+      max-width: 500px;
+      background: var(--bg2);
+      border-left: 1px solid var(--b);
+      display: flex;
+      flex-direction: column;
+      transition: right .35s cubic-bezier(.4, 0, .2, 1);
+      overflow: hidden;
+    }
+
+    .drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--b);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .drawer-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--b);
+      display: flex;
+      gap: .75rem;
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+
+    /* Form */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: .45rem;
+    }
+
+    .form-label {
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--t2);
+      letter-spacing: .04em;
+    }
+
+    .form-input {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--b);
+      border-radius: .65rem;
+      padding: .65rem .9rem;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .85rem;
+      color: var(--t1);
+      outline: none;
+      transition: border-color .2s;
+      width: 100%;
+    }
+
+    .form-input:focus {
+      border-color: rgba(99, 102, 241, .45);
+      background: rgba(99, 102, 241, .05);
+    }
+
+    .form-input::placeholder {
+      color: var(--t3);
+    }
+
+    .form-textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .form-hint {
+      font-size: .7rem;
+      color: var(--t3);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+    }
+
+    .form-divider {
+      border: none;
+      border-top: 1px solid var(--b2);
+      margin: .5rem 0;
+    }
+
+    .form-section-label {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--t3);
+      margin-bottom: .25rem;
+    }
+
+    /* Select */
+    .form-select {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--b);
+      border-radius: .65rem;
+      padding: .65rem .9rem;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: .85rem;
+      color: var(--t1);
+      outline: none;
+      width: 100%;
+      cursor: pointer;
+      transition: border-color .2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23475569' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right .9rem center;
+      padding-right: 2.25rem;
+    }
+
+    .form-select:focus {
+      border-color: rgba(99, 102, 241, .45);
+    }
+
+    .form-select option {
+      background: #0c1628;
+    }
+
+    /* Avatar preview in drawer */
+    .avatar-preview-wrap {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: .875rem;
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--b2);
+      border-radius: .875rem;
+    }
+
+    .avatar-preview {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e1b4b, #0f172a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #818cf8, #34d399);
+      color: white;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    /* ══════════════
+       TOAST
+    ══════════════ */
+    .toast-area {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 600;
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--surf);
+      border: 1px solid rgba(99, 102, 241, .25);
+      border-radius: .75rem;
+      padding: .55rem 1.25rem;
+      font-size: .82rem;
+      font-weight: 500;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .4);
+      animation: toastIn .25s ease both;
+      pointer-events: auto;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── SKELETON ── */
+    .skel {
+      background: linear-gradient(90deg, rgba(255, 255, 255, .04) 25%, rgba(255, 255, 255, .08) 50%, rgba(255, 255, 255, .04) 75%);
+      background-size: 200%;
+      animation: shimmer 1.5s infinite;
+      border-radius: .4rem;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .left-col,
+      .right-col {
+        grid-column: 1;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .page {
+        padding: 1.25rem 1rem 4rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: .5rem;
+      }
+
+      .badges-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .drawer {
+        max-width: 100%;
+      }
+    }
+
+    /* ── ANIMATED BG ── */
+    .bg-mesh {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 15% 20%, rgba(99, 102, 241, .06) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 80%, rgba(16, 185, 129, .04) 0%, transparent 50%);
+    }
+
+    /* ── NO BADGES STATE ── */
+    .empty-badges {
+      padding: 2rem;
+      text-align: center;
+      color: var(--t3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    /* Spin animation for loading */
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, .2);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+
+    /* Password strength */
+    .strength-bar {
+      display: flex;
+      gap: 3px;
+      margin-top: .35rem;
+    }
+
+    .strength-seg {
+      flex: 1;
+      height: 3px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, .08);
+      transition: background .3s;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- MESH BG -->
+  <div class="bg-mesh"></div>
+
+  <header class="topbar">
+    <a href="dashboard-eleve.html" class="btn btn-ghost btn-sm" data-i18n="nav_back">← Retour</a>
+    <div class="logo">KMERSCHOOL</div>
+    <div id="topLoading" style="display:none">
+      <div class="spinner"></div>
+    </div>
+    <div style="display:flex; gap:.75rem;">
+      <button class="btn btn-ghost btn-sm" onclick="location.reload()" data-i18n="btn_refresh">Rafraîchir</button>
+      <button class="btn btn-primary btn-sm" onclick="openEditDrawer()" data-i18n="btn_edit_profile">Modifier le Profil</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- LEFT: PERFIL SUMMARY -->
+    <aside class="left-col">
+      <div class="hero-card">
+        <div class="hero-inner">
+          <div class="xp-ring-wrap" onclick="openEditDrawer()" title="Cliquez pour modifier">
+            <svg class="xp-ring-svg" viewBox="0 0 120 120">
+              <circle class="xp-ring-track" cx="60" cy="60" r="54" />
+              <circle class="xp-ring-fill" id="xpCircle" cx="60" cy="60" r="54" />
+              <defs>
+                <linearGradient id="xpGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#6366f1" />
+                  <stop offset="100%" style="stop-color:#10b981" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="avatar-wrap">
+              <div id="avatarTarget" class="avatar-img">
+                <span class="avatar-initials" id="initialsTarget">KS</span>
+              </div>
+            </div>
+            <div class="avatar-edit-btn">✎</div>
+          </div>
+
+          <div>
+            <h2 id="disp-name" class="skel" style="min-width:140px; min-height:28px; margin-bottom:4px">...</h2>
+            <div id="disp-lvl" class="level-badge skel" style="min-width:80px; min-height:22px">...</div>
+          </div>
+
+          <div style="width:100%; display:flex; flex-direction:column; gap:.4rem; margin-top:.5rem">
+            <div style="display:flex; justify-content:space-between; font-size:.7rem; font-weight:700">
+              <span style="color:var(--t3)" data-i18n="lbl_progression">PROGRESSION</span>
+              <span id="disp-xp-text" style="color:var(--indigo)">... XP</span>
+            </div>
+            <div class="xp-bar-wrap">
+              <div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div>
+            </div>
+          </div>
+
+          <p id="disp-bio" style="font-size:.78rem; line-height:1.5; color:var(--t2); margin-top:.5rem" data-i18n="loading_bio">
+            Chargement de votre présentation...
+          </p>
+
+          <div style="display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; margin-top:.5rem">
+            <span id="disp-sys" class="sys-badge sys-fr skel" style="min-width:60px; min-height:20px">...</span>
+            <span id="disp-serie" class="sys-badge" style="background:rgba(255,255,255,.05); color:var(--t2)">...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERSO INFO -->
+      <div class="card">
+        <div class="card-header">
+          <span class="section-title">Informations</span>
+        </div>
+        <div class="card-body" style="display:flex; flex-direction:column; gap:1rem;">
+          <div>
+            <div
+              style="font-size:.65rem; color:var(--t3); font-weight:700; text-transform:uppercase; margin-bottom:.2rem">
+              Email</div>
+            <div id="disp-email" style="font-size:.82rem; color:var(--t1); overflow:hidden; text-overflow:ellipsis">...
+            </div>
+          </div>
+          <div>
+            <div
+              style="font-size:.65rem; color:var(--t3); font-weight:700; text-transform:uppercase; margin-bottom:.2rem">
+              Établissement</div>
+            <div id="disp-school" style="font-size:.82rem; color:var(--t1)">...</div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+            <div>
+              <div
+                style="font-size:.65rem; color:var(--t3); font-weight:700; text-transform:uppercase; margin-bottom:.2rem">
+                Membre depuis</div>
+              <div id="disp-joined" style="font-size:.82rem; color:var(--t1)">...</div>
+            </div>
+            <div>
+              <div
+                style="font-size:.65rem; color:var(--t3); font-weight:700; text-transform:uppercase; margin-bottom:.2rem">
+                Dernière Connexion</div>
+              <div id="disp-last-login" style="font-size:.82rem; color:var(--t1)">...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: STATS & ACTIVITY -->
+    <div class="right-col">
+      <!-- STATS ROW -->
+      <div class="stats-grid">
+        <div class="stat-card indigo">
+          <div class="stat-icon">📚</div>
+          <div class="stat-val" id="st-cours">0</div>
+          <div class="stat-lbl" data-i18n="lbl_courses">Cours complétés</div>
+        </div>
+        <div class="stat-card emerald">
+          <div class="stat-icon">✅</div>
+          <div class="stat-val" id="st-exos">0</div>
+          <div class="stat-lbl" data-i18n="lbl_exercises">Exercices réussis</div>
+        </div>
+        <div class="stat-card rose">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-val" id="st-streak">0</div>
+          <div class="stat-lbl" data-i18n="lbl_days">Jours de suite</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon">🥇</div>
+          <div class="stat-val" id="st-badges">0</div>
+          <div class="stat-lbl">Badges obtenus</div>
+        </div>
+        <div class="stat-card violet">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-val" id="st-rank">#0</div>
+          <div class="stat-lbl" data-i18n="lbl_rank">Rang Mondial</div>
+        </div>
+        <div class="stat-card cyan">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-val" id="st-xp-total">0</div>
+          <div class="stat-lbl" data-i18n="lbl_points">Total XP</div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY -->
+      <div class="card">
+        <div class="card-header">
+          <span class="section-title" data-i18n="lbl_history">Activité (7 derniers jours)</span>
+          <div class="stat-delta up" id="chart-total-label">+0 XP cette semaine</div>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-bars" id="activityBars">
+            <!-- Dynamique -->
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#6366f1"></div> Objectif atteint
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:rgba(255,255,255,.05)"></div> Inactif
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BADGES SECTION -->
+      <div class="card">
+        <div class="card-header">
+          <span class="section-title" data-i18n="lbl_badges_title">Mes Badges</span>
+          <span style="font-size:.7rem; color:var(--indigo); cursor:pointer"
+            onclick="showToast('Section Collection bientôt dispo')">Voir tous →</span>
+        </div>
+        <div id="badgesGrid" class="badges-grid">
+          <!-- Dynamique -->
+        </div>
+      </div>
+
+      <!-- RECENT COURSES -->
+      <div class="card">
+        <div class="card-header">
+          <span class="section-title" data-i18n="lbl_consulted">Derniers cours consultés</span>
+        </div>
+        <div id="coursesList">
+          <!-- Dynamique -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- EDIT DRAWER -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeEditDrawer()"></div>
+  <div class="drawer" id="editDrawer">
+    <div class="drawer-header">
+      <h3 data-i18n="lbl_edit_title">Modifier le profil</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeEditDrawer()" data-i18n="btn_cancel">Annuler</button>
+    </div>
+
+    <div class="drawer-body">
+      <div class="avatar-preview-wrap">
+        <div class="avatar-preview" id="editAvatarPreview">
+          <span id="editInitials">KS</span>
+        </div>
+        <div style="flex:1">
+          <div class="form-label" data-i18n="lbl_photo">Photo de profil</div>
+          <p class="form-hint" data-i18n="lbl_photo_hint">Une URL d'image (ou laissez vide pour vos initiales)</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" data-i18n="lbl_avatar_url">URL de l'avatar</label>
+        <input type="text" id="in-avatar" class="form-input" placeholder="https://..."
+          oninput="updateAvatarPreview(this.value)">
+      </div>
+
+      <div class="form-divider"></div>
+      <div class="form-section-label" data-i18n="lbl_identity">IDENTITÉ & BIO</div>
+
+      <div class="form-group">
+        <label class="form-label" data-i18n="lbl_full_name">Nom complet</label>
+        <input type="text" id="in-name" class="form-input" placeholder="Ton nom complet" data-i18n="lbl_full_name">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" data-i18n="lbl_bio">Bio / Présentation</label>
+        <textarea id="in-bio" class="form-input form-textarea"
+          placeholder="Parle-nous de toi, tes objectifs..." data-i18n="lbl_bio"></textarea>
+      </div>
+
+      <div class="form-divider"></div>
+      <div class="form-section-label">SCOLARITÉ</div>
+
+      <div class="form-group">
+        <label class="form-label" data-i18n="lbl_school">Établissement</label>
+        <input type="text" id="in-school" class="form-input" placeholder="Nom de ton établissement" data-i18n="lbl_school">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" data-i18n="lbl_specialty">Série / Spécialité</label>
+          <select id="in-serie" class="form-select">
+            <!-- Dynamique via JS -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="lbl_academic_year">Année Scolaire</label>
+          <input type="text" id="in-year" class="form-input" value="2024-2025" placeholder="ex: 2024-2025">
+        </div>
+      </div>
+
+      <div class="form-divider" style="margin:1rem 0"></div>
+      <div class="form-section-label" data-i18n="lbl_security">SÉCURITÉ</div>
+
+      <div class="form-group">
+        <label class="form-label" data-i18n="lbl_new_pass">Nouveau mot de passe</label>
+        <input type="password" id="in-pass" class="form-input" placeholder="••••••••" oninput="checkPass(this.value)">
+        <div class="strength-bar" id="passStrength">
+          <div class="strength-seg"></div>
+          <div class="strength-seg"></div>
+          <div class="strength-seg"></div>
+          <div class="strength-seg"></div>
+        </div>
+        <p class="form-hint" data-i18n="lbl_pass_hint">Laissez vide pour conserver l'actuel. Min 8 caractères.</p>
+      </div>
+
+    </div>
+
+    <div class="drawer-footer">
+      <button class="btn btn-primary" id="saveProfileBtn" onclick="saveProfile()">
+        <span data-i18n="btn_save">Enregistrer les modifications</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="toast-area" id="toastArea"></div>
+
+  <script>
+    // ── I18N ──
+    const I18N = {
+        fr: {
+          btn_refresh: "Rafraîchir",
+          nav_back: "← Retour",
+          btn_edit_profile: "Modifier le Profil",
+          lbl_progression: "PROGRESSION",
+          loading_bio: "<div class='spinner spinner-sm'></div>",
+          lbl_info: "Informations",
+          lbl_stats: "Statistiques",
+          lbl_badges: "Badges",
+          lbl_history: "Activités Récentes",
+          btn_save: "Enregistrer les modifications",
+          btn_cancel: "Annuler",
+          msg_error_init: "Erreur d'initialisation",
+          msg_profile_updated: "Profil mis à jour !",
+          msg_error_update: "Erreur lors de la mise à jour",
+          lbl_level: "Niveau",
+          lbl_xp_max: "Max atteint",
+          lbl_exercises: "Exercices réussis",
+          lbl_success: "Réussis",
+          lbl_days: "Jours de suite",
+          lbl_rank: "Rang Mondial",
+          lbl_points: "Total XP",
+          lbl_courses: "Cours complétés",
+          lbl_badges_title: "Mes Badges",
+          lbl_consulted: "Derniers cours consultés",
+          lbl_edit_title: "Modifier le profil",
+          lbl_photo: "Photo de profil",
+          lbl_photo_hint: "Une URL d'image (ou laissez vide pour vos initiales)",
+          lbl_avatar_url: "URL de l'avatar",
+          lbl_identity: "IDENTITÉ & BIO",
+          lbl_full_name: "Nom complet",
+          lbl_bio: "Bio / Présentation",
+          lbl_school: "Établissement",
+          lbl_specialty: "Série / Spécialité",
+          lbl_academic_year: "Année Scolaire",
+          lbl_security: "SÉCURITÉ",
+          lbl_new_pass: "Nouveau mot de passe",
+          lbl_pass_hint: "Laissez vide pour conserver l'actuel. Min 8 caractères."
+        },
+        en: {
+          btn_refresh: "Refresh",
+          nav_back: "← Back",
+          btn_edit_profile: "Edit Profile",
+          lbl_progression: "PROGRESSION",
+          loading_bio: "<div class='spinner spinner-sm'></div>",
+          lbl_info: "Information",
+          lbl_stats: "Statistics",
+          lbl_badges: "Badges",
+          lbl_history: "Recent Activities",
+          btn_save: "Save changes",
+          btn_cancel: "Cancel",
+          msg_error_init: "Initialization Error",
+          msg_profile_updated: "Profile updated!",
+          msg_error_update: "Error while updating",
+          lbl_level: "Level",
+          lbl_xp_max: "Max reached",
+          lbl_exercises: "Exercises passed",
+          lbl_success: "Passed",
+          lbl_days: "Day streak",
+          lbl_rank: "World Rank",
+          lbl_points: "Total XP",
+          lbl_courses: "Courses completed",
+          lbl_badges_title: "My Badges",
+          lbl_consulted: "Last courses consulted",
+          lbl_edit_title: "Edit profile",
+          lbl_photo: "Profile Picture",
+          lbl_photo_hint: "An image URL (or leave empty for initials)",
+          lbl_avatar_url: "Avatar URL",
+          lbl_identity: "IDENTITY & BIO",
+          lbl_full_name: "Full Name",
+          lbl_bio: "Bio / Presentation",
+          lbl_school: "School",
+          lbl_specialty: "Section / Specialty",
+          lbl_academic_year: "Academic Year",
+          lbl_security: "SECURITY",
+          lbl_new_pass: "New password",
+          lbl_pass_hint: "Leave empty to keep current. Min 8 characters."
+        }
+    };
+
+    function t(key, ...args) {
+        let __userId = ''; let __sysCode = '';
+        if (typeof STATE !== 'undefined' && STATE.profile) { __userId = STATE.profile.id; __sysCode = STATE.profile.sous_systeme?.code; }
+        else if (typeof currentUser !== 'undefined' && currentUser) { __userId = currentUser.id; __sysCode = typeof userProfile !== 'undefined' && userProfile ? userProfile.sous_systeme?.code : ''; }
+        else if (typeof user !== 'undefined' && user) { __userId = user.id; __sysCode = typeof profile !== 'undefined' && profile ? profile.sous_systeme?.code : ''; }
+        const storeKey = __userId ? `kmer_eleve_settings_${__userId}` : 'kmer_eleve_settings';
+        const st = JSON.parse(localStorage.getItem(storeKey) || '{}');
+        let lang = st.lang;
+        if (!lang && __sysCode) lang = (__sysCode === 'anglophone' || __sysCode === 'EN' || __sysCode === 'en') ? 'en' : 'fr';
+        lang = lang || 'fr';
+        let str = (I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : (I18N['fr'][key] || key);
+        args.forEach((a, i) => { str = str.replace(`{${i}}`, a); });
+        return str;
+    }
+
+    function applyTranslations() {
+        let __userId = ''; let __sysCode = '';
+        if (typeof STATE !== 'undefined' && STATE.profile) { __userId = STATE.profile.id; __sysCode = STATE.profile.sous_systeme?.code; }
+        else if (typeof currentUser !== 'undefined' && currentUser) { __userId = currentUser.id; __sysCode = typeof userProfile !== 'undefined' && userProfile ? userProfile.sous_systeme?.code : ''; }
+        else if (typeof user !== 'undefined' && user) { __userId = user.id; __sysCode = typeof profile !== 'undefined' && profile ? profile.sous_systeme?.code : ''; }
+        const storeKey = __userId ? `kmer_eleve_settings_${__userId}` : 'kmer_eleve_settings';
+        const st = JSON.parse(localStorage.getItem(storeKey) || '{}');
+        let lang = st.lang;
+        if (!lang && __sysCode) lang = (__sysCode === 'anglophone' || __sysCode === 'EN' || __sysCode === 'en') ? 'en' : 'fr';
+        lang = lang || 'fr';
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (I18N[lang] && I18N[lang][key]) {
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.placeholder = I18N[lang][key];
+                } else {
+                    el.innerHTML = I18N[lang][key];
+                }
+            }
+        });
+    }
+
+    // ── CONFIG SUPABASE ──
+    const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let USER = null;
+    let PROFILE = null;
+
+    // ── INIT ──
+    async function init() {
+      try {
+        showLoading(true);
+        const { data: { user }, error: authError } = await sb.auth.getUser();
+        if (authError) throw authError;
+        if (!user) {
+          window.location.href = 'onboarding_cameroun.html';
+          return;
+        }
+        USER = user;
+        await Promise.all([
+          loadProfile(),
+          loadRecentCourses(),
+          loadBadges(),
+          loadSeries()
+        ]);
+        applyTranslations();
+      } catch (err) {
+        console.error("Initialization error:", err);
+        const isNetworkError = !navigator.onLine || err.message?.includes('fetch') || err.code === 'PGRST301';
+        showToast(isNetworkError ? "Réseau instable" : "Erreur d'initialisation", "error");
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // ── LOAD PROFILE & STATS ──
+    async function loadProfile() {
+      try {
+        // 1. Profil + Joins manuels
+        const { data: profile, error: pError } = await sb.from('profiles').select('*').eq('id', USER.id).single();
+        if (pError) throw pError;
+        if (!profile) return;
+        PROFILE = profile;
+
+        // Détails supplémentaires
+        const [ss, nv, sr] = await Promise.all([
+          profile.sous_systeme_id ? sb.from('sous_systemes').select('nom_fr, code').eq('id', profile.sous_systeme_id).single() : null,
+          profile.niveau_scolaire_id ? sb.from('niveaux_scolaires').select('nom_fr, nom_court').eq('id', profile.niveau_scolaire_id).single() : null,
+          profile.serie_id ? sb.from('series_specialites').select('nom_fr, code').eq('id', profile.serie_id).single() : null
+        ]);
+
+        PROFILE.sous_systeme = ss?.data;
+        PROFILE.niveau = nv?.data;
+        PROFILE.serie = sr?.data;
+
+        // 2. Stats
+        const { count: countCours, error: cError } = await sb.from('progressions_cours').select('*', { count: 'exact', head: true }).eq('user_id', USER.id).eq('est_termine', true);
+        if (cError) throw cError;
+        const { count: countExos, error: eError } = await sb.from('resultats_exercices').select('*', { count: 'exact', head: true }).eq('user_id', USER.id).gte('score', 70);
+        if (eError) throw eError;
+        const { count: countBadges, error: bError } = await sb.from('user_badges').select('*', { count: 'exact', head: true }).eq('user_id', USER.id);
+        if (bError) throw bError;
+
+        // Rendering
+        renderUI(countCours, countExos, countBadges);
+        renderActivity();
+      } catch (err) {
+        console.error("Error loading profile:", err);
+        throw err; // Re-throw to be caught by init()
+      }
+    }
+
+    function renderUI(cCours, cExos, cBadges) {
+      const p = PROFILE;
+      const initials = p.nom ? p.nom.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '??';
+
+      // Textes
+      document.getElementById('disp-name').textContent = p.nom || 'Sans nom';
+      document.getElementById('disp-bio').textContent = p.bio || 'Aucune biographie définie.';
+      document.getElementById('disp-email').textContent = p.email || USER.email;
+      document.getElementById('disp-school').textContent = p.etablissement || 'Non renseigné';
+      document.getElementById('disp-joined').textContent = new Date(p.created_at).toLocaleDateString('fr-FR');
+      document.getElementById('disp-last-login').textContent = p.last_sign_in_at ? new Date(p.last_sign_in_at).toLocaleDateString('fr-FR') : 'Aujourd\'hui';
+
+      document.getElementById('disp-lvl').textContent = '✦ ' + (p.niveau?.nom_fr || 'Niveau');
+      document.getElementById('disp-sys').textContent = p.sous_systeme?.nom_fr || 'Cameroun';
+      document.getElementById('disp-serie').textContent = p.serie?.nom_fr || 'Tronc Commun';
+
+      // Stats
+      document.getElementById('st-cours').textContent = cCours || 0;
+      document.getElementById('st-exos').textContent = cExos || 0;
+      document.getElementById('st-streak').textContent = p.streak_jours || 0;
+      document.getElementById('st-badges').textContent = cBadges || 0;
+      document.getElementById('st-xp-total').textContent = (p.points_total || 0).toLocaleString();
+      document.getElementById('disp-xp-text').textContent = (p.points_total || 0) + ' XP';
+
+      // XP Ring & Bar
+      const xp = p.points_total || 0;
+      const nextLvlXp = 2000; // Demo threshold
+      const pct = Math.min((xp / nextLvlXp) * 100, 100);
+      const offset = 339 - (339 * pct) / 100;
+      document.getElementById('xpCircle').style.strokeDashoffset = offset;
+      document.getElementById('xpBarFill').style.width = pct + '%';
+
+      // Avatar
+      const target = document.getElementById('avatarTarget');
+      if (p.avatar_url) {
+        target.innerHTML = `<img src="${p.avatar_url}" class="avatar-img" alt="Avatar">`;
+      } else {
+        document.getElementById('initialsTarget').textContent = initials;
+      }
+
+      // Ranking demo
+      document.getElementById('st-rank').textContent = '#' + (Math.floor(Math.random() * 50) + 1);
+
+      // Skeleton remove
+      document.querySelectorAll('.skel').forEach(s => s.classList.remove('skel'));
+    }
+
+    // ── ACTIVITY CHART ──
+    function renderActivity() {
+      const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+      const currentDay = (new Date().getDay() + 6) % 7;
+      const data = [45, 80, 20, 100, 60, 10, 0]; // Demo data
+      const container = document.getElementById('activityBars');
+
+      container.innerHTML = days.map((day, i) => {
+        const val = data[i];
+        const isToday = i === currentDay;
+        return `
+          <div class="chart-bar-col ${isToday ? 'chart-today' : ''}">
+            <div class="chart-bar-track">
+              <div class="chart-bar-fill ${val === 0 ? 'empty' : ''}" style="height:${val}%"></div>
+            </div>
+            <span class="chart-day">${day}</span>
+          </div>
+        `;
+      }).join('');
+
+      const totalWeek = data.reduce((a, b) => a + b, 0);
+      document.getElementById('chart-total-label').textContent = `+${totalWeek * 10} XP cette semaine`;
+    }
+
+    // ── LOAD BADGES ──
+    async function loadBadges() {
+      const { data } = await sb.from('user_badges').select('*, badge:badges(*)').eq('user_id', USER.id);
+      const grid = document.getElementById('badgesGrid');
+
+      if (!data || data.length === 0) {
+        grid.innerHTML = '<div class="empty-badges"><span>🏜️</span><p>Aucun badge encore obtenu.</p></div>';
+        return;
+      }
+
+      grid.innerHTML = data.map(b => `
+        <div class="badge-item">
+          <div class="badge-rarity rarity-${(b.badge.rarete || 'commun').toLowerCase()}">${b.badge.rarete || 'COMMUN'}</div>
+          <div class="badge-icon">${b.badge.icone_url || '🏅'}</div>
+          <div class="badge-name">${b.badge.nom}</div>
+          <div class="badge-desc">${b.badge.description || ''}</div>
+        </div>
+      `).join('');
+    }
+
+    // ── LOAD RECENT COURSES ──
+    async function loadRecentCourses() {
+      const { data } = await sb.from('progressions_cours')
+        .select('*, cours:cours(*)')
+        .eq('user_id', USER.id)
+        .order('date_debut', { ascending: false })
+        .limit(4);
+
+      const list = document.getElementById('coursesList');
+      if (!data || data.length === 0) {
+        list.innerHTML = '<p style="padding:2rem; text-align:center; font-size:.8rem; color:var(--t3)">Aucun cours récent.</p>';
+        return;
+      }
+
+      list.innerHTML = data.map(p => `
+        <div class="course-row" onclick="window.location.href='cours.html?id=${p.cours_id}'">
+          <div class="course-dot" style="background:rgba(99,102,241,.1); color:var(--indigo)">📚</div>
+          <div class="course-info">
+            <div class="course-title">${p.cours.titre}</div>
+            <div class="course-sub">${p.cours.matiere} • ${p.cours.type_contenu}</div>
+            <div class="mini-bar"><div class="mini-bar-fill" style="width:${p.progression_pourcentage}%"></div></div>
+          </div>
+          <div class="course-pct">${p.progression_pourcentage}%</div>
+        </div>
+      `).join('');
+    }
+
+    // ── DRAWER LOGIC ──
+    function openEditDrawer() {
+      document.getElementById('drawerOverlay').classList.add('show');
+      document.getElementById('editDrawer').classList.add('open');
+
+      // Fill values
+      document.getElementById('in-name').value = PROFILE.nom || '';
+      document.getElementById('in-bio').value = PROFILE.bio || '';
+      document.getElementById('in-school').value = PROFILE.etablissement || '';
+      document.getElementById('in-avatar').value = PROFILE.avatar_url || '';
+      document.getElementById('in-serie').value = PROFILE.serie_id || '';
+      updateAvatarPreview(PROFILE.avatar_url);
+    }
+
+    function closeEditDrawer() {
+      document.getElementById('drawerOverlay').classList.remove('show');
+      document.getElementById('editDrawer').classList.remove('open');
+    }
+
+    async function loadSeries() {
+      const { data } = await sb.from('series_specialites').select('*').order('nom_fr');
+      if (data) {
+        document.getElementById('in-serie').innerHTML = '<option value="">Choisir une série</option>' +
+          data.map(s => `<option value="${s.id}">${s.nom_fr}</option>`).join('');
+      }
+    }
+
+    function updateAvatarPreview(url) {
+      const preview = document.getElementById('editAvatarPreview');
+      const initials = PROFILE.nom ? PROFILE.nom.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '??';
+
+      if (url && url.startsWith('http')) {
+        preview.innerHTML = `<img src="${url}" alt="Preview">`;
+      } else {
+        preview.innerHTML = `<span id="editInitials">${initials}</span>`;
+      }
+    }
+
+    // ── SAVE PROFILE ──
+    async function saveProfile() {
+      const btn = document.getElementById('saveProfileBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> <span>Enregistrement...</span>';
+
+      const updates = {
+        nom: document.getElementById('in-name').value,
+        bio: document.getElementById('in-bio').value,
+        etablissement: document.getElementById('in-school').value,
+        avatar_url: document.getElementById('in-avatar').value,
+        serie_id: document.getElementById('in-serie').value || null,
+        updated_at: new Date()
+      };
+
+      const pass = document.getElementById('in-pass').value;
+
+      try {
+        // 1. Update Profile
+        const { error: pErr } = await sb.from('profiles').update(updates).eq('id', USER.id);
+        if (pErr) throw pErr;
+
+        // 2. Update Password if set
+        if (pass && pass.length >= 8) {
+          const { error: aErr } = await sb.auth.updateUser({ password: pass });
+          if (aErr) throw aErr;
+        }
+
+        showToast('Profil mis à jour avec succès !', 'success');
+        await loadProfile();
+        closeEditDrawer();
+      } catch (err) {
+        console.error('Update error:', err);
+        const isNetworkError = !navigator.onLine || err.message?.includes('fetch') || err.code === 'PGRST301';
+        showToast(isNetworkError ? "Réseau instable" : err.message, "error");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Enregistrer les modifications</span>';
+      }
+    }
+
+    // UTILS
+    function checkPass(v) {
+      const bars = document.querySelectorAll('#passStrength .strength-seg');
+      bars.forEach(b => b.style.background = 'rgba(255,255,255,.08)');
+      if (!v) return;
+      let score = 0;
+      if (v.length >= 8) score++;
+      if (/[A-Z]/.test(v)) score++;
+      if (/[0-9]/.test(v)) score++;
+      if (/[^A-Za-z0-9]/.test(v)) score++;
+
+      const colors = ['#f43f5e', '#f59e0b', '#6366f1', '#10b981'];
+      for (let i = 0; i < score; i++) bars[i].style.background = colors[score - 1];
+    }
+
+    function showToast(msg, type = 'info') {
+      const area = document.getElementById('toastArea');
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.style.borderColor = type === 'success' ? 'rgba(16,185,129,.4)' : type === 'error' ? 'rgba(244,63,94,.4)' : 'rgba(99,102,241,.3)';
+      t.textContent = msg;
+      area.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(-10px)'; setTimeout(() => t.remove(), 300); }, 3000);
+    }
+
+    function showLoading(show) {
+      document.getElementById('topLoading').style.display = show ? 'block' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+
+  </script>

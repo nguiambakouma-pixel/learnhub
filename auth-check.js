@@ -70,7 +70,8 @@ function redirectToCorrectDashboard(typeParcours) {
     const dashboards = {
         'eleve': 'Dashboard-eleves/dashboard-eleve.html',
         'dev-web': 'Dashboard-Dev/dashboard-dev.html',
-        'designer': 'Dashboard-designer/dashboard-designer.html'
+        'designer': 'Dashboard-designer/dashboard-designer.html',
+        'professeur': 'professeur/professeur-dashboard.html'
     }
 
     const dashboard = dashboards[typeParcours] || 'index.html'
@@ -90,6 +91,59 @@ function getParcoursLabel(type) {
 }
 
 /**
+ * Redirige automatiquement l'utilisateur s'il est déjà connecté (Admin ou Élève)
+ * Utile pour index.html et auth.html
+ */
+async function resolveUserRoleAndRedirect() {
+    try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+
+        // 1. Vérifier si c'est un Admin
+        const { data: admin } = await supabase
+            .from('admins')
+            .select('role')
+            .eq('id', user.id)
+            .maybeSingle()
+
+        if (admin) {
+            console.log('👑 Admin détecté, redirection...')
+            window.location.href = 'admin-dashbord/index.html'
+            return
+        }
+
+        // 2. Vérifier si c'est un Professeur
+        const { data: prof } = await supabase
+            .from('professeurs')
+            .select('statut')
+            .eq('id', user.id)
+            .maybeSingle()
+
+        if (prof && prof.statut === 'approuve') {
+            console.log('👨‍🏫 Professeur approuvé détecté, redirection...')
+            window.location.href = 'professeur/professeur-dashboard.html'
+            return
+        }
+
+        // 3. Vérifier si c'est un élève (Profil)
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('type_parcours')
+            .eq('id', user.id)
+            .maybeSingle()
+
+        if (profile) {
+            console.log('🎓 Élève détecté, redirection...')
+            redirectToCorrectDashboard(profile.type_parcours)
+            return
+        }
+        
+    } catch (error) {
+        console.error('Erreur redirection auto:', error)
+    }
+}
+
+/**
  * Déconnexion
  */
 async function logout() {
@@ -105,6 +159,7 @@ async function logout() {
 // Exporter pour utilisation globale
 window.AuthCheck = {
     checkAuth,
+    resolveUserRoleAndRedirect,
     logout,
     supabase
 }

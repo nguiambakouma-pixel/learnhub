@@ -711,7 +711,7 @@
                 `)
                     .eq('user_id', currentUser.id)
                     .eq('est_termine', false)
-                    .order('updated_at', { ascending: false })
+                    .order('date_debut', { ascending: false })
                     .limit(5)
 
                 if (error) throw error

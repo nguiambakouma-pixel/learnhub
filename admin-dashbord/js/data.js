@@ -131,21 +131,31 @@ const DataLoader = {
      */
     async loadGlobalStats() {
         try {
-            // Stats élèves par sous-système
+            // Stats tous profils
             const { data: profiles, error: profilesError } = await supabaseClient
                 .from('profiles')
-                .select('id, sous_systeme_id');
+                .select('id, sous_systeme_id, type_parcours');
 
             if (profilesError) throw profilesError;
 
-            // Compter par sous-système
-            const stats = await this.countBySubsystem(profiles);
+            // Filtrer par catégorie
+            const eleveProfiles = profiles.filter(p => p.type_parcours === 'eleve');
+            const devProfiles = profiles.filter(p => p.type_parcours === 'dev-web');
+            const designerProfiles = profiles.filter(p => p.type_parcours === 'designer');
 
+            // Compter par sous-système (pour les élèves uniquement)
+            const stats = await this.countBySubsystem(eleveProfiles);
+
+            // Ajouter les autres totaux
+            stats.totalDev = devProfiles.length;
             // Mettre à jour l'interface
             this.updateStatsUI(stats);
 
             // Stats cours
             await this.loadCoursStats();
+
+            // Charger les datalists de matières
+            await this.loadMatieresDatalists();
 
             return stats;
         } catch (error) {
@@ -207,7 +217,9 @@ const DataLoader = {
             'statElevesFr': stats.francophone,
             'statElevesAn': stats.anglophone,
             'sidebarStatFr': stats.francophone,
-            'sidebarStatAn': stats.anglophone
+            'sidebarStatAn': stats.anglophone,
+            'statApprenantsdev': stats.totalDev,
+            'statCreatifs': stats.totalDesigner
         };
 
         Object.entries(elements).forEach(([id, value]) => {
@@ -234,6 +246,40 @@ const DataLoader = {
             return total;
         } catch (error) {
             console.error('Erreur stats cours:', error);
+        }
+    },
+
+    /**
+     * Charger les datalists de matières dynamiquement
+     */
+    async loadMatieresDatalists() {
+        try {
+            const { data: matieres, error } = await supabaseClient
+                .from('matieres')
+                .select('nom, type_parcours')
+                .order('nom');
+
+            if (error) throw error;
+
+            const frList = document.getElementById('matieresFrList');
+            const anList = document.getElementById('matieresAnList');
+
+            if (frList) {
+                // Pour la section francophone, on peut filtrer si besoin, mais ici on met tout ou par parcours
+                frList.innerHTML = matieres
+                    .map(m => `<option value="${m.nom}">`)
+                    .join('');
+            }
+
+            if (anList) {
+                anList.innerHTML = matieres
+                    .map(m => `<option value="${m.nom}">`)
+                    .join('');
+            }
+
+            console.log('✅ Datalists matières mis à jour');
+        } catch (error) {
+            console.error('Erreur chargement datalists matières:', error);
         }
     }
 };

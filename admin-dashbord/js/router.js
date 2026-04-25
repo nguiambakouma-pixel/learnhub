@@ -1,11 +1,12 @@
 // js/router.js
-import { dashboardView } from './views/dashboard.js';
-import { matieresView } from './views/matieres.js';
-import { chapitresView } from './views/chapitres.js';
-import { coursView } from './views/cours.js';
-import { exercicesView } from './views/exercices.js';
-import { utilisateursView } from './views/utilisateurs.js';
-import { exercicesCodeView } from './views/exercices-code.js';
+import { dashboardView } from './dashboard.js';
+import { matieresView } from './matieres.js';
+import { chapitresView } from './chapitres.js';
+import { coursView } from './cours.js';
+import { exercicesView } from './exercices.js';
+import { utilisateursView } from './utilisateurs.js';
+import { exercicesCodeView } from './exercices-code.js';
+import { examensView } from './examens.js';
 
 export class Router {
   constructor() {
@@ -16,7 +17,8 @@ export class Router {
       chapitres: chapitresView,
       cours: coursView,
       exercices: exercicesView,
-      'exercices-code': exercicesCodeView, // NOUVEAU
+      'exercices-code': exercicesCodeView,
+      examens: examensView,
       utilisateurs: utilisateursView
     };
   }

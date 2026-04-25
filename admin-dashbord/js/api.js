@@ -1,22 +1,17 @@
 // js/api.js
-import { SUPABASE_CONFIG, STORAGE_BUCKETS } from './config.js';
 
 class SupabaseAPI {
-  constructor() {
-    this.client = null;
-    this.initClient();
-  }
+  constructor() { }
 
-  initClient() {
-    const { createClient } = window.supabase;
-    this.client = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storage: window.localStorage
+  get client() {
+    if (!window.supabaseClient) {
+      console.error('❌ Supabase client not initialized in window.supabaseClient');
+      // On peut tenter de le recréer si CONFIG est global
+      if (window.supabase && window.CONFIG) {
+        window.supabaseClient = window.supabase.createClient(window.CONFIG.supabase.url, window.CONFIG.supabase.key);
       }
-    });
+    }
+    return window.supabaseClient;
   }
 
   // AUTH
@@ -33,12 +28,12 @@ class SupabaseAPI {
 
   // MATIÈRES
   async getMatieres(filters = {}) {
-    let query = this.client.from('matieres').select('*, chapitres(count)');
-    
+    let query = this.client.from('matieres').select('*, sous_systemes(code, nom_fr), niveaux_scolaires(nom_fr, nom_court), series_specialites(nom_fr, nom_court), chapitres(count)');
+
     if (filters.type_parcours) {
       query = query.eq('type_parcours', filters.type_parcours);
     }
-    
+
     const { data, error } = await query.order('ordre');
     if (error) throw error;
     return data;
@@ -85,11 +80,11 @@ class SupabaseAPI {
     let query = this.client
       .from('chapitres')
       .select('*, matieres(nom, couleur)');
-    
+
     if (filters.matiere_id) {
       query = query.eq('matiere_id', filters.matiere_id);
     }
-    
+
     const { data, error } = await query.order('ordre');
     if (error) throw error;
     return data;
@@ -131,16 +126,93 @@ class SupabaseAPI {
     if (error) throw error;
   }
 
+  // NIVEAUX SCOLAIRES (CLASSES)
+  async getNiveaux(filters = {}) {
+    let query = this.client.from('niveaux_scolaires').select('*, cycles(sous_systemes(code, nom_fr))');
+    const { data, error } = await query.order('ordre');
+    if (error) throw error;
+    return data;
+  }
+
+  async getCycles() {
+    const { data, error } = await this.client.from('cycles').select('*, sous_systemes(nom_fr)').order('ordre');
+    if (error) throw error;
+    return data;
+  }
+
+  async getNiveauById(id) {
+    const { data, error } = await this.client.from('niveaux_scolaires').select('*').eq('id', id).single();
+    if (error) throw error;
+    return data;
+  }
+
+  async createNiveau(niveau) {
+    const { data, error } = await this.client.from('niveaux_scolaires').insert([niveau]).select().single();
+    if (error) throw error;
+    return data;
+  }
+
+  async updateNiveau(id, updates) {
+    const { data, error } = await this.client.from('niveaux_scolaires').update(updates).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
+  }
+
+  async deleteNiveau(id) {
+    const { error } = await this.client.from('niveaux_scolaires').delete().eq('id', id);
+    if (error) throw error;
+  }
+
+  async getSousSystemes() {
+    const { data, error } = await this.client.from('sous_systemes').select('*').order('nom_fr');
+    if (error) throw error;
+    return data;
+  }
+
+  // SÉRIES / SPÉCIALITÉS
+  async getSeries(filters = {}) {
+    let query = this.client.from('series_specialites').select('*, niveaux_scolaires(nom_fr, code)');
+    if (filters.niveau_id) {
+      query = query.eq('niveau_id', filters.niveau_id);
+    }
+    const { data, error } = await query.order('ordre');
+    if (error) throw error;
+    return data;
+  }
+
+  async getSerieById(id) {
+    const { data, error } = await this.client.from('series_specialites').select('*').eq('id', id).single();
+    if (error) throw error;
+    return data;
+  }
+
+  async createSerie(serie) {
+    const { data, error } = await this.client.from('series_specialites').insert([serie]).select().single();
+    if (error) throw error;
+    return data;
+  }
+
+  async updateSerie(id, updates) {
+    const { data, error } = await this.client.from('series_specialites').update(updates).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
+  }
+
+  async deleteSerie(id) {
+    const { error } = await this.client.from('series_specialites').delete().eq('id', id);
+    if (error) throw error;
+  }
+
   // COURS
   async getCours(filters = {}) {
     let query = this.client
       .from('cours')
       .select('*, chapitres(titre, matieres(nom, couleur))');
-    
+
     if (filters.chapitre_id) {
       query = query.eq('chapitre_id', filters.chapitre_id);
     }
-    
+
     const { data, error } = await query.order('ordre');
     if (error) throw error;
     return data;
@@ -185,11 +257,11 @@ class SupabaseAPI {
   // UTILISATEURS
   async getUtilisateurs(filters = {}) {
     let query = this.client.from('profiles').select('*');
-    
+
     if (filters.type_parcours) {
       query = query.eq('type_parcours', filters.type_parcours);
     }
-    
+
     const { data, error } = await query.order('created_at', { ascending: false });
     if (error) throw error;
     return data;
@@ -226,7 +298,7 @@ class SupabaseAPI {
         cacheControl: '3600',
         upsert: false
       });
-    
+
     if (error) throw error;
     return data.path;
   }

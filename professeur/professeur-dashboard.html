@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="fr" id="html-root">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-tab-title">Dashboard Professeur — KMERSCHOOL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="secrets.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --ind: #4f46e5;
+            --em: #10b981;
+            --am: #d97706;
+            --red: #ef4444;
+            --txt: #0f172a;
+            --mu: #64748b
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 40% at 5% 10%, rgba(79, 70, 229, .04) 0%, transparent 55%), radial-gradient(ellipse 40% 50% at 90% 90%, rgba(16, 185, 129, .03) 0%, transparent 55%);
+            pointer-events: none;
+            z-index: 0
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 256px;
+            flex-shrink: 0;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 1.25rem 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, .04)
+        }
+
+        .sb-brand {
+            padding: 0 1.25rem 1.1rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: .6rem
+        }
+
+        .sb-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--txt)
+        }
+
+        .sb-logo .k {
+            color: var(--ind)
+        }
+
+        .sb-logo .s {
+            color: var(--em)
+        }
+
+        .sb-role {
+            font-size: .68rem;
+            color: var(--mu);
+            letter-spacing: .07em;
+            text-transform: uppercase;
+            margin-top: .25rem
+        }
+
+        .sb-lang-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            margin-top: .5rem;
+            padding: .22rem .65rem;
+            border-radius: 99px;
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .05em
+        }
+
+        .sb-lang-fr {
+            background: rgba(79, 70, 229, .1);
+            color: var(--ind);
+            border: 1px solid rgba(79, 70, 229, .2)
+        }
+
+        .sb-lang-en {
+            background: rgba(245, 158, 11, .1);
+            color: var(--am);
+            border: 1px solid rgba(245, 158, 11, .2)
+        }
+
+        .sb-sec {
+            padding: .42rem 1.25rem .18rem;
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--mu);
+            margin-top: .35rem
+        }
+
+        .ni {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .6rem 1.25rem;
+            cursor: pointer;
+            transition: all .18s;
+            border-left: 3px solid transparent;
+            font-size: .845rem;
+            color: var(--mu);
+            font-weight: 500;
+            user-select: none
+        }
+
+        .ni:hover {
+            color: var(--ind);
+            background: rgba(79, 70, 229, .05)
+        }
+
+        .ni.active {
+            color: var(--ind);
+            background: rgba(79, 70, 229, .08);
+            border-left-color: var(--ind);
+            font-weight: 600
+        }
+
+        .ni-ico {
+            width: 18px;
+            text-align: center;
+            font-size: .95rem;
+            flex-shrink: 0
+        }
+
+        .sb-bot {
+            margin-top: auto;
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border)
+        }
+
+        .av-wrap {
+            position: relative;
+            display: inline-block;
+            margin-bottom: .75rem
+        }
+
+        .av {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--ind), var(--em));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #fff;
+            overflow: hidden;
+            flex-shrink: 0
+        }
+
+        .av img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover
+        }
+
+        .av-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 18px;
+            height: 18px;
+            background: var(--ind);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: .6rem;
+            color: #fff;
+            border: 2px solid var(--surface)
+        }
+
+        .pname {
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--txt)
+        }
+
+        .psub {
+            font-size: .7rem;
+            color: var(--mu);
+            margin-top: .1rem
+        }
+
+        .pst {
+            font-size: .68rem;
+            color: var(--em);
+            margin-top: .1rem;
+            display: flex;
+            align-items: center;
+            gap: .3rem
+        }
+
+        .btn-out {
+            width: 100%;
+            margin-top: .65rem;
+            padding: .45rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--mu);
+            border-radius: .45rem;
+            font-size: .75rem;
+            cursor: pointer;
+            transition: all .2s
+        }
+
+        .btn-out:hover {
+            border-color: var(--red);
+            color: var(--red)
+        }
+
+        /* Main */
+        .main {
+            flex: 1;
+            overflow-x: hidden;
+            background: var(--bg)
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .9rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .05)
+        }
+
+        .ptitle {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--txt)
+        }
+
+        .btn {
+            padding: .52rem 1.15rem;
+            border-radius: .5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: .78rem;
+            letter-spacing: .02em;
+            border: none;
+            cursor: pointer;
+            transition: all .2s
+        }
+
+        .btn-p {
+            background: var(--ind);
+            color: #fff
+        }
+
+        .btn-p:hover {
+            background: #4338ca;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, .3);
+            transform: translateY(-1px)
+        }
+
+        .btn-p:disabled {
+            opacity: .5;
+            transform: none;
+            cursor: not-allowed
+        }
+
+        .btn-g {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--mu)
+        }
+
+        .btn-g:hover {
+            border-color: var(--ind);
+            color: var(--ind)
+        }
+
+        .btn-em {
+            background: rgba(16, 185, 129, .1);
+            border: 1px solid rgba(16, 185, 129, .3);
+            color: #059669
+        }
+
+        .btn-em:hover {
+            background: rgba(16, 185, 129, .18)
+        }
+
+        /* Content */
+        .content {
+            padding: 1.75rem
+        }
+
+        .sec {
+            display: none
+        }
+
+        .sec.active {
+            display: block
+        }
+
+        /* Stat grid */
+        .sg {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.75rem
+        }
+
+        .sc {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .04)
+        }
+
+        .sc::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 1rem 1rem 0 0
+        }
+
+        .sc.ci::after {
+            background: linear-gradient(90deg, var(--ind), #818cf8)
+        }
+
+        .sc.ce::after {
+            background: linear-gradient(90deg, var(--em), #34d399)
+        }
+
+        .sc.ca::after {
+            background: linear-gradient(90deg, var(--am), #fbbf24)
+        }
+
+        .sc.cp::after {
+            background: linear-gradient(90deg, #a855f7, #c084fc)
+        }
+
+        .sv {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: .2rem;
+            margin-top: .5rem
+        }
+
+        .ci .sv {
+            color: var(--ind)
+        }
+
+        .ce .sv {
+            color: var(--em)
+        }
+
+        .ca .sv {
+            color: var(--am)
+        }
+
+        .cp .sv {
+            color: #9333ea
+        }
+
+        .sl {
+            font-size: .74rem;
+            color: var(--mu);
+            font-weight: 500
+        }
+
+        .sico {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.6rem;
+            opacity: .12
+        }
+
+        /* Glass card */
+        .gl {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .04)
+        }
+
+        .gh {
+            padding: 1rem 1.35rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .gtitle {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: .9rem;
+            color: var(--txt)
+        }
+
+        .gb {
+            padding: 1.35rem
+        }
+
+        /* Form */
+        .fd {
+            margin-bottom: .95rem
+        }
+
+        .fd label {
+            display: block;
+            font-size: .71rem;
+            font-weight: 700;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: var(--mu);
+            margin-bottom: .38rem
+        }
+
+        .fd input,
+        .fd select,
+        .fd textarea {
+            width: 100%;
+            padding: .65rem 1rem;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: .55rem;
+            color: var(--txt);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .875rem;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s
+        }
+
+        .fd input:focus,
+        .fd select:focus,
+        .fd textarea:focus {
+            border-color: var(--ind);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, .1)
+        }
+
+        .fd select option {
+            background: var(--surface)
+        }
+
+        .fd textarea {
+            resize: vertical;
+            min-height: 90px
+        }
+
+        .g2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .95rem
+        }
+
+        .g3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: .95rem
+        }
+
+        /* Code editor */
+        .ce-wrap {
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: .55rem;
+            overflow: hidden
+        }
+
+        .ce-tb {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .45rem .9rem;
+            background: #f1f5f9;
+            border-bottom: 1px solid var(--border)
+        }
+
+        .lang-b {
+            font-size: .7rem;
+            font-weight: 700;
+            padding: .18rem .55rem;
+            border-radius: 99px;
+            background: rgba(79, 70, 229, .1);
+            color: var(--ind);
+            letter-spacing: .05em;
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        .ce-ta {
+            width: 100%;
+            padding: .9rem;
+            background: transparent;
+            border: none;
+            color: #1e293b;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .8rem;
+            line-height: 1.65;
+            outline: none;
+            resize: vertical;
+            min-height: 180px;
+            tab-size: 2
+        }
+
+        /* Upload */
+        .uz {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            padding: .78rem .95rem;
+            background: var(--bg);
+            border: 1.5px dashed var(--border);
+            border-radius: .55rem;
+            cursor: pointer;
+            transition: all .2s
+        }
+
+        .uz:hover {
+            border-color: var(--ind);
+            background: rgba(79, 70, 229, .03)
+        }
+
+        .uz.done {
+            border-color: var(--em);
+            background: rgba(16, 185, 129, .04)
+        }
+
+        .uz input {
+            display: none
+        }
+
+        .ut {
+            font-size: .78rem;
+            color: var(--mu)
+        }
+
+        .ut strong {
+            color: var(--txt);
+            display: block;
+            font-size: .84rem
+        }
+
+        /* Editor */
+        .et {
+            display: flex;
+            gap: .3rem;
+            padding: .42rem .7rem;
+            background: #f1f5f9;
+            border: 1.5px solid var(--border);
+            border-bottom: none;
+            border-radius: .55rem .55rem 0 0
+        }
+
+        .eb {
+            padding: .28rem .5rem;
+            background: transparent;
+            border: none;
+            color: var(--mu);
+            border-radius: .28rem;
+            cursor: pointer;
+            font-size: .78rem;
+            transition: background .15s
+        }
+
+        .eb:hover {
+            background: rgba(79, 70, 229, .1);
+            color: var(--ind)
+        }
+
+        .ec {
+            min-height: 180px;
+            padding: .9rem;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: 0 0 .55rem .55rem;
+            color: var(--txt);
+            outline: none;
+            font-size: .875rem;
+            line-height: 1.65
+        }
+
+        .ec:focus {
+            border-color: var(--ind)
+        }
+
+        .ec:empty::before {
+            content: attr(data-ph);
+            color: var(--mu);
+            pointer-events: none
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: .2rem .62rem;
+            border-radius: 99px;
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .04em
+        }
+
+        .bok {
+            background: rgba(16, 185, 129, .1);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, .25)
+        }
+
+        .bwt {
+            background: rgba(245, 158, 11, .1);
+            color: var(--am);
+            border: 1px solid rgba(245, 158, 11, .25)
+        }
+
+        .bdr {
+            background: rgba(100, 116, 139, .08);
+            color: #64748b;
+            border: 1px solid rgba(100, 116, 139, .18)
+        }
+
+        .brej {
+            background: rgba(239, 68, 68, .08);
+            color: var(--red);
+            border: 1px solid rgba(239, 68, 68, .18)
+        }
+
+        .b-fr {
+            background: rgba(79, 70, 229, .08);
+            color: var(--ind);
+            border: 1px solid rgba(79, 70, 229, .18)
+        }
+
+        .b-en {
+            background: rgba(245, 158, 11, .08);
+            color: var(--am);
+            border: 1px solid rgba(245, 158, 11, .18)
+        }
+
+        .b-bi {
+            background: rgba(16, 185, 129, .08);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, .18)
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        th {
+            padding: .6rem 1rem;
+            text-align: left;
+            font-size: .69rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--mu);
+            border-bottom: 1.5px solid var(--border);
+            background: #f8fafc
+        }
+
+        td {
+            padding: .8rem 1rem;
+            font-size: .83rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+            color: var(--txt)
+        }
+
+        tr:last-child td {
+            border-bottom: none
+        }
+
+        tr:hover td {
+            background: rgba(79, 70, 229, .02)
+        }
+
+        /* Séparateur */
+        .sep {
+            height: 1px;
+            background: var(--border);
+            margin: 1.15rem 0
+        }
+
+        /* Alert */
+        .al {
+            padding: .78rem 1rem;
+            border-radius: .55rem;
+            font-size: .83rem;
+            margin-bottom: .9rem;
+            display: none;
+            align-items: flex-start;
+            gap: .55rem
+        }
+
+        .al.show {
+            display: flex
+        }
+
+        .aerr {
+            background: rgba(239, 68, 68, .07);
+            border: 1px solid rgba(239, 68, 68, .2);
+            color: var(--red)
+        }
+
+        .aok {
+            background: rgba(16, 185, 129, .07);
+            border: 1px solid rgba(16, 185, 129, .2);
+            color: #059669
+        }
+
+        .ainfo {
+            background: rgba(79, 70, 229, .07);
+            border: 1px solid rgba(79, 70, 229, .15);
+            color: var(--ind)
+        }
+
+        /* Empty */
+        .emp {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--mu)
+        }
+
+        .emp-ico {
+            font-size: 2.2rem;
+            margin-bottom: .65rem
+        }
+
+        .emp h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: .9rem;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-bottom: .28rem
+        }
+
+        .emp p {
+            font-size: .8rem
+        }
+
+        /* Profile specific */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(79, 70, 229, .06) 0%, rgba(16, 185, 129, .04) 100%);
+            border-radius: .9rem;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem
+        }
+
+        .prof-av-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--ind), var(--em));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: #fff;
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative
+        }
+
+        .prof-av-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover
+        }
+
+        .av-upload-btn {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity .2s;
+            cursor: pointer;
+            border-radius: 50%;
+            font-size: .7rem;
+            color: #fff;
+            text-align: center
+        }
+
+        .prof-av-large:hover .av-upload-btn {
+            opacity: 1
+        }
+
+        /* Tags spécialités */
+        .tags-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+            padding: .58rem .9rem;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: .55rem;
+            min-height: 2.8rem;
+            cursor: text;
+            transition: border-color .2s
+        }
+
+        .tags-wrap:focus-within {
+            border-color: var(--ind);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, .1)
+        }
+
+        .tags-wrap input {
+            flex: 1;
+            min-width: 120px;
+            background: transparent;
+            border: none;
+            color: var(--txt);
+            font-size: .875rem;
+            outline: none;
+            font-family: 'DM Sans', sans-serif
+        }
+
+        .tag-pill {
+            padding: .22rem .65rem;
+            background: rgba(79, 70, 229, .1);
+            border: 1px solid rgba(79, 70, 229, .2);
+            border-radius: 99px;
+            font-size: .74rem;
+            color: var(--ind);
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+            font-weight: 600
+        }
+
+        .tag-pill button {
+            background: none;
+            border: none;
+            color: var(--ind);
+            cursor: pointer;
+            font-size: .9rem;
+            line-height: 1;
+            padding: 0;
+            margin: 0;
+            opacity: .6
+        }
+
+        .tag-pill button:hover {
+            opacity: 1
+        }
+
+        /* Test cases */
+        .tr-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: .45rem;
+            margin-bottom: .45rem;
+            align-items: center
+        }
+
+        .tr-row input {
+            padding: .48rem .75rem;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: .45rem;
+            color: var(--txt);
+            font-size: .8rem;
+            outline: none;
+            font-family: 'JetBrains Mono', monospace
+        }
+
+        .tr-row input:focus {
+            border-color: var(--ind)
+        }
+
+        .td-btn {
+            background: rgba(239, 68, 68, .08);
+            border: 1px solid rgba(239, 68, 68, .2);
+            color: var(--red);
+            padding: .38rem .55rem;
+            border-radius: .38rem;
+            cursor: pointer;
+            font-size: .78rem
+        }
+
+        /* Progress bar */
+        .prog-bar {
+            height: 6px;
+            background: var(--border);
+            border-radius: 99px;
+            overflow: hidden;
+            margin-top: .4rem
+        }
+
+        .prog-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width .4s
+        }
+
+        /* Spinner */
+        .spin {
+            width: 13px;
+            height: 13px;
+            border: 2px solid rgba(255, 255, 255, .3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: sp .7s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: .3rem
+        }
+
+        .spin-dark {
+            border: 2px solid var(--border);
+            border-top-color: var(--ind)
+        }
+
+        @keyframes sp {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(79, 70, 229, .2);
+            border-radius: 3px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <!-- ═══ SIDEBAR ═══ -->
+        <aside class="sidebar">
+            <div class="sb-brand">
+                <div class="sb-logo"><span class="k">KMER</span><span class="s">SCHOOL</span></div>
+                <div class="sb-role" id="sb-role">Espace Professeur</div>
+                <div class="sb-lang-badge sb-lang-fr" id="sb-lang-badge">🇫🇷 Francophone</div>
+            </div>
+
+            <div class="sb-sec" id="lbl-sec-overview">Vue d'ensemble</div>
+            <div class="ni active" onclick="go('dashboard')"><span class="ni-ico">📊</span><span
+                    data-i18n="nav_dashboard">Tableau de bord</span></div>
+
+            <div class="sb-sec" id="lbl-sec-content" data-i18n="nav_sec_content">Contenu</div>
+            <div class="ni" onclick="go('mes-cours')"><span class="ni-ico">📚</span><span data-i18n="nav_my_courses">Mes
+                    Cours</span></div>
+            <div class="ni" onclick="go('proposer-cours')"><span class="ni-ico">✏️</span><span
+                    data-i18n="nav_propose_course">Proposer un cours</span></div>
+            <div class="ni" onclick="go('mes-exercices')"><span class="ni-ico">💻</span><span
+                    data-i18n="nav_my_exercises">Mes Exercices Code</span></div>
+            <div class="ni" onclick="go('proposer-exercice')"><span class="ni-ico">➕</span><span
+                    data-i18n="nav_propose_exercise">Proposer un exercice</span></div>
+
+            <div class="sb-sec" data-i18n="nav_sec_exams">Épreuves</div>
+            <div class="ni" onclick="go('mes-epreuves')"><span class="ni-ico">📝</span><span
+                    data-i18n="nav_my_exams">Mes Épreuves</span></div>
+            <div class="ni" onclick="go('soumettre')"><span class="ni-ico">🚀</span><span
+                    data-i18n="nav_submit_exam">Soumettre une épreuve</span></div>
+
+            <div class="sb-sec" data-i18n="nav_sec_finance">Finances & Compte</div>
+            <div class="ni" onclick="go('paiements')"><span class="ni-ico">💰</span><span data-i18n="nav_payments">Mes
+                    Paiements</span></div>
+            <div class="ni" onclick="go('profil')"><span class="ni-ico">👤</span><span data-i18n="nav_profile">Mon
+                    Profil</span></div>
+
+            <div class="sb-bot">
+                <div style="display:flex;align-items:center;gap:.85rem;margin-bottom:.5rem">
+                    <div class="av-wrap">
+                        <div class="av" id="sb-av">?</div>
+                    </div>
+                    <div style="flex:1;min-width:0">
+                        <div class="pname" id="sb-name">…</div>
+                        <div class="psub" id="sb-spec">…</div>
+                        <div class="pst">● <span data-i18n="status_active">Compte actif</span></div>
+                    </div>
+                </div>
+                <button class="btn-out" onclick="doLogout()" data-i18n="btn_logout">🚪 Déconnexion</button>
+            </div>
+        </aside>
+
+        <!-- ═══ MAIN ═══ -->
+        <div class="main">
+            <div class="topbar">
+                <div class="ptitle" id="ptitle">Tableau de bord</div>
+                <div style="display:flex;gap:.6rem">
+                    <button class="btn btn-g" onclick="go('proposer-cours')" id="topbtn-cours"
+                        data-i18n="btn_add_course">+ Cours</button>
+                    <button class="btn btn-g" onclick="go('proposer-exercice')" data-i18n="btn_add_exercise">+
+                        Exercice</button>
+                    <button class="btn btn-p" onclick="go('soumettre')" data-i18n="btn_add_exam">+ Épreuve</button>
+                </div>
+            </div>
+
+            <div class="content">
+
+                <!-- ══ DASHBOARD ══ -->
+                <div id="sec-dashboard" class="sec active">
+                    <div class="sg">
+                        <div class="sc ci">
+                            <div class="sico">📚</div>
+                            <div class="sv" id="st-c">—</div>
+                            <div class="sl" data-i18n="stat_courses">Cours proposés</div>
+                        </div>
+                        <div class="sc cp">
+                            <div class="sico">💻</div>
+                            <div class="sv" id="st-x">—</div>
+                            <div class="sl" data-i18n="stat_exercises">Exercices Code</div>
+                        </div>
+                        <div class="sc ce">
+                            <div class="sico">✅</div>
+                            <div class="sv" id="st-v">—</div>
+                            <div class="sl" data-i18n="stat_validated">Épreuves validées</div>
+                        </div>
+                        <div class="sc ca">
+                            <div class="sico">💰</div>
+                            <div class="sv" id="st-g">—</div>
+                            <div class="sl">Gains (XAF)</div>
+                        </div>
+                    </div>
+
+                    <!-- Taux + Progression -->
+                    <div class="gl" style="margin-bottom:1.25rem">
+                        <div class="gh">
+                            <div class="gtitle" data-i18n="dash_performance">Performance</div>
+                        </div>
+                        <div class="gb">
+                            <div class="g3">
+                                <div>
+                                    <div style="font-size:.76rem;color:var(--mu);margin-bottom:.3rem"
+                                        data-i18n="perf_acceptance_rate">Taux d'acceptation</div>
+                                    <div style="font-size:1.4rem;font-weight:700;font-family:'Space Grotesk',sans-serif;color:var(--em)"
+                                        id="perf-taux">—%</div>
+                                    <div class="prog-bar">
+                                        <div class="prog-fill" id="prog-taux" style="background:var(--em);width:0%">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="font-size:.76rem;color:var(--mu);margin-bottom:.3rem"
+                                        data-i18n="perf_pending_gains">Gains en attente</div>
+                                    <div style="font-size:1.4rem;font-weight:700;font-family:'Space Grotesk',sans-serif;color:var(--am)"
+                                        id="perf-attente">— XAF</div>
+                                </div>
+                                <div>
+                                    <div style="font-size:.76rem;color:var(--mu);margin-bottom:.3rem"
+                                        data-i18n="perf_paid_gains">Gains versés</div>
+                                    <div style="font-size:1.4rem;font-weight:700;font-family:'Space Grotesk',sans-serif;color:var(--ind)"
+                                        id="perf-verses">— XAF</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.15rem;margin-bottom:1.15rem">
+                        <div class="gl">
+                            <div class="gh">
+                                <div class="gtitle" data-i18n="dash_last_courses">Derniers cours</div><button
+                                    class="btn btn-g" style="font-size:.72rem;padding:.32rem .75rem"
+                                    onclick="go('mes-cours')" data-i18n="btn_see_all">Voir tout</button>
+                            </div>
+                            <div id="d-cours"></div>
+                        </div>
+                        <div class="gl">
+                            <div class="gh">
+                                <div class="gtitle" data-i18n="dash_last_exams">Dernières épreuves</div><button
+                                    class="btn btn-g" style="font-size:.72rem;padding:.32rem .75rem"
+                                    onclick="go('mes-epreuves')" data-i18n="btn_see_all">Voir tout</button>
+                            </div>
+                            <div id="d-ep"></div>
+                        </div>
+                    </div>
+                    <div class="gl">
+                        <div class="gh">
+                            <div class="gtitle" data-i18n="dash_last_exercises">Derniers exercices code</div><button
+                                class="btn btn-g" style="font-size:.72rem;padding:.32rem .75rem"
+                                onclick="go('mes-exercices')" data-i18n="btn_see_all">Voir tout</button>
+                        </div>
+                        <div id="d-ex"></div>
+                    </div>
+                </div>
+
+                <!-- ══ MES COURS ══ -->
+                <div id="sec-mes-cours" class="sec">
+                    <div class="gl">
+                        <div class="gh">
+                            <div class="gtitle" data-i18n="my_courses_title">Mes Cours proposés</div><button
+                                class="btn btn-p" onclick="go('proposer-cours')" data-i18n="btn_new_course">+ Nouveau
+                                cours</button>
+                        </div>
+                        <div id="cl-wrap">
+                            <div class="emp">
+                                <div class="emp-ico">⏳</div>
+                                <h4 data-i18n="loading">Chargement…</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ PROPOSER COURS ══ -->
+                <div id="sec-proposer-cours" class="sec">
+                    <div class="gl" style="max-width:820px">
+                        <div class="gh">
+                            <div class="gtitle" id="cf-title" data-i18n="propose_course_title">✏️ Proposer un nouveau
+                                cours</div>
+                        </div>
+                        <div class="gb">
+                            <div id="al-cours" class="al"></div>
+                            <div class="g2">
+                                <div class="fd"><label data-i18n="field_subject">Matière *</label>
+                                    <select id="c-spec">
+                                        <option value="" data-i18n-opt="select_placeholder">Sélectionner…</option>
+                                    </select>
+                                </div>
+                                <div class="fd"><label data-i18n="field_chapter">Chapitre *</label><input type="text"
+                                        id="c-chap"></div>
+                            </div>
+                            <div class="fd"><label data-i18n="field_title">Titre du cours *</label><input type="text"
+                                    id="c-tit"></div>
+                            <div class="g3">
+                                <div class="fd"><label data-i18n="field_class">Classe *</label>
+                                    <select id="c-niv" onchange="loadSeries('c-niv','c-ser-wrap','c-ser')">
+                                        <option value="" data-i18n-opt="select_placeholder">Sélectionner…</option>
+                                    </select>
+                                </div>
+                                <div class="fd" id="c-ser-wrap" style="display:none"><label
+                                        data-i18n="field_specialty">Spécialité</label>
+                                    <select id="c-ser">
+                                        <option value="">—</option>
+                                    </select>
+                                </div>
+                                <div class="fd"><label data-i18n="field_content_type">Type de contenu</label>
+                                    <select id="c-typ">
+                                        <option value="texte" data-i18n-opt="type_text">📄 Cours écrit</option>
+                                        <option value="video" data-i18n-opt="type_video">🎥 Vidéo</option>
+                                    </select>
+                                </div>
+                            </div>
+                                        <option value="video" data-i18n-opt="type_video">🎥 Vidéo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="g2">
+                                <div class="fd"><label data-i18n="field_duration">Durée (min)</label><input
+                                        type="number" id="c-dur" placeholder="45" min="5"></div>
+                                <div class="fd"><label data-i18n="field_xp">Points XP</label><input type="number"
+                                        id="c-pts" value="20" min="5"></div>
+                            </div>
+                            <div class="fd"><label data-i18n="field_video_url">URL Vidéo YouTube
+                                    (optionnel)</label><input type="url" id="c-vid"
+                                    placeholder="https://youtube.com/watch?v=…"></div>
+                            <div class="fd"><label data-i18n="field_image">Image de couverture</label>
+                                <label class="uz" id="iz"><input type="file" id="c-img" accept="image/*"
+                                        onchange="uploadImg(event)"><span style="font-size:1.3rem">🖼️</span>
+                                    <div class="ut"><strong id="iname" data-i18n="choose_image">Choisir une
+                                            image</strong><span data-i18n="img_hint">JPG, PNG — Max 5 MB</span></div>
+                                </label>
+                            </div>
+                            <div class="fd"><label data-i18n="field_pdf">PDF du cours (optionnel)</label>
+                                <label class="uz" id="pz"><input type="file" id="c-pdf" accept=".pdf"
+                                        onchange="uploadPdf(event)"><span style="font-size:1.3rem">📄</span>
+                                    <div class="ut"><strong id="pname" data-i18n="choose_pdf">Choisir un
+                                            PDF</strong><span data-i18n="pdf_hint">Max 10 MB</span></div>
+                                </label>
+                            </div>
+                            <div class="fd"><label data-i18n="field_content">Contenu du cours *</label>
+                                <div class="et">
+                                    <button class="eb" type="button" onclick="fmt('bold')"><b>B</b></button>
+                                    <button class="eb" type="button" onclick="fmt('italic')"><i>I</i></button>
+                                    <button class="eb" type="button" onclick="fmt('underline')"><u>U</u></button>
+                                    <button class="eb" type="button" onclick="fmt('insertUnorderedList')">≡</button>
+                                    <button class="eb" type="button" onclick="fmt('insertOrderedList')">1.</button>
+                                    <button class="eb" type="button" onclick="fmt('formatBlock','h3')">H3</button>
+                                </div>
+                                <div id="c-cont" class="ec" contenteditable="true"
+                                    data-ph="Rédigez le contenu du cours ici…"></div>
+                            </div>
+                            <div class="sep"></div>
+                            <div style="display:flex;gap:.7rem;justify-content:flex-end">
+                                <button class="btn btn-g" onclick="resetCours()" data-i18n="btn_reset">🔄
+                                    Réinitialiser</button>
+                                <button class="btn btn-p" id="btn-cours" onclick="saveCours()"><span
+                                        data-i18n="btn_submit_course">📤 Soumettre le cours</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ MES EXERCICES ══ -->
+                <div id="sec-mes-exercices" class="sec">
+                    <div class="gl">
+                        <div class="gh">
+                            <div class="gtitle" data-i18n="my_exercises_title">Mes Exercices Code</div><button
+                                class="btn btn-p" onclick="go('proposer-exercice')" data-i18n="btn_new_exercise">+
+                                Nouveau</button>
+                        </div>
+                        <div id="xl-wrap">
+                            <div class="emp">
+                                <div class="emp-ico">⏳</div>
+                                <h4 data-i18n="loading">Chargement…</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ PROPOSER EXERCICE ══ -->
+                <div id="sec-proposer-exercice" class="sec">
+                    <div class="gl" style="max-width:900px">
+                        <div class="gh">
+                            <div class="gtitle" id="xf-title" data-i18n="propose_exercise_title">💻 Proposer un exercice
+                                de code</div>
+                        </div>
+                        <div class="gb">
+                            <div id="al-exo" class="al"></div>
+                            <div class="g2">
+                                <div class="fd"><label data-i18n="field_title">Titre *</label><input type="text"
+                                        id="x-tit"></div>
+                                <div class="fd"><label data-i18n="field_language">Langage *</label>
+                                    <select id="x-lang" onchange="syncLang()">
+                                        <option value="">…</option>
+                                        <option value="javascript">JavaScript</option>
+                                        <option value="python">Python</option>
+                                        <option value="html">HTML</option>
+                                        <option value="css">CSS</option>
+                                        <option value="sql">SQL</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="g2">
+                                <div class="fd"><label data-i18n="field_difficulty">Difficulté</label>
+                                    <select id="x-diff">
+                                        <option value="facile" data-i18n-opt="diff_easy">🟢 Facile</option>
+                                        <option value="moyen" selected data-i18n-opt="diff_medium">🟡 Moyen</option>
+                                        <option value="difficile" data-i18n-opt="diff_hard">🔴 Difficile</option>
+                                    </select>
+                                </div>
+                                <div class="fd"><label data-i18n="field_xp">Points XP</label><input type="number"
+                                        id="x-pts" value="20" min="5"></div>
+                            </div>
+                            <div class="fd"><label data-i18n="field_instructions">Description / Consignes
+                                    *</label><textarea id="x-desc"></textarea></div>
+                            <div class="fd"><label data-i18n="field_starter_code">Code de départ (fourni à
+                                    l'étudiant)</label>
+                                <div class="ce-wrap">
+                                    <div class="ce-tb"><span class="lang-b" id="lb-s">—</span><span
+                                            style="font-size:.7rem;color:var(--mu)" data-i18n="starter_code_hint">Code
+                                            que verra l'étudiant</span></div><textarea class="ce-ta"
+                                        id="x-init"></textarea>
+                                </div>
+                            </div>
+                            <div class="fd"><label data-i18n="field_solution">Solution correcte *</label>
+                                <div class="ce-wrap">
+                                    <div class="ce-tb"><span class="lang-b" id="lb-sol">—</span><span
+                                            style="font-size:.7rem;color:var(--mu)" data-i18n="solution_hint">Solution
+                                            de référence</span></div><textarea class="ce-ta" id="x-sol"></textarea>
+                                </div>
+                            </div>
+                            <div class="fd">
+                                <label style="display:flex;align-items:center;justify-content:space-between"><span
+                                        data-i18n="field_tests">Tests unitaires</span><button type="button"
+                                        onclick="addTest()" class="btn btn-g"
+                                        style="font-size:.7rem;padding:.28rem .7rem;text-transform:none;letter-spacing:0"
+                                        data-i18n="btn_add_test">+ Test</button></label>
+                                <div style="font-size:.73rem;color:var(--mu);margin-bottom:.6rem"
+                                    data-i18n="tests_hint">Paires entrée → sortie pour validation automatique</div>
+                                <div id="tests-c"></div>
+                            </div>
+                            <div class="sep"></div>
+                            <div style="display:flex;gap:.7rem;justify-content:flex-end">
+                                <button class="btn btn-g" onclick="resetExo()" data-i18n="btn_reset">🔄
+                                    Réinitialiser</button>
+                                <button class="btn btn-p" id="btn-exo" onclick="saveExo()"><span
+                                        data-i18n="btn_submit_exercise">📤 Soumettre l'exercice</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ MES ÉPREUVES ══ -->
+                <div id="sec-mes-epreuves" class="sec">
+                    <div class="gl">
+                        <div class="gh">
+                            <div class="gtitle" data-i18n="my_exams_title">Mes Épreuves</div>
+                            <div style="display:flex;gap:.45rem;align-items:center">
+                                <select id="ep-f" onchange="loadEp()"
+                                    style="padding:.38rem .75rem;background:var(--bg);border:1.5px solid var(--border);color:var(--txt);border-radius:.45rem;font-size:.76rem">
+                                    <option value="" data-i18n-opt="filter_all">Tous</option>
+                                    <option value="brouillon" data-i18n-opt="status_draft">Brouillon</option>
+                                    <option value="soumis" data-i18n-opt="status_submitted">Soumis</option>
+                                    <option value="en_revision" data-i18n-opt="status_review">En révision</option>
+                                    <option value="valide" data-i18n-opt="status_validated">Validé</option>
+                                    <option value="rejete" data-i18n-opt="status_rejected">Rejeté</option>
+                                </select>
+                                <button class="btn btn-p" onclick="go('soumettre')" data-i18n="btn_new_exam">+
+                                    Nouvelle</button>
+                            </div>
+                        </div>
+                        <div id="ep-wrap">
+                            <div class="emp">
+                                <div class="emp-ico">⏳</div>
+                                <h4 data-i18n="loading">Chargement…</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ SOUMETTRE ÉPREUVE ══ -->
+                <div id="sec-soumettre" class="sec">
+                    <div class="gl" style="max-width:840px">
+                        <div class="gh">
+                            <div class="gtitle" id="ef-title" data-i18n="submit_exam_title">🚀 Nouvelle épreuve</div>
+                        </div>
+                        <div class="gb">
+                            <div id="al-ep" class="al"></div>
+                            <div class="g2">
+                                <div class="fd"><label data-i18n="field_title">Titre *</label><input type="text"
+                                        id="e-tit"></div>
+                                <div class="fd"><label data-i18n="field_specialty">Spécialité *</label>
+                                    <select id="e-spec">
+                                        <option value="" data-i18n-opt="select_placeholder">Sélectionner…</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="g3">
+                                <div class="fd"><label data-i18n="field_exam_type">Type *</label>
+                                    <select id="e-typ">
+                                        <option value="">…</option>
+                                        <option value="evaluation">Évaluation</option>
+                                        <option value="controle">Contrôle</option>
+                                        <option value="devoir">Devoir</option>
+                                        <option value="composition">Composition</option>
+                                        <option value="examen_blanc">Examen blanc</option>
+                                        <option value="test">Test</option>
+                                    </select>
+                                </div>
+                                <div class="fd"><label data-i18n="field_class">Classe</label>
+                                    <select id="e-niv" onchange="loadSeries('e-niv','e-ser-wrap','e-ser')">
+                                        <option value="">—</option>
+                                    </select>
+                                </div>
+                                <div class="fd" id="e-ser-wrap" style="display:none"><label
+                                        data-i18n="field_series">Série</label>
+                                    <select id="e-ser">
+                                        <option value="">—</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="g2">
+                                <div class="fd"><label data-i18n="field_duration">Durée (min) *</label><input
+                                        type="number" id="e-dur" value="60"></div>
+                                <div class="fd"><label data-i18n="field_total_score">Barème total</label><input
+                                        type="number" id="e-bar" value="20"></div>
+                            </div>
+                            <div class="fd"><label data-i18n="field_instructions">Consignes générales</label><textarea
+                                    id="e-desc" style="min-height:70px"></textarea></div>
+                            <div class="sep"></div>
+                            <div
+                                style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem">
+                                <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.86rem;color:var(--txt)"
+                                    data-i18n="questions_label">Questions <span
+                                        style="color:var(--mu);font-weight:400;font-size:.76rem" id="qc">(0)</span>
+                                </div>
+                                <div style="display:flex;gap:.38rem;flex-wrap:wrap">
+                                    <button class="btn btn-g" style="font-size:.7rem;padding:.32rem .65rem"
+                                        onclick="addQ('qcm_unique')" data-i18n="btn_qcm_single">+ QCM unique</button>
+                                    <button class="btn btn-g" style="font-size:.7rem;padding:.32rem .65rem"
+                                        onclick="addQ('qcm_multiple')" data-i18n="btn_qcm_multi">+ QCM multiple</button>
+                                    <button class="btn btn-g" style="font-size:.7rem;padding:.32rem .65rem"
+                                        onclick="addQ('vrai_faux')" data-i18n="btn_true_false">+ Vrai/Faux</button>
+                                    <button class="btn btn-g" style="font-size:.7rem;padding:.32rem .65rem"
+                                        onclick="addQ('texte_long')" data-i18n="btn_open">+ Ouverte</button>
+                                </div>
+                            </div>
+                            <div id="qbox"></div>
+                            <div class="sep"></div>
+                            <div style="display:flex;gap:.7rem;justify-content:flex-end">
+                                <button class="btn btn-g" id="btn-draft" onclick="saveEp('brouillon')"
+                                    data-i18n="btn_draft">💾 Brouillon</button>
+                                <button class="btn btn-p" id="btn-subep" onclick="saveEp('soumis')"
+                                    data-i18n="btn_submit_exam">🚀 Soumettre</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ PAIEMENTS ══ -->
+                <div id="sec-paiements" class="sec">
+                    <div class="gl">
+                        <div class="gh">
+                            <div class="gtitle" data-i18n="payments_title">Historique des paiements</div>
+                        </div>
+                        <div id="pay-wrap">
+                            <div class="emp">
+                                <div class="emp-ico">⏳</div>
+                                <h4 data-i18n="loading">Chargement…</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ PROFIL COMPLET ══ -->
+                <div id="sec-profil" class="sec">
+                    <div style="max-width:700px">
+
+                        <!-- Header profil -->
+                        <div class="profile-header">
+                            <div class="prof-av-large" id="prof-av-large">
+                                <span id="prof-av-initials">?</span>
+                                <label class="av-upload-btn" for="av-file-input">📷<br><span style="font-size:.58rem"
+                                        data-i18n="change_photo">Changer</span></label>
+                                <input type="file" id="av-file-input" accept="image/*" style="display:none"
+                                    onchange="uploadAvatar(event)">
+                            </div>
+                            <div style="flex:1">
+                                <div style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:800;color:var(--txt)"
+                                    id="prof-fullname">…</div>
+                                <div style="font-size:.82rem;color:var(--mu);margin-top:.2rem" id="prof-email-disp">…
+                                </div>
+                                <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.65rem"
+                                    id="prof-badges-disp"></div>
+                                <div style="display:flex;gap:1.5rem;margin-top:.75rem">
+                                    <div>
+                                        <div style="font-size:.68rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em"
+                                            data-i18n="stat_validated">Validées</div>
+                                        <div style="font-size:1.2rem;font-weight:700;color:var(--em)" id="prof-stat-v">—
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div
+                                            style="font-size:.68rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em">
+                                            Taux</div>
+                                        <div style="font-size:1.2rem;font-weight:700;color:var(--ind)" id="prof-stat-t">
+                                            —%</div>
+                                    </div>
+                                    <div>
+                                        <div
+                                            style="font-size:.68rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em">
+                                            Gains</div>
+                                        <div style="font-size:1.2rem;font-weight:700;color:var(--am)" id="prof-stat-g">—
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Formulaire profil -->
+                        <div class="gl">
+                            <div class="gh">
+                                <div class="gtitle" data-i18n="edit_profile">Modifier mes informations</div><button
+                                    class="btn btn-p" onclick="saveProfil()" data-i18n="btn_save">Enregistrer</button>
+                            </div>
+                            <div class="gb">
+                                <div id="al-prof" class="al"></div>
+                                <div class="g2">
+                                    <div class="fd"><label data-i18n="field_first_name">Prénom *</label><input
+                                            type="text" id="p-pr"></div>
+                                    <div class="fd"><label data-i18n="field_last_name">Nom *</label><input type="text"
+                                            id="p-no"></div>
+                                </div>
+                                <div class="g2">
+                                    <div class="fd"><label data-i18n="field_phone">Téléphone</label><input type="tel"
+                                            id="p-ph" placeholder="+237 6XX XXX XXX"></div>
+                                    <div class="fd"><label data-i18n="field_experience">Années
+                                            d'expérience</label><input type="number" id="p-ex" min="0"></div>
+                                </div>
+                                <div class="fd"><label data-i18n="field_school">Établissement actuel</label><input
+                                        type="text" id="p-et"></div>
+
+                                <!-- Spécialités (tags) -->
+                                <div class="fd">
+                                    <label data-i18n="field_specialties">Spécialités <span
+                                            style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.7rem;color:var(--mu)"
+                                            data-i18n="specialties_hint">(Appuyer Entrée pour ajouter)</span></label>
+                                    <div class="tags-wrap" id="tags-wrap"
+                                        onclick="document.getElementById('tag-input').focus()">
+                                        <input type="text" id="tag-input" list="matieres-suggestions" placeholder="ex: Mathématiques"
+                                            onkeydown="handleTag(event)">
+                                    </div>
+                                    <datalist id="matieres-suggestions"></datalist>
+                                </div>
+
+                                <!-- Sous-systèmes (lecture seule — modifiable par l'admin) -->
+                                <div class="fd">
+                                    <label data-i18n="field_subsystems">Sous-systèmes enseignés <span
+                                            style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.7rem;color:var(--mu)"
+                                            data-i18n="subsystems_readonly">(Modifiable uniquement par
+                                            l'admin)</span></label>
+                                    <div id="ss-display"
+                                        style="display:flex;flex-wrap:wrap;gap:.5rem;padding:.65rem 1rem;background:var(--bg);border:1.5px solid var(--border);border-radius:.55rem;min-height:2.5rem">
+                                    </div>
+                                </div>
+
+                                <!-- Langue interface -->
+                                <div class="fd">
+                                    <label data-i18n="field_lang">Langue de l'interface</label>
+                                    <select id="p-lang" onchange="switchLangManual()">
+                                        <option value="fr">🇫🇷 Français</option>
+                                        <option value="en">🇬🇧 English</option>
+                                    </select>
+                                </div>
+
+                                <div class="fd"><label data-i18n="field_bio">Bio / Présentation</label><textarea
+                                        id="p-bi" style="min-height:110px"></textarea></div>
+
+                                <div class="sep"></div>
+                                <div style="display:flex;gap:.7rem;justify-content:flex-end">
+                                    <button class="btn btn-p" onclick="saveProfil()" data-i18n="btn_save">💾
+                                        Enregistrer</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sécurité -->
+                        <div class="gl" style="margin-top:1.25rem">
+                            <div class="gh">
+                                <div class="gtitle" data-i18n="security_title">Sécurité</div>
+                            </div>
+                            <div class="gb">
+                                <div id="al-pwd" class="al"></div>
+                                <div class="g2">
+                                    <div class="fd"><label data-i18n="field_new_password">Nouveau mot de
+                                            passe</label><input type="password" id="p-pwd"
+                                            placeholder="Min. 8 caractères"></div>
+                                    <div class="fd"><label data-i18n="field_confirm_password">Confirmer</label><input
+                                            type="password" id="p-pwd2"></div>
+                                </div>
+                                <button class="btn btn-g" onclick="changePassword()" data-i18n="btn_change_password">🔐
+                                    Modifier le mot de passe</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div><!-- /content -->
+        </div><!-- /main -->
+    </div><!-- /layout -->
+
+    <script>
+        // ════════════════════════════════════════════════════════════
+        //  CONFIG
+        // ════════════════════════════════════════════════════════════
+        const SB_URL = window.SUPABASE_SECRETS ? window.SUPABASE_SECRETS.url : 'https://votre-url-supabase.supabase.co'
+        const SB_KEY = window.SUPABASE_SECRETS ? window.SUPABASE_SECRETS.key : 'votre-cle-anonyme'
+        const sb = window.supabase.createClient(SB_URL, SB_KEY)
+
+        let prof = null, uid = null
+        let imgUrl = null, pdfUrl = null
+        let qs = [], editEpId = null, tests = [], editCId = null, editXId = null
+        let specialites = [], matieresCache = []
+        let niveauxCache = []   // niveaux accessibles au prof courant
+        let LANG = 'fr'         // langue courante
+
+        // ════════════════════════════════════════════════════════════
+        //  I18N — DICTIONNAIRE BILINGUE
+        // ════════════════════════════════════════════════════════════
+        const I18N = {
+            fr: {
+                /* Navigation */
+                nav_dashboard: 'Tableau de bord', nav_sec_content: 'Contenu',
+                nav_my_courses: 'Mes Cours', nav_propose_course: 'Proposer un cours',
+                nav_my_exercises: 'Mes Exercices Code', nav_propose_exercise: 'Proposer un exercice',
+                nav_sec_exams: 'Épreuves', nav_my_exams: 'Mes Épreuves', nav_submit_exam: 'Soumettre une épreuve',
+                nav_sec_finance: 'Finances & Compte', nav_payments: 'Mes Paiements', nav_profile: 'Mon Profil',
+                /* Statuts & Labels */
+                status_active: 'Compte actif', btn_logout: '🚪 Déconnexion',
+                /* Topbar */
+                btn_add_course: '+ Cours', btn_add_exercise: '+ Exercice', btn_add_exam: '+ Épreuve',
+                /* Stats dashboard */
+                stat_courses: 'Cours proposés', stat_exercises: 'Exercices Code', stat_validated: 'Épreuves validées',
+                dash_performance: 'Performance', perf_acceptance_rate: 'Taux d\'acceptation',
+                perf_pending_gains: 'Gains en attente', perf_paid_gains: 'Gains versés',
+                dash_last_courses: 'Derniers cours', dash_last_exams: 'Dernières épreuves',
+                dash_last_exercises: 'Derniers exercices code', btn_see_all: 'Voir tout',
+                /* Cours */
+                my_courses_title: 'Mes Cours proposés', btn_new_course: '+ Nouveau cours',
+                propose_course_title: '✏️ Proposer un nouveau cours',
+                /* Exercices */
+                my_exercises_title: 'Mes Exercices Code', btn_new_exercise: '+ Nouveau',
+                propose_exercise_title: '💻 Proposer un exercice de code',
+                /* Épreuves */
+                my_exams_title: 'Mes Épreuves', btn_new_exam: '+ Nouvelle',
+                submit_exam_title: '🚀 Nouvelle épreuve',
+                /* Paiements */
+                payments_title: 'Historique des paiements',
+                /* Profil */
+                edit_profile: 'Modifier mes informations', change_photo: 'Changer',
+                field_first_name: 'Prénom *', field_last_name: 'Nom *',
+                field_phone: 'Téléphone', field_experience: 'Années d\'expérience',
+                field_school: 'Établissement actuel',
+                field_specialties: 'Spécialités', specialties_hint: '(Appuyer Entrée pour ajouter)',
+                field_subsystems: 'Sous-systèmes enseignés', subsystems_readonly: '(Modifiable uniquement par l\'admin)',
+                field_lang: 'Langue de l\'interface', field_bio: 'Bio / Présentation',
+                security_title: 'Sécurité', field_new_password: 'Nouveau mot de passe',
+                field_confirm_password: 'Confirmer', btn_change_password: '🔐 Modifier le mot de passe',
+                /* Champs formulaires */
+                field_subject: 'Matière *', field_chapter: 'Chapitre *', field_title: 'Titre *',
+                field_class: 'Classe *', field_specialty: 'Spécialité', field_content_type: 'Type de contenu',
+                field_duration: 'Durée (min)', field_xp: 'Points XP', field_video_url: 'URL Vidéo YouTube (optionnel)',
+                field_image: 'Image de couverture', field_pdf: 'PDF du cours (optionnel)',
+                field_content: 'Contenu du cours *', field_language: 'Langage *',
+                field_difficulty: 'Difficulté', field_instructions: 'Description / Consignes *',
+                field_starter_code: 'Code de départ (fourni à l\'étudiant)',
+                field_solution: 'Solution correcte *', field_tests: 'Tests unitaires',
+                field_exam_type: 'Type *', field_total_score: 'Barème total',
+                /* Boutons */
+                btn_reset: '🔄 Réinitialiser', btn_submit_course: '📤 Soumettre le cours',
+                btn_submit_exercise: '📤 Soumettre l\'exercice', btn_submit_exam: '🚀 Soumettre',
+                btn_draft: '💾 Brouillon', btn_save: '💾 Enregistrer',
+                btn_add_test: '+ Test', btn_qcm_single: '+ QCM unique', btn_qcm_multi: '+ QCM multiple',
+                btn_true_false: '+ Vrai/Faux', btn_open: '+ Ouverte',
+                /* Misc */
+                loading: 'Chargement…', questions_label: 'Questions',
+                starter_code_hint: 'Code que verra l\'étudiant',
+                solution_hint: 'Solution de référence',
+                tests_hint: 'Paires entrée → sortie pour validation automatique',
+                choose_image: 'Choisir une image', img_hint: 'JPG, PNG — Max 5 MB',
+                choose_pdf: 'Choisir un PDF', pdf_hint: 'Max 10 MB',
+                /* Options select */
+                select_placeholder: 'Sélectionner…', type_text: '📄 Cours écrit', type_video: '🎥 Vidéo',
+                diff_easy: '🟢 Facile', diff_medium: '🟡 Moyen', diff_hard: '🔴 Difficile',
+                filter_all: 'Tous', status_draft: 'Brouillon', status_submitted: 'Soumis',
+                status_review: 'En révision', status_validated: 'Validé', status_rejected: 'Rejeté',
+                status_active: 'Compte Actif', status_pending: 'En attente',
+                /* Badges statut */
+                badge_published: '✅ Publié', badge_pending: '⏳ En révision',
+                badge_draft_s: '📝 Brouillon', badge_submitted: '⏳ Soumis',
+                badge_in_review: '🔍 En révision', badge_validated: '✅ Validé', badge_rejected: '❌ Rejeté',
+                badge_en: '🇬🇧 Anglophone', badge_fr: '🇫🇷 Francophone', badge_bi: '🌍 Bilingue',
+                /* Messages */
+                msg_course_submitted: '✅ Cours soumis ! L\'admin le publiera après vérification.',
+                msg_course_updated: '✅ Cours mis à jour — en attente de publication.',
+                msg_exercise_submitted: '✅ Exercice soumis ! Il sera publié après validation.',
+                msg_exam_submitted: '✅ Épreuve soumise pour validation !',
+                msg_draft_saved: '✅ Brouillon enregistré.',
+                msg_profile_saved: '✅ Profil mis à jour !',
+                msg_password_changed: '✅ Mot de passe modifié avec succès.',
+                msg_password_mismatch: '❌ Les mots de passe ne correspondent pas.',
+                msg_password_short: '❌ Mot de passe trop court (min. 8 caractères).',
+                msg_required_fields: '❌ Champs obligatoires manquants.',
+                msg_add_question: '❌ Ajoutez au moins une question.',
+                role_label: 'Espace Professeur',
+                page_title: 'Dashboard Professeur — KMERSCHOOL',
+                add_specialty: 'Ajouter une spécialité'
+            },
+            en: {
+                /* Navigation */
+                nav_dashboard: 'Dashboard', nav_sec_content: 'Content',
+                nav_my_courses: 'My Courses', nav_propose_course: 'Submit a course',
+                nav_my_exercises: 'My Code Exercises', nav_propose_exercise: 'Submit an exercise',
+                nav_sec_exams: 'Examinations', nav_my_exams: 'My Exams', nav_submit_exam: 'Submit an exam',
+                nav_sec_finance: 'Finance & Account', nav_payments: 'My Payments', nav_profile: 'My Profile',
+                /* Statuts & Labels */
+                status_active: 'Account active', btn_logout: '🚪 Log out',
+                /* Topbar */
+                btn_add_course: '+ Course', btn_add_exercise: '+ Exercise', btn_add_exam: '+ Exam',
+                /* Stats dashboard */
+                stat_courses: 'Courses submitted', stat_exercises: 'Code Exercises', stat_validated: 'Exams validated',
+                dash_performance: 'Performance', perf_acceptance_rate: 'Acceptance rate',
+                perf_pending_gains: 'Pending earnings', perf_paid_gains: 'Paid earnings',
+                dash_last_courses: 'Latest courses', dash_last_exams: 'Latest exams',
+                dash_last_exercises: 'Latest code exercises', btn_see_all: 'View all',
+                /* Cours */
+                my_courses_title: 'My submitted courses', btn_new_course: '+ New course',
+                propose_course_title: '✏️ Submit a new course',
+                /* Exercices */
+                my_exercises_title: 'My Code Exercises', btn_new_exercise: '+ New',
+                propose_exercise_title: '💻 Submit a code exercise',
+                /* Épreuves */
+                my_exams_title: 'My Examinations', btn_new_exam: '+ New',
+                submit_exam_title: '🚀 New examination',
+                /* Paiements */
+                payments_title: 'Payment history',
+                /* Profil */
+                edit_profile: 'Edit my information', change_photo: 'Change',
+                field_first_name: 'First name *', field_last_name: 'Last name *',
+                field_phone: 'Phone number', field_experience: 'Years of experience',
+                field_school: 'Current school / institution',
+                field_specialties: 'Specialties', specialties_hint: '(Press Enter to add)',
+                field_subsystems: 'Teaching sub-systems', subsystems_readonly: '(Only editable by admin)',
+                field_lang: 'Interface language', field_bio: 'Bio / Presentation',
+                security_title: 'Security', field_new_password: 'New password',
+                field_confirm_password: 'Confirm', btn_change_password: '🔐 Change password',
+                /* Champs formulaires */
+                field_subject: 'Subject *', field_specialty: 'Specialty *', field_chapter: 'Chapter *', field_title: 'Title *',
+                field_class: 'Class *', field_series: 'Series/Stream', field_content_type: 'Content type',
+                field_duration: 'Duration (min)', field_xp: 'XP points', field_video_url: 'YouTube Video URL (optional)',
+                field_image: 'Cover image', field_pdf: 'Course PDF (optional)',
+                field_content: 'Course content *', field_language: 'Language *',
+                field_difficulty: 'Difficulty', field_instructions: 'Description / Instructions *',
+                field_starter_code: 'Starter code (given to student)',
+                field_solution: 'Correct solution *', field_tests: 'Unit tests',
+                field_exam_type: 'Type *', field_total_score: 'Total marks',
+                /* Boutons */
+                btn_reset: '🔄 Reset', btn_submit_course: '📤 Submit course',
+                btn_submit_exercise: '📤 Submit exercise', btn_submit_exam: '🚀 Submit',
+                btn_draft: '💾 Save draft', btn_save: '💾 Save',
+                btn_add_test: '+ Test', btn_qcm_single: '+ MCQ single', btn_qcm_multi: '+ MCQ multiple',
+                btn_true_false: '+ True/False', btn_open: '+ Open question',
+                /* Misc */
+                loading: 'Loading…', questions_label: 'Questions',
+                starter_code_hint: 'Code the student will see',
+                solution_hint: 'Reference solution',
+                tests_hint: 'Input/output pairs for automatic validation',
+                choose_image: 'Choose an image', img_hint: 'JPG, PNG — Max 5 MB',
+                choose_pdf: 'Choose a PDF', pdf_hint: 'Max 10 MB',
+                /* Options select */
+                select_placeholder: 'Select…', type_text: '📄 Written course', type_video: '🎥 Video',
+                diff_easy: '🟢 Easy', diff_medium: '🟡 Medium', diff_hard: '🔴 Hard',
+                filter_all: 'All', status_draft: 'Draft', status_submitted: 'Submitted',
+                status_review: 'Under review', status_validated: 'Validated', status_rejected: 'Rejected',
+                status_active: 'Account Active', status_pending: 'Pending',
+                /* Badges statut */
+                badge_published: '✅ Published', badge_pending: '⏳ Under review',
+                badge_draft_s: '📝 Draft', badge_submitted: '⏳ Submitted',
+                badge_in_review: '🔍 Under review', badge_validated: '✅ Validated', badge_rejected: '❌ Rejected',
+                badge_en: '🇬🇧 Anglophone', badge_fr: '🇫🇷 Francophone', badge_bi: '🌍 Bilingual',
+                /* Messages */
+                msg_course_submitted: '✅ Course submitted! The admin will publish it after review.',
+                msg_course_updated: '✅ Course updated — awaiting publication.',
+                msg_exercise_submitted: '✅ Exercise submitted! It will be published after validation.',
+                msg_exam_submitted: '✅ Exam submitted for validation!',
+                msg_draft_saved: '✅ Draft saved.',
+                msg_profile_saved: '✅ Profile updated!',
+                msg_password_changed: '✅ Password successfully changed.',
+                msg_password_mismatch: '❌ Passwords do not match.',
+                msg_password_short: '❌ Password too short (min. 8 characters).',
+                msg_required_fields: '❌ Required fields are missing.',
+                msg_add_question: '❌ Please add at least one question.',
+                role_label: 'Teacher Portal',
+                page_title: 'Teacher Dashboard — KMERSCHOOL',
+                add_specialty: 'Add a specialty'
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  APPLIQUER LA TRADUCTION
+        // ════════════════════════════════════════════════════════════
+        function applyLang(lang) {
+            LANG = lang
+            const t = I18N[lang]
+            if (!t) return
+
+            // <html lang>
+            document.getElementById('html-root').lang = lang
+            document.getElementById('page-tab-title').textContent = t.page_title
+
+            // Tous les éléments data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n')
+                if (t[key] !== undefined) el.textContent = t[key]
+            })
+
+            // Placeholder de l'éditeur de contenu
+            const ec = document.getElementById('c-cont')
+            if (ec) ec.setAttribute('data-ph', lang === 'en' ? 'Write the full course content here…' : 'Rédigez le contenu du cours ici…')
+
+            // Placeholder des exercices
+            const xDesc = document.getElementById('x-desc')
+            if (xDesc) xDesc.placeholder = lang === 'en' ? 'Clearly describe what the student must implement…' : 'Décrivez clairement ce que l\'étudiant doit implémenter…'
+
+            // Placeholder spécialités
+            const tagInput = document.getElementById('tag-input')
+            if (tagInput) tagInput.placeholder = t.add_specialty + '…'
+
+            // Badge sidebar langue
+            const badge = document.getElementById('sb-lang-badge')
+            if (badge) {
+                const isBi = prof?.sous_systemes?.includes('francophone') && prof?.sous_systemes?.includes('anglophone')
+                if (isBi) {
+                    badge.className = 'sb-lang-badge b-bi'
+                    badge.textContent = t.badge_bi
+                } else if (lang === 'en') {
+                    badge.className = 'sb-lang-badge sb-lang-en'
+                    badge.textContent = t.badge_en
+                } else {
+                    badge.className = 'sb-lang-badge sb-lang-fr'
+                    badge.textContent = t.badge_fr
+                }
+            }
+
+            // Rôle sidebar
+            const roleEl = document.getElementById('sb-role')
+            if (roleEl) roleEl.textContent = t.role_label
+
+            // Sélecteur langue dans profil
+            const pLang = document.getElementById('p-lang')
+            if (pLang) pLang.value = lang
+        }
+
+        function t(key) { return I18N[LANG]?.[key] ?? I18N.fr[key] ?? key }
+
+        // ════════════════════════════════════════════════════════════
+        //  INIT + AUTH GUARD
+        // ════════════════════════════════════════════════════════════
+        async function init() {
+            const { data: { user } } = await sb.auth.getUser()
+            if (!user) return location.href = 'login.html'
+            uid = user.id
+
+            const { data, error } = await sb.from('professeurs').select('*').eq('id', uid).single()
+            if (error || !data || data.statut !== 'approuve') {
+                await sb.auth.signOut()
+                return location.href = 'login.html'
+            }
+            prof = data
+
+            // Déterminer la langue
+            LANG = prof.langue_interface || 'fr'
+
+            // Mettre à jour la sidebar
+            document.getElementById('sb-name').textContent = `${prof.prenom} ${prof.nom}`
+            document.getElementById('sb-spec').textContent = (prof.specialites || []).slice(0, 2).join(' · ') || '—'
+
+            // Avatar
+            if (prof.avatar_url) {
+                document.getElementById('sb-av').innerHTML = `<img src="${prof.avatar_url}" alt="avatar">`
+            } else {
+                document.getElementById('sb-av').textContent = (prof.prenom[0] + prof.nom[0]).toUpperCase()
+            }
+
+            // Appliquer la langue
+            applyLang(LANG)
+
+            // Charger les données nécessaires
+            await loadMatieresFromDB()
+            await loadNiveauxForProf()
+
+            // Initialiser les spécialités dans le profil
+            specialites = [...(prof.specialites || [])]
+
+            // Charger le dashboard
+            try { await loadDash() } catch (e) { console.error('Dashboard error:', e) }
+        }
+
+        async function loadMatieresFromDB() {
+            try {
+                const { data, error } = await sb.from('matieres').select('id, nom').order('nom')
+                if (error) throw error
+                matieresCache = data || []
+                
+                // Peupler la datalist globale pour le profil
+                const dl = document.getElementById('matieres-suggestions')
+                if (dl) {
+                    dl.innerHTML = matieresCache.map(m => `<option value="${m.nom}">`).join('')
+                }
+                // Une fois les matières chargées, on peut repeupler les selects si nécessaire
+                populateSpecialiteSelects()
+            } catch (e) {
+                console.error('Error loading subjects:', e)
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  NAVIGATION
+        // ════════════════════════════════════════════════════════════
+        const PAGE_TITLES_KEY = {
+            'dashboard': 'nav_dashboard', 'mes-cours': 'my_courses_title', 'proposer-cours': 'propose_course_title',
+            'mes-exercices': 'my_exercises_title', 'proposer-exercice': 'propose_exercise_title',
+            'mes-epreuves': 'my_exams_title', 'soumettre': 'submit_exam_title',
+            'paiements': 'payments_title', 'profil': 'edit_profile'
+        }
+
+        function go(section) {
+            document.querySelectorAll('.ni').forEach(e => e.classList.remove('active'))
+            document.querySelectorAll('.sec').forEach(e => e.classList.remove('active'))
+            const nav = document.querySelector(`[onclick="go('${section}')"]`)
+            if (nav) nav.classList.add('active')
+            const sec = document.getElementById(`sec-${section}`)
+            if (sec) sec.classList.add('active')
+            document.getElementById('ptitle').textContent = t(PAGE_TITLES_KEY[section] || 'nav_dashboard')
+
+            if (section === 'mes-cours') loadCours()
+            if (section === 'mes-exercices') loadExos()
+            if (section === 'mes-epreuves') loadEp()
+            if (section === 'paiements') loadPay()
+            if (section === 'profil') loadProfil()
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  NIVEAUX FILTRÉS SELON LE PROF
+        // ════════════════════════════════════════════════════════════
+        async function loadNiveauxForProf() {
+            try {
+                const { data, error } = await sb.rpc('get_niveaux_for_prof')
+                if (!error && data?.length) {
+                    niveauxCache = data
+                } else {
+                    console.warn('RPC get_niveaux_for_prof non disponible ou vide, fallback')
+                    const ss = prof.sous_systemes || []
+                    const { data: allSS } = await sb.from('sous_systemes').select('id,code')
+                    const filteredSS = allSS?.filter(s => ss.includes(s.code) || ss.length === 0).map(s => s.id) || []
+                    
+                    const { data: niv, error: errNiv } = await sb.from('niveaux_scolaires')
+                        .select('id,code,nom_fr,nom_en,nom_court,est_classe_examen,type_examen,cycles!inner(sous_systeme_id)')
+                        .in('cycles.sous_systeme_id', filteredSS.length ? filteredSS : ['*'])
+                        .order('ordre')
+                    
+                    if (errNiv) throw errNiv
+                    niveauxCache = niv || []
+                }
+                populateNiveauSelects()
+                populateSpecialiteSelects()
+            } catch (e) {
+                console.error('Error loading levels:', e)
+            }
+        }
+
+        function populateSpecialiteSelects() {
+            const selects = ['c-spec', 'e-spec']
+            const specs = matieresCache.length > 0 ? matieresCache.map(m => m.nom) : (prof.specialites || [])
+            
+            selects.forEach(id => {
+                const sel = document.getElementById(id)
+                if (!sel) return
+                const ph = t('select_placeholder')
+                const currentVal = sel.value
+                sel.innerHTML = `<option value="">${ph}</option>`
+                specs.forEach(s => {
+                    const opt = document.createElement('option')
+                    opt.value = opt.textContent = s
+                    sel.appendChild(opt)
+                })
+                if (currentVal) sel.value = currentVal
+            })
+        }
+
+        function populateNiveauSelects() {
+            const selects = ['c-niv', 'e-niv']
+            selects.forEach(id => {
+                const sel = document.getElementById(id)
+                if (!sel) return
+                const ph = t('select_placeholder')
+                sel.innerHTML = `<option value="">${ph}</option>`
+                niveauxCache.forEach(n => {
+                    const label = LANG === 'en' ? (n.nom_en || n.nom_fr) : n.nom_fr
+                    const opt = document.createElement('option')
+                    opt.value = n.niveau_id || n.id
+                    opt.textContent = label + (n.est_examen ? ' 🎯' : '')
+                    opt.dataset.code = n.niveau_code || n.code
+                    sel.appendChild(opt)
+                })
+            })
+        }
+
+        async function loadSeries(niveauSelectId, containerDivId, serieSelectId) {
+            const sel = document.getElementById(niveauSelectId)
+            const niveauId = sel?.value
+            const container = document.getElementById(containerDivId)
+            if (!container) return
+
+            if (!niveauId) { container.style.display = 'none'; return }
+
+            const { data, error } = await sb.rpc('get_series_for_niveau', { p_niveau_id: niveauId })
+            if (error || !data?.length) { container.style.display = 'none'; return }
+
+            const serieSel = document.getElementById(serieSelectId)
+            serieSel.innerHTML = `<option value="">—</option>`
+            data.forEach(s => {
+                const label = LANG === 'en' ? (s.nom_en || s.nom_fr) : s.nom_fr
+                serieSel.innerHTML += `<option value="${s.serie_id || s.id}">${s.nom_court} — ${label}</option>`
+            })
+            container.style.display = 'block'
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  DASHBOARD
+        // ════════════════════════════════════════════════════════════
+        async function loadDash() {
+            const [{ count: nc }, { count: nx }, epR] = await Promise.all([
+                sb.from('cours').select('*', { count: 'exact', head: true }).eq('soumis_par', uid),
+                sb.from('exercices_code').select('*', { count: 'exact', head: true }).eq('soumis_par', uid),
+                sb.from('soumissions_epreuves').select('statut').eq('prof_id', uid)
+            ])
+            document.getElementById('st-c').textContent = nc ?? 0
+            document.getElementById('st-x').textContent = nx ?? 0
+            document.getElementById('st-v').textContent = epR.data?.filter(e => e.statut === 'valide').length ?? 0
+            document.getElementById('st-g').textContent = parseFloat(prof.gains_total ?? 0).toLocaleString('fr-FR')
+            document.getElementById('perf-taux').textContent = (prof.taux_acceptation ?? 0) + '%'
+            document.getElementById('prog-taux').style.width = Math.min(prof.taux_acceptation ?? 0, 100) + '%'
+            document.getElementById('perf-attente').textContent = parseFloat(prof.gains_en_attente ?? 0).toLocaleString('fr-FR') + ' XAF'
+            document.getElementById('perf-verses').textContent = parseFloat(prof.gains_verses ?? 0).toLocaleString('fr-FR') + ' XAF'
+
+            const [{ data: cours }, { data: eps }, { data: exos }] = await Promise.all([
+                sb.from('cours').select('titre,matiere,est_publie').eq('soumis_par', uid).order('created_at', { ascending: false }).limit(5),
+                sb.from('soumissions_epreuves').select('titre,statut').eq('prof_id', uid).order('created_at', { ascending: false }).limit(5),
+                sb.from('exercices_code').select('titre,langage,difficulte,est_actif').eq('soumis_par', uid).order('created_at', { ascending: false }).limit(5)
+            ])
+
+            mini('d-cours', cours ?? [], c => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div><div style="font-size:.83rem;font-weight:600;color:var(--txt)">${c.titre}</div><div style="font-size:.7rem;color:var(--mu)">${c.matiere}</div></div>${c.est_publie ? `<span class="badge bok">${t('badge_published')}</span>` : `<span class="badge bwt">${t('badge_pending')}</span>`}</div>`, '📚', t('stat_courses'))
+            mini('d-ep', eps ?? [], e => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div style="font-size:.83rem;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)">${e.titre}</div>${bep(e.statut)}</div>`, '📝', t('stat_validated'))
+            mini('d-ex', exos ?? [], x => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div><div style="font-size:.83rem;font-weight:600;color:var(--txt)">${x.titre}</div><span style="font-size:.7rem;color:var(--mu)">${x.langage} · ${x.difficulte}</span></div>${x.est_actif ? `<span class="badge bok">${t('badge_published')}</span>` : `<span class="badge bwt">${t('badge_pending')}</span>`}</div>`, '💻', t('stat_exercises'))
+        }
+
+        function mini(id, items, fn, ico, empty) {
+            const el = document.getElementById(id)
+            if (!items.length) { el.innerHTML = `<div class="emp" style="padding:1.4rem"><div class="emp-ico" style="font-size:1.4rem">${ico}</div><h4>${empty}</h4></div>`; return }
+            el.innerHTML = items.map(fn).join('')
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  MES COURS
+        // ════════════════════════════════════════════════════════════
+        async function loadCours() {
+            const w = document.getElementById('cl-wrap')
+            try {
+                const { data, error } = await sb.from('cours').select('id,titre,matiere,chapitre,est_publie,type_contenu,duree_lecture,points_recompense,created_at').eq('soumis_par', uid).order('created_at', { ascending: false })
+                if (error) throw error
+                if (!data?.length) { w.innerHTML = `<div class="emp"><div class="emp-ico">📚</div><h4>${t('my_courses_title')}</h4></div>`; return }
+                const pub = t('badge_published'), pend = t('badge_pending')
+                w.innerHTML = `<table><tr><th>${t('field_title')}</th><th>${t('field_subject')}</th><th>${t('field_content_type')}</th><th>${t('field_duration')}</th><th>XP</th><th>Statut</th><th></th></tr>${data.map(c => `<tr><td style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)">${c.titre}</td><td style="color:var(--mu)">${c.matiere}</td><td style="font-size:.74rem;color:#94a3b8">${c.type_contenu === 'video' ? '🎥' : '📄'}</td><td style="color:var(--mu)">${c.duree_lecture ? c.duree_lecture + ' min' : '—'}</td><td style="color:var(--am)">${c.points_recompense} XP</td><td>${c.est_publie ? `<span class="badge bok">${pub}</span>` : `<span class="badge bwt">${pend}</span>`}</td><td>${!c.est_publie ? `<button onclick="loadEditCours('${c.id}')" style="padding:.28rem .6rem;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);color:var(--ind);border-radius:.38rem;cursor:pointer;font-size:.73rem">✏️</button>` : ''}</td></tr>`).join('')}</table>`
+            } catch (e) {
+                console.error(e)
+                w.innerHTML = `<div class="emp"><div class="emp-ico">⚠️</div><h4>Error</h4><p>${e.message}</p></div>`
+            }
+        }
+
+        async function loadEditCours(id) {
+            const { data } = await sb.from('cours').select('*').eq('id', id).single()
+            if (!data) return
+            editCId = id
+            const cSpec = document.getElementById('c-spec')
+            if (cSpec) {
+                const opt = Array.from(cSpec.options).find(o => o.value === data.matiere)
+                if (opt) cSpec.value = data.matiere
+            }
+            document.getElementById('c-chap').value = data.chapitre || ''
+            document.getElementById('c-tit').value = data.titre || ''
+            document.getElementById('c-typ').value = data.type_contenu || 'texte'
+            document.getElementById('c-vid').value = data.video_url || ''
+            document.getElementById('c-dur').value = data.duree_lecture || ''
+            document.getElementById('c-pts').value = data.points_recompense || 20
+            document.getElementById('c-cont').innerHTML = data.contenu || ''
+            imgUrl = data.image_url || null; pdfUrl = data.pdf_url || null
+            if (data.image_url) { document.getElementById('iname').textContent = '✅ image'; document.getElementById('iz').classList.add('done') }
+            if (data.pdf_url) { document.getElementById('pname').textContent = '✅ PDF'; document.getElementById('pz').classList.add('done') }
+            document.getElementById('cf-title').textContent = t('propose_course_title').replace('Proposer', 'Modifier').replace('Submit', 'Edit')
+            go('proposer-cours')
+        }
+
+        async function saveCours() {
+            const titre = document.getElementById('c-tit').value.trim()
+            const matiere = document.getElementById('c-spec').value.trim()
+            const contenu = document.getElementById('c-cont').innerHTML.trim()
+            const niveauId = document.getElementById('c-niv').value
+            if (!titre || !matiere || !contenu) return shAl('al-cours', t('msg_required_fields'), 'err')
+            const btn = document.getElementById('btn-cours')
+            btn.disabled = true; btn.innerHTML = '<span class="spin spin-dark"></span>'
+
+            try {
+                let nSS = null, serieId = document.getElementById('c-ser')?.value || null
+                // Résoudre le sous_systeme_id depuis le niveau sélectionné
+                if (niveauId) {
+                    const niv = niveauxCache.find(n => (n.niveau_id || n.id) === niveauId)
+                    if (niv?.ss_code) {
+                        const { data: ssD } = await sb.from('sous_systemes').select('id').eq('code', niv.ss_code).single()
+                        nSS = ssD?.id || null
+                    }
+                }
+                const pl = {
+                    titre, matiere,
+                    slug: slugify(titre + '-' + Date.now()),
+                    chapitre: document.getElementById('c-chap').value.trim() || null,
+                    contenu,
+                    type_contenu: document.getElementById('c-typ').value,
+                    video_url: document.getElementById('c-vid').value.trim() || null,
+                    duree_lecture: parseInt(document.getElementById('c-dur').value) || null,
+                    points_recompense: parseInt(document.getElementById('c-pts').value) || 20,
+                    est_gratuit: true, est_publie: false, ordre: 1,
+                    sous_systeme_id: nSS,
+                    niveau_scolaire_id: niveauId || null,
+                    serie_id: serieId || null,
+                    image_url: imgUrl, pdf_url: pdfUrl,
+                    soumis_par: uid, updated_at: new Date().toISOString()
+                }
+                let err
+                if (editCId) { ({ error: err } = await sb.from('cours').update(pl).eq('id', editCId)) }
+                else { ({ error: err } = await sb.from('cours').insert([pl])) }
+                if (err) throw err
+                shAl('al-cours', editCId ? t('msg_course_updated') : t('msg_course_submitted'), 'ok')
+                editCId = null; resetCours(); loadDash()
+            } catch (e) { shAl('al-cours', e.message, 'err') }
+            finally { btn.disabled = false; btn.innerHTML = t('btn_submit_course') }
+        }
+
+        function resetCours() {
+            ['c-mat', 'c-chap', 'c-tit', 'c-vid', 'c-dur'].forEach(id => { const el = document.getElementById(id); if (el) el.value = '' })
+            document.getElementById('c-pts').value = 20
+            document.getElementById('c-cont').innerHTML = ''
+            document.getElementById('c-niv').value = ''
+            document.getElementById('c-ser-wrap').style.display = 'none'
+            document.getElementById('c-typ').value = 'texte'
+            document.getElementById('iname').textContent = t('choose_image')
+            document.getElementById('pname').textContent = t('choose_pdf')
+            document.getElementById('iz').classList.remove('done')
+            document.getElementById('pz').classList.remove('done')
+            document.getElementById('cf-title').textContent = t('propose_course_title')
+            const cSpec = document.getElementById('c-spec'); if (cSpec) cSpec.value = ''
+            imgUrl = null; pdfUrl = null; editCId = null
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  UPLOADS
+        // ════════════════════════════════════════════════════════════
+        async function uploadImg(e) {
+            const f = e.target.files[0]; if (!f) return
+            if (f.size > 5 * 1024 * 1024) return alert('Max 5 MB')
+            document.getElementById('iname').textContent = '⏳…'
+            const path = `prof/${uid}/img_${Date.now()}_${f.name.replace(/[^a-zA-Z0-9.]/g, '_')}`
+            const { error } = await sb.storage.from('course-images').upload(path, f)
+            if (error) { document.getElementById('iname').textContent = '❌'; return }
+            const { data: u } = sb.storage.from('course-images').getPublicUrl(path)
+            imgUrl = u.publicUrl
+            document.getElementById('iname').textContent = '✅ ' + f.name
+            document.getElementById('iz').classList.add('done')
+        }
+
+        async function uploadPdf(e) {
+            const f = e.target.files[0]; if (!f) return
+            if (f.size > 10 * 1024 * 1024) return alert('Max 10 MB')
+            document.getElementById('pname').textContent = '⏳…'
+            const path = `prof/${uid}/pdf_${Date.now()}_${f.name.replace(/[^a-zA-Z0-9.]/g, '_')}`
+            const { error } = await sb.storage.from('course-pdfs').upload(path, f)
+            if (error) { document.getElementById('pname').textContent = '❌'; return }
+            const { data: u } = sb.storage.from('course-pdfs').getPublicUrl(path)
+            pdfUrl = u.publicUrl
+            document.getElementById('pname').textContent = '✅ ' + f.name
+            document.getElementById('pz').classList.add('done')
+        }
+
+        async function uploadAvatar(e) {
+            const f = e.target.files[0]; if (!f) return
+            if (f.size > 2 * 1024 * 1024) return alert('Max 2 MB')
+            const path = `prof-avatars/${uid}/avatar_${Date.now()}.${f.name.split('.').pop()}`
+            const { error } = await sb.storage.from('prof-avatars').upload(path, f, { upsert: true })
+            if (error) { console.error(error); return }
+            const { data: u } = sb.storage.from('prof-avatars').getPublicUrl(path)
+            const avUrl = u.publicUrl
+            // Update DB
+            await sb.from('professeurs').update({ avatar_url: avUrl }).eq('id', uid)
+            prof.avatar_url = avUrl
+            // Update UI
+            document.getElementById('sb-av').innerHTML = `<img src="${avUrl}" alt="avatar">`
+            document.getElementById('prof-av-large').querySelector('#prof-av-initials').style.display = 'none'
+            const existing = document.getElementById('prof-av-large').querySelector('img')
+            if (existing) existing.remove()
+            const img = document.createElement('img')
+            img.src = avUrl; img.alt = 'avatar'
+            img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%'
+            document.getElementById('prof-av-large').appendChild(img)
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  EXERCICES CODE
+        // ════════════════════════════════════════════════════════════
+        async function loadExos() {
+            const w = document.getElementById('xl-wrap')
+            try {
+                const { data, error } = await sb.from('exercices_code').select('id,titre,langage,difficulte,points_recompense,est_actif,created_at').eq('soumis_par', uid).order('created_at', { ascending: false })
+                if (error) throw error
+                if (!data?.length) { w.innerHTML = `<div class="emp"><div class="emp-ico">💻</div><h4>${t('my_exercises_title')}</h4></div>`; return }
+                const pub = t('badge_published'), pend = t('badge_pending')
+                const diffs = { 'facile': t('diff_easy'), 'moyen': t('diff_medium'), 'difficile': t('diff_hard') }
+                w.innerHTML = `<table><tr><th>${t('field_title')}</th><th>${t('field_language')}</th><th>${t('field_difficulty')}</th><th>XP</th><th>Statut</th><th></th></tr>${data.map(x => `<tr><td style="font-weight:600;color:var(--txt)">${x.titre}</td><td><span style="font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:.18rem .48rem;background:rgba(79,70,229,.08);color:var(--ind);border-radius:.32rem">${x.langage}</span></td><td>${dbadge(x.difficulte)}</td><td style="color:var(--am)">${x.points_recompense} XP</td><td>${x.est_actif ? `<span class="badge bok">${pub}</span>` : `<span class="badge bwt">${pend}</span>`}</td><td>${!x.est_actif ? `<button onclick="loadEditExo(${x.id})" style="padding:.28rem .55rem;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);color:var(--ind);border-radius:.38rem;cursor:pointer;font-size:.73rem">✏️</button>` : ''}</td></tr>`).join('')}</table>`
+            } catch (e) {
+                console.error(e)
+                w.innerHTML = `<div class="emp"><div class="emp-ico">⚠️</div><h4>Error</h4><p>${e.message}</p></div>`
+            }
+        }
+
+        async function loadEditExo(id) {
+            const { data } = await sb.from('exercices_code').select('*').eq('id', id).single()
+            if (!data) return
+            editXId = id
+            document.getElementById('x-tit').value = data.titre || ''
+            document.getElementById('x-lang').value = data.langage || ''
+            document.getElementById('x-diff').value = data.difficulte || 'moyen'
+            document.getElementById('x-pts').value = data.points_recompense || 20
+            document.getElementById('x-desc').value = data.description || ''
+            document.getElementById('x-init').value = data.code_initial || ''
+            document.getElementById('x-sol').value = data.code_solution || ''
+            tests = data.tests_unitaires || []
+            renderTests(); syncLang()
+            document.getElementById('xf-title').textContent = t('propose_exercise_title').replace('Proposer', 'Modifier').replace('Submit', 'Edit')
+            go('proposer-exercice')
+        }
+
+        async function saveExo() {
+            const titre = document.getElementById('x-tit').value.trim()
+            const lang = document.getElementById('x-lang').value
+            const sol = document.getElementById('x-sol').value.trim()
+            const desc = document.getElementById('x-desc').value.trim()
+            if (!titre || !lang || !sol || !desc) return shAl('al-exo', t('msg_required_fields'), 'err')
+            const btn = document.getElementById('btn-exo')
+            btn.disabled = true; btn.innerHTML = '<span class="spin spin-dark"></span>'
+            try {
+                const pl = { titre, langage: lang, description: desc, difficulte: document.getElementById('x-diff').value, points_recompense: parseInt(document.getElementById('x-pts').value) || 20, code_initial: document.getElementById('x-init').value || null, code_solution: sol, tests_unitaires: tests.length ? tests : null, est_actif: false, ordre: 1, soumis_par: uid, updated_at: new Date().toISOString() }
+                let err
+                if (editXId) { ({ error: err } = await sb.from('exercices_code').update(pl).eq('id', editXId)) }
+                else { ({ error: err } = await sb.from('exercices_code').insert([pl])) }
+                if (err) throw err
+                shAl('al-exo', t('msg_exercise_submitted'), 'ok')
+                editXId = null; resetExo(); loadDash()
+            } catch (e) { shAl('al-exo', e.message, 'err') }
+            finally { btn.disabled = false; btn.innerHTML = t('btn_submit_exercise') }
+        }
+
+        function resetExo() {
+            ['x-tit', 'x-desc', 'x-init', 'x-sol'].forEach(id => { const el = document.getElementById(id); if (el) el.value = '' })
+            document.getElementById('x-lang').value = ''
+            document.getElementById('x-diff').value = 'moyen'
+            document.getElementById('x-pts').value = 20
+            document.getElementById('xf-title').textContent = t('propose_exercise_title')
+            tests = []; renderTests(); syncLang(); editXId = null
+        }
+
+        function syncLang() {
+            const l = document.getElementById('x-lang').value || '—'
+            document.getElementById('lb-s').textContent = l
+            document.getElementById('lb-sol').textContent = l
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  TESTS UNITAIRES
+        // ════════════════════════════════════════════════════════════
+        function addTest() { tests.push({ entree: '', sortie_attendue: '' }); renderTests() }
+        function removeTest(i) { tests.splice(i, 1); renderTests() }
+        function renderTests() {
+            const c = document.getElementById('tests-c')
+            if (!tests.length) { c.innerHTML = `<div style="font-size:.76rem;color:var(--mu);padding:.45rem;text-align:center">${t('tests_hint')}</div>`; return }
+            c.innerHTML = tests.map((ts, i) => `<div class="tr-row"><input type="text" value="${esc(ts.entree)}" placeholder="${LANG === 'en' ? 'Input (e.g. 5)' : 'Entrée (ex: 5)'}" oninput="tests[${i}].entree=this.value"><input type="text" value="${esc(ts.sortie_attendue)}" placeholder="${LANG === 'en' ? 'Expected output (e.g. 120)' : 'Sortie attendue (ex: 120)'}" oninput="tests[${i}].sortie_attendue=this.value"><button class="td-btn" onclick="removeTest(${i})">✕</button></div>`).join('')
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  ÉPREUVES
+        // ════════════════════════════════════════════════════════════
+        async function loadEp() {
+            const w = document.getElementById('ep-wrap')
+            try {
+                const f = document.getElementById('ep-f').value
+                let q = sb.from('soumissions_epreuves').select('*').eq('prof_id', uid).order('created_at', { ascending: false })
+                if (f) q = q.eq('statut', f)
+                const { data, error } = await q
+                if (error) throw error
+                if (!data?.length) { w.innerHTML = `<div class="emp"><div class="emp-ico">📝</div><h4>${t('my_exams_title')}</h4></div>`; return }
+                const th = LANG === 'en' ? ['Title', 'Subject', 'Type', 'Duration', 'Status', 'Remuneration', 'Actions'] : ['Titre', 'Matière', 'Type', 'Durée', 'Statut', 'Rémunération', 'Actions']
+                w.innerHTML = `<table><tr>${th.map(h => `<th>${h}</th>`).join('')}</tr>${data.map(e => `<tr><td style="font-weight:600;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)">${e.titre}</td><td style="color:var(--mu)">${e.matiere}</td><td style="font-size:.74rem;color:#94a3b8">${e.type_examen}</td><td style="color:var(--mu)">${e.duree_minutes} min</td><td>${bep(e.statut)}</td><td style="color:var(--am);font-weight:600">${parseFloat(e.remuneration_due || 0).toLocaleString('fr-FR')} XAF</td><td style="display:flex;gap:.3rem">${['brouillon', 'rejete'].includes(e.statut) ? `<button onclick="loadEpEdit('${e.id}')" style="padding:.28rem .55rem;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);color:var(--ind);border-radius:.38rem;cursor:pointer;font-size:.73rem">✏️</button>` : ''} ${e.commentaire_admin ? `<button onclick="alert('💬 '+${JSON.stringify(e.commentaire_admin)})" style="padding:.28rem .55rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--am);border-radius:.38rem;cursor:pointer;font-size:.73rem">💬</button>` : ''}</td></tr>`).join('')}</table>`
+            } catch (e) {
+                console.error(e)
+                w.innerHTML = `<div class="emp"><div class="emp-ico">⚠️</div><h4>Error</h4><p>${e.message}</p></div>`
+            }
+        }
+
+        async function loadEpEdit(id) {
+            const { data } = await sb.from('soumissions_epreuves').select('*').eq('id', id).single()
+            if (!data) return
+            editEpId = id
+            document.getElementById('e-tit').value = data.titre || ''
+            
+            // Set specialty select
+            const eSpec = document.getElementById('e-spec')
+            if (eSpec) {
+                const opt = Array.from(eSpec.options).find(o => o.value === data.matiere)
+                if (opt) eSpec.value = data.matiere
+            }
+
+            document.getElementById('e-typ').value = data.type_examen || ''
+            document.getElementById('e-dur').value = data.duree_minutes || 60
+            document.getElementById('e-bar').value = data.note_totale || 20
+            document.getElementById('e-desc').value = data.description || ''
+            qs = data.contenu_json?.questions || []
+            renderQs()
+            
+            document.getElementById('ef-title').textContent = t('submit_exam_title')
+            go('soumettre')
+        }
+
+        async function saveEp(statut) {
+            const ti = document.getElementById('e-tit').value.trim()
+            const ma = document.getElementById('e-spec').value.trim()
+            const ty = document.getElementById('e-typ').value
+            if (!ti || !ma || !ty) return shAl('al-ep', t('msg_required_fields'), 'err')
+            if (statut === 'soumis' && !qs.length) return shAl('al-ep', t('msg_add_question'), 'err')
+            const bid = statut === 'soumis' ? 'btn-subep' : 'btn-draft'
+            const btn = document.getElementById(bid)
+            btn.disabled = true; btn.innerHTML = '<span class="spin spin-dark"></span>'
+
+            // Récupérer le ss du niveau sélectionné
+            const niveauId = document.getElementById('e-niv').value || null
+            const serieId = document.getElementById('e-ser')?.value || null
+            let ssCode = 'francophone'
+            if (niveauId) {
+                const niv = niveauxCache.find(n => (n.niveau_id || n.id) === niveauId)
+                if (niv?.ss_code) ssCode = niv.ss_code
+            }
+
+            try {
+                const pl = {
+                    prof_id: uid, titre: ti, matiere: ma, type_examen: ty, sous_systeme_code: ssCode,
+                    niveau_code: niveauId ? niveauxCache.find(n => (n.niveau_id || n.id) === niveauId)?.niveau_code || null : null,
+                    serie_code: null, duree_minutes: parseInt(document.getElementById('e-dur').value) || 60,
+                    note_totale: parseInt(document.getElementById('e-bar').value) || 20,
+                    description: document.getElementById('e-desc').value.trim() || null,
+                    contenu_json: { questions: qs }, statut,
+                    soumis_le: statut === 'soumis' ? new Date().toISOString() : null,
+                    remuneration_due: prof.tarif_par_epreuve ?? 5000
+                }
+                let err
+                if (editEpId) { ({ error: err } = await sb.from('soumissions_epreuves').update(pl).eq('id', editEpId)) }
+                else { ({ error: err } = await sb.from('soumissions_epreuves').insert([pl])) }
+                if (err) throw err
+                shAl('al-ep', statut === 'soumis' ? t('msg_exam_submitted') : t('msg_draft_saved'), 'ok')
+                editEpId = null; qs = []; renderQs()
+                    ;['e-tit', 'e-mat', 'e-desc'].forEach(id => document.getElementById(id).value = '')
+                document.getElementById('ef-title').textContent = t('submit_exam_title')
+                loadDash()
+            } catch (e) { shAl('al-ep', e.message, 'err') }
+            finally { btn.disabled = false; btn.innerHTML = statut === 'soumis' ? t('btn_submit_exam') : t('btn_draft') }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  QUESTION BUILDER
+        // ════════════════════════════════════════════════════════════
+        function addQ(type) { qs.push({ id: Date.now(), type_question: type, question_texte: '', points: 1, choix: type !== 'texte_long' ? [{ texte: '', est_correct: false }, { texte: '', est_correct: false }] : [], explication: '' }); renderQs() }
+        function removeQ(i) { qs.splice(i, 1); renderQs() }
+        function addChoix(qi) { qs[qi].choix.push({ texte: '', est_correct: false }); renderQs() }
+        function removeChoix(qi, ci) { qs[qi].choix.splice(ci, 1); renderQs() }
+
+        function lq(type) {
+            const m = { fr: { qcm_unique: 'QCM unique', qcm_multiple: 'QCM multiple', vrai_faux: 'Vrai/Faux', texte_court: 'Réponse courte', texte_long: 'Question ouverte' }, en: { qcm_unique: 'MCQ single', qcm_multiple: 'MCQ multiple', vrai_faux: 'True/False', texte_court: 'Short answer', texte_long: 'Open question' } }
+            return (m[LANG] || m.fr)[type] || type
+        }
+
+        function renderQs() {
+            document.getElementById('qc').textContent = `(${qs.length})`
+            const c = document.getElementById('qbox')
+            if (!qs.length) { c.innerHTML = `<div class="emp" style="border:1.5px dashed var(--border);border-radius:.65rem;margin-bottom:.85rem"><div class="emp-ico">❓</div><h4>${LANG === 'en' ? 'No questions yet' : 'Aucune question'}</h4></div>`; return }
+            c.innerHTML = qs.map((q, i) => `<div style="background:var(--bg);border:1.5px solid var(--border);border-radius:.65rem;padding:.9rem;margin-bottom:.65rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
+      <span style="font-size:.7rem;font-weight:700;color:var(--ind);letter-spacing:.06em">Q${i + 1} — ${lq(q.type_question)}</span>
+      <button onclick="removeQ(${i})" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);color:var(--red);padding:.22rem .5rem;border-radius:.32rem;cursor:pointer;font-size:.75rem">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 65px;gap:.6rem;margin-bottom:.6rem">
+      <input type="text" value="${esc(q.question_texte)}" placeholder="${LANG === 'en' ? 'Question statement…' : 'Énoncé de la question…'}" oninput="qs[${i}].question_texte=this.value" style="padding:.52rem .82rem;background:var(--surface);border:1.5px solid var(--border);border-radius:.48rem;color:var(--txt);font-size:.84rem;outline:none">
+      <input type="number" value="${q.points}" min=".5" max="20" step=".5" oninput="qs[${i}].points=parseFloat(this.value)" style="padding:.52rem;background:var(--surface);border:1.5px solid var(--border);border-radius:.48rem;color:var(--am);font-size:.84rem;outline:none;text-align:center" title="${LANG === 'en' ? 'Points' : 'Points'}">
+    </div>
+    ${q.type_question !== 'texte_long' ? `<div style="margin-left:.4rem">${q.choix.map((ch, ci) => `<div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.3rem"><input type="${q.type_question === 'qcm_multiple' ? 'checkbox' : 'radio'}" name="r${i}" ${ch.est_correct ? 'checked' : ''} onchange="${q.type_question === 'qcm_multiple' ? `qs[${i}].choix[${ci}].est_correct=this.checked` : `qs[${i}].choix.forEach((c,k)=>c.est_correct=(k===${ci}))`}" style="accent-color:var(--em);flex-shrink:0"><input type="text" value="${esc(ch.texte)}" placeholder="${LANG === 'en' ? 'Choice' : 'Choix'} ${ci + 1}…" oninput="qs[${i}].choix[${ci}].texte=this.value" style="flex:1;padding:.38rem .7rem;background:var(--surface);border:1.5px solid var(--border);border-radius:.38rem;color:var(--txt);font-size:.78rem;outline:none">${q.choix.length > 2 ? `<button onclick="removeChoix(${i},${ci})" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:.95rem;padding:0 .2rem">×</button>` : ''}</div>`).join('')}<button onclick="addChoix(${i})" style="background:none;border:1px dashed rgba(79,70,229,.3);color:var(--ind);padding:.28rem .65rem;border-radius:.38rem;font-size:.73rem;cursor:pointer;margin-top:.2rem">+ ${LANG === 'en' ? 'Choice' : 'Choix'}</button></div>` : `<div style="padding:.45rem .72rem;background:var(--bg);border:1.5px solid var(--border);border-radius:.38rem;font-size:.76rem;color:var(--mu)">${LANG === 'en' ? 'Open answer — student types a free response' : 'Réponse libre — l\'élève répondra par texte'}</div>`}
+  </div>`).join('')
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  PAIEMENTS
+        // ════════════════════════════════════════════════════════════
+        async function loadPay() {
+            const w = document.getElementById('pay-wrap')
+            try {
+                const { data, error } = await sb.from('paiements_professeurs').select('*').eq('prof_id', uid).order('date_paiement', { ascending: false })
+                if (error) throw error
+                if (!data?.length) { w.innerHTML = `<div class="emp"><div class="emp-ico">💳</div><h4>${t('payments_title')}</h4></div>`; return }
+                const th = LANG === 'en' ? ['Amount', 'Mode', 'Reference', 'Status', 'Date'] : ['Montant', 'Mode', 'Référence', 'Statut', 'Date']
+                w.innerHTML = `<table><tr>${th.map(h => `<th>${h}</th>`).join('')}</tr>${data.map(p => `<tr><td style="font-weight:700;color:var(--em)">${parseFloat(p.montant).toLocaleString('fr-FR')} ${p.devise}</td><td style="color:var(--mu)">${fmode(p.mode_paiement)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--mu)">${p.reference || '—'}</td><td>${bpay(p.statut)}</td><td style="color:var(--mu);font-size:.76rem">${fd(p.date_paiement)}</td></tr>`).join('')}</table>`
+            } catch (e) {
+                console.error(e)
+                w.innerHTML = `<div class="emp"><div class="emp-ico">⚠️</div><h4>Error</h4><p>${e.message}</p></div>`
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  PROFIL COMPLET
+        // ════════════════════════════════════════════════════════════
+        async function loadProfil() {
+            document.getElementById('p-pr').value = prof.prenom || ''
+            document.getElementById('p-no').value = prof.nom || ''
+            document.getElementById('p-ph').value = prof.telephone || ''
+            document.getElementById('p-et').value = prof.etablissement || ''
+            document.getElementById('p-ex').value = prof.annees_experience || 0
+            document.getElementById('p-bi').value = prof.bio || ''
+            document.getElementById('p-lang').value = LANG
+
+            // Header profil
+            document.getElementById('prof-fullname').textContent = `${prof.prenom} ${prof.nom}`
+            document.getElementById('prof-email-disp').textContent = prof.email || ''
+            document.getElementById('prof-av-initials').textContent = (prof.prenom[0] + prof.nom[0]).toUpperCase()
+            document.getElementById('prof-stat-v').textContent = prof.epreuves_validees ?? '—'
+            document.getElementById('prof-stat-t').textContent = (prof.taux_acceptation ?? 0) + '%'
+            document.getElementById('prof-stat-g').textContent = parseFloat(prof.gains_total ?? 0).toLocaleString('fr-FR') + ' XAF'
+
+            // Avatar large
+            if (prof.avatar_url) {
+                document.getElementById('prof-av-large').innerHTML = `<img src="${prof.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><label class="av-upload-btn" for="av-file-input">📷<br><span style="font-size:.58rem">${t('change_photo')}</span></label><input type="file" id="av-file-input" accept="image/*" style="display:none" onchange="uploadAvatar(event)">`
+            }
+
+            // Badges sous-systèmes
+            const ssList = prof.sous_systemes || []
+            const isBi = ssList.includes('francophone') && ssList.includes('anglophone')
+            const badgesContainer = document.getElementById('prof-badges-disp')
+            badgesContainer.innerHTML = ''
+            if (isBi) { badgesContainer.innerHTML = `<span class="badge b-bi">${t('badge_bi')}</span>` }
+            else if (ssList.includes('anglophone')) { badgesContainer.innerHTML = `<span class="badge b-en">${t('badge_en')}</span>` }
+            else { badgesContainer.innerHTML = `<span class="badge b-fr">${t('badge_fr')}</span>` }
+            if (prof.annees_experience) { badgesContainer.innerHTML += `<span class="badge bdr">📅 ${prof.annees_experience} ${LANG === 'en' ? 'yrs exp.' : 'ans exp.'}</span>` }
+
+            // Sous-systèmes display (lecture seule)
+            const ssDisp = document.getElementById('ss-display')
+            ssDisp.innerHTML = ssList.map(ss => `<span class="badge ${ss === 'francophone' ? 'b-fr' : 'b-en'}">${ss === 'francophone' ? '🇫🇷 Francophone' : '🇬🇧 Anglophone'}</span>`).join('')
+
+            // Spécialités (tags éditables)
+            specialites = [...(prof.specialites || [])]
+            renderTags()
+        }
+
+        async function saveProfil() {
+            const prenom = document.getElementById('p-pr').value.trim()
+            const nom = document.getElementById('p-no').value.trim()
+            if (!prenom || !nom) return shAl('al-prof', t('msg_required_fields'), 'err')
+
+            const newLang = document.getElementById('p-lang').value
+            const u = {
+                prenom, nom,
+                telephone: document.getElementById('p-ph').value.trim() || null,
+                etablissement: document.getElementById('p-et').value.trim() || null,
+                annees_experience: parseInt(document.getElementById('p-ex').value) || 0,
+                bio: document.getElementById('p-bi').value.trim() || null,
+                specialites,
+                langue_interface: newLang,
+                updated_at: new Date().toISOString()
+            }
+            const { error } = await sb.from('professeurs').update(u).eq('id', uid)
+            if (error) return shAl('al-prof', error.message, 'err')
+
+            prof = { ...prof, ...u }
+            document.getElementById('sb-name').textContent = `${prenom} ${nom}`
+            document.getElementById('sb-spec').textContent = specialites.slice(0, 2).join(' · ') || '—'
+
+            // Changer la langue si modifiée
+            if (newLang !== LANG) {
+                applyLang(newLang)
+                populateNiveauSelects()
+            }
+
+            shAl('al-prof', t('msg_profile_saved'), 'ok')
+            // Recharger le header profil
+            document.getElementById('prof-fullname').textContent = `${prenom} ${nom}`
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  GESTION TAGS SPÉCIALITÉS
+        // ════════════════════════════════════════════════════════════
+        function handleTag(e) {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault()
+                const val = e.target.value.trim()
+                if (val && !specialites.includes(val)) { specialites.push(val); renderTags() }
+                e.target.value = ''
+            }
+        }
+        function removeTag(i) { specialites.splice(i, 1); renderTags() }
+        function renderTags() {
+            const wrap = document.getElementById('tags-wrap')
+            const input = document.getElementById('tag-input')
+            if (!wrap) return
+            wrap.innerHTML = ''
+            specialites.forEach((t, i) => {
+                const pill = document.createElement('div')
+                pill.className = 'tag-pill'
+                pill.innerHTML = `${t} <button onclick="removeTag(${i})">×</button>`
+                wrap.appendChild(pill)
+            })
+            wrap.appendChild(input)
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  CHANGEMENT DE LANGUE MANUEL (depuis le profil)
+        // ════════════════════════════════════════════════════════════
+        function switchLangManual() {
+            const newLang = document.getElementById('p-lang').value
+            applyLang(newLang)
+            populateNiveauSelects()
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  MOT DE PASSE
+        // ════════════════════════════════════════════════════════════
+        async function changePassword() {
+            const pwd = document.getElementById('p-pwd').value
+            const pwd2 = document.getElementById('p-pwd2').value
+            if (pwd.length < 8) return shAl('al-pwd', t('msg_password_short'), 'err')
+            if (pwd !== pwd2) return shAl('al-pwd', t('msg_password_mismatch'), 'err')
+            const { error } = await sb.auth.updateUser({ password: pwd })
+            if (error) return shAl('al-pwd', error.message, 'err')
+            shAl('al-pwd', t('msg_password_changed'), 'ok')
+            document.getElementById('p-pwd').value = ''
+            document.getElementById('p-pwd2').value = ''
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  LOGOUT
+        // ════════════════════════════════════════════════════════════
+        async function doLogout() {
+            if (!confirm(LANG === 'en' ? 'Log out?' : 'Se déconnecter ?')) return
+            await sb.auth.signOut()
+            location.href = 'login.html'
+        }
+
+        // ════════════════════════════════════════════════════════════
+        //  HELPERS
+        // ════════════════════════════════════════════════════════════
+        function shAl(id, msg, type) {
+            const el = document.getElementById(id); if (!el) return
+            el.className = `al show ${type === 'err' ? 'aerr' : type === 'ok' ? 'aok' : 'ainfo'}`
+            el.innerHTML = `<span>${type === 'err' ? '❌' : type === 'ok' ? '✅' : 'ℹ️'}</span><span>${msg}</span>`
+            setTimeout(() => { el.className = 'al'; el.innerHTML = '' }, 7000)
+        }
+
+        function fmt(cmd, val) { document.execCommand(cmd, false, val || null); document.getElementById('c-cont').focus() }
+
+        function bep(s) {
+            const m = { brouillon: 'bdr ' + t('badge_draft_s'), soumis: 'bwt ' + t('badge_submitted'), en_revision: 'bwt ' + t('badge_in_review'), valide: 'bok ' + t('badge_validated'), rejete: 'brej ' + t('badge_rejected') }
+            const v = m[s] || 'bdr ' + s; const sp = v.indexOf(' '); const cls = v.substring(0, sp), label = v.substring(sp + 1)
+            return `<span class="badge ${cls}">${label}</span>`
+        }
+        function bpay(s) {
+            const m = { en_attente: 'bwt ⏳', traite: 'bwt 🔄', confirme: 'bok ✅', echoue: 'brej ❌', annule: 'bdr 🚫' }
+            const [cls, ico] = (m[s] || 'bdr •').split(' ')
+            return `<span class="badge ${cls}">${ico} ${s}</span>`
+        }
+        function dbadge(d) {
+            const c = { facile: ['rgba(16,185,129,.1)', '#059669'], moyen: ['rgba(245,158,11,.1)', 'var(--am)'], difficile: ['rgba(239,68,68,.08)', 'var(--red)'] }
+            const [bg, tc] = c[d] || ['rgba(99,102,241,.1)', 'var(--ind)']
+            return `<span style="font-size:.7rem;font-weight:700;padding:.16rem .52rem;border-radius:99px;background:${bg};color:${tc}">${{ facile: t('diff_easy'), moyen: t('diff_medium'), difficile: t('diff_hard') }[d] || d}</span>`
+        }
+        function fmode(m) { return { mtn_mobile_money: '📱 MTN MoMo', orange_money: '🟠 Orange Money', virement_bancaire: '🏦 Virement', especes: '💵 Espèces', autre: '💳 Autre' }[m] || m || '—' }
+        function fd(d) { if (!d) return '—'; return new Date(d).toLocaleDateString(LANG === 'en' ? 'en-GB' : 'fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) }
+        function slugify(s) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }
+        function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;') }
+
+        init()
+    </script>
+</body>
+
+</html>

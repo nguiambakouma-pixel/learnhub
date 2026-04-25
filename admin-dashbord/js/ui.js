@@ -246,3 +246,4 @@ class UIManager {
 }
 
 export const ui = new UIManager();
+window.ui = ui;

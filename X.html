@@ -1,80 +1,39 @@
-OUI VAS Y.MAIS JE MET D'ABORD L'ACCENT EN CE QUI CORCERNE L'INTERFACE ELEVE CAR JE VEUX AUSSI POUVOIR AJOUTER SI
-POSSIBLE DANS LES COURS LES VIDEOS, DES PDF(FACULTATIF POUR CERTAINS COURS...) ET TOUTE CES FONCTIONNALITE DOIVENT ETRE
-FLUIDE POUR FACILITE LA NAVIGUATION.
-💡 WORKFLOW RECOMMANDÉ
+Excellente vision. Avant de coder quoi que ce soit, voici l'architecture complète que je propose — de la BD jusqu'au
+flux admin.Voici l'architecture complète pensée en 4 couches. Deux diagrammes pour visualiser le flux.
 
-### Création d'un Cours
-```
-1. Sélectionner le sous-système
-└─→ 🇫🇷 Francophone ou 🇬🇧 Anglophone
+**Le principe central :** le professeur est un acteur tiers, pas un admin. Il a son propre espace sécurisé, soumet du
+contenu qui passe en file d'attente, et l'admin n'a plus qu'à valider en un clic. La monétisation est calculée
+automatiquement à chaque validation.Voici maintenant les tables BD à ajouter dans Supabase pour supporter tout ce
+flux.---
 
-2. Choisir le niveau
-└─→ Auto-chargement depuis la base
+### Ce que ça donne concrètement — les 4 couches
 
-3. Choisir la série (si Terminale/Première)
-└─→ Optionnel, laisser vide pour cours général
+**Couche 1 — Authentification sécurisée du professeur**
 
-4. Renseigner la matière & titre
-└─→ Titre descriptif obligatoire
+Le professeur s'inscrit via Supabase Auth (email + mot de passe), exactement comme un élève. Mais son compte démarre
+avec `statut = 'en_attente'` et `est_verifie = false`. Il ne peut rien faire tant que l'admin n'a pas approuvé. Il doit
+obligatoirement uploader au moins 3 documents : diplôme universitaire, pièce d'identité, et attestation d'enseignement.
+Ces fichiers vont dans un bucket Supabase Storage privé, accessible uniquement par les admins. C'est du KYC (Know Your
+Customer) appliqué à l'éducation.
 
-5. Rédiger le contenu
-└─→ Utiliser l'éditeur de texte enrichi
+**Couche 2 — Le portail professeur**
 
-6. Ajouter une vidéo (OPTIONNEL)
-└─→ YouTube URL (RECOMMANDÉ) ou Upload
+Une fois approuvé, le professeur accède à un espace dédié avec son propre dashboard (ses épreuves publiées, ses gains,
+son taux d'acceptation), un formulaire de soumission d'épreuve — version allégée du builder admin avec les mêmes 8 types
+de questions — et un historique de ses soumissions avec les statuts et commentaires de l'admin.
 
-7. Ajouter un PDF (OPTIONNEL)
-└─→ Support de cours, annales, fiches
+**Couche 3 — La file d'attente admin**
 
-8. Définir métadonnées
-└─→ Durée, Points XP
+Côté admin, une nouvelle section "Validations en attente" regroupe toutes les soumissions de professeurs. L'admin peut
+prévisualiser l'épreuve complète, l'approuver (elle bascule automatiquement dans `examens.est_publie = true`) ou la
+rejeter avec un commentaire qui repart au professeur. La rémunération est calculée automatiquement au moment de la
+validation.
 
-9. Publier ou Brouillon
-└─→ Cocher pour publier immédiatement
+**Couche 4 — Monétisation**
 
-10. ✅ Enregistrer !
-```
+Deux modèles possibles, configurables par professeur : un forfait fixe par épreuve validée (ex. 5 000 XAF), ou un modèle
+variable basé sur l'utilisation (nombre de passages élèves × tarif). La table `paiements_professeurs` trace tout.
+L'admin déclenche les virements manuellement ou via Mobile Money (MTN/Orange) avec saisie de la référence.
 
----
-
-## 🔥 POINTS FORTS DU DASHBOARD
-
-### ✅ INTELLIGENCE
-
-1. **Chargement Dynamique**
-- Les niveaux changent selon le sous-système
-- Les séries n'apparaissent que si nécessaires
-- Détection automatique des classes d'examen 🎯
-
-2. **Validation Intelligente**
-- Champs obligatoires marqués *
-- Vérification de la taille des fichiers
-- Messages d'erreur clairs
-
-3. **Upload Optimisé**
-- Barre de progression en temps réel
-- Upload asynchrone (non bloquant)
-- Confirmation visuelle après upload
-
-### ✅ FLEXIBILITÉ
-
-- **Vidéos** : URL (illimité) ou Upload (500 MB)
-- **PDFs** : Optionnels mais recommandés
-- **Publication** : Immédiate ou brouillon
-- **Séries** : Optionnelles pour cours généraux
-
-### ✅ PERFORMANCE
-
-- Chargement asynchrone des données
-- Requêtes SQL optimisées avec JOIN
-- Utilisation des vues `v_niveaux_complets` et `v_series_completes`
-- Limité à 50 cours affichés (pagination future)
-
----
-TU N'A PAS TOTALEMENT COMPRIS MA REQUETE. LE SYSYTEME CAMEROUNAIS EDUCATIF A DEUX SECTION(FRANCOPHONE ET ANGLEPHONE)
-DIFFERENTS(COURS, LECONS...) DANS LE PARCOURS ELEVE JE VOUDRAIS SPECIFIER LES CHOSES. DONNER LA POSSIBILITER A L'ELEVE
-DE CHOISIR APRES AVOIR CHOISIT PARCOURS ELEVE DE CHOISIR SA SECTION (ANGLEPHONE OU FRANCOPHONE) APRES CELA IL SPECIFIE
-SA CLASSE(TERMINALE,PREMIERE,SECONDE...) APRES IL SPECIFIFIE LA SPECIALITE DE SA CLASSE SI ELLE EN A. POUR LA SECTION
-FRANCOPHONE (TERMINALE TI,C,D,A; PREMIERE TI,C,D,A) ET POUR LA SECTION ANGLEPHONE (UPPER SIXT ART,SCIENCE...). RENSEIGNE
-TOI SUR LE FONCTIONNEMENT EDUCATIF AU CAMEROUN ET DIT MOI SI JE POURRAIS ADAPTER MON SITE AVEC CETTE LOGIQUE. MEME SI JE
-COMMENCE PAR LES CLASSES D'EXAMEN DE SECTION ANGLOPHONE ET FRANCOPHONE AVEC LES CLASSES ET LEUR SPECIALITES...
+---La logique recommandée est de partir du SQL d'abord — sans les tables en BD, rien d'autre ne peut fonctionner. Mais
+tu peux choisir l'ordre qui te convient le mieux.
