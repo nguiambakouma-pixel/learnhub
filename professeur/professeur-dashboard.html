@@ -1976,7 +1976,12 @@
             'paiements': 'payments_title', 'profil': 'edit_profile'
         }
 
-        function go(section) {
+        function go(section, pushToHistory = true) {
+            
+            if (pushToHistory) {
+                history.pushState({ section }, t(PAGE_TITLES_KEY[section] || 'nav_dashboard'), "#" + section);
+            }
+            
             document.querySelectorAll('.ni').forEach(e => e.classList.remove('active'))
             document.querySelectorAll('.sec').forEach(e => e.classList.remove('active'))
             const nav = document.querySelector(`[onclick="go('${section}')"]`)
@@ -1997,6 +2002,15 @@
             if (section === 'paiements') loadPay()
             if (section === 'profil') loadProfil()
         }
+
+        window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.section) {
+                go(e.state.section, false);
+            } else {
+                const s = window.location.hash.replace('#', '');
+                go(s || 'dashboard', false);
+            }
+        });
 
         // ════════════════════════════════════════════════════════════
         //  NIVEAUX FILTRÉS SELON LE PROF
