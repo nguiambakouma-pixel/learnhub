@@ -1013,10 +1013,61 @@
             background: rgba(79, 70, 229, .2);
             border-radius: 3px
         }
+
+        /* ROTATION PROMPT */
+        .rotate-prompt {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, var(--ind), #818cf8);
+            color: #fff;
+            z-index: 100000;
+            padding: 12px 20px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rotate-prompt.dismissed {
+            display: none !important;
+        }
+
+        .rotate-prompt button {
+            background: rgba(0,0,0,0.2);
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: auto;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) and (orientation: portrait) {
+            .rotate-prompt:not(.dismissed) {
+                display: flex;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <!-- ROTATION PROMPT -->
+    <div class="rotate-prompt" id="rotatePrompt">
+        <i data-lucide="smartphone"></i>
+        <span>Pivote ton téléphone pour une meilleure vue !</span>
+        <button onclick="document.getElementById('rotatePrompt').classList.add('dismissed')">✖</button>
+    </div>
+
     <div class="layout">
 
         <!-- ═══ SIDEBAR ═══ -->

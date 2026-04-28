@@ -1691,10 +1691,61 @@
 
         .spinner-sm { width: 14px; height: 14px; border-width: 1.5px; }
         .spinner-lg { width: 40px; height: 40px; border-width: 3px; }
+
+        /* ROTATION PROMPT */
+        .rotate-prompt {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, var(--gold), #FDE68A);
+            color: #000;
+            z-index: 100000;
+            padding: 12px 20px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rotate-prompt.dismissed {
+            display: none !important;
+        }
+
+        .rotate-prompt button {
+            background: rgba(0,0,0,0.1);
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: auto;
+            color: #000;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) and (orientation: portrait) {
+            .rotate-prompt:not(.dismissed) {
+                display: flex;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <!-- ROTATION PROMPT -->
+    <div class="rotate-prompt" id="rotatePrompt">
+        <i data-lucide="smartphone"></i>
+        <span>Pivote ton téléphone pour une meilleure vue !</span>
+        <button onclick="document.getElementById('rotatePrompt').classList.add('dismissed')">✖</button>
+    </div>
+
     <!-- GLOBAL LOADER -->
     <div id="globalLoader" style="position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg-base);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.5s ease;">
         <div class="spinner spinner-lg" style="border-top-color:var(--gold);"></div>
