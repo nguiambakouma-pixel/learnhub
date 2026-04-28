@@ -138,13 +138,26 @@
             display: none;
             height: 60px;
             background: var(--bg-surface);
-            border-bottom: 1px solid var(--border);
+            border-bottom: 2px solid var(--gold);
             padding: 0 20px;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 90;
+        }
+
+        .menu-toggle {
+            background: var(--gold) !important;
+            color: var(--bg-base) !important;
+            border-radius: 12px !important;
+            width: 44px !important;
+            height: 44px !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(245, 184, 0, 0.3);
+            border: none !important;
         }
 
         .sidebar-logo {
@@ -1755,8 +1768,8 @@
 
     <div class="mobile-header">
         <div class="logo-mark">KMERSCHOOL</div>
-        <button onclick="document.querySelector('.sidebar').classList.toggle('open')" class="icon-btn">
-            <i data-lucide="menu"></i>
+        <button onclick="document.querySelector('.sidebar').classList.toggle('open')" class="menu-toggle">
+            <i data-lucide="menu" class="w-6 h-6"></i>
         </button>
     </div>
 
@@ -1822,10 +1835,10 @@
 
                 <div class="nav-section-label" data-i18n="nav_account">Compte</div>
                 <div class="nav-item" onclick="window.location.href='profil.html'">
-                    <div class="nav-icon">👤</div><span data-i18n="menu_profile">Mon Profil</span>
+                    <div class="nav-icon"><i data-lucide="user" class="w-5 h-5"></i></div><span data-i18n="menu_profile">Mon Profil</span>
                 </div>
                 <div class="nav-item" onclick="navigate('parametres')">
-                    <div class="nav-icon">⚙️</div><span data-i18n="menu_settings">Paramètres</span>
+                    <div class="nav-icon"><i data-lucide="settings" class="w-5 h-5"></i></div><span data-i18n="menu_settings">Paramètres</span>
                 </div>
             </nav>
 
@@ -1986,7 +1999,7 @@
 
             <!-- COURS PAGE -->
             <section class="page-content" id="page-cours">
-                <div class="page-header">
+                <div class="page-header" id="coursPageHeader">
                     <h1 data-i18n="page_courses_title">📚 Mes Cours</h1>
                     <p data-i18n="page_courses_desc">Explore et continue ton apprentissage par matière</p>
                 </div>
@@ -2225,11 +2238,18 @@
             const el = document.getElementById('page-' + page);
             if (el) el.classList.add('active');
             document.querySelectorAll('.nav-item').forEach(n => { if (n.getAttribute('onclick')?.includes("'" + page + "'")) n.classList.add('active'); });
-            document.getElementById('topbarTitle').textContent = TITLES[page] || page;
+            
+            // Si on filtre par matière, on affiche le nom de la matière en titre
+            document.getElementById('topbarTitle').textContent = mat || TITLES[page] || page;
+            
             document.getElementById('notifPanel').classList.remove('open');
             if (page === 'cours') renderCatalog();
             if (page === 'profil') renderProfil();
             if (page === 'favoris') loadFavoris();
+            
+            // Re-initialiser les icones Lucide pour les éléments injectés dynamiquement
+            if (window.lucide) lucide.createIcons();
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -2490,6 +2510,9 @@
             } else if (exBadge) {
                 exBadge.style.display = 'none';
             }
+
+            // Initialiser les icones Lucide
+            if (window.lucide) lucide.createIcons();
         }
 
         function animateCount(id, from, to, dur) {
@@ -2610,10 +2633,14 @@
 
         function renderCatalog() {
             const c = document.getElementById('coursCatalog');
+            const hdr = document.getElementById('coursPageHeader');
             let items = STATE.catalog;
 
             if (currentMatiereFilter) {
                 items = items.filter(x => x.matiere === currentMatiereFilter);
+                if (hdr) hdr.style.display = 'none'; // Cacher le header générique pour un accès "direct"
+            } else {
+                if (hdr) hdr.style.display = 'block';
             }
 
             // Map progress to catalog items

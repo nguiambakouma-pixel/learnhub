@@ -177,9 +177,15 @@
 
         .pdf-frame {
             width: 100%;
-            height: 580px;
+            height: 620px;
             border: none;
             background: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .pdf-frame {
+                height: 480px;
+            }
         }
 
         /* CONTENT */
@@ -652,8 +658,23 @@
                 padding: 1.25rem
             }
 
+            .topbar {
+                padding: 0 0.75rem;
+                gap: 0.5rem;
+            }
+
             .topbar-title {
-                max-width: 180px
+                max-width: 120px;
+                font-size: 0.85rem;
+            }
+            
+            .timer-badge {
+                padding: 0.2rem 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            #topbarMatiere {
+                display: none;
             }
         }
 
@@ -1366,7 +1387,7 @@
         if (window.innerWidth < 900) document.getElementById('mobileToggle').style.display = 'block';
         window.addEventListener('beforeunload', () => { clearInterval(timerInt); saveProg(); });
         init().catch(console.error);
+        if (window.lucide) lucide.createIcons();
     </script>
 </body>
-
 </html>
