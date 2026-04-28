@@ -7,6 +7,7 @@
     <title id="page-tab-title">Dashboard Professeur — KMERSCHOOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="secrets.js"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
@@ -1030,41 +1031,41 @@
             </div>
 
             <div class="sb-sec" id="lbl-sec-overview" data-i18n="nav_sec_overview">Vue d'ensemble</div>
-            <div class="ni active" onclick="ui.switchSec('dash', this)">
+            <div class="ni active" onclick="go('dashboard')">
                 <span class="ni-ico"><i data-lucide="layout-dashboard" class="w-4 h-4"></i></span>
                 <span data-t="ni_dash">Tableau de bord</span>
             </div>
 
             <div class="sb-sec" id="lbl-sec-content" data-i18n="nav_sec_content">Contenu</div>
-            <div class="ni" onclick="ui.switchSec('cours', this)">
+            <div class="ni" onclick="go('mes-cours')">
                 <span class="ni-ico"><i data-lucide="book-open" class="w-4 h-4"></i></span>
                 <span data-t="ni_cours">Mes Cours</span>
             </div>
-            <div class="ni" onclick="ui.switchSec('proposer-cours', this)">
+            <div class="ni" onclick="go('proposer-cours')">
                 <span class="ni-ico"><i data-lucide="pencil" class="w-4 h-4"></i></span>
                 <span data-t="ni_prop_cours">Proposer un cours</span>
             </div>
-            <div class="ni" onclick="ui.switchSec('exos', this)">
+            <div class="ni" onclick="go('mes-exercices')">
                 <span class="ni-ico"><i data-lucide="code-2" class="w-4 h-4"></i></span>
                 <span data-t="ni_exos">Mes Exercices</span>
             </div>
-            <div class="ni" onclick="ui.switchSec('proposer-exo', this)">
+            <div class="ni" onclick="go('proposer-exercice')">
                 <span class="ni-ico"><i data-lucide="plus-circle" class="w-4 h-4"></i></span>
                 <span data-t="ni_prop_exo">Proposer un exo</span>
             </div>
 
             <div class="sb-sec" id="lbl-sec-comm" data-i18n="nav_sec_community">Communauté</div>
-            <div class="ni" onclick="ui.switchSec('forum', this)">
+            <div class="ni" onclick="go('forum')">
                 <span class="ni-ico"><i data-lucide="message-square" class="w-4 h-4"></i></span>
                 <span data-t="ni_forum">Forum & Aide</span>
             </div>
 
             <div class="sb-sec" id="lbl-sec-account" data-i18n="nav_sec_account">Compte</div>
-            <div class="ni" onclick="ui.switchSec('profile', this)">
+            <div class="ni" onclick="go('profil')">
                 <span class="ni-ico"><i data-lucide="user" class="w-4 h-4"></i></span>
                 <span data-t="ni_profile">Mon Profil</span>
             </div>
-            <div class="ni" onclick="ui.switchSec('settings', this)">
+            <div class="ni" onclick="go('settings')">
                 <span class="ni-ico"><i data-lucide="settings" class="w-4 h-4"></i></span>
                 <span data-t="ni_settings">Paramètres</span>
             </div>
@@ -1099,7 +1100,7 @@
                         <i data-lucide="bell" class="w-4 h-4"></i>
                         <span class="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
                     </button>
-                    <button class="btn btn-p hidden sm:flex items-center gap-2" onclick="ui.switchSec('proposer-cours')">
+                    <button class="btn btn-p hidden sm:flex items-center gap-2" onclick="go('proposer-cours')">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         <span data-t="btn_new_course">Proposer un cours</span>
                     </button>
@@ -1982,7 +1983,13 @@
             if (nav) nav.classList.add('active')
             const sec = document.getElementById(`sec-${section}`)
             if (sec) sec.classList.add('active')
-            document.getElementById('ptitle').textContent = t(PAGE_TITLES_KEY[section] || 'nav_dashboard')
+            
+            // Appliquer les icônes si de nouvelles s'affichent
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+
+            document.getElementById('page-content-title').textContent = t(PAGE_TITLES_KEY[section] || 'nav_dashboard')
 
             if (section === 'mes-cours') loadCours()
             if (section === 'mes-exercices') loadExos()
@@ -2649,6 +2656,11 @@
         function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;') }
 
         init()
+        
+        // Initialiser les icônes
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
     </script>
 </body>
 
