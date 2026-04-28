@@ -1607,8 +1607,16 @@ Tu es là pour aider ${name} à réussir. Commence chaque session avec enthousia
                 content: m.content
             }));
 
+            const isLocal = window.location.hostname === 'localhost' || 
+                            window.location.hostname === '127.0.0.1' || 
+                            window.location.hostname.startsWith('192.168.') ||
+                            window.location.hostname.endsWith('.local');
+            
+            // On utilise l'IP actuelle pour que ça marche aussi sur mobile en réseau local
+            const apiUrl = isLocal ? `http://${window.location.hostname}:3000/chat` : "/api/chat";
+
             try {
-                const response = await fetch("/api/chat", {
+                const response = await fetch(apiUrl, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
