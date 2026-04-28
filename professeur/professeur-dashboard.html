@@ -2003,19 +2003,39 @@
         // ════════════════════════════════════════════════════════════
         async function loadNiveauxForProf() {
             try {
-                const { data, error } = await sb.rpc('get_niveaux_for_prof')
+                // Essayer l'appel RPC avec le prof_id si ça a été défini ainsi dans Supabase, 
+                // sinon un appel simple. On attrapera l'erreur 400 pour le fallback en toute sécurité.
+                let data = null, error = null;
+                try {
+                    const rpcRes = await sb.rpc('get_niveaux_for_prof', { p_prof_id: uid })
+                    data = rpcRes.data
+                    error = rpcRes.error
+                    if (error) {
+                        const rpcRes2 = await sb.rpc('get_niveaux_for_prof')
+                        data = rpcRes2.data
+                        error = rpcRes2.error
+                    }
+                } catch(err) {
+                    error = err
+                }
+
                 if (!error && data?.length) {
                     niveauxCache = data
                 } else {
-                    console.warn('RPC get_niveaux_for_prof non disponible ou vide, fallback')
+                    console.warn('RPC get_niveaux_for_prof non disponible ou vide, fallback activé.')
                     const ss = prof.sous_systemes || []
                     const { data: allSS } = await sb.from('sous_systemes').select('id,code')
                     const filteredSS = allSS?.filter(s => ss.includes(s.code) || ss.length === 0).map(s => s.id) || []
                     
-                    const { data: niv, error: errNiv } = await sb.from('niveaux_scolaires')
+                    let query = sb.from('niveaux_scolaires')
                         .select('id,code,nom_fr,nom_en,nom_court,est_classe_examen,type_examen,cycles!inner(sous_systeme_id)')
-                        .in('cycles.sous_systeme_id', filteredSS.length ? filteredSS : ['*'])
                         .order('ordre')
+                        
+                    if (filteredSS.length > 0) {
+                        query = query.in('cycles.sous_systeme_id', filteredSS)
+                    }
+                    
+                    const { data: niv, error: errNiv } = await query
                     
                     if (errNiv) throw errNiv
                     niveauxCache = niv || []
