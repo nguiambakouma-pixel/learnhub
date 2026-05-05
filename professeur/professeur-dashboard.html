@@ -2184,7 +2184,7 @@
             if (section === 'mes-exercices') loadExos()
             if (section === 'mes-epreuves') loadEp()
             if (section === 'paiements') loadPay()
-            if (section === 'profil') loadProfil()
+            if (section === 'profil' || section === 'settings') loadProfil()
         }
 
         window.addEventListener('popstate', (e) => {
