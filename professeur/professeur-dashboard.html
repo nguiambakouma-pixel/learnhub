@@ -2120,7 +2120,7 @@
             'dashboard': 'nav_dashboard', 'mes-cours': 'my_courses_title', 'proposer-cours': 'propose_course_title',
             'mes-exercices': 'my_exercises_title', 'proposer-exercice': 'propose_exercise_title',
             'mes-epreuves': 'my_exams_title', 'soumettre': 'submit_exam_title',
-            'paiements': 'payments_title', 'profil': 'edit_profile'
+            'paiements': 'payments_title', 'profil': 'edit_profile', 'settings': 'nav_settings', 'forum': 'ni_forum'
         }
 
         function go(section, pushToHistory = true) {
@@ -2136,6 +2136,9 @@
             const sec = document.getElementById(`sec-${section}`)
             if (sec) sec.classList.add('active')
             
+            // Fermer la sidebar sur mobile après clic
+            document.querySelector('.sidebar').classList.remove('active')
+
             // Appliquer les icônes si de nouvelles s'affichent
             if (window.lucide) {
                 window.lucide.createIcons();
