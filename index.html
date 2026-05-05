@@ -247,41 +247,42 @@
     <!-- Navbar -->
     <nav class="fixed top-0 w-full z-50 glass border-b border-slate-200 dark:border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex items-center space-x-2" data-aos="fade-right">
-                    <img src="assets/logo/LOGO.png" alt="KMERSCHOOL" class="h-16 w-auto object-contain">
-                    <span class="text-2xl font-black tracking-tighter">
+            <div class="flex justify-between items-center h-24">
+                <div class="flex items-center" data-aos="fade-right">
+                    <span class="text-2xl md:text-3xl font-black tracking-tighter hover:scale-105 transition-transform duration-300 cursor-pointer">
                         <span class="kmer-text">KMER</span><span class="sch-text">SCH</span><span class="ool-text">OOL</span>
                     </span>
                 </div>
 
-                <div class="hidden md:flex items-center space-x-10">
-                    <a href="#parcours" class="font-medium text-slate-600 dark:text-slate-400 hover:text-primary transition">Parcours</a>
-                    <a href="#methode" class="font-medium text-slate-600 dark:text-slate-400 hover:text-primary transition">Ma méthode</a>
-                    <a href="#stats" class="font-medium text-slate-600 dark:text-slate-400 hover:text-primary transition">Impact</a>
-                    <a href="professeur/login.html" class="font-bold text-secondary hover:opacity-80 transition">Espace Professeur</a>
-                    <a href="auth.html" class="font-bold text-slate-900 dark:text-white hover:text-primary transition">Connexion</a>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#parcours" class="font-bold text-sm uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Parcours</a>
+                    <a href="#methode" class="font-bold text-sm uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Ma méthode</a>
+                    <a href="#stats" class="font-bold text-sm uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Impact</a>
+                    <div class="w-px h-6 bg-slate-200 dark:bg-slate-800 mx-2"></div>
+                    <a href="professeur/login.html" class="font-bold text-sm uppercase tracking-widest text-secondary hover:opacity-80 transition">Pro</a>
+                    <a href="auth.html" class="font-bold text-sm uppercase tracking-widest text-slate-900 dark:text-white hover:text-primary transition">Login</a>
                     <a href="auth.html?mode=register"
-                        class="px-7 py-3 bg-primary text-white font-bold rounded-full btn-premium shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30">
+                        class="px-8 py-3.5 bg-primary text-white text-xs font-black uppercase tracking-[0.2em] rounded-full btn-premium shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all">
                         S'inscrire
                     </a>
                     
                     <!-- Theme Toggle -->
-                    <button onclick="toggleTheme()" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-300">
-                        <i data-lucide="sun" class="w-6 h-6 hidden dark:block"></i>
-                        <i data-lucide="moon" class="w-6 h-6 block dark:hidden"></i>
+                    <button onclick="toggleTheme()" class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 hover:scale-110 transition-all text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                     </button>
                 </div>
 
-                <div class="flex items-center space-x-4 md:hidden">
-                    <button onclick="toggleTheme()" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-600 dark:text-slate-300">
-                        <i data-lucide="sun" class="w-6 h-6 hidden dark:block"></i>
-                        <i data-lucide="moon" class="w-6 h-6 block dark:hidden"></i>
+                <div class="flex items-center space-x-3 md:hidden">
+                    <!-- Theme Toggle Mobile -->
+                    <button onclick="toggleTheme()" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                     </button>
-                    <button id="mobile-menu-button" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                        <svg class="w-7 h-7 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16"></path>
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-button" class="p-3 rounded-xl bg-primary text-white shadow-lg shadow-primary/20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
                     </button>
                 </div>
@@ -404,26 +405,26 @@
                 <div class="h-1.5 w-20 bg-gradient-to-r from-primary via-secondary to-accent mx-auto mt-6 rounded-full"></div>
             </div>
             
-            <div class="flex flex-wrap justify-center items-center gap-8 lg:gap-12" data-aos="fade-up" data-aos-delay="100">
+            <div class="flex flex-wrap justify-center items-center gap-4 sm:gap-8 lg:gap-12" data-aos="fade-up" data-aos-delay="100">
                 <!-- Jean Tabi -->
-                <div class="group relative bg-white dark:bg-slate-900/50 p-5 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-white/5 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-500 backdrop-blur-sm">
-                    <img src="assets/J.png" alt="Jean Tabi" class="h-20 w-20 object-contain group-hover:scale-110 transition-transform duration-500">
+                <div class="group relative bg-white dark:bg-slate-900/50 p-3 sm:p-5 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-white/5 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-500 backdrop-blur-sm">
+                    <img src="assets/J.png" alt="Jean Tabi" class="h-12 w-12 sm:h-20 sm:w-20 object-contain group-hover:scale-110 transition-transform duration-500">
                 </div>
                 <!-- Libermann -->
-                <div class="group relative bg-white dark:bg-slate-900/50 p-5 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-white/5 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-500 backdrop-blur-sm">
-                    <img src="assets/L.png" alt="Libermann" class="h-20 w-20 object-contain group-hover:scale-110 transition-transform duration-500">
+                <div class="group relative bg-white dark:bg-slate-900/50 p-3 sm:p-5 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-white/5 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-500 backdrop-blur-sm">
+                    <img src="assets/L.png" alt="Libermann" class="h-12 w-12 sm:h-20 sm:w-20 object-contain group-hover:scale-110 transition-transform duration-500">
                 </div>
                 <!-- Vogt -->
-                <div class="group relative bg-white dark:bg-slate-900/50 p-5 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-white/5 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-500 backdrop-blur-sm">
-                    <img src="assets/V.png" alt="Vogt" class="h-20 w-20 object-contain group-hover:scale-110 transition-transform duration-500">
+                <div class="group relative bg-white dark:bg-slate-900/50 p-3 sm:p-5 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-white/5 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-500 backdrop-blur-sm">
+                    <img src="assets/V.png" alt="Vogt" class="h-12 w-12 sm:h-20 sm:w-20 object-contain group-hover:scale-110 transition-transform duration-500">
                 </div>
                 <!-- Leclerc -->
-                <div class="group relative bg-white dark:bg-slate-900/50 p-5 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-white/5 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-500 backdrop-blur-sm">
-                    <img src="assets/LE.png" alt="Leclerc" class="h-20 w-20 object-contain group-hover:scale-110 transition-transform duration-500">
+                <div class="group relative bg-white dark:bg-slate-900/50 p-3 sm:p-5 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-white/5 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-500 backdrop-blur-sm">
+                    <img src="assets/LE.png" alt="Leclerc" class="h-12 w-12 sm:h-20 sm:w-20 object-contain group-hover:scale-110 transition-transform duration-500">
                 </div>
                 <!-- Adventiste -->
-                <div class="group relative bg-white dark:bg-slate-900/50 p-5 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-white/5 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-500 backdrop-blur-sm">
-                    <img src="assets/CLOGO.JPG" alt="Adventiste" class="h-20 w-20 object-contain group-hover:scale-110 transition-transform duration-500">
+                <div class="group relative bg-white dark:bg-slate-900/50 p-3 sm:p-5 rounded-[1.5rem] sm:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-white/5 hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-500 backdrop-blur-sm">
+                    <img src="assets/CLOGO.JPG" alt="Adventiste" class="h-12 w-12 sm:h-20 sm:w-20 object-contain group-hover:scale-110 transition-transform duration-500">
                 </div>
             </div>
         </div>
