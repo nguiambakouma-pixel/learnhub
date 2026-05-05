@@ -1819,6 +1819,10 @@
                     <div class="nav-icon"><i data-lucide="bot" class="w-5 h-5"></i></div>
                     <span>KmerAI</span>
                 </div>
+                <div class="nav-item" onclick="navigate('labo')">
+                    <div class="nav-icon"><i data-lucide="microscope" class="w-5 h-5"></i></div>
+                    <span>Labo 3D</span>
+                </div>
                 <div class="nav-item" onclick="window.location.href='annales.html'">
                     <div class="nav-icon"><i data-lucide="file-text" class="w-5 h-5"></i></div>
                     <span data-i18n="menu_annales">Annales</span>
@@ -2218,7 +2222,7 @@
 
 
         // ── NAVIGATION ──
-        const TITLES = { dashboard: 'Tableau de bord', cours: 'Mes Cours', exercices: 'Exercices', examens: 'Examens', annales: 'Annales', classement: 'Classement', favoris: 'Favoris', profil: 'Mon Profil', parametres: 'Paramètres' };
+        const TITLES = { dashboard: 'Tableau de bord', cours: 'Mes Cours', labo: 'Laboratoire 3D', exercices: 'Exercices', examens: 'Examens', annales: 'Annales', classement: 'Classement', favoris: 'Favoris', profil: 'Mon Profil', parametres: 'Paramètres' };
         let currentFilter = 'all';
         let currentMatiereFilter = null;
 
@@ -2227,6 +2231,7 @@
             if (page === 'annales') { window.location.href = 'annales.html'; return; }
             if (page === 'chatbot') { window.location.href = 'chatbot-ia.html'; return; }
             if (page === 'examens') { window.location.href = 'examens.html'; return; }
+            if (page === 'labo') { window.location.href = 'laboratoire.html'; return; }
             
             if (pushToHistory) {
                 history.pushState({ page, mat }, TITLES[page] || page, "#" + page);

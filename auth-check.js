@@ -93,25 +93,15 @@
      * Redirige automatiquement l'utilisateur s'il est déjà connecté (Admin ou Élève)
      * Utile pour index.html et auth.html
      */
-    async function resolveUserRoleAndRedirect() {
+    /**
+     * Retourne les informations de redirection sans rediriger
+     */
+    async function getUserRedirectInfo() {
         try {
             const { data: { user } } = await supabase.auth.getUser()
-            if (!user) return
+            if (!user) return null
 
-            // 1. Vérifier si c'est un Admin
-            const { data: admin } = await supabase
-                .from('admins')
-                .select('role')
-                .eq('id', user.id)
-                .maybeSingle()
-
-            if (admin) {
-                console.log('👑 Admin détecté, redirection...')
-                window.location.href = 'admin-dashbord/index.html'
-                return
-            }
-
-            // 2. Vérifier si c'est un Professeur
+            // 1. Vérifier si c'est un Professeur
             const { data: prof } = await supabase
                 .from('professeurs')
                 .select('statut')
@@ -119,12 +109,10 @@
                 .maybeSingle()
 
             if (prof && prof.statut === 'approuve') {
-                console.log('👨‍🏫 Professeur approuvé détecté, redirection...')
-                window.location.href = 'professeur/professeur-dashboard.html'
-                return
+                return { url: 'professeur/professeur-dashboard.html', label: 'Espace Prof' }
             }
 
-            // 3. Vérifier si c'est un élève (Profil)
+            // 2. Vérifier si c'est un élève (Profil)
             const { data: profile } = await supabase
                 .from('profiles')
                 .select('type_parcours')
@@ -132,13 +120,29 @@
                 .maybeSingle()
 
             if (profile) {
-                console.log('🎓 Élève détecté, redirection...')
-                redirectToCorrectDashboard(profile.type_parcours)
-                return
+                const dashboards = {
+                    'eleve': 'Dashboard-eleves/dashboard-eleve.html',
+                    'dev-web': 'Dashboard-Dev/dashboard-dev.html',
+                    'designer': 'Dashboard-designer/dashboard-designer.html'
+                }
+                return { url: dashboards[profile.type_parcours] || 'index.html', label: 'Mon Espace' }
             }
             
+            return null
         } catch (error) {
-            console.error('Erreur redirection auto:', error)
+            console.error('Erreur récupération info redirection:', error)
+            return null
+        }
+    }
+
+    /**
+     * Redirige automatiquement l'utilisateur s'il est déjà connecté (Admin ou Élève)
+     * Utile pour auth.html
+     */
+    async function resolveUserRoleAndRedirect() {
+        const info = await getUserRedirectInfo()
+        if (info && info.url) {
+            window.location.href = info.url
         }
     }
 
@@ -158,6 +162,7 @@
     // Exporter pour utilisation globale
     window.AuthCheck = {
         checkAuth,
+        getUserRedirectInfo,
         resolveUserRoleAndRedirect,
         logout,
         supabase

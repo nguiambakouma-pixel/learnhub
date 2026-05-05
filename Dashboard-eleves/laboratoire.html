@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laboratoire Virtuel – KMERSCHOOL</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+        rel="stylesheet" />
+
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #080c14;
+            --bg-surface: #0e1420;
+            --bg-raised: #141b2d;
+            --bg-hover: #1a2340;
+            --border: rgba(255, 255, 255, 0.07);
+            --border-lit: rgba(255, 255, 255, 0.14);
+            --gold: #F5B800;
+            --gold-muted: rgba(245, 184, 0, 0.12);
+            --emerald: #10B981;
+            --rose: #F43F5E;
+            --blue: #3B82F6;
+            --blue-muted: rgba(59, 130, 246, 0.12);
+            --text-primary: #F0F4FF;
+            --text-muted: #8892A4;
+            --text-faint: #4A5568;
+            --sidebar-w: 260px;
+            --topbar-h: 64px;
+            --radius: 14px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-base);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Syne', sans-serif;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-mark {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            background: linear-gradient(135deg, var(--gold), #FDE68A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 10px;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-raised);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--gold-muted);
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .nav-section-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-faint);
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        /* MAIN CONTENT */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .topbar {
+            height: var(--topbar-h);
+            background: rgba(8, 12, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            justify-content: space-between;
+        }
+
+        .topbar-title {
+            font-weight: 700;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content {
+            flex: 1;
+            position: relative;
+            background: #05080f;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* SIMULATOR CANVAS */
+        #sim-container {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: row;
+            background: #000;
+        }
+
+        #canvas-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #sim-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* UI OVERLAY */
+        .controls-overlay {
+            width: 350px;
+            background: rgba(14, 20, 32, 1);
+            border-left: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .explanation-card {
+            background: rgba(245, 184, 0, 0.1);
+            border-left: 3px solid var(--gold);
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-value {
+            color: var(--gold);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: var(--bg-raised);
+            border-radius: 2px;
+            appearance: none;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--gold);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(245, 184, 0, 0.5);
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 10px;
+            background: var(--gold);
+            color: var(--bg-base);
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        /* GALLERY VIEW */
+        #gallery {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-base);
+            z-index: 20;
+            padding: 40px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .sim-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sim-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .sim-thumb {
+            height: 180px;
+            background: var(--bg-raised);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            position: relative;
+        }
+
+        .sim-thumb::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.6));
+        }
+
+        .sim-info {
+            padding: 20px;
+        }
+
+        .sim-tag {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--gold);
+            background: var(--gold-muted);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .sim-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .sim-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .back-btn {
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-lit);
+        }
+
+        /* MOBILE OVERLAY */
+        @media (max-width: 1024px) {
+            .sidebar {
+                display: none;
+            }
+            .controls-overlay {
+                width: calc(100% - 40px);
+                bottom: 20px;
+                top: auto;
+            }
+        }
+
+        #labo-title {
+            background: linear-gradient(135deg, var(--gold), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-mark">KMERSCHOOL</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Laboratoire Virtuel</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item active" onclick="showGallery()">
+                <div class="nav-icon"><i data-lucide="layout-grid"></i></div>
+                <span>Toutes les simulations</span>
+            </div>
+            <div class="nav-section-label">Physique</div>
+            <div class="nav-item" onclick="loadSimulation('optique')">
+                <div class="nav-icon"><i data-lucide="eye"></i></div>
+                <span>Optique Géométrique</span>
+            </div>
+            <div class="nav-item" onclick="loadSimulation('atome')">
+                <div class="nav-icon"><i data-lucide="atom"></i></div>
+                <span>Atome de Bohr</span>
+            </div>
+            <div class="nav-item" onclick="loadSimulation('pendule')">
+                <div class="nav-icon"><i data-lucide="timer"></i></div>
+                <span>Pendule Simple</span>
+            </div>
+            <div class="nav-item" onclick="loadSimulation('fente')">
+                <div class="nav-icon"><i data-lucide="waves"></i></div>
+                <span>Fentes de Young</span>
+            </div>
+            <div class="nav-item" onclick="loadSimulation('rlc')">
+                <div class="nav-icon"><i data-lucide="zap"></i></div>
+                <span>Circuit RLC</span>
+            </div>
+            <div class="nav-section-label">Retour</div>
+            <div class="nav-item" onclick="window.location.href='dashboard-eleve.html'">
+                <div class="nav-icon"><i data-lucide="arrow-left"></i></div>
+                <span>Mon Tableau de bord</span>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="topbar-title">
+                <button class="back-btn" id="sim-back-btn" style="display: none;" onclick="showGallery()">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    Retour
+                </button>
+                <span id="current-sim-title">Sélectionne une simulation</span>
+            </div>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <div id="sim-status" style="font-size: 12px; color: var(--emerald); display: none;">
+                    <span style="width: 8px; height: 8px; background: var(--emerald); border-radius: 50%; display: inline-block; margin-right: 4px;"></span>
+                    Simulation active
+                </div>
+                <img id="userAvatar" src="" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--gold);" />
+            </div>
+        </header>
+
+        <div class="content">
+            <div id="gallery">
+                <div class="sim-card" onclick="loadSimulation('optique')">
+                    <div class="sim-thumb"><i data-lucide="eye" class="w-16 h-16 text-blue-400"></i></div>
+                    <div class="sim-info">
+                        <span class="sim-tag">Physique • Optique</span>
+                        <h3 class="sim-title">Optique Géométrique</h3>
+                        <p class="sim-desc">Étudiez les lentilles convergentes et la formation des images.</p>
+                    </div>
+                </div>
+                <div class="sim-card" onclick="loadSimulation('atome')">
+                    <div class="sim-thumb"><i data-lucide="atom" class="w-16 h-16 text-rose-400"></i></div>
+                    <div class="sim-info">
+                        <span class="sim-tag">Physique • Atomistique</span>
+                        <h3 class="sim-title">Atome de Bohr</h3>
+                        <p class="sim-desc">Simulation 3D des transitions électroniques de l'hydrogène.</p>
+                    </div>
+                </div>
+                <div class="sim-card" onclick="loadSimulation('pendule')">
+                    <div class="sim-thumb"><i data-lucide="timer" class="w-16 h-16 text-emerald-400"></i></div>
+                    <div class="sim-info">
+                        <span class="sim-tag">Physique • Mécanique</span>
+                        <h3 class="sim-title">Pendule Simple</h3>
+                        <p class="sim-desc">Analysez les oscillations et l'influence de la gravité.</p>
+                    </div>
+                </div>
+                <div class="sim-card" onclick="loadSimulation('fente')">
+                    <div class="sim-thumb"><i data-lucide="waves" class="w-16 h-16 text-blue-300"></i></div>
+                    <div class="sim-info">
+                        <span class="sim-tag">Physique • Ondes</span>
+                        <h3 class="sim-title">Fentes de Young</h3>
+                        <p class="sim-desc">Interférence lumineuse et nature ondulatoire de la lumière.</p>
+                    </div>
+                </div>
+                <div class="sim-card" onclick="loadSimulation('rlc')">
+                    <div class="sim-thumb"><i data-lucide="zap" class="w-16 h-16 text-yellow-400"></i></div>
+                    <div class="sim-info">
+                        <span class="sim-tag">Physique • Électricité</span>
+                        <h3 class="sim-title">Circuit RLC</h3>
+                        <p class="sim-desc">Visualisez la résonance et le déphasage tension/courant.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sim-container" style="display: none;">
+                <div id="canvas-wrapper">
+                    <canvas id="sim-canvas"></canvas>
+                    <div id="three-container" style="width: 100%; height: 100%;"></div>
+                </div>
+
+                <div class="controls-overlay" id="controls-container">
+                    <div id="controls"></div>
+                    <div class="explanation-card" id="explanation-panel">
+                        <div class="explanation-title"><i data-lucide="info" class="w-4 h-4"></i> Observation</div>
+                        <div id="explanation-text">Sélectionne une simulation pour voir les détails.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/simulations.js"></script>
+    <script>
+        // Init Lucide
+        lucide.createIcons();
+
+        // UI Logic
+        function showGallery() {
+            document.getElementById('gallery').style.display = 'grid';
+            document.getElementById('sim-container').style.display = 'none';
+            document.getElementById('sim-back-btn').style.display = 'none';
+            document.getElementById('current-sim-title').textContent = 'Sélectionne une simulation';
+            document.getElementById('sim-status').style.display = 'none';
+            
+            // Stop current simulation if any
+            if (window.currentSimulation) {
+                window.currentSimulation.stop();
+                window.currentSimulation = null;
+            }
+        }
+
+        function loadSimulation(type) {
+            document.getElementById('gallery').style.display = 'none';
+            document.getElementById('sim-container').style.display = 'flex';
+            document.getElementById('sim-back-btn').style.display = 'flex';
+            document.getElementById('sim-status').style.display = 'flex';
+
+            const titles = {
+                optique: 'Optique Géométrique',
+                atome: 'Atome de Bohr',
+                pendule: 'Pendule Simple',
+                fente: 'Fentes de Young',
+                rlc: 'Circuit RLC'
+            };
+            document.getElementById('current-sim-title').textContent = titles[type];
+
+            // Initialize simulation
+            if (window.initSimulation) {
+                window.initSimulation(type);
+            }
+
+            // Refresh icons in dynamic controls
+            setTimeout(() => lucide.createIcons(), 100);
+        }
+
+        // Fetch user avatar
+        async function fetchUser() {
+            const sbUrl = 'https://zbbulpomopfwkqipbehk.supabase.co';
+            const sbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A';
+            const sb = window.supabase.createClient(sbUrl, sbKey);
+            
+            const { data: { user } } = await sb.auth.getUser();
+            if (user) {
+                const { data: profile } = await sb.from('profiles').select('avatar_url').eq('id', user.id).single();
+                if (profile && profile.avatar_url) {
+                    document.getElementById('userAvatar').src = profile.avatar_url;
+                }
+            }
+        }
+        fetchUser();
+    </script>
+</body>
+
+</html>

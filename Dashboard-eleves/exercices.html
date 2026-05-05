@@ -990,6 +990,45 @@
             }
         }
 
+        /* ── INDICATEUR DE SCROLL VERTICAL (TYPE WORD) ── */
+        .scroll-v-track {
+            position: fixed;
+            right: 4px;
+            top: 76px;
+            bottom: 20px;
+            width: 3px;
+            background: rgba(255, 255, 255, .03);
+            border-radius: 10px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .scroll-v-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(to bottom, #6366f1, #10b981);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+            transition: height 0.1s ease;
+        }
+
+        /* ── OPTIMISATION PAYSAGE MOBILE ── */
+        @media (max-height: 500px) and (max-width: 920px) {
+            .filter-sidebar {
+                width: 80% !important;
+                z-index: 500 !important;
+            }
+            .topbar {
+                height: 48px !important;
+            }
+            .page-wrap {
+                padding-top: 48px !important;
+            }
+        }
+
         /* ── SPINNER ── */
         .spinner {
             width: 20px;
@@ -1012,6 +1051,11 @@
 </head>
 
 <body>
+
+    <!-- ═══ VERTICAL SCROLL PROGRESS (WORD-LIKE) ═══ -->
+    <div class="scroll-v-track">
+        <div class="scroll-v-fill" id="progressFillV"></div>
+    </div>
 
     <!-- ═══ TOPBAR ═══ -->
     <header class="topbar">
@@ -1102,7 +1146,7 @@
             <div class="content-header">
                 <div>
                     <h2 style="font-size:1.3rem;font-weight:800;color:#f1f5f9;" data-i18n="page_title">✏️ Mes Exercices</h2>
-                    <p style="font-size:.82rem;color:#475569;margin-top:.2rem;" id="subLabel" data-i18n="loading"><div class="spinner spinner-sm"></div></p>
+                    <p style="font-size:.82rem;color:#475569;margin-top:.2rem;" id="subLabel"><div class="spinner spinner-sm"></div></p>
                 </div>
                 <div class="search-wrap">
                     <i data-lucide="search" style="width:14px;color:#475569;"></i>
@@ -2363,6 +2407,14 @@
             closeArena();
             window.location.href = 'dashboard-eleve.html';
         }
+
+        window.addEventListener('scroll', () => {
+            const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+            if (totalHeight <= 0) return;
+            const progress = (window.pageYOffset / totalHeight) * 100;
+            const vFill = document.getElementById('progressFillV');
+            if (vFill) vFill.style.height = progress + '%';
+        });
 
         // ── START ─────────────────────────────────────────────────────────
         init().catch(console.error);

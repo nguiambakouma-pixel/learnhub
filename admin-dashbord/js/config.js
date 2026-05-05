@@ -4,8 +4,8 @@
 
 window.CONFIG = {
   supabase: {
-    url: window.SUPABASE_SECRETS ? window.SUPABASE_SECRETS.url : 'https://votre-url-supabase.supabase.co',
-    key: window.SUPABASE_SECRETS ? window.SUPABASE_SECRETS.key : 'votre-cle-anonyme'
+    url: window.SUPABASE_SECRETS ? window.SUPABASE_SECRETS.url : 'https://zbbulpomopfwkqipbehk.supabase.co',
+    key: window.SUPABASE_SECRETS ? window.SUPABASE_SECRETS.key : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
   },
   storage: {
     images: {

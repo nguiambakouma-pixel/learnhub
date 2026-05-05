@@ -428,6 +428,46 @@
             font-size: .82rem
         }
 
+        .btn-icon:hover {
+            background: rgba(255, 255, 255, .09);
+        }
+
+        /* ── INDICATEUR DE SCROLL VERTICAL (TYPE WORD) ── */
+        .scroll-v-track {
+            position: fixed;
+            right: 4px;
+            top: 76px;
+            bottom: 20px;
+            width: 3px;
+            background: rgba(255, 255, 255, .03);
+            border-radius: 10px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .scroll-v-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(to bottom, #6366f1, #10b981);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+            transition: height 0.1s ease;
+        }
+
+        /* ── OPTIMISATION PAYSAGE MOBILE ── */
+        @media (max-height: 500px) and (max-width: 920px) {
+            .sidebar {
+                width: 80% !important;
+                z-index: 500 !important;
+            }
+            .topbar {
+                height: 48px !important;
+            }
+        }
+
         /* ── SKEL ── */
         .skel {
             background: linear-gradient(90deg, rgba(255, 255, 255, .04) 25%, rgba(255, 255, 255, .08) 50%, rgba(255, 255, 255, .04) 75%);
@@ -1335,6 +1375,10 @@
 </head>
 
 <body>
+    <!-- ═══ VERTICAL SCROLL PROGRESS (WORD-LIKE) ═══ -->
+    <div class="scroll-v-track">
+        <div class="scroll-v-fill" id="progressFillV"></div>
+    </div>
 
     <!-- TOPBAR -->
     <header class="topbar">
@@ -1428,7 +1472,7 @@
             <div class="content-top">
                 <div>
                     <h2 style="font-size:1.3rem;font-weight:800" data-i18n="title">📝 Examens Blancs Chronométrés</h2>
-                    <p id="subLabel" style="font-size:.8rem;color:var(--t3);margin-top:.2rem" data-i18n="loading"><div class="spinner spinner-sm"></div></p>
+                    <p id="subLabel" style="font-size:.8rem;color:var(--t3);margin-top:.2rem"><div class="spinner spinner-sm"></div></p>
                 </div>
                 <div style="display:flex;align-items:center;gap:.65rem;flex-wrap:wrap">
                     <div class="search-bar">
@@ -2638,6 +2682,14 @@
         });
 
         /* START */
+        window.addEventListener('scroll', () => {
+            const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+            if (totalHeight <= 0) return;
+            const progress = (window.pageYOffset / totalHeight) * 100;
+            const vFill = document.getElementById('progressFillV');
+            if (vFill) vFill.style.height = progress + '%';
+        });
+
         init().catch(console.error);
     </script>
 </body>

@@ -177,14 +177,30 @@
 
         .pdf-frame {
             width: 100%;
-            height: 620px;
+            height: 250px;
             border: none;
             background: #fff;
+            transition: height .3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pdf-frame.expanded {
+            height: 800px;
         }
 
         @media (max-width: 768px) {
             .pdf-frame {
+                height: 160px;
+            }
+            .pdf-frame.expanded {
                 height: 480px;
+            }
+            #pdfViewer {
+                max-width: 100% !important;
+                margin: 0 0 1rem 0 !important;
+                border-radius: 0.5rem !important;
+            }
+            .pdf-toolbar {
+                padding: 0.4rem 0.75rem !important;
             }
         }
 
@@ -699,10 +715,60 @@
         .btn-sm:hover {
             background: rgba(99, 102, 241, .25);
         }
+
+        /* ── INDICATEUR DE SCROLL VERTICAL (TYPE WORD) ── */
+        .scroll-v-track {
+            position: fixed;
+            right: 4px;
+            top: calc(var(--topbar-h) + 20px);
+            bottom: 20px;
+            width: 3px;
+            background: rgba(255, 255, 255, .03);
+            border-radius: 10px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .scroll-v-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(to bottom, #6366f1, #10b981);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+            transition: height 0.1s ease;
+        }
+
+        /* ── OPTIMISATION PAYSAGE MOBILE ── */
+        @media (max-height: 500px) and (max-width: 920px) {
+            .right-sidebar {
+                width: 85% !important;
+                background: #07111f !important;
+            }
+            .sidebar-panel {
+                padding: 0.75rem !important;
+            }
+            .topbar {
+                height: 48px !important;
+            }
+            :root {
+                --topbar-h: 48px !important;
+            }
+            .main-content {
+                margin-top: 51px !important;
+            }
+        }
     </style>
 </head>
 
 <body>
+
+    <!-- ═══ VERTICAL SCROLL PROGRESS (WORD-LIKE) ═══ -->
+    <div class="scroll-v-track">
+        <div class="scroll-v-fill" id="progressFillV"></div>
+    </div>
 
     <!-- ═══ TOP BAR ═══ -->
     <header class="topbar">
@@ -714,7 +780,7 @@
             <div style="width:1px;height:18px;background:rgba(255,255,255,.1);flex-shrink:0;"></div>
             <span id="topbarMatiere" style="font-size:.72rem;font-weight:600;color:#818cf8;flex-shrink:0;"></span>
             <span style="color:#1e293b;font-size:.8rem;flex-shrink:0;">›</span>
-            <span class="topbar-title" id="topbarTitle" data-i18n="loading">Chargement...</span>
+            <span class="topbar-title" id="topbarTitle">Chargement...</span>
         </div>
         <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0;">
             <div class="timer-badge">
@@ -758,10 +824,19 @@
             <div id="courseBody" style="display:none;">
                 <div id="videoZone" style="display:none;"></div>
 
-                <div id="pdfViewer" style="display:none;background:#0b1525;">
+                <div id="pdfViewer" style="display:none;background:#0b1525;max-width:850px;margin:0 auto 1.5rem;border-radius:1rem;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 30px rgba(0,0,0,.3);">
                     <div class="pdf-toolbar">
                         <span style="font-size:.8rem;color:#94a3b8;font-weight:600;" data-i18n="lbl_pdf_doc">📄 Document PDF</span>
-                        <div style="margin-left:auto;display:flex;gap:.5rem;">
+                        <div style="margin-left:auto;display:flex;gap:.5rem;align-items:center;">
+                            <button onclick="markPdfRead()" id="pdfReadBtn"
+                                style="display:flex;align-items:center;gap:.35rem;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);color:#34d399;padding:.3rem .7rem;border-radius:.5rem;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;">
+                                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> <span id="pdfReadTxt">Marquer comme lu</span>
+                            </button>
+                            <div style="width:1px;height:20px;background:rgba(255,255,255,.1);margin:0 .25rem;"></div>
+                            <button onclick="togglePdfSize()" id="pdfSizeBtn"
+                                style="display:flex;align-items:center;gap:.3rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#94a3b8;padding:.3rem .7rem;border-radius:.5rem;font-size:.75rem;font-weight:600;cursor:pointer;">
+                                <i data-lucide="maximize-2" class="w-3 h-3"></i> <span data-i18n="btn_expand">Agrandir</span>
+                            </button>
                             <a id="pdfDlBtn" href="#" download target="_blank"
                                 style="display:flex;align-items:center;gap:.3rem;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.25);color:#a5b4fc;padding:.3rem .7rem;border-radius:.5rem;font-size:.75rem;font-weight:600;text-decoration:none;" data-i18n="btn_download">⬇
                                 Télécharger</a>
@@ -934,7 +1009,7 @@
 
             <!-- PROGRESS -->
             <div class="sidebar-panel" id="panel-progress">
-                <div style="font-size:.8rem;font-weight:600;color:#94a3b8;margin-bottom:1rem;">📊 Ta progression</div>
+                <div style="font-size:.8rem;font-weight:600;color:#94a3b8;margin-bottom:1rem;">📊 Ta progression détaillée</div>
                 <div style="display:flex;justify-content:center;margin-bottom:1.25rem;">
                     <div style="position:relative;width:96px;height:96px;">
                         <svg width="96" height="96" viewBox="0 0 96 96">
@@ -954,6 +1029,51 @@
                             id="ringPct">0%</div>
                     </div>
                 </div>
+
+                <div id="detailedProgress" style="display:flex;flex-direction:column;gap:1.25rem;margin-bottom:1.5rem;">
+                    <!-- Lecture -->
+                    <div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.75rem;font-weight:600;">
+                            <span style="color:#94a3b8;display:flex;align-items:center;gap:.3rem;"><i data-lucide="book-open" class="w-3 h-3"></i> Lecture</span>
+                            <span id="pctScrollLabel" style="color:#6366f1;">0%</span>
+                        </div>
+                        <div style="height:4px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden;">
+                            <div id="barScroll" style="height:100%;width:0%;background:#6366f1;transition:width .4s;"></div>
+                        </div>
+                    </div>
+                    <!-- Vidéo -->
+                    <div id="rowVideoProg" style="display:none;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.75rem;font-weight:600;">
+                            <span style="color:#94a3b8;display:flex;align-items:center;gap:.3rem;"><i data-lucide="play-circle" class="w-3 h-3"></i> Vidéo</span>
+                            <span id="pctVideoLabel" style="color:#818cf8;">0%</span>
+                        </div>
+                        <div style="height:4px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden;">
+                            <div id="barVideo" style="height:100%;width:0%;background:#818cf8;transition:width .4s;"></div>
+                        </div>
+                    </div>
+                    <!-- PDF -->
+                    <div id="rowPdfProg" style="display:none;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.75rem;font-weight:600;">
+                            <span style="color:#94a3b8;display:flex;align-items:center;gap:.3rem;"><i data-lucide="file-text" class="w-3 h-3"></i> PDF</span>
+                            <span id="pctPdfLabel" style="color:#2dd4bf;">0%</span>
+                        </div>
+                        <div style="height:4px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden;">
+                            <div id="barPdf" style="height:100%;width:0%;background:#2dd4bf;transition:width .4s;"></div>
+                        </div>
+                    </div>
+                    <!-- Exercices -->
+                    <div id="rowExProg" style="display:none;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.75rem;font-weight:600;">
+                            <span style="color:#94a3b8;display:flex;align-items:center;gap:.3rem;"><i data-lucide="check-square" class="w-3 h-3"></i> QCM / Exercices</span>
+                            <span id="pctExLabel" style="color:#10b981;">0%</span>
+                        </div>
+                        <div style="height:4px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden;">
+                            <div id="barEx" style="height:100%;width:0%;background:#10b981;transition:width .4s;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="font-size:.72rem;font-weight:600;color:#475569;margin-bottom:.6rem;text-transform:uppercase;">Statistiques globales</div>
                 <div style="display:flex;flex-direction:column;gap:.55rem;" id="progStats"></div>
                 <div id="exResultsPanel" style="margin-top:1rem;display:none;">
                     <div style="font-size:.72rem;font-weight:600;color:#64748b;margin-bottom:.4rem;">RÉSULTATS EXERCICES
@@ -1005,6 +1125,8 @@
                 lbl_pdf_doc: "📄 Document PDF",
                 btn_download: "⬇ Télécharger",
                 btn_open: "↗ Ouvrir",
+                btn_expand: "Agrandir",
+                btn_collapse: "Réduire",
                 lbl_exercises: "✏️ Exercices",
                 lbl_resources: "📎 Ressources",
                 lbl_finish: "Terminer le cours",
@@ -1058,6 +1180,8 @@
                 lbl_pdf_doc: "📄 PDF Document",
                 btn_download: "⬇ Download",
                 btn_open: "↗ Open",
+                btn_expand: "Expand",
+                btn_collapse: "Collapse",
                 lbl_exercises: "✏️ Exercises",
                 lbl_resources: "📎 Resources",
                 lbl_finish: "Finish course",
@@ -1151,6 +1275,7 @@
             if (error || !data) { showErr(); return; }
             cours = data;
             await Promise.all([loadProg(id), loadExercises(id), loadResources(id), checkFav(id)]);
+            loadDetailedState();
             render();
             startTimer();
             setupScroll();
@@ -1179,10 +1304,42 @@
             document.getElementById('topbarMatiere').textContent = c.matiere || '';
 
             // Video
-            if (c.video_url) { const z = document.getElementById('videoZone'); z.style.display = 'block'; z.innerHTML = buildEmbed(c.video_url); }
+            if (c.video_url) { 
+                const z = document.getElementById('videoZone'); 
+                z.style.display = 'block'; 
+                z.innerHTML = `
+                    ${buildEmbed(c.video_url)}
+                    <div style="background:#0b1525;padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,255,255,.06);">
+                        <button onclick="markVideoWatched()" id="videoWatchedBtn"
+                            style="display:flex;align-items:center;gap:.5rem;background:${videoPct === 100 ? 'rgba(16,185,129,.15)' : 'rgba(99,102,241,.1)'};border:1px solid ${videoPct === 100 ? '#10b981' : 'rgba(99,102,241,.3)'};color:${videoPct === 100 ? '#34d399' : '#a5b4fc'};padding:.5rem 1.25rem;border-radius:.75rem;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;">
+                            <i data-lucide="${videoPct === 100 ? 'check-circle-2' : 'play'}" class="w-4 h-4"></i>
+                            <span id="videoWatchedTxt">${videoPct === 100 ? 'Vidéo terminée' : 'Marquer la vidéo comme terminée'}</span>
+                        </button>
+                    </div>
+                `; 
+                if (window.lucide) lucide.createIcons();
+            }
 
             // PDF
-            if (c.pdf_url) { document.getElementById('pdfViewer').style.display = 'block'; document.getElementById('pdfFrame').src = c.pdf_url; document.getElementById('pdfDlBtn').href = c.pdf_url; document.getElementById('pdfOpenBtn').href = c.pdf_url; }
+            if (c.pdf_url) { 
+                document.getElementById('pdfViewer').style.display = 'block'; 
+                let displayUrl = c.pdf_url;
+                if (window.innerWidth < 768) {
+                    displayUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(c.pdf_url)}&embedded=true`;
+                }
+                document.getElementById('pdfFrame').src = displayUrl; 
+                document.getElementById('pdfDlBtn').href = c.pdf_url; 
+                document.getElementById('pdfOpenBtn').href = c.pdf_url; 
+                
+                // Update PDF button state
+                const pb = document.getElementById('pdfReadBtn');
+                if (pdfPct === 100) {
+                    pb.style.background = 'rgba(16,185,129,.2)';
+                    pb.style.borderColor = '#10b981';
+                    pb.style.color = '#34d399';
+                    document.getElementById('pdfReadTxt').textContent = 'Document lu';
+                }
+            }
 
             // Tags
             const mt = document.getElementById('matiereTag'); mt.textContent = c.matiere || 'Cours'; mt.style.background = meta.bg; mt.style.color = meta.c;
@@ -1213,7 +1370,7 @@
             // Sidebar
             renderSidebar();
             applyTranslations();
-            updateProg(pct);
+            updateProgUI();
         }
 
         function buildEmbed(url) {
@@ -1265,7 +1422,13 @@
             const fb = document.getElementById(`fb${ei}`);
             if (fb) { fb.style.display = 'block'; fb.style.background = ok ? 'rgba(16,185,129,.1)' : 'rgba(244,63,94,.08)'; fb.style.border = `1px solid ${ok ? 'rgba(16,185,129,.3)' : 'rgba(244,63,94,.2)'}`; fb.style.color = ok ? '#34d399' : '#fb7185'; fb.innerHTML = ok ? `${t('msg_correct')}${ex.explication ? ` <span style="color:#94a3b8;">${ex.explication}</span>` : ''}` : `${t('msg_incorrect')}${ex.explication ? ` <span style="color:#94a3b8;">${ex.explication}</span>` : ''}`; }
             const sb = document.getElementById(`sb${ei}`); if (sb) sb.style.display = 'none';
-            if (ok) { validatedExercises.add(ei); addXP(ex.points || 10); showToast(t('msg_good_answer', ex.points || 10), 'emerald'); addExResult(ex.titre || `${t('lbl_exercises').replace('✏️ ', '')} ${ei + 1}`, true, ex.points || 10); }
+            if (ok) { 
+                validatedExercises.add(ei); 
+                addXP(ex.points || 10); 
+                showToast(t('msg_good_answer', ex.points || 10), 'emerald'); 
+                addExResult(ex.titre || `${t('lbl_exercises').replace('✏️ ', '')} ${ei + 1}`, true, ex.points || 10); 
+                calculateTotalProg();
+            }
             else { showToast(t('msg_wrong_answer'), 'rose'); addExResult(ex.titre || `${t('lbl_exercises').replace('✏️ ', '')} ${ei + 1}`, false, 0); }
         }
 
@@ -1275,7 +1438,10 @@
             const sb = document.getElementById(`sb${ei}`);
             if (sb) { 
                 const p = qs.length > 0 ? Math.round((ok / qs.length) * 100) : 0; 
-                if (p >= 50) { validatedExercises.add(ei); }
+                if (p >= 50) { 
+                    validatedExercises.add(ei); 
+                    calculateTotalProg();
+                }
                 sb.outerHTML = `<div style="margin-top:.75rem;padding:.65rem 1rem;background:${p >= 50 ? 'rgba(16,185,129,.1)' : 'rgba(244,63,94,.08)'};border:1px solid ${p >= 50 ? 'rgba(16,185,129,.3)' : 'rgba(244,63,94,.2)'};border-radius:.6rem;font-size:.85rem;color:${p >= 50 ? '#34d399' : '#fb7185'};">${p >= 50 ? '✅' : '❌'} ${t('msg_score')} : ${ok}/${qs.length} (${p}%)</div>`; 
             }
         }
@@ -1287,27 +1453,128 @@
             document.getElementById('resContainer').innerHTML = resources.map(r => { const ext = r.url_fichier?.split('.').pop()?.toLowerCase() || ''; const ic = icon[r.type_fichier] || icon[ext] || '📎'; const kb = r.taille_fichier ? `${Math.round(r.taille_fichier / 1024)} Ko` : ''; return `<a class="resource-item" href="${r.url_fichier}" target="_blank" download><span style="font-size:1.2rem;">${ic}</span><div style="flex:1;"><div style="font-size:.83rem;font-weight:600;color:#f1f5f9;">${r.titre}</div>${kb ? `<div style="font-size:.7rem;color:#475569;">${kb}</div>` : ''}</div><span style="font-size:.75rem;color:#6366f1;">⬇</span></a>`; }).join('');
         }
 
-        function setupScroll() { window.addEventListener('scroll', throttle(onScroll, 300)); }
-        function throttle(fn, d) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; }
+        let scrollPct = 0, videoPct = 0, pdfPct = 0, exPct = 0;
+        let detailKey = '';
+
         function onScroll() {
             const z = document.getElementById('contentZone'); if (!z) return;
             const scrolled = window.scrollY + window.innerHeight - z.offsetTop;
             const total = z.scrollHeight;
-            const raw = Math.min(100, Math.max(pct, Math.round((scrolled / total) * 100)));
-            if (raw > pct) { pct = raw; updateProg(raw); sched(); }
+            const raw = Math.min(100, Math.max(scrollPct, Math.round((scrolled / total) * 100)));
+            if (raw > scrollPct) { 
+                scrollPct = raw; 
+                calculateTotalProg();
+                sched(); 
+            }
         }
 
-        function updateProg(p) {
-            p = Math.min(100, Math.max(0, p));
-            document.getElementById('progressFill').style.width = p + '%';
-            document.getElementById('topPct').textContent = p + '%';
-            if (document.getElementById('sbPct')) document.getElementById('sbPct').textContent = p + '%';
-            if (document.getElementById('sbFill')) document.getElementById('sbFill').style.width = p + '%';
-            const ring = document.getElementById('ringCircle'); if (ring) ring.style.strokeDashoffset = 239 - (239 * p / 100);
-            if (document.getElementById('ringPct')) document.getElementById('ringPct').textContent = p + '%';
-            for (let i = 0; i < 5; i++) { const c = document.getElementById(`cp${i}`); if (c) c.classList.toggle('reached', i * 20 <= p); }
+        function calculateTotalProg() {
+            if (!cours) return;
+            let parts = 1; // Lecture always
+            let total = scrollPct;
+
+            if (cours.video_url) { parts++; total += videoPct; document.getElementById('rowVideoProg').style.display = 'block'; }
+            if (cours.pdf_url) { parts++; total += pdfPct; document.getElementById('rowPdfProg').style.display = 'block'; }
+            if (exercises.length > 0) { 
+                parts++; 
+                exPct = Math.round((validatedExercises.size / exercises.length) * 100);
+                total += exPct; 
+                document.getElementById('rowExProg').style.display = 'block'; 
+            }
+
+            pct = Math.round(total / parts);
+            
+            // UI Update
+            updateProgUI();
+            saveDetailedState();
+        }
+
+        function updateProgUI() {
+            document.getElementById('progressFill').style.width = pct + '%';
+            const vFill = document.getElementById('progressFillV');
+            if (vFill) vFill.style.height = pct + '%';
+            document.getElementById('topPct').textContent = pct + '%';
+            
+            // Sidebar detailed labels
+            document.getElementById('pctScrollLabel').textContent = scrollPct + '%';
+            document.getElementById('barScroll').style.width = scrollPct + '%';
+            
+            if (document.getElementById('pctVideoLabel')) {
+                document.getElementById('pctVideoLabel').textContent = videoPct + '%';
+                document.getElementById('barVideo').style.width = videoPct + '%';
+            }
+            if (document.getElementById('pctPdfLabel')) {
+                document.getElementById('pctPdfLabel').textContent = pdfPct + '%';
+                document.getElementById('barPdf').style.width = pdfPct + '%';
+            }
+            if (document.getElementById('pctExLabel')) {
+                document.getElementById('pctExLabel').textContent = exPct + '%';
+                document.getElementById('barEx').style.width = exPct + '%';
+            }
+
+            // Ring
+            const ring = document.getElementById('ringCircle'); 
+            if (ring) ring.style.strokeDashoffset = 239 - (239 * pct / 100);
+            if (document.getElementById('ringPct')) document.getElementById('ringPct').textContent = pct + '%';
+            
+            // Checkpoints
+            for (let i = 0; i < 5; i++) { 
+                const c = document.getElementById(`cp${i}`); 
+                if (c) c.classList.toggle('reached', i * 20 <= pct); 
+            }
+
+            // Global stats row
             renderProgStats();
         }
+
+        function saveDetailedState() {
+            if (!detailKey) return;
+            const state = { scrollPct, videoPct, pdfPct, exPct, validated: Array.from(validatedExercises) };
+            localStorage.setItem(detailKey, JSON.stringify(state));
+        }
+
+        function loadDetailedState() {
+            detailKey = `ks_detail_${user?.id}_${cours?.id}`;
+            const s = localStorage.getItem(detailKey);
+            if (s) {
+                const state = JSON.parse(s);
+                scrollPct = state.scrollPct || 0;
+                videoPct = state.videoPct || 0;
+                pdfPct = state.pdfPct || 0;
+                exPct = state.exPct || 0;
+                if (state.validated) validatedExercises = new Set(state.validated);
+            }
+            if (prog?.est_termine) {
+                scrollPct = 100; videoPct = 100; pdfPct = 100; exPct = 100;
+            }
+            calculateTotalProg();
+        }
+
+        function markVideoWatched() {
+            videoPct = 100;
+            const btn = document.getElementById('videoWatchedBtn');
+            btn.style.background = 'rgba(16,185,129,.15)';
+            btn.style.borderColor = '#10b981';
+            btn.style.color = '#34d399';
+            btn.innerHTML = `<i data-lucide="check-circle-2" class="w-4 h-4"></i> <span>Vidéo terminée</span>`;
+            if (window.lucide) lucide.createIcons();
+            showToast('🎥 Vidéo marquée comme terminée !', 'emerald');
+            calculateTotalProg();
+        }
+
+        function markPdfRead() {
+            pdfPct = 100;
+            const btn = document.getElementById('pdfReadBtn');
+            btn.style.background = 'rgba(16,185,129,.2)';
+            btn.style.borderColor = '#10b981';
+            btn.style.color = '#34d399';
+            document.getElementById('pdfReadTxt').textContent = 'Document lu';
+            showToast('📄 PDF marqué comme lu !', 'emerald');
+            calculateTotalProg();
+        }
+
+        function setupScroll() { window.addEventListener('scroll', throttle(onScroll, 300)); }
+        function throttle(fn, d) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), d); }; }
 
         function sched() { clearTimeout(saveTout); setAutoSave('saving'); saveTout = setTimeout(saveProg, 2000); }
         async function saveProg(done = false) {
@@ -1331,19 +1598,20 @@
                 showToast(t('lbl_already_done'), 'amber');
                 return;
             }
-            if (timerSec < 600) {
-                const requiredMin = 10;
-                const currentMin = Math.floor(timerSec / 60);
-                showToast(`Tu dois passer au moins ${requiredMin} minutes sur ce cours (actuel: ${currentMin} min).`, 'rose');
-                return;
-            }
-            if (exercises.length > 0 && validatedExercises.size < exercises.length) {
-                showToast(`Tu dois valider tous les exercices d'abord (${validatedExercises.size}/${exercises.length}).`, 'rose');
+            
+            let missing = [];
+            if (scrollPct < 80) missing.push("Lecture du cours");
+            if (cours.video_url && videoPct < 100) missing.push("Vidéo");
+            if (cours.pdf_url && pdfPct < 100) missing.push("PDF");
+            if (exercises.length > 0 && validatedExercises.size < exercises.length) missing.push("Exercices");
+
+            if (missing.length > 0) {
+                showToast(`Incomplet : ${missing.join(', ')}`, 'rose');
                 return;
             }
 
             const btn = document.getElementById('completeBtn'); btn.disabled = true; btn.textContent = t('loading');
-            pct = 100; await saveProg(true); await addXP(cours.points_recompense || 20); updateProg(100);
+            pct = 100; await saveProg(true); await addXP(cours.points_recompense || 20); updateProgUI();
             btn.classList.add('done'); btn.innerHTML = t('lbl_already_done');
             showXp(cours.points_recompense || 20, cours.titre);
         }
@@ -1381,6 +1649,24 @@
 
         function switchTab(tab) { document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active')); document.querySelectorAll('.sidebar-panel').forEach(p => p.classList.remove('active')); document.getElementById(`tab-${tab}`).classList.add('active'); document.getElementById(`panel-${tab}`).classList.add('active'); }
         function toggleSidebar() { document.getElementById('rightSidebar').classList.toggle('open'); }
+        function togglePdfSize() {
+            const v = document.getElementById('pdfViewer');
+            const f = document.getElementById('pdfFrame');
+            const b = document.getElementById('pdfSizeBtn');
+            const isExp = f.classList.toggle('expanded');
+            
+            if (isExp) {
+                v.style.maxWidth = '100%';
+            } else {
+                v.style.maxWidth = '850px';
+            }
+
+            b.innerHTML = isExp 
+                ? `<i data-lucide="minimize-2" class="w-3 h-3"></i> <span data-i18n="btn_collapse">${t('btn_collapse')}</span>`
+                : `<i data-lucide="maximize-2" class="w-3 h-3"></i> <span data-i18n="btn_expand">${t('btn_expand')}</span>`;
+            if (window.lucide) lucide.createIcons();
+        }
+
         function shareUrl() { navigator.clipboard?.writeText(window.location.href).then(() => showToast('🔗 Lien copié !')); }
         function goBack() { window.location.href = 'dashboard-eleve.html'; }
         function showErr() { document.getElementById('loadingEl').style.display = 'none'; document.getElementById('errorEl').style.display = 'block'; }
