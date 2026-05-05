@@ -2001,9 +2001,36 @@
 
         async function loadMatieresFromDB() {
             try {
-                const { data, error } = await sb.from('matieres').select('id, nom').order('nom')
-                if (error) throw error
-                matieresCache = data || []
+                // On récupère les IDs des sous-systèmes du prof
+                const profSS = prof.sous_systemes || []
+                let filteredMatieres = []
+
+                if (profSS.length > 0) {
+                    // 1. Récupérer les IDs des sous-systèmes basés sur les codes
+                    const { data: ssData } = await sb.from('sous_systemes').select('id, code').in('code', profSS)
+                    const ssIds = (ssData || []).map(s => s.id)
+
+                    // 2. Récupérer les matières liées à ces sous-systèmes OU sans sous-système (communes)
+                    let query = sb.from('matieres').select('id, nom, sous_systeme_id').order('nom')
+                    
+                    if (ssIds.length > 0) {
+                        query = query.or(`sous_systeme_id.in.(${ssIds.join(',')}),sous_systeme_id.is.null`)
+                    } else {
+                        query = query.is('sous_systeme_id', null)
+                    }
+
+                    const { data, error } = await query
+                    if (error) throw error
+                    filteredMatieres = data || []
+                } else {
+                    // Si le prof n'a pas de section définie (cas rare), on charge tout ou rien ?
+                    // On charge tout par défaut pour ne pas bloquer, mais on avertit
+                    const { data, error } = await sb.from('matieres').select('id, nom').order('nom')
+                    if (error) throw error
+                    filteredMatieres = data || []
+                }
+
+                matieresCache = filteredMatieres
                 
                 // Peupler la datalist globale pour le profil
                 const dl = document.getElementById('matieres-suggestions')
@@ -2656,7 +2683,21 @@
             if (e.key === 'Enter' || e.key === ',') {
                 e.preventDefault()
                 const val = e.target.value.trim()
-                if (val && !specialites.includes(val)) { specialites.push(val); renderTags() }
+                if (!val) return
+
+                // Vérification stricte : la spécialité doit exister dans la BD
+                const exists = matieresCache.some(m => m.nom.toLowerCase() === val.toLowerCase())
+                
+                if (exists) {
+                    // On utilise le nom exact de la BD pour éviter les variations de casse
+                    const exactNom = matieresCache.find(m => m.nom.toLowerCase() === val.toLowerCase()).nom
+                    if (!specialites.includes(exactNom)) {
+                        specialites.push(exactNom)
+                        renderTags()
+                    }
+                } else {
+                    alert(LANG === 'en' ? 'Please select a subject from the list.' : 'Veuillez sélectionner une matière dans la liste suggérée.')
+                }
                 e.target.value = ''
             }
         }

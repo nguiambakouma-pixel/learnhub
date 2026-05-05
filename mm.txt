@@ -1,0 +1,403 @@
+python
+
+"""
+Inject spectacular PowerPoint transitions + entrance animations
+into KMERSCHOOL_Presentation.pptx
+"""
+import os, re, zipfile, shutil
+
+SRC = "/home/claude/KMERSCHOOL_Presentation.pptx"
+DST = "/home/claude/KMERSCHOOL_Spectacular.pptx"
+TMP = "/tmp/kmer_spectacular"
+
+P14 = "http://schemas.microsoft.com/office/powerpoint/2010/main"
+
+# ─── TRANSITION BUILDERS ──────────────────────────────────────────────────────
+
+def trans(inner, dur=900, extra_ns=""):
+    return (
+        f'<p:transition spd="med" dur="{dur}" '
+        f'xmlns:p14="{P14}" {extra_ns}>'
+        f'{inner}</p:transition>'
+    )
+
+def vortex(dir="l",dur=1000):
+    return trans(f'<p14:vortex xmlns:p14="{P14}" dir="{dir}"/>', dur)
+
+def honeycomb(dur=1000):
+    return trans(f'<p14:honeycomb xmlns:p14="{P14}"/>', dur)
+
+def ripple(dur=900):
+    return trans(f'<p14:ripple xmlns:p14="{P14}"/>', dur)
+
+def glitter(dir="l", pat="hexagon", dur=900):
+    return trans(f'<p14:glitter xmlns:p14="{P14}" dir="{dir}" pattern="{pat}"/>', dur)
+
+def flythrough(dur=900):
+    return trans(f'<p14:flyThrough xmlns:p14="{P14}" dir="in" hasBounce="1"/>', dur)
+
+def shred(dur=900):
+    return trans(f'<p14:shred xmlns:p14="{P14}" dir="in" pattern="strip"/>', dur)
+
+def gallery(dir="l", dur=800):
+    return trans(f'<p14:gallery xmlns:p14="{P14}" dir="{dir}"/>', dur)
+
+def conveyor(dir="l", dur=800):
+    return trans(f'<p14:conveyor xmlns:p14="{P14}" dir="{dir}"/>', dur)
+
+def prestige(dur=1000):
+    return trans(f'<p14:prestige xmlns:p14="{P14}"/>', dur)
+
+def ferris(dir="l", dur=1000):
+    return trans(f'<p14:ferris xmlns:p14="{P14}" dir="{dir}"/>', dur)
+
+def wind(dir="l", dur=800):
+    return trans(f'<p14:wind xmlns:p14="{P14}" dir="{dir}"/>', dur)
+
+def flash(dur=600):
+    return trans(f'<p14:flash xmlns:p14="{P14}"/>', dur)
+
+def warp(dur=900):
+    return trans(f'<p14:warp xmlns:p14="{P14}"/>', dur)
+
+def pan(dir="l", dur=800):
+    return trans(f'<p14:pan xmlns:p14="{P14}" dir="{dir}"/>', dur)
+
+
+# ─── TRANSITION MAP ──────────────────────────────────────────────────────────
+TRANSITIONS = {
+    1:  vortex("l", 1100),      # Couverture : tourbillon d'entrée
+    2:  gallery("l", 900),      # Plan : galerie cinématique
+    3:  flythrough(1000),       # Problématique : traversée en vol
+    4:  ripple(900),            # Solution : ondulation
+    5:  honeycomb(1000),        # Architecture : nid d'abeilles
+    6:  conveyor("l", 800),     # Acteurs : tapis roulant
+    7:  ferris("l", 1000),      # Portail Prof : grande roue
+    8:  glitter("l","hexagon",900), # BD : paillettes hexagones
+    9:  shred(900),             # Sécurité : déchiquetage
+    10: warp(1000),             # Pipeline : déformation spatiale
+    11: wind("l", 800),         # Bilingue : vent
+    12: prestige(1100),         # Technologies : prestige
+    13: pan("l", 800),          # Résultats : panoramique
+    14: glitter("r","diamond",900), # Perspectives : paillettes diamant
+    15: vortex("r", 1200),      # Conclusion : vortex de sortie
+}
+
+# ─── ANIMATION XML BUILDERS ──────────────────────────────────────────────────
+# presetID reference (entrance effects):
+# 2=appear 10=fade 22=fly-in 27=grow&turn 37=spiral 40=split 42=swivel 48=zoom
+
+def anim_fade(spid, start_delay, ctn_id_base, duration=500):
+    """Fade in animation for a shape"""
+    c1, c2, c3, c4 = ctn_id_base, ctn_id_base+1, ctn_id_base+2, ctn_id_base+3
+    delay = "0" if start_delay == 0 else str(start_delay)
+    trigger = '<p:cond delay="indefinite"/>' if start_delay < 0 else f'<p:cond delay="{delay}"/>'
+    
+    return f'''<p:par>
+  <p:cTn id="{c1}" fill="hold">
+    <p:stCondLst>{trigger}</p:stCondLst>
+    <p:childTnLst>
+      <p:par>
+        <p:cTn id="{c2}" presetID="10" presetClass="entr" presetSubtype="0"
+               fill="hold" grpId="{c1}" nodeType="{"clickEffect" if start_delay < 0 else "afterEffect"}">
+          <p:stCondLst><p:cond delay="0"/></p:stCondLst>
+          <p:childTnLst>
+            <p:set>
+              <p:cBhvr><p:cTn id="{c3}" dur="1" fill="hold"/>
+                <p:tgtEl><p:spTgt spid="{spid}"/></p:tgtEl>
+                <p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst>
+              </p:cBhvr>
+              <p:to><p:strVal val="visible"/></p:to>
+            </p:set>
+            <p:animEffect transition="in" filter="fade">
+              <p:cBhvr><p:cTn id="{c4}" dur="{duration}"/>
+                <p:tgtEl><p:spTgt spid="{spid}"/></p:tgtEl>
+              </p:cBhvr>
+            </p:animEffect>
+          </p:childTnLst>
+        </p:cTn>
+      </p:par>
+    </p:childTnLst>
+  </p:cTn>
+</p:par>'''
+
+
+def anim_fly_in(spid, start_delay, ctn_id_base, direction="b", duration=600):
+    """Fly in from direction (t=top, b=bottom, l=left, r=right)"""
+    c1, c2, c3, c4, c5 = ctn_id_base, ctn_id_base+1, ctn_id_base+2, ctn_id_base+3, ctn_id_base+4
+    delay = "0" if start_delay == 0 else str(start_delay)
+    trigger = '<p:cond delay="indefinite"/>' if start_delay < 0 else f'<p:cond delay="{delay}"/>'
+    
+    # subtype map
+    sub = {"l": 4, "r": 8, "t": 16, "b": 1, "bl": 5, "br": 9, "tl": 20, "tr": 24}.get(direction, 1)
+    
+    from_x = {"l": "-1", "r": "1", "t": "0", "b": "0"}.get(direction, "0")
+    from_y = {"l": "0", "r": "0", "t": "-1", "b": "1"}.get(direction, "1")
+
+    return f'''<p:par>
+  <p:cTn id="{c1}" fill="hold">
+    <p:stCondLst>{trigger}</p:stCondLst>
+    <p:childTnLst>
+      <p:par>
+        <p:cTn id="{c2}" presetID="22" presetClass="entr" presetSubtype="{sub}"
+               fill="hold" grpId="{c1}" nodeType="{"clickEffect" if start_delay < 0 else "afterEffect"}">
+          <p:stCondLst><p:cond delay="0"/></p:stCondLst>
+          <p:childTnLst>
+            <p:set>
+              <p:cBhvr><p:cTn id="{c3}" dur="1" fill="hold"/>
+                <p:tgtEl><p:spTgt spid="{spid}"/></p:tgtEl>
+                <p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst>
+              </p:cBhvr>
+              <p:to><p:strVal val="visible"/></p:to>
+            </p:set>
+            <p:animMotion origin="parent" path="M 0 0 L 0 0 E" pathEditMode="relative" rAng="0" ptsTypes="">
+              <p:cBhvr><p:cTn id="{c4}" dur="{duration}" fill="hold"/>
+                <p:tgtEl><p:spTgt spid="{spid}"/></p:tgtEl>
+                <p:attrNameLst><p:attrName>ppt_x</p:attrName><p:attrName>ppt_y</p:attrName></p:attrNameLst>
+              </p:cBhvr>
+              <p:who><p:sldTgt/></p:who>
+              <p:from><p:strVal val="0,{from_y}"/></p:from>
+              <p:to><p:strVal val="0,0"/></p:to>
+            </p:animMotion>
+          </p:childTnLst>
+        </p:cTn>
+      </p:par>
+    </p:childTnLst>
+  </p:cTn>
+</p:par>'''
+
+
+def anim_zoom(spid, start_delay, ctn_id_base, duration=600):
+    """Zoom in animation"""
+    c1, c2, c3, c4, c5 = ctn_id_base, ctn_id_base+1, ctn_id_base+2, ctn_id_base+3, ctn_id_base+4
+    delay = "0" if start_delay == 0 else str(start_delay)
+    trigger = '<p:cond delay="indefinite"/>' if start_delay < 0 else f'<p:cond delay="{delay}"/>'
+
+    return f'''<p:par>
+  <p:cTn id="{c1}" fill="hold">
+    <p:stCondLst>{trigger}</p:stCondLst>
+    <p:childTnLst>
+      <p:par>
+        <p:cTn id="{c2}" presetID="48" presetClass="entr" presetSubtype="4"
+               fill="hold" grpId="{c1}" nodeType="{"clickEffect" if start_delay < 0 else "afterEffect"}">
+          <p:stCondLst><p:cond delay="0"/></p:stCondLst>
+          <p:childTnLst>
+            <p:set>
+              <p:cBhvr><p:cTn id="{c3}" dur="1" fill="hold"/>
+                <p:tgtEl><p:spTgt spid="{spid}"/></p:tgtEl>
+                <p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst>
+              </p:cBhvr>
+              <p:to><p:strVal val="visible"/></p:to>
+            </p:set>
+            <p:animScale>
+              <p:cBhvr><p:cTn id="{c4}" dur="{duration}"/>
+                <p:tgtEl><p:spTgt spid="{spid}"/></p:tgtEl>
+              </p:cBhvr>
+              <p:by x="1" y="1"/>
+            </p:animScale>
+          </p:childTnLst>
+        </p:cTn>
+      </p:par>
+    </p:childTnLst>
+  </p:cTn>
+</p:par>'''
+
+
+def build_timing(anim_blocks):
+    """Wrap animation blocks in p:timing element"""
+    inner = "\n".join(anim_blocks)
+    return f'''<p:timing>
+  <p:tnLst>
+    <p:par>
+      <p:cTn id="1" dur="indefinite" restart="whenNotActive" nodeType="tmRoot">
+        <p:childTnLst>
+          <p:seq concurrent="1" nextAc="seek">
+            <p:cTn id="2" dur="indefinite" nodeType="mainSeq">
+              <p:childTnLst>
+{inner}
+              </p:childTnLst>
+            </p:cTn>
+            <p:prevCondLst>
+              <p:cond evt="onPrevNode" delay="0">
+                <p:tn><p:tnLst><p:par><p:cTn id="2"/></p:par></p:tnLst></p:tn>
+              </p:cond>
+            </p:prevCondLst>
+          </p:seq>
+        </p:childTnLst>
+      </p:cTn>
+    </p:par>
+  </p:tnLst>
+  <p:bldLst/>
+</p:timing>'''
+
+
+# ─── ANIMATIONS PER SLIDE ─────────────────────────────────────────────────────
+# Format: list of (shape_id, delay_ms, effect, direction, duration)
+# delay < 0 = on click. delay >= 0 = auto after N ms
+# First group: delay=-1 = first click; others chained with delay>=0
+
+def slide_animations(slide_num, all_ids):
+    """Return list of animation blocks for a slide."""
+    blocks = []
+    ctn = 10  # start counter offset (1,2 reserved for root)
+
+    n = len(all_ids)
+
+    if slide_num == 1:
+        # Title fly in, then subtitle fade, then card zoom
+        seqs = [
+            (all_ids[1], 0,   "fly", "l", 700),
+            (all_ids[2], 200, "fly", "l", 700),
+            (all_ids[3], 300, "fade", None, 500),
+            (all_ids[4], 400, "fade", None, 500),
+            (all_ids[5], 500, "zoom", None, 600),
+        ]
+    elif slide_num == 2:
+        # Plan cards fly in from right staggered
+        seqs = [(all_ids[i], i*120, "fly", "r", 500) for i in range(2, min(n, 12))]
+    elif slide_num == 3:
+        # KPI cards zoom in, then bullets fade
+        seqs = [
+            (all_ids[1], 0, "fly", "t", 600),
+            (all_ids[2], 0, "fly", "t", 600),
+            (all_ids[4], 150, "zoom", None, 600),
+            (all_ids[5], 300, "zoom", None, 600),
+            (all_ids[6], 450, "zoom", None, 600),
+            (all_ids[7], 100, "fade", None, 700),
+        ]
+    elif slide_num == 4:
+        seqs = [
+            (all_ids[1], 0, "fly", "l", 600),
+            (all_ids[2], 0, "fly", "l", 600),
+            (all_ids[3], 200, "fade", None, 500),
+        ] + [(all_ids[4+i], 300+i*200, "zoom", None, 600) for i in range(min(4, n-5))]
+    elif slide_num == 5:
+        seqs = [
+            (all_ids[1], 0, "fly", "t", 600),
+            (all_ids[2], 0, "fly", "t", 600),
+        ] + [(all_ids[3+i], i*250, "fly", ["l","b","r"][i%3], 700) for i in range(min(6, n-4))]
+    elif slide_num == 6:
+        seqs = [
+            (all_ids[1], 0, "fly", "t", 600),
+            (all_ids[2], 0, "fly", "t", 600),
+        ] + [(all_ids[3+i], i*200, "zoom", None, 600) for i in range(min(9, n-4))]
+    elif slide_num == 7:
+        seqs = [
+            (all_ids[1], 0, "fly", "l", 600),
+            (all_ids[2], 0, "fly", "l", 600),
+        ] + [(all_ids[3+i], i*180, "fly", "b", 600) for i in range(min(12, n-4))]
+    elif slide_num == 8:
+        seqs = [
+            (all_ids[1], 0, "fly", "t", 600),
+            (all_ids[2], 0, "fly", "t", 600),
+        ] + [(all_ids[3+i], i*200, "fade", None, 600) for i in range(min(8, n-4))]
+    elif slide_num == 9:
+        seqs = [
+            (all_ids[1], 0, "fly", "l", 700),
+            (all_ids[2], 0, "fly", "l", 700),
+        ] + [(all_ids[3+i], i*150, "fly", "b", 600) for i in range(min(10, n-4))]
+    elif slide_num == 10:
+        seqs = [
+            (all_ids[1], 0, "fly", "t", 700),
+            (all_ids[2], 0, "fly", "t", 700),
+        ] + [(all_ids[3+i], i*200, "zoom", None, 700) for i in range(min(8, n-4))]
+    elif slide_num == 11:
+        seqs = [
+            (all_ids[1], 0, "fly", "t", 600),
+            (all_ids[2], 0, "fly", "t", 600),
+        ] + [(all_ids[3+i], i*150, "fly", ["l","r"][i%2], 600) for i in range(min(14, n-4))]
+    elif slide_num == 12:
+        seqs = [
+            (all_ids[1], 0, "fly", "t", 600),
+            (all_ids[2], 0, "fly", "t", 600),
+        ] + [(all_ids[3+i], i*100, "zoom", None, 500) for i in range(min(16, n-4))]
+    elif slide_num == 13:
+        seqs = [
+            (all_ids[1], 0, "fly", "t", 700),
+            (all_ids[2], 0, "fly", "t", 700),
+        ] + [(all_ids[3+i], i*120, "fly", "b", 600) for i in range(min(10, n-4))]
+    elif slide_num == 14:
+        seqs = [
+            (all_ids[1], 0, "fly", "t", 600),
+            (all_ids[2], 0, "fly", "t", 600),
+        ] + [(all_ids[3+i], i*150, "zoom", None, 600) for i in range(min(12, n-4))]
+    else:  # slide 15
+        seqs = [
+            (all_ids[1], 0, "fly", "l", 800),
+            (all_ids[2], 200, "zoom", None, 900),
+            (all_ids[3], 400, "fade", None, 700),
+        ] + [(all_ids[4+i], 600+i*200, "fade", None, 600) for i in range(min(6, n-5))]
+
+    first = True
+    for (spid, delay_ms, effect, direction, duration) in seqs:
+        if first:
+            actual_delay = -1  # first = click trigger
+            first = False
+        else:
+            actual_delay = delay_ms
+
+        if effect == "fade":
+            block = anim_fade(spid, actual_delay, ctn, duration)
+        elif effect == "zoom":
+            block = anim_zoom(spid, actual_delay, ctn, duration)
+        else:  # fly
+            block = anim_fly_in(spid, actual_delay, ctn, direction or "b", duration)
+
+        blocks.append(block)
+        ctn += 5
+
+    return blocks
+
+
+# ─── PROCESS ─────────────────────────────────────────────────────────────────
+if os.path.exists(TMP):
+    shutil.rmtree(TMP)
+os.makedirs(TMP)
+
+with zipfile.ZipFile(SRC, 'r') as z:
+    z.extractall(TMP)
+
+slides_dir = os.path.join(TMP, "ppt", "slides")
+
+for slide_num in range(1, 16):
+    fname = os.path.join(slides_dir, f"slide{slide_num}.xml")
+    with open(fname, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    # ── 1. Remove old transition ──────────────────────────────────────────────
+    content = re.sub(r'<p:transition[^/]*/>', '', content)
+    content = re.sub(r'<p:transition[^>]*>.*?</p:transition>', '', content, flags=re.DOTALL)
+
+    # ── 2. Remove old timing ──────────────────────────────────────────────────
+    content = re.sub(r'<p:timing>.*?</p:timing>', '', content, flags=re.DOTALL)
+
+    # ── 3. Get all shape IDs ──────────────────────────────────────────────────
+    all_ids = re.findall(r'<p:cNvPr id="(\d+)"', content)
+
+    # ── 4. Build animations ───────────────────────────────────────────────────
+    anim_blocks = slide_animations(slide_num, all_ids)
+    timing_xml  = build_timing(anim_blocks) if anim_blocks else ""
+
+    # ── 5. Inject transition + timing before </p:sld> ─────────────────────────
+    trans_xml = TRANSITIONS[slide_num]
+    inject = trans_xml + "\n" + timing_xml
+    content = content.replace("</p:sld>", inject + "</p:sld>")
+
+    with open(fname, 'w', encoding='utf-8') as f:
+        f.write(content)
+
+    print(f"  ✅ slide{slide_num:02d} — transition + {len(anim_blocks)} animations injected")
+
+# ─── REPACK ──────────────────────────────────────────────────────────────────
+if os.path.exists(DST):
+    os.remove(DST)
+
+with zipfile.ZipFile(DST, 'w', zipfile.ZIP_DEFLATED) as zout:
+    for root, dirs, files in os.walk(TMP):
+        for file in files:
+            filepath = os.path.join(root, file)
+            arcname  = os.path.relpath(filepath, TMP)
+            zout.write(filepath, arcname)
+
+sz = os.path.getsize(DST) / 1024
+print(f"\n✅ Done → {DST}  ({sz:.0f} KB)")

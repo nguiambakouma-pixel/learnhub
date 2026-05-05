@@ -278,6 +278,36 @@ export class MatieresView {
         };
 
         try {
+            // --- NOUVEAU : Vérification des doublons ---
+            const ssId = formData.get('sous_systeme_id') || null;
+            
+            // On vérifie s'il existe une autre matière avec le même nom dans le même sous-système
+            let query = api.client
+                .from('matieres')
+                .select('id')
+                .ilike('nom', nomMatiere.trim());
+            
+            if (ssId) {
+                query = query.eq('sous_systeme_id', ssId);
+            } else {
+                query = query.is('sous_systeme_id', null);
+            }
+
+            // Si on édite, on exclut la matière actuelle de la recherche
+            if (this.editingId) {
+                query = query.neq('id', this.editingId);
+            }
+
+            const { data: existing, error: checkError } = await query;
+            
+            if (checkError) throw checkError;
+            
+            if (existing && existing.length > 0) {
+                ui.showNotification('❌ Une matière avec ce nom existe déjà dans ce système', 'error');
+                return;
+            }
+            // --- FIN Vérification ---
+
             if (this.editingId) {
                 await api.updateMatiere(this.editingId, data);
                 ui.showNotification('Matière mise à jour', 'success');
@@ -300,7 +330,7 @@ export class MatieresView {
     // SUPPRESSION
     // ========================================
     async delete(id, nom) {
-        if (!confirm(`Supprimer la matière "${nom}" ?\n\nAttention: Cela peut casser le lien avec les chapitres existants.`)) {
+        if (!confirm(`⚠️ SUPPRESSION DÉFINITIVE\n\nSouhaitez-vous vraiment supprimer la matière "${nom}" ?\n\nCela supprimera AUTOMATIQUEMENT :\n- Tous les chapitres liés\n- Toutes les associations avec les classes et séries\n\nLes cours et examens existants seront conservés mais n'auront plus de matière associée.`)) {
             return;
         }
 
