@@ -2013,15 +2013,49 @@
         // ════════════════════════════════════════════════════════════
         async function init() {
             try {
-                const { data: { user } } = await sb.auth.getUser()
-                if (!user) return location.href = 'login.html'
-                uid = user.id
+                const overlay = document.getElementById('loading-overlay');
+                if (overlay) overlay.classList.remove('hidden');
 
-                const { data, error } = await sb.from('professeurs').select('*').eq('id', uid).single()
+                // Utiliser getSession pour une vérification rapide de la session active
+                const { data: { session } } = await sb.auth.getSession()
+                if (!session) return location.href = 'login.html'
+                uid = session.user.id
+
+                let retryCount = 0;
+                let data = null, error = null;
+
+                // Tentatives de récupération du profil (utile sur réseau mobile instable)
+                while (retryCount < 3) {
+                    const result = await sb.from('professeurs').select('*').eq('id', uid).single()
+                    data = result.data
+                    error = result.error
+                    
+                    if (!error && data) break;
+                    
+                    retryCount++;
+                    if (retryCount < 3) await new Promise(r => setTimeout(r, 1000 * retryCount));
+                }
                 
-                if (error || !data || data.statut !== 'approuve' || !data.est_actif) {
-                    // Si on est déjà logué mais plus approuvé (ex: rejeté après coup ou désactivé)
-                    // on redirige vers login qui saura quoi afficher
+                if (error || !data) {
+                    console.error('Erreur profil:', error);
+                    // Au lieu de rediriger, on affiche une erreur sur l'overlay
+                    if (overlay) {
+                        overlay.innerHTML = `
+                            <div style="text-align:center; padding: 20px;">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">📡</div>
+                                <h3 style="color: white; margin-bottom: 1rem;">Problème de connexion</h3>
+                                <p style="color: var(--mu); margin-bottom: 2rem;">Nous n'arrivons pas à charger votre profil. Vérifiez votre connexion internet.</p>
+                                <button onclick="location.reload()" class="btn btn-p">Réessayer</button>
+                                <button onclick="doLogout()" class="btn btn-g" style="margin-top: 10px;">Déconnexion</button>
+                            </div>
+                        `;
+                        overlay.classList.remove('hidden');
+                    }
+                    return;
+                }
+
+                if (data.statut !== 'approuve' || !data.est_actif) {
+                    // Ici c'est un problème de droit d'accès, on redirige vers login
                     window.location.href = 'login.html'
                     return
                 }

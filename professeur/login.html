@@ -1034,11 +1034,14 @@
             const { data: { user } } = await sb.auth.getUser()
             if (!user) return
 
-            const { data: prof } = await sb.from('professeurs').select('statut,est_actif').eq('id', user.id).single()
+            const { data: prof, error: profErr } = await sb.from('professeurs').select('statut,est_actif').eq('id', user.id).single()
             
-            if (!prof) {
-                // Not a professor - Offer to logout if they want to use a different account
-                showAlert('alert-login', 'Vous êtes connecté avec un compte élève. <a href="#" onclick="doLogout()" style="text-decoration:underline;font-weight:bold">Déconnexion</a> pour utiliser un compte professeur.', 'info')
+            if (profErr || !prof) {
+                // Not a professor or network error - DO NOT REDIRECT
+                console.error("Initial session check failed:", profErr)
+                if (user) {
+                   showAlert('alert-login', 'Session détectée. Si vous êtes professeur, assurez-vous d\'être sur le bon compte. <a href="#" onclick="doLogout()" style="text-decoration:underline;font-weight:bold">Déconnexion</a>', 'info')
+                }
                 return
             }
 
