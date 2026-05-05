@@ -1052,6 +1052,16 @@
             font-weight: bold;
         }
 
+        /* ── LOADING OVERLAY ── */
+        #loading-overlay {
+            position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease-out, visibility 0.5s;
+        }
+        #loading-overlay.hidden { opacity: 0; visibility: hidden; }
+        .loader-spin { width: 40px; height: 40px; border: 3px solid rgba(99,102,241,0.1); border-top-color: var(--ind); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         @media (max-width: 768px) and (orientation: portrait) {
             .rotate-prompt:not(.dismissed) {
                 display: flex;
@@ -1070,6 +1080,11 @@
 
     <div class="layout">
 
+        <div id="loading-overlay">
+            <div class="loader-spin"></div>
+            <div style="margin-top: 1rem; color: var(--mu); font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem;" data-i18n="loading">Chargement...</div>
+        </div>
+
         <!-- ═══ SIDEBAR ═══ -->
         <aside class="sidebar">
             <div class="sb-brand">
@@ -1084,41 +1099,41 @@
             <div class="sb-sec" id="lbl-sec-overview" data-i18n="nav_sec_overview">Vue d'ensemble</div>
             <div class="ni active" onclick="go('dashboard')">
                 <span class="ni-ico"><i data-lucide="layout-dashboard" class="w-4 h-4"></i></span>
-                <span data-t="ni_dash">Tableau de bord</span>
+                <span data-i18n="ni_dash">Tableau de bord</span>
             </div>
 
             <div class="sb-sec" id="lbl-sec-content" data-i18n="nav_sec_content">Contenu</div>
             <div class="ni" onclick="go('mes-cours')">
                 <span class="ni-ico"><i data-lucide="book-open" class="w-4 h-4"></i></span>
-                <span data-t="ni_cours">Mes Cours</span>
+                <span data-i18n="ni_cours">Mes Cours</span>
             </div>
             <div class="ni" onclick="go('proposer-cours')">
                 <span class="ni-ico"><i data-lucide="pencil" class="w-4 h-4"></i></span>
-                <span data-t="ni_prop_cours">Proposer un cours</span>
+                <span data-i18n="ni_prop_cours">Proposer un cours</span>
             </div>
             <div class="ni" onclick="go('mes-exercices')">
                 <span class="ni-ico"><i data-lucide="code-2" class="w-4 h-4"></i></span>
-                <span data-t="ni_exos">Mes Exercices</span>
+                <span data-i18n="ni_exos">Mes Exercices</span>
             </div>
             <div class="ni" onclick="go('proposer-exercice')">
                 <span class="ni-ico"><i data-lucide="plus-circle" class="w-4 h-4"></i></span>
-                <span data-t="ni_prop_exo">Proposer un exo</span>
+                <span data-i18n="ni_prop_exo">Proposer un exo</span>
             </div>
 
             <div class="sb-sec" id="lbl-sec-comm" data-i18n="nav_sec_community">Communauté</div>
             <div class="ni" onclick="go('forum')">
                 <span class="ni-ico"><i data-lucide="message-square" class="w-4 h-4"></i></span>
-                <span data-t="ni_forum">Forum & Aide</span>
+                <span data-i18n="ni_forum">Forum & Aide</span>
             </div>
 
             <div class="sb-sec" id="lbl-sec-account" data-i18n="nav_sec_account">Compte</div>
             <div class="ni" onclick="go('profil')">
                 <span class="ni-ico"><i data-lucide="user" class="w-4 h-4"></i></span>
-                <span data-t="ni_profile">Mon Profil</span>
+                <span data-i18n="ni_profile">Mon Profil</span>
             </div>
             <div class="ni" onclick="go('settings')">
                 <span class="ni-ico"><i data-lucide="settings" class="w-4 h-4"></i></span>
-                <span data-t="ni_settings">Paramètres</span>
+                <span data-i18n="ni_settings">Paramètres</span>
             </div>
 
             <div class="sb-bot">
@@ -1656,14 +1671,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Langue interface -->
-                                <div class="fd">
-                                    <label data-i18n="field_lang">Langue de l'interface</label>
-                                    <select id="p-lang" onchange="switchLangManual()">
-                                        <option value="fr">🇫🇷 Français</option>
-                                        <option value="en">🇬🇧 English</option>
-                                    </select>
-                                </div>
 
                                 <div class="fd"><label data-i18n="field_bio">Bio / Présentation</label><textarea
                                         id="p-bi" style="min-height:110px"></textarea></div>
@@ -1676,25 +1683,50 @@
                             </div>
                         </div>
 
+                    </div>
+                </div>
+
+                <!-- ══ PARAMÈTRES ══ -->
+                <div id="sec-settings" class="sec">
+                    <div style="max-width:700px">
+                        <div class="gl">
+                            <div class="gh">
+                                <div class="gtitle" data-i18n="settings_title">Paramètres du compte</div>
+                            </div>
+                            <div class="gb">
+                                <!-- Langue interface -->
+                                <div class="fd">
+                                    <label data-i18n="field_lang">Langue de l'interface</label>
+                                    <select id="p-lang" onchange="switchLangManual()" style="max-width:300px">
+                                        <option value="fr">🇫🇷 Français</option>
+                                        <option value="en">🇬🇧 English</option>
+                                    </select>
+                                </div>
+                                <div class="sep"></div>
+                                <p style="font-size:.8rem;color:var(--mu);margin-bottom:1.5rem" data-i18n="subsystems_readonly">
+                                    Les informations critiques comme vos sections d'enseignement sont modifiables uniquement par l'administrateur pour garantir la cohérence des données.
+                                </p>
+                            </div>
+                        </div>
+
                         <!-- Sécurité -->
                         <div class="gl" style="margin-top:1.25rem">
                             <div class="gh">
-                                <div class="gtitle" data-i18n="security_title">Sécurité</div>
+                                <div class="gtitle" data-i18n="security_title">Sécurité & Accès</div>
                             </div>
                             <div class="gb">
                                 <div id="al-pwd" class="al"></div>
                                 <div class="g2">
-                                    <div class="fd"><label data-i18n="field_new_password">Nouveau mot de
-                                            passe</label><input type="password" id="p-pwd"
-                                            placeholder="Min. 8 caractères"></div>
-                                    <div class="fd"><label data-i18n="field_confirm_password">Confirmer</label><input
-                                            type="password" id="p-pwd2"></div>
+                                    <div class="fd"><label data-i18n="field_new_password">Nouveau mot de passe</label>
+                                        <input type="password" id="p-pwd" placeholder="Min. 8 caractères">
+                                    </div>
+                                    <div class="fd"><label data-i18n="field_confirm_password">Confirmer</label>
+                                        <input type="password" id="p-pwd2">
+                                    </div>
                                 </div>
-                                <button class="btn btn-g" onclick="changePassword()" data-i18n="btn_change_password">🔐
-                                    Modifier le mot de passe</button>
+                                <button class="btn btn-g" onclick="changePassword()" data-i18n="btn_change_password">🔐 Modifier le mot de passe</button>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
@@ -1723,11 +1755,20 @@
         const I18N = {
             fr: {
                 /* Navigation */
-                nav_dashboard: 'Tableau de bord', nav_sec_content: 'Contenu',
+                nav_dashboard: 'Tableau de bord', 
+                nav_sec_overview: 'Vue d\'ensemble',
+                nav_sec_content: 'Contenu',
+                nav_sec_exams: 'Épreuves',
+                nav_sec_finance: 'Finances & Compte',
+                nav_sec_community: 'Communauté',
+                nav_sec_account: 'Compte',
                 nav_my_courses: 'Mes Cours', nav_propose_course: 'Proposer un cours',
                 nav_my_exercises: 'Mes Exercices Code', nav_propose_exercise: 'Proposer un exercice',
-                nav_sec_exams: 'Épreuves', nav_my_exams: 'Mes Épreuves', nav_submit_exam: 'Soumettre une épreuve',
-                nav_sec_finance: 'Finances & Compte', nav_payments: 'Mes Paiements', nav_profile: 'Mon Profil',
+                nav_my_exams: 'Mes Épreuves', nav_submit_exam: 'Soumettre une épreuve',
+                nav_payments: 'Mes Paiements', nav_profile: 'Mon Profil', nav_settings: 'Paramètres',
+                ni_dash: 'Tableau de bord', ni_cours: 'Mes Cours', ni_prop_cours: 'Proposer un cours',
+                ni_exos: 'Mes Exercices', ni_prop_exo: 'Proposer un exo', ni_forum: 'Forum & Aide',
+                ni_profile: 'Mon Profil', ni_settings: 'Paramètres',
                 /* Statuts & Labels */
                 status_active: 'Compte actif', btn_logout: '🚪 Déconnexion',
                 /* Topbar */
@@ -1757,8 +1798,9 @@
                 field_specialties: 'Spécialités', specialties_hint: '(Appuyer Entrée pour ajouter)',
                 field_subsystems: 'Sous-systèmes enseignés', subsystems_readonly: '(Modifiable uniquement par l\'admin)',
                 field_lang: 'Langue de l\'interface', field_bio: 'Bio / Présentation',
-                security_title: 'Sécurité', field_new_password: 'Nouveau mot de passe',
+                security_title: 'Sécurité & Accès', field_new_password: 'Nouveau mot de passe',
                 field_confirm_password: 'Confirmer', btn_change_password: '🔐 Modifier le mot de passe',
+                settings_title: 'Paramètres du compte',
                 /* Champs formulaires */
                 field_subject: 'Matière *', field_chapter: 'Chapitre *', field_title: 'Titre *',
                 field_class: 'Classe *', field_specialty: 'Spécialité', field_content_type: 'Type de contenu',
@@ -1811,11 +1853,20 @@
             },
             en: {
                 /* Navigation */
-                nav_dashboard: 'Dashboard', nav_sec_content: 'Content',
+                nav_dashboard: 'Dashboard', 
+                nav_sec_overview: 'Overview',
+                nav_sec_content: 'Content',
+                nav_sec_exams: 'Examinations',
+                nav_sec_finance: 'Finance & Account',
+                nav_sec_community: 'Community',
+                nav_sec_account: 'Account',
                 nav_my_courses: 'My Courses', nav_propose_course: 'Submit a course',
                 nav_my_exercises: 'My Code Exercises', nav_propose_exercise: 'Submit an exercise',
-                nav_sec_exams: 'Examinations', nav_my_exams: 'My Exams', nav_submit_exam: 'Submit an exam',
-                nav_sec_finance: 'Finance & Account', nav_payments: 'My Payments', nav_profile: 'My Profile',
+                nav_my_exams: 'My Exams', nav_submit_exam: 'Submit an exam',
+                nav_payments: 'My Payments', nav_profile: 'My Profile', nav_settings: 'Settings',
+                ni_dash: 'Dashboard', ni_cours: 'My Courses', ni_prop_cours: 'Submit a Course',
+                ni_exos: 'My Exercises', ni_prop_exo: 'Submit an Exo', ni_forum: 'Forum & Help',
+                ni_profile: 'My Profile', ni_settings: 'Settings',
                 /* Statuts & Labels */
                 status_active: 'Account active', btn_logout: '🚪 Log out',
                 /* Topbar */
@@ -1845,8 +1896,9 @@
                 field_specialties: 'Specialties', specialties_hint: '(Press Enter to add)',
                 field_subsystems: 'Teaching sub-systems', subsystems_readonly: '(Only editable by admin)',
                 field_lang: 'Interface language', field_bio: 'Bio / Presentation',
-                security_title: 'Security', field_new_password: 'New password',
+                security_title: 'Security & Access', field_new_password: 'New password',
                 field_confirm_password: 'Confirm', btn_change_password: '🔐 Change password',
+                settings_title: 'Account Settings',
                 /* Champs formulaires */
                 field_subject: 'Subject *', field_specialty: 'Specialty *', field_chapter: 'Chapter *', field_title: 'Title *',
                 field_class: 'Class *', field_series: 'Series/Stream', field_content_type: 'Content type',
@@ -1960,16 +2012,20 @@
         //  INIT + AUTH GUARD
         // ════════════════════════════════════════════════════════════
         async function init() {
-            const { data: { user } } = await sb.auth.getUser()
-            if (!user) return location.href = 'login.html'
-            uid = user.id
+            try {
+                const { data: { user } } = await sb.auth.getUser()
+                if (!user) return location.href = 'login.html'
+                uid = user.id
 
-            const { data, error } = await sb.from('professeurs').select('*').eq('id', uid).single()
-            if (error || !data || data.statut !== 'approuve') {
-                await sb.auth.signOut()
-                return location.href = 'login.html'
-            }
-            prof = data
+                const { data, error } = await sb.from('professeurs').select('*').eq('id', uid).single()
+                
+                if (error || !data || data.statut !== 'approuve' || !data.est_actif) {
+                    // Si on est déjà logué mais plus approuvé (ex: rejeté après coup ou désactivé)
+                    // on redirige vers login qui saura quoi afficher
+                    window.location.href = 'login.html'
+                    return
+                }
+                prof = data
 
             // Déterminer la langue
             LANG = prof.langue_interface || 'fr'
@@ -1997,7 +2053,20 @@
 
             // Charger le dashboard
             try { await loadDash() } catch (e) { console.error('Dashboard error:', e) }
+
+            // Masquer le loading
+            setTimeout(() => {
+                const overlay = document.getElementById('loading-overlay')
+                if (overlay) overlay.classList.add('hidden')
+            }, 300)
+
+        } catch (err) {
+            console.error('Initialization error:', err)
+            // En cas d'erreur réseau majeure, on peut rester sur la page ou retenter
+            // Mais pour l'instant redirigeons pour sécurité si auth fails
+            if (err.message?.includes('JWT')) location.href = 'login.html'
         }
+    }
 
         async function loadMatieresFromDB() {
             try {
