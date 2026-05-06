@@ -109,7 +109,7 @@
                 .maybeSingle()
 
             if (prof && prof.statut === 'approuve') {
-                return { url: 'professeur/professeur-dashboard.html', label: 'Espace Prof' }
+                return { url: 'professeur/professeur-dashboard.html', label: 'Espace Professeur' }
             }
 
             // 2. Vérifier si c'est un élève (Profil)

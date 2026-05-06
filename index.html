@@ -13,6 +13,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="auth-check.js"></script>
+    <script src="js/i18n.js"></script>
     <script>
         // Tailwind Configuration
         tailwind.config = {
@@ -240,6 +241,43 @@
             0%, 25% { opacity: 1; }
             33.33%, 100% { opacity: 0; }
         }
+
+        /* Premium Language Switcher */
+        .lang-switcher {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 0.3rem;
+            border-radius: 1rem;
+            display: flex;
+            gap: 0.2rem;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .dark .lang-switcher {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .lang-option {
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.7rem;
+            font-weight: 800;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.3s;
+            color: #64748b;
+            border: none;
+            background: transparent;
+        }
+        .lang-option.active {
+            background: #007A5E;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 122, 94, 0.2);
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+        .lang-option:not(.active):hover {
+            background: rgba(0, 122, 94, 0.05);
+            color: #007A5E;
+        }
     </style>
 </head>
 
@@ -255,17 +293,21 @@
                 </div>
 
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="#parcours" class="font-bold text-sm uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Parcours</a>
-                    <a href="#methode" class="font-bold text-sm uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Ma méthode</a>
-                    <a href="#stats" class="font-bold text-sm uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Impact</a>
+                    <a href="#parcours" data-i18n="nav-parcours" class="font-bold text-sm uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Parcours</a>
                     <div class="w-px h-6 bg-slate-200 dark:bg-slate-800 mx-2"></div>
-                    <a href="professeur/login.html" class="font-bold text-sm uppercase tracking-widest text-secondary hover:opacity-80 transition">Pro</a>
-                    <a href="auth.html" class="font-bold text-sm uppercase tracking-widest text-slate-900 dark:text-white hover:text-primary transition">Login</a>
-                    <a href="auth.html?mode=register"
+                    <a href="professeur/login.html" data-i18n="nav-prof" class="font-bold text-sm uppercase tracking-widest text-secondary hover:opacity-80 transition">Espace Professeur</a>
+                    <a href="auth.html" data-i18n="nav-login" class="font-bold text-sm uppercase tracking-widest text-slate-900 dark:text-white hover:text-primary transition">Login</a>
+                    <a href="auth.html?mode=register" data-i18n="nav-register"
                         class="px-8 py-3.5 bg-primary text-white text-xs font-black uppercase tracking-[0.2em] rounded-full btn-premium shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all">
                         S'inscrire
                     </a>
                     
+                    <!-- Language Switcher -->
+                    <div class="lang-switcher">
+                        <button onclick="window.i18n.setLanguage('fr')" class="lang-option" data-lang="fr">FR</button>
+                        <button onclick="window.i18n.setLanguage('en')" class="lang-option" data-lang="en">EN</button>
+                    </div>
+
                     <!-- Theme Toggle -->
                     <button onclick="toggleTheme()" class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 hover:scale-110 transition-all text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
                         <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
@@ -274,6 +316,11 @@
                 </div>
 
                 <div class="flex items-center space-x-3 md:hidden">
+                    <!-- Language Switcher Mobile -->
+                    <div class="lang-switcher scale-90">
+                        <button onclick="window.i18n.setLanguage('fr')" class="lang-option" data-lang="fr">FR</button>
+                        <button onclick="window.i18n.setLanguage('en')" class="lang-option" data-lang="en">EN</button>
+                    </div>
                     <!-- Theme Toggle Mobile -->
                     <button onclick="toggleTheme()" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
                         <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
@@ -306,12 +353,6 @@
                 <a href="#parcours" class="mobile-link text-lg font-bold text-slate-900 dark:text-white flex items-center justify-between">
                     Parcours <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
                 </a>
-                <a href="#methode" class="mobile-link text-lg font-bold text-slate-900 dark:text-white flex items-center justify-between">
-                    Ma méthode <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
-                </a>
-                <a href="#stats" class="mobile-link text-lg font-bold text-slate-900 dark:text-white flex items-center justify-between">
-                    Impact <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
-                </a>
                 <div class="h-px bg-slate-100 dark:bg-slate-800 my-4"></div>
                 <a href="professeur/login.html" class="text-lg font-bold text-secondary">Espace Professeur</a>
                 <a href="auth.html" class="text-lg font-bold text-slate-900 dark:text-white">Connexion</a>
@@ -336,22 +377,22 @@
                 <div data-aos="fade-up" data-aos-duration="1000">
                     <div class="inline-flex items-center px-4 py-2 bg-primary/10 rounded-full border border-primary/20 mb-8">
                         <span class="flex h-2 w-2 rounded-full bg-primary mr-3 animate-pulse"></span>
-                        <span class="text-sm font-bold text-primary uppercase tracking-widest">Nouveau : Session Spéciale 2024</span>
+                        <span class="text-sm font-bold text-primary uppercase tracking-widest" data-i18n="hero-badge">Nouveau : Session Spéciale 2024</span>
                     </div>
-                    <h1 class="text-5xl lg:text-7xl font-black text-slate-900 dark:text-white leading-[1.1] mb-8">
+                    <h1 class="text-5xl lg:text-7xl font-black text-slate-900 dark:text-white leading-[1.1] mb-8" data-i18n="hero-title">
                         Devenez qui vous <br>
                         <span class="gradient-text">voulez être.</span>
                     </h1>
-                    <p class="text-xl text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl mb-10">
+                    <p class="text-xl text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl mb-10" data-i18n="hero-desc">
                         <span class="kmer-text">KMER</span><span class="sch-text">SCH</span><span class="ool-text">OOL</span> vous accompagne dans votre transformation professionnelle. Des parcours sur-mesure,
                         des mentors experts et une communauté soudée pour atteindre l'excellence.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-5">
-                        <a href="auth.html?mode=register"
+                        <a href="auth.html?mode=register" data-i18n="hero-start"
                             class="px-10 py-5 bg-primary text-white text-lg font-bold rounded-2xl btn-premium shadow-2xl shadow-primary/20 text-center">
                             Démarrer maintenant
                         </a>
-                        <a href="#parcours"
+                        <a href="#parcours" data-i18n="hero-explore"
                             class="px-10 py-5 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white text-lg font-bold rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition text-center border border-slate-200 dark:border-slate-700">
                             Explorer les parcours
                         </a>
@@ -395,10 +436,10 @@
 
         <div class="max-w-7xl mx-auto px-4 relative z-10">
             <div class="text-center mb-16" data-aos="fade-up">
-                <h3 class="text-slate-500 dark:text-primary font-bold uppercase tracking-[0.2em] text-xs mb-4">
+                <h3 class="text-slate-500 dark:text-primary font-bold uppercase tracking-[0.2em] text-xs mb-4" data-i18n="stats-partners-title">
                     Partenariats Éducatifs
                 </h3>
-                <p class="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                <p class="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight" data-i18n="stats-partners-desc">
                     PLUSIEURS ÉTABLISSEMENTS NOUS FONT CONFIANCE <br class="hidden md:block">
                     ET VOUS ACCOMPAGNENT DANS <span class="kmer-text">KMER</span><span class="sch-text">SCH</span><span class="ool-text">OOL</span>.
                 </p>
@@ -434,11 +475,11 @@
     <section id="parcours" class="py-32 bg-white dark:bg-slate-950">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-24" data-aos="fade-up">
-                <h2 class="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-6 uppercase tracking-tight">Nos 3 Parcours
+                <h2 class="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-6 uppercase tracking-tight" data-i18n="pathways-title">Nos 3 Parcours
                     <span class="gradient-text">Phares</span>
                 </h2>
                 <div class="h-1.5 w-24 bg-primary mx-auto rounded-full mb-8"></div>
-                <p class="text-xl text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
+                <p class="text-xl text-slate-600 dark:text-slate-400 font-medium leading-relaxed" data-i18n="pathways-desc">
                     Une approche pédagogique innovante qui place l'apprenant au centre de sa réussite. Choisissez votre
                     voie.
                 </p>
@@ -455,15 +496,15 @@
                             class="absolute inset-0 bg-primary/20 group-hover:bg-primary/0 transition-all duration-500">
                         </div>
                         <div
-                            class="absolute top-6 left-6 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-primary uppercase tracking-widest shadow-lg">
+                            class="absolute top-6 left-6 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-primary uppercase tracking-widest shadow-lg" data-i18n="path-student-badge">
                             Fondamentaux</div>
                     </div>
                     <div class="p-10">
                         <i data-lucide="graduation-cap" class="w-10 h-10 text-primary mb-6"></i>
-                        <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">PARCOURS<br>ÉLÈVE</h3>
-                        <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed font-medium">Relevez le défi de l'excellence
+                        <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight" data-i18n="path-student-title">PARCOURS<br>ÉLÈVE</h3>
+                        <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed font-medium" data-i18n="path-student-desc">Relevez le défi de l'excellence
                             académique avec des outils interactifs et un tutorat personnalisé.</p>
-                        <a href="auth.html?path=student"
+                        <a href="auth.html?path=student" data-i18n="path-student-btn"
                             class="flex items-center text-primary font-black tracking-widest text-sm uppercase group-hover:translate-x-3 transition-transform">
                             Découvrir le programme
                             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -484,18 +525,18 @@
                             class="absolute inset-0 bg-primary/20 group-hover:bg-primary/0 transition-all duration-500">
                         </div>
                         <div
-                            class="absolute top-6 left-6 px-4 py-2 bg-primary text-white rounded-full text-xs font-bold uppercase tracking-widest shadow-lg">
+                            class="absolute top-6 left-6 px-4 py-2 bg-primary text-white rounded-full text-xs font-bold uppercase tracking-widest shadow-lg" data-i18n="path-dev-badge">
                             Le plus populaire</div>
                         <div
-                            class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse">
+                            class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
                             Bientôt Disponible</div>
                     </div>
                     <div class="p-10">
                         <i data-lucide="code" class="w-10 h-10 text-primary mb-6"></i>
-                        <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">PARCOURS<br>DÉV-WEB</h3>
-                        <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed font-medium">Apprenez à coder les technologies du
+                        <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight" data-i18n="path-dev-title">PARCOURS<br>DÉV-WEB</h3>
+                        <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed font-medium" data-i18n="path-dev-desc">Apprenez à coder les technologies du
                             futur et intégrez les meilleures entreprises de la tech.</p>
-                        <a href="auth.html?path=dev"
+                        <a href="auth.html?path=dev" data-i18n="path-dev-btn"
                             class="flex items-center text-primary font-black tracking-widest text-sm uppercase group-hover:translate-x-3 transition-transform">
                             Lancer sa carrière
                             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -516,18 +557,18 @@
                             class="absolute inset-0 bg-primary/20 group-hover:bg-primary/0 transition-all duration-500">
                         </div>
                         <div
-                            class="absolute top-6 left-6 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-primary uppercase tracking-widest shadow-lg">
+                            class="absolute top-6 left-6 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-primary uppercase tracking-widest shadow-lg" data-i18n="path-designer-badge">
                             Nouveauté</div>
                         <div
-                            class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse">
+                            class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
                             Bientôt Disponible</div>
                     </div>
                     <div class="p-10">
                         <i data-lucide="palette" class="w-10 h-10 text-primary mb-6"></i>
-                        <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">PARCOURS<br>DESIGNER</h3>
-                        <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed font-medium">Maîtrisez l'UX/UI Design et apprenez
+                        <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight" data-i18n="path-designer-title">PARCOURS<br>DESIGNER</h3>
+                        <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed font-medium" data-i18n="path-designer-desc">Maîtrisez l'UX/UI Design et apprenez
                             à créer des expériences utilisateur inoubliables.</p>
-                        <a href="auth.html?path=designer"
+                        <a href="auth.html?path=designer" data-i18n="path-designer-btn"
                             class="flex items-center text-primary font-black tracking-widest text-sm uppercase group-hover:translate-x-3 transition-transform">
                             Créer la différence
                             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -546,7 +587,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid lg:grid-cols-2 gap-20 items-center">
                 <div data-aos="fade-right">
-                    <h2 class="text-4xl lg:text-5xl font-black mb-10 leading-tight">Pourquoi choisir <span
+                    <h2 class="text-4xl lg:text-5xl font-black mb-10 leading-tight" data-i18n="methode-title">Pourquoi choisir <span
                             class="kmer-text">KMER</span><span class="sch-text">SCH</span><span class="ool-text">OOL</span> ?</h2>
                     <div class="space-y-10">
                         <div class="flex items-start">
@@ -556,8 +597,8 @@
                                 </svg>
                             </div>
                             <div class="ml-6">
-                                <h4 class="text-xl font-bold mb-2 uppercase tracking-tighter">Programme MINESEC</h4>
-                                <p class="text-slate-400 font-medium leading-relaxed">Nos leçons et exercices sont strictement conformes au programme officiel en vigueur de la section Francophone et Anglophone.</p>
+                                <h4 class="text-xl font-bold mb-2 uppercase tracking-tighter" data-i18n="methode-item1-title">Programme MINESEC</h4>
+                                <p class="text-slate-400 font-medium leading-relaxed" data-i18n="methode-item1-desc">Nos leçons et exercices sont strictement conformes au programme officiel en vigueur de la section Francophone et Anglophone.</p>
                             </div>
                         </div>
                         <div class="flex items-start">
@@ -567,8 +608,8 @@
                                 </svg>
                             </div>
                             <div class="ml-6">
-                                <h4 class="text-xl font-bold mb-2 uppercase tracking-tighter">Ressources Intelligentes</h4>
-                                <p class="text-slate-400 font-medium leading-relaxed">De l'aide personnalisée via l'assistance KmerAI jusqu'aux banques d'annales pour préparer l'élève efficacement à son examen final.</p>
+                                <h4 class="text-xl font-bold mb-2 uppercase tracking-tighter" data-i18n="methode-item2-title">Ressources Intelligentes</h4>
+                                <p class="text-slate-400 font-medium leading-relaxed" data-i18n="methode-item2-desc">De l'aide personnalisée via l'assistance KmerAI jusqu'aux banques d'annales pour préparer l'élève efficacement à son examen final.</p>
                             </div>
                         </div>
                     </div>
@@ -606,22 +647,22 @@
     <!-- Final Call to Action -->
     <section class="py-32 bg-white dark:bg-slate-950 relative overflow-hidden">
         <div class="max-w-5xl mx-auto px-4 text-center relative z-10" data-aos="zoom-in">
-            <h2 class="text-5xl lg:text-7xl font-black text-slate-900 dark:text-white mb-10 tracking-tight">Prêt à transformer <br>votre
+            <h2 class="text-5xl lg:text-7xl font-black text-slate-900 dark:text-white mb-10 tracking-tight" data-i18n="cta-title">Prêt à transformer <br>votre
                 <span class="gradient-text">destin ?</span>
             </h2>
-            <p class="text-2xl text-slate-600 dark:text-slate-400 font-medium mb-16 max-w-2xl mx-auto">Rejoignez 25,000+ apprenants et
+            <p class="text-2xl text-slate-600 dark:text-slate-400 font-medium mb-16 max-w-2xl mx-auto" data-i18n="cta-desc">Rejoignez 25,000+ apprenants et
                 commencez à construire votre futur dès aujourd'hui.</p>
             <div class="flex flex-col sm:flex-row justify-center gap-6">
-                <a href="auth.html?mode=register"
+                <a href="auth.html?mode=register" data-i18n="cta-btn-register"
                     class="px-12 py-6 bg-primary text-white text-xl font-black rounded-3xl btn-premium shadow-2xl shadow-primary/20">
                     S'INSCRIRE GRATUITEMENT
                 </a>
-                <a href="auth.html"
+                <a href="auth.html" data-i18n="cta-btn-login"
                     class="px-12 py-6 border-4 border-slate-900 dark:border-white text-slate-900 dark:text-white text-xl font-black rounded-3xl hover:bg-slate-900 dark:hover:bg-white dark:hover:text-slate-900 hover:text-white transition-all duration-300">
                     SE CONNECTER
                 </a>
             </div>
-            <div class="mt-8 text-slate-500 dark:text-slate-400">
+            <div class="mt-8 text-slate-500 dark:text-slate-400" data-i18n="cta-footer-prof">
                 <i data-lucide="users" class="w-5 h-5 inline-block mr-2 opacity-80"></i>
                 Vous êtes enseignant ? S'inscrire en tant que professeur
             </div>
@@ -640,7 +681,7 @@
                             <span class="kmer-text">KMER</span><span class="sch-text">SCH</span><span class="ool-text">OOL</span>
                         </span>
                     </div>
-                    <p class="font-medium leading-relaxed mb-8">La plateforme qui forme les leaders de la nouvelle
+                    <p class="font-medium leading-relaxed mb-8" data-i18n="footer-desc">La plateforme qui forme les leaders de la nouvelle
                         économie numérique.</p>
                     <div class="flex space-x-5">
                         <a href="#"
@@ -658,16 +699,16 @@
                     </div>
                 </div>
                 <div>
-                    <h4 class="text-white font-bold text-lg mb-10 uppercase tracking-widest">Parcours</h4>
+                    <h4 class="text-white font-bold text-lg mb-10 uppercase tracking-widest" data-i18n="footer-paths">Parcours</h4>
                     <ul class="space-y-6 font-medium">
-                        <li><a href="#" class="hover:text-primary transition">Élève Fondamentaux</a></li>
+                        <li><a href="#" class="hover:text-primary transition" data-i18n="nav-parcours">Élève Fondamentaux</a></li>
                         <li><a href="#" class="hover:text-primary transition">Développement FullStack</a></li>
                         <li><a href="#" class="hover:text-primary transition">UI/UX Design Master</a></li>
                         <li><a href="#" class="hover:text-primary transition">Data Science & AI</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="text-white font-bold text-lg mb-10 uppercase tracking-widest">Entreprise</h4>
+                    <h4 class="text-white font-bold text-lg mb-10 uppercase tracking-widest" data-i18n="footer-company">Entreprise</h4>
                     <ul class="space-y-6 font-medium">
                         <li><a href="#" class="hover:text-primary transition">Notre Histoire</a></li>
                         <li><a href="#" class="hover:text-primary transition">Carrières</a></li>
@@ -676,18 +717,18 @@
                     </ul>
                 </div>
                 <div>
-                    <h4 class="text-white font-bold text-lg mb-10 uppercase tracking-widest">Newsletter</h4>
-                    <p class="mb-8 font-medium">Recevez nos meilleures ressources chaque semaine.</p>
+                    <h4 class="text-white font-bold text-lg mb-10 uppercase tracking-widest" data-i18n="footer-newsletter">Newsletter</h4>
+                    <p class="mb-8 font-medium" data-i18n="footer-newsletter-desc">Recevez nos meilleures ressources chaque semaine.</p>
                     <form class="space-y-4">
                         <input type="email" placeholder="votre@email.com"
                             class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-primary transition text-white">
-                        <button
+                        <button data-i18n="footer-newsletter-btn"
                             class="w-full py-4 bg-white text-slate-900 font-black rounded-2xl hover:bg-primary hover:text-white transition">S'ABONNER</button>
                     </form>
                 </div>
             </div>
             <div class="pt-12 border-t border-white/5 flex flex-col md:row justify-between items-center text-sm">
-                <p>&copy; 2024 <span class="kmer-text">KMER</span><span class="sch-text">SCH</span><span class="ool-text">OOL</span>. Tous droits réservés. L'excellence comme horizon.</p>
+                <p data-i18n="footer-copyright">&copy; 2024 <span class="kmer-text">KMER</span><span class="sch-text">SCH</span><span class="ool-text">OOL</span>. Tous droits réservés. L'excellence comme horizon.</p>
                 <div class="flex space-x-10 mt-6 md:mt-0">
                     <a href="#" class="hover:text-white">Mentions légales</a>
                     <a href="#" class="hover:text-white">Confidentialité</a>

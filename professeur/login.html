@@ -7,518 +7,304 @@
     <title>Espace Professeur — KMERSCHOOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/i18n.js"></script>
     <style>
         :root {
-            --bg: #060b16;
-            --surface: #0e1628;
-            --border: rgba(99, 102, 241, 0.18);
-            --indigo: #6366f1;
-            --emerald: #10b981;
-            --text: #e2e8f0;
+            --primary: #007A5E;
+            --secondary: #CE1126;
+            --accent: #FCD116;
+            --bg: #f1f5f9;
+            --surface: rgba(255, 255, 255, 0.95);
+            --text: #0f172a;
             --muted: #64748b;
+            --border: rgba(0, 122, 94, 0.1);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Outfit', sans-serif;
         }
 
         body {
-            font-family: 'DM Sans', sans-serif;
             background: var(--bg);
-            color: var(--text);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding: 2rem;
+            position: relative;
             overflow-x: hidden;
         }
 
-        /* ── Fond animé ── */
-        body::before {
-            content: '';
+        /* ── Background Spécial : Vagues Fluides ── */
+        .waves-container {
             position: fixed;
             inset: 0;
-            background:
-                radial-gradient(ellipse 70% 50% at 20% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse 50% 60% at 80% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: 0;
+            z-index: -1;
+            background: linear-gradient(135deg, #fff 0%, #f1f5f9 100%);
+        }
+
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            opacity: 0.15;
+            border-radius: 40%;
+            animation: wave-rotate 30s infinite linear;
+        }
+
+        .wave-1 { background: var(--primary); animation-duration: 40s; opacity: 0.1; }
+        .wave-2 { background: var(--secondary); animation-duration: 55s; animation-delay: -5s; opacity: 0.08; }
+        .wave-3 { background: var(--accent); animation-duration: 45s; animation-delay: -10s; opacity: 0.12; }
+
+        @keyframes wave-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .container {
-            position: relative;
-            z-index: 1;
             width: 100%;
-            max-width: 520px;
-            padding: 1.5rem;
+            max-width: 580px;
+            background: var(--surface);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            box-shadow: 0 40px 100px rgba(0, 122, 94, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
         }
 
-        /* ── Logo ── */
-        .brand {
-            text-align: center;
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Barre Tricolore */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary) 33.33%, var(--secondary) 33.33% 66.66%, var(--accent) 66.66%);
+            z-index: 10;
+        }
+
+        .brand { 
+            text-align: center; 
             margin-bottom: 2.5rem;
+            animation: fadeInDown 0.8s ease-out;
+            position: relative;
+            z-index: 200;
         }
-
-        .brand-logo {
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .brand-logo { 
+            font-size: 3.5rem; 
+            font-weight: 900; 
+            letter-spacing: -0.05em; 
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2px;
+        }
+        .brand-logo:hover { transform: scale(1.02) translateY(-5px); }
+        .brand-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 800;
-            font-size: 1.5rem;
-        }
-
-        .brand-logo span.k {
-            color: var(--indigo);
-        }
-
-        .brand-logo span.s {
-            color: var(--emerald);
-        }
-
-        .brand-badge {
-            display: inline-block;
-            margin-top: 0.5rem;
-            padding: 0.25rem 0.9rem;
-            background: rgba(99, 102, 241, 0.12);
-            border: 1px solid var(--border);
-            border-radius: 99px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            letter-spacing: .08em;
-            color: #818cf8;
-            text-transform: uppercase;
-        }
-
-        .brand-sub {
-            margin-top: 0.4rem;
+            padding: 0.5rem 1.8rem;
+            background: linear-gradient(135deg, var(--primary) 0%, #005a45 100%);
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 122, 94, 0.2);
+            border-radius: 2rem;
             font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .brand-sub {
+            margin-top: 1.2rem;
             color: var(--muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
         }
 
-        /* ── Card ── */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 1.25rem;
-            overflow: hidden;
-        }
-
-        /* ── Tabs ── */
-        .tabs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            border-bottom: 1px solid var(--border);
-        }
-
+        .tabs { display: flex; background: rgba(0,0,0,0.02); border-bottom: 1px solid rgba(0,0,0,0.05); }
         .tab-btn {
-            padding: 1rem;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            font-size: 0.875rem;
-            letter-spacing: .03em;
-            background: transparent;
-            border: none;
+            flex: 1;
+            padding: 1.4rem;
+            font-weight: 700;
             color: var(--muted);
+            border: none;
+            background: transparent;
             cursor: pointer;
-            transition: all .25s;
-            position: relative;
+            transition: 0.3s;
         }
-
-        .tab-btn.active {
-            color: var(--text);
-            background: rgba(99, 102, 241, 0.06);
-        }
-
+        .tab-btn.active { color: var(--primary); background: var(--surface); position: relative; }
         .tab-btn.active::after {
             content: '';
             position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--indigo), var(--emerald));
+            bottom: 0;
+            left: 20%;
+            right: 20%;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px 3px 0 0;
         }
 
-        /* ── Form body ── */
-        .form-body {
-            padding: 1.75rem;
-        }
+        .form-body { padding: 2rem 3rem; }
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+        
+        .field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        @media (max-width: 500px) { .field-group { grid-template-columns: 1fr; } }
 
-        .form-section {
-            display: none;
-        }
-
-        .form-section.active {
-            display: block;
-        }
-
-        .field {
-            margin-bottom: 1.1rem;
-        }
-
-        .field label {
-            display: block;
-            font-size: 0.78rem;
-            font-weight: 600;
-            letter-spacing: .04em;
-            color: #94a3b8;
-            margin-bottom: 0.45rem;
-            text-transform: uppercase;
-        }
-
-        .field input,
-        .field select,
-        .field textarea {
+        .field { margin-bottom: 1rem; }
+        .field label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text); }
+        .field input, .field select, .field textarea {
             width: 100%;
-            padding: 0.7rem 1rem;
-            background: rgba(6, 11, 22, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 0.6rem;
-            color: var(--text);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.9rem;
-            transition: border-color .2s, box-shadow .2s;
-            outline: none;
+            padding: 0.8rem 1.1rem;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 0.8rem;
+            font-size: 0.95rem;
+            transition: 0.3s;
         }
+        .field input:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(0, 122, 94, 0.08); }
 
-        .field input:focus,
-        .field select:focus,
-        .field textarea:focus {
-            border-color: var(--indigo);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-        }
-
-        .field select option {
-            background: #0e1628;
-        }
-
-        .field textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        /* ── Upload zones ── */
         .upload-label {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.9rem 1rem;
-            background: rgba(6, 11, 22, 0.6);
-            border: 1.5px dashed rgba(99, 102, 241, 0.3);
-            border-radius: 0.6rem;
+            padding: 1.5rem;
+            border: 2px dashed #cbd5e1;
+            border-radius: 1rem;
             cursor: pointer;
-            transition: all .2s;
+            background: #f8fafc;
+            transition: 0.3s;
         }
-
-        .upload-label:hover {
-            border-color: var(--indigo);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .upload-label input {
-            display: none;
-        }
-
-        .upload-icon {
-            font-size: 1.3rem;
-            flex-shrink: 0;
-        }
-
-        .upload-text {
-            font-size: 0.82rem;
-            color: var(--muted);
-            line-height: 1.4;
-        }
-
-        .upload-text strong {
-            color: var(--text);
-            display: block;
-        }
-
-        .upload-label.done {
-            border-color: var(--emerald);
-            background: rgba(16, 185, 129, 0.06);
-        }
-
-        .upload-label.done .upload-text strong {
-            color: var(--emerald);
-        }
-
-        /* ── Upload group section ── */
-        .kyc-section {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .kyc-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #818cf8;
-            letter-spacing: .06em;
-            text-transform: uppercase;
-            margin-bottom: 0.35rem;
-        }
-
-        .kyc-desc {
-            font-size: 0.8rem;
-            color: var(--muted);
-            margin-bottom: 1rem;
-        }
-
-        /* ── Tags input (spécialités) ── */
-        .tags-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem;
-            padding: 0.6rem 0.75rem;
-            background: rgba(6, 11, 22, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 0.6rem;
-            min-height: 2.8rem;
-            cursor: text;
-        }
-
-        .tags-wrapper input {
-            flex: 1;
-            min-width: 120px;
-            background: transparent;
-            border: none;
-            color: var(--text);
-            font-size: 0.88rem;
-            outline: none;
-            padding: 0;
-        }
-
-        .tag-pill {
-            padding: 0.2rem 0.6rem;
-            background: rgba(99, 102, 241, 0.2);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 99px;
-            font-size: 0.75rem;
-            color: #a5b4fc;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
-        .tag-pill button {
-            background: none;
-            border: none;
-            color: #818cf8;
-            cursor: pointer;
-            font-size: 0.9rem;
-            line-height: 1;
-            padding: 0;
-            margin: 0;
-        }
-
-        /* ── Steps indicator ── */
-        .steps {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .step {
-            flex: 1;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 99px;
-            transition: background .3s;
-        }
-
-        .step.done {
-            background: var(--indigo);
-        }
-
-        .step.active {
-            background: linear-gradient(90deg, var(--indigo), var(--emerald));
-        }
-
-        .step-label {
-            font-size: 0.72rem;
-            color: var(--muted);
-            margin-bottom: 0.5rem;
-        }
-
-        /* ── Boutons ── */
-        .btn {
-            width: 100%;
-            padding: 0.85rem 1.5rem;
-            border-radius: 0.65rem;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 0.9rem;
-            letter-spacing: .03em;
-            border: none;
-            cursor: pointer;
-            transition: all .25s;
-        }
+        .upload-label:hover { border-color: var(--primary); background: rgba(0, 122, 94, 0.02); }
+        .upload-text strong { color: var(--primary); }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--indigo), #818cf8);
+            background: linear-gradient(to right, var(--primary), #00a884);
             color: #fff;
+            padding: 1.2rem;
+            border-radius: 1.2rem;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(0, 122, 94, 0.2);
         }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.35);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            transform: none;
-            cursor: not-allowed;
-        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0, 122, 94, 0.3); }
 
         .btn-outline {
             background: transparent;
-            border: 1px solid var(--border);
-            color: var(--muted);
-        }
-
-        .btn-outline:hover {
-            border-color: var(--indigo);
-            color: var(--text);
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 1.25rem;
-        }
-
-        .btn-row .btn {
-            flex: 1;
-        }
-
-        /* ── Alert ── */
-        .alert {
-            padding: 0.8rem 1rem;
-            border-radius: 0.6rem;
-            font-size: 0.85rem;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .alert.show {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.6rem;
-        }
-
-        .alert-error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.25);
-            color: #fca5a5;
-        }
-
-        .alert-success {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            color: #6ee7b7;
-        }
-
-        .alert-info {
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid var(--border);
-            color: #a5b4fc;
-        }
-
-        /* ── Notice pending ── */
-        .notice {
-            text-align: center;
-            padding: 2rem 1.5rem;
-        }
-
-        .notice-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .notice h3 {
-            font-family: 'Space Grotesk', sans-serif;
+            border: 2px solid #e2e8f0;
+            padding: 1rem;
+            border-radius: 1.2rem;
             font-weight: 700;
-            font-size: 1.15rem;
-            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: 0.3s;
         }
+        .btn-outline:hover { border-color: var(--secondary); color: var(--secondary); }
 
-        .notice p {
-            font-size: 0.85rem;
+        /* Accents Jaunes */
+        .steps-title { color: #b58d00; font-weight: 800; }
+        .step-dot.active { background: var(--accent); }
+
+        .alert-error { background: #fee2e2; color: #991b1b; border-left: 5px solid var(--secondary); }
+
+        .lang-switcher {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 0.4rem;
+            border-radius: 1.2rem;
+            display: flex;
+            gap: 0.2rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .lang-option {
+            padding: 0.5rem 1rem;
+            border-radius: 0.8rem;
+            font-weight: 800;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             color: var(--muted);
-            line-height: 1.6;
-        }
-
-        /* ── Loader ── */
-        .spinner {
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin .7s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 0.4rem;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
+            border: none;
             background: transparent;
+            text-transform: uppercase;
         }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(99, 102, 241, 0.3);
-            border-radius: 3px;
+        .lang-option.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 122, 94, 0.3);
+            text-shadow: 0 0 8px rgba(255,255,255,0.5);
+        }
+        .lang-option:not(.active):hover {
+            background: rgba(0, 122, 94, 0.05);
+            color: var(--primary);
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
+    <div class="waves-container">
+        <div class="wave wave-1"></div>
+        <div class="wave wave-2"></div>
+        <div class="wave wave-3"></div>
+    </div>
 
-        <!-- Brand -->
-        <div class="brand">
-            <div class="brand-logo">
-                <span class="k">KMER</span><span class="s">SCHOOL</span>
-            </div>
-            <div class="brand-badge">Portail Professeur</div>
-            <div class="brand-sub">Rejoignez la plateforme éducative camerounaise</div>
+    <div class="lang-switcher">
+        <button onclick="window.i18n.setLanguage('fr')" class="lang-option" data-lang="fr">FR</button>
+        <button onclick="window.i18n.setLanguage('en')" class="lang-option" data-lang="en">EN</button>
+    </div>
+
+    <div class="brand">
+        <div class="brand-logo" onclick="window.location.href='../index.html'">
+            <span style="color:var(--primary)">KMER</span><span style="color:var(--secondary)">SCH</span><span style="color:var(--accent)">OOL</span>
         </div>
+        <div class="brand-badge" data-i18n="prof-login-title">Portail Professeur</div>
+        <div class="brand-sub" data-i18n="prof-login-subtitle">Rejoignez la plateforme éducative camerounaise</div>
+    </div>
+
+    <div class="container">
 
         <!-- Card -->
         <div class="card">
 
             <!-- Tabs -->
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('login')" id="tab-login">Connexion</button>
-                <button class="tab-btn" onclick="switchTab('register')" id="tab-register">Inscription</button>
+                <button class="tab-btn active" onclick="switchTab('login')" id="tab-login" data-i18n="prof-tab-login">Connexion</button>
+                <button class="tab-btn" onclick="switchTab('register')" id="tab-register" data-i18n="prof-tab-register">Inscription</button>
             </div>
 
             <!-- ═══ LOGIN ═══ -->
@@ -542,19 +328,19 @@
                     <!-- Formulaire login -->
                     <div id="login-form-wrapper">
                         <div class="field">
-                            <label>Email</label>
+                            <label data-i18n="prof-email-label">Email</label>
                             <input type="email" id="loginEmail" placeholder="prof@example.com">
                         </div>
                         <div class="field">
-                            <label>Mot de passe</label>
+                            <label data-i18n="prof-pass-label">Mot de passe</label>
                             <input type="password" id="loginPassword" placeholder="••••••••">
                         </div>
-                        <button class="btn btn-primary" id="btnLogin" onclick="doLogin()">
-                            Se connecter
+                        <button class="btn btn-primary" id="btnLogin" onclick="doLogin(event)">
+                            <span data-i18n="prof-btn-login">Se connecter</span>
                         </button>
                         <p style="text-align:center;margin-top:1rem;font-size:.8rem;color:var(--muted)">
-                            Pas encore inscrit ? <a href="#" onclick="switchTab('register')" style="color:#818cf8">Créer
-                                un compte</a>
+                            <span data-i18n="prof-no-account">Pas encore inscrit ?</span> 
+                            <a href="#" onclick="switchTab('register')" style="color:#818cf8" data-i18n="prof-create-account">Créer un compte</a>
                         </p>
                     </div>
                 </div>
@@ -565,15 +351,19 @@
                     <div id="alert-register" class="alert"></div>
 
                     <!-- Step indicator -->
-                    <div class="step-label" id="step-label">Étape 1 sur 2 — Informations personnelles</div>
-                    <div class="steps">
-                        <div class="step active" id="step-dot-1"></div>
-                        <div class="step" id="step-dot-2"></div>
+                    <div class="steps-container">
+                        <div class="steps-header">
+                            <div class="steps-title" id="step-label">Étape 1 sur 2 — Informations personnelles</div>
+                            <div class="steps-dots">
+                                <div class="step-dot active" id="step-dot-1"></div>
+                                <div class="step-dot" id="step-dot-2"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Step 1: Infos -->
                     <div id="reg-step-1">
-                        <div class="grid-2">
+                        <div class="field-group">
                             <div class="field">
                                 <label>Prénom *</label>
                                 <input type="text" id="regPrenom" placeholder="Jean">
@@ -594,7 +384,7 @@
                             <input type="tel" id="regPhone" placeholder="+237 6XX XXX XXX">
                         </div>
 
-                        <div class="grid-2">
+                        <div class="field-group">
                             <div class="field">
                                 <label>Mot de passe *</label>
                                 <input type="password" id="regPassword" placeholder="Min. 8 caractères">
@@ -712,7 +502,7 @@
         </div>
 
         <p style="text-align:center;margin-top:1.5rem;font-size:.78rem;color:var(--muted)">
-            <a href="../index.html" style="color:#475569">Retour au site</a>
+            <a href="../index.html" style="color:#475569" data-i18n="prof-back-site">Retour au site</a>
         </p>
 
     </div>
@@ -814,23 +604,24 @@
             hideAlert('alert-register')
             document.getElementById('reg-step-1').style.display = 'none'
             document.getElementById('reg-step-2').style.display = 'block'
-            document.getElementById('step-dot-1').className = 'step done'
-            document.getElementById('step-dot-2').className = 'step active'
+            document.getElementById('step-dot-1').className = 'step-dot done active'
+            document.getElementById('step-dot-2').className = 'step-dot active'
             document.getElementById('step-label').textContent = 'Étape 2 sur 2 — Documents de vérification'
         }
 
         function goStep1() {
             document.getElementById('reg-step-2').style.display = 'none'
             document.getElementById('reg-step-1').style.display = 'block'
-            document.getElementById('step-dot-1').className = 'step active'
-            document.getElementById('step-dot-2').className = 'step'
+            document.getElementById('step-dot-1').className = 'step-dot active'
+            document.getElementById('step-dot-2').className = 'step-dot'
             document.getElementById('step-label').textContent = 'Étape 1 sur 2 — Informations personnelles'
         }
 
         // ──────────────────────────────────
         // LOGIN
         // ──────────────────────────────────
-        async function doLogin() {
+        async function doLogin(e) {
+            if (e) e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim()
             const pwd = document.getElementById('loginPassword').value
             if (!email || !pwd) return showAlert('alert-login', 'Email et mot de passe requis.')
@@ -877,7 +668,8 @@
                 }
 
                 if (prof.statut === 'approuve') {
-                    window.location.href = 'professeur-dashboard.html'
+                    console.log('✅ Approved! Redirecting to dashboard...');
+                    window.location.href = './professeur-dashboard.html'
                 }
 
             } catch (err) {
@@ -1046,7 +838,7 @@
             }
 
             if (prof.statut === 'approuve' && prof.est_actif) {
-                window.location.href = 'professeur-dashboard.html'
+                window.location.href = './professeur-dashboard.html'
             } else if (prof.statut === 'en_attente' || prof.statut === 'en_revision') {
                 document.getElementById('login-form-wrapper').style.display = 'none'
                 document.getElementById('notice-pending').style.display = 'block'

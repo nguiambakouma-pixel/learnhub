@@ -9,50 +9,133 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="auth-check.js"></script>
+    <script src="js/i18n.js"></script>
     <script>
         // Si déjà connecté, rediriger vers le bon espace
         AuthCheck.resolveUserRoleAndRedirect();
     </script>
     <style>
+        :root {
+            --primary: #007A5E;
+            --secondary: #CE1126;
+            --accent: #FCD116;
+            --surface: rgba(255, 255, 255, 0.9);
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: rgba(255, 255, 255, 0.3);
+            --radius: 2.5rem;
+        }
+
+        .lang-switcher {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 0.4rem;
+            border-radius: 1.2rem;
+            display: flex;
+            gap: 0.2rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .lang-option {
+            padding: 0.5rem 1rem;
+            border-radius: 0.8rem;
+            font-weight: 800;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--muted);
+            border: none;
+            background: transparent;
+            text-transform: uppercase;
+        }
+        .lang-option.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 122, 94, 0.3);
+            text-shadow: 0 0 8px rgba(255,255,255,0.5);
+        }
+        .lang-option:not(.active):hover {
+            background: rgba(0, 122, 94, 0.05);
+            color: var(--primary);
+        }
+
         * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
             font-family: 'Outfit', sans-serif;
         }
 
         body {
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
+            background: #f8fafc;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow-x: hidden;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes gradient {
-            0% {
-                background-position: 0% 50%;
-            }
+        /* ── Effet Background Spécial : Orbes Dynamiques ── */
+        .bg-blobs {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: #fff;
+            filter: blur(80px);
+            opacity: 0.6;
+        }
 
-            50% {
-                background-position: 100% 50%;
-            }
+        .blob {
+            position: absolute;
+            width: 50vw;
+            height: 50vw;
+            border-radius: 50%;
+            animation: move 20s infinite alternate;
+        }
 
-            100% {
-                background-position: 0% 50%;
-            }
+        .blob-1 { background: var(--primary); top: -10%; left: -10%; animation-duration: 25s; }
+        .blob-2 { background: var(--secondary); bottom: -10%; right: -10%; animation-duration: 30s; animation-delay: -5s; }
+        .blob-3 { background: var(--accent); top: 50%; left: 50%; transform: translate(-50%, -50%); animation-duration: 22s; animation-delay: -10s; }
+
+        @keyframes move {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(10%, 15%) scale(1.1); }
+            66% { transform: translate(-15%, 5%) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
         }
 
         .container {
             position: relative;
-            width: 850px;
+            width: 950px;
             max-width: 100%;
-            min-height: 600px;
-            background: #fff;
-            border-radius: 40px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+            min-height: 650px;
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            box-shadow: 0 40px 120px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
             overflow: hidden;
+            display: flex;
+        }
+
+        /* ── Barre Tricolore ── */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary) 33.33%, var(--secondary) 33.33% 66.66%, var(--accent) 66.66%);
+            z-index: 10;
         }
 
         .form-container {
@@ -62,44 +145,13 @@
             transition: all 0.6s ease-in-out;
         }
 
-        .sign-in-container {
-            left: 0;
-            width: 50%;
-            z-index: 2;
-        }
+        .sign-in-container { left: 0; width: 50%; z-index: 2; }
+        .container.right-panel-active .sign-in-container { transform: translateX(100%); }
 
-        .container.right-panel-active .sign-in-container {
-            transform: translateX(100%);
-        }
+        .sign-up-container { left: 0; width: 50%; opacity: 0; z-index: 1; }
+        .container.right-panel-active .sign-up-container { transform: translateX(100%); opacity: 1; z-index: 5; animation: show 0.6s; }
 
-        .sign-up-container {
-            left: 0;
-            width: 50%;
-            opacity: 0;
-            z-index: 1;
-        }
-
-        .container.right-panel-active .sign-up-container {
-            transform: translateX(100%);
-            opacity: 1;
-            z-index: 5;
-            animation: show 0.6s;
-        }
-
-        @keyframes show {
-
-            0%,
-            49.99% {
-                opacity: 0;
-                z-index: 1;
-            }
-
-            50%,
-            100% {
-                opacity: 1;
-                z-index: 5;
-            }
-        }
+        @keyframes show { 0%, 49.99% { opacity: 0; z-index: 1; } 50%, 100% { opacity: 1; z-index: 5; } }
 
         .overlay-container {
             position: absolute;
@@ -112,16 +164,11 @@
             z-index: 100;
         }
 
-        .container.right-panel-active .overlay-container {
-            transform: translateX(-100%);
-        }
+        .container.right-panel-active .overlay-container { transform: translateX(-100%); }
 
         .overlay {
-            background: linear-gradient(to right, #7c3aed, #4f46e5);
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: 0 0;
-            color: #FFFFFF;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
             position: relative;
             left: -100%;
             height: 100%;
@@ -130,9 +177,7 @@
             transition: transform 0.6s ease-in-out;
         }
 
-        .container.right-panel-active .overlay {
-            transform: translateX(50%);
-        }
+        .container.right-panel-active .overlay { transform: translateX(50%); }
 
         .overlay-panel {
             position: absolute;
@@ -149,25 +194,14 @@
             transition: transform 0.6s ease-in-out;
         }
 
-        .overlay-left {
-            transform: translateX(-20%);
-        }
+        .overlay-left { transform: translateX(-20%); }
+        .container.right-panel-active .overlay-left { transform: translateX(0); }
 
-        .container.right-panel-active .overlay-left {
-            transform: translateX(0);
-        }
-
-        .overlay-right {
-            right: 0;
-            transform: translateX(0);
-        }
-
-        .container.right-panel-active .overlay-right {
-            transform: translateX(20%);
-        }
+        .overlay-right { right: 0; transform: translateX(0); }
+        .container.right-panel-active .overlay-right { transform: translateX(20%); }
 
         form {
-            background-color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.98);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -177,44 +211,90 @@
             text-align: center;
         }
 
-        input,
-        select {
-            background-color: #f3f4f6;
-            border: none;
-            padding: 12px 15px;
-            margin: 8px 0;
+        input, select {
+            background-color: #f1f5f9;
+            border: 1px solid transparent;
+            padding: 14px 18px;
+            margin: 10px 0;
             width: 100%;
-            border-radius: 12px;
+            border-radius: 1rem;
             outline: none;
-            font-size: 14px;
+            font-size: 15px;
+            transition: all 0.2s;
+            color: var(--text);
+        }
+
+        input:focus, select:focus {
+            background-color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 122, 94, 0.1);
         }
 
         .btn-auth {
-            border-radius: 20px;
-            border: 1px solid #7c3aed;
-            background-color: #7c3aed;
-            color: #FFFFFF;
-            font-size: 12px;
-            font-weight: bold;
-            padding: 12px 45px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: transform 80ms ease-in;
+            border-radius: 1.2rem;
+            border: none;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 800;
+            padding: 16px 45px;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 25px;
+            width: 100%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px rgba(0, 122, 94, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(206, 17, 38, 0.3);
+            filter: brightness(1.1);
+            color: #ffffff;
         }
 
         .btn-auth:active {
-            transform: scale(0.95);
-        }
-
-        .btn-auth:focus {
-            outline: none;
+            transform: translateY(-1px) scale(0.98);
         }
 
         .btn-auth.ghost {
-            background-color: transparent;
-            border-color: #FFFFFF;
+            background: transparent;
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            box-shadow: none;
+        }
+
+        .btn-auth.ghost:hover {
+            background: #ffffff;
+            color: var(--primary);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            z-index: 101;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .logo-container:hover {
+            transform: scale(1.05);
+        }
+
+        .mobile-toggle {
+            display: none;
+            margin-top: 25px;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
         }
 
         #messageContainer {
@@ -229,114 +309,61 @@
             transition: transform 0.4s ease;
         }
 
-        #messageContainer.show {
-            transform: translateY(0);
-        }
-
-        /* Custom Styles */
-        .logo-container {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            z-index: 101;
-            cursor: pointer;
-        }
-
-        .mobile-toggle {
-            display: none;
-            margin-top: 20px;
-            color: #7c3aed;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        #messageContainer.show { transform: translateY(0); }
 
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-                align-items: flex-start;
-                padding-top: 80px;
-            }
-
-            .logo-container {
-                top: 20px;
-                left: 20px;
-            }
-
-            .container {
-                min-height: auto;
-                width: 100%;
-                border-radius: 24px;
-            }
-
-            .form-container {
-                width: 100%;
-                height: auto;
-                position: static;
-            }
-
-            .sign-in-container, .sign-up-container {
-                width: 100%;
-                position: static;
-                opacity: 1;
-                z-index: 1;
-                transform: none !important;
-            }
-
-            .container.right-panel-active .sign-in-container {
-                display: none;
-            }
-
-            .container:not(.right-panel-active) .sign-up-container {
-                display: none;
-            }
-
-            .overlay-container {
-                display: none;
-            }
-
-            form {
-                padding: 40px 25px;
-                height: auto;
-            }
-
-            .mobile-toggle {
-                display: block;
-            }
-
-            .btn-auth {
-                width: 100%;
-                padding: 14px;
-            }
+            body { padding: 1.5rem; align-items: center; }
+            .logo-container { top: 20px; left: 20px; }
+            .container { min-height: auto; width: 100%; border-radius: 1.5rem; }
+            .form-container { width: 100%; height: auto; position: static; }
+            .sign-in-container, .sign-up-container { width: 100%; position: static; opacity: 1; z-index: 1; transform: none !important; }
+            .container.right-panel-active .sign-in-container { display: none; }
+            .container:not(.right-panel-active) .sign-up-container { display: none; }
+            .overlay-container { display: none; }
+            form { padding: 50px 30px; height: auto; }
+            .mobile-toggle { display: block; }
         }
     </style>
 </head>
 
 <body>
 
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="lang-switcher">
+        <button onclick="window.i18n.setLanguage('fr')" class="lang-option" data-lang="fr">FR</button>
+        <button onclick="window.i18n.setLanguage('en')" class="lang-option" data-lang="en">EN</button>
+    </div>
+
     <div id="messageContainer" class="hidden"></div>
 
     <div class="logo-container" onclick="window.location.href='index.html'">
-        <img src="assets/logo/LOGO.png" alt="KMERSCHOOL" class="h-16 w-auto drop-shadow-md">
+        <span class="text-3xl font-black tracking-tighter">
+            <span style="color:var(--primary)">KMER</span><span style="color:var(--secondary)">SCH</span><span style="color:var(--accent)">OOL</span>
+        </span>
     </div>
 
     <div class="container" id="container">
         <!-- Inscription (Sign Up) -->
         <div class="form-container sign-up-container">
             <form id="signUpForm">
-                <h1 class="text-3xl font-bold mb-4">Créer un compte</h1>
-                <p class="text-sm text-gray-500 mb-6">Rejoins la communauté KMERSCHOOL</p>
-                <input type="text" id="reg-name" placeholder="Nom complet" required />
-                <input type="email" id="reg-email" placeholder="Email" required />
-                <input type="password" id="reg-password" placeholder="Mot de passe" required />
+                <h1 class="text-3xl font-bold mb-4" data-i18n="auth-signup-title">Créer un compte</h1>
+                <p class="text-sm text-gray-500 mb-6" data-i18n="auth-signup-desc">Rejoins la communauté KMERSCHOOL</p>
+                <input type="text" id="reg-name" placeholder="Nom complet" data-i18n="auth-name-placeholder" required />
+                <input type="email" id="reg-email" placeholder="Email" data-i18n="auth-email-placeholder" required />
+                <input type="password" id="reg-password" placeholder="Mot de passe" data-i18n="auth-pass-placeholder" required />
                 <select id="reg-path" required>
-                    <option value="" disabled selected>Choisis ton parcours</option>
-                    <option value="eleve">🎓 Élève (Collège/Lycée)</option>
-                    <option value="dev-web">💻 Développeur Web</option>
-                    <option value="designer">🎨 Designer UI/UX</option>
+                    <option value="" disabled selected data-i18n="auth-path-placeholder">Choisis ton parcours</option>
+                    <option value="eleve" data-i18n="auth-path-student">🎓 Élève (Collège/Lycée)</option>
+                    <option value="dev-web" data-i18n="auth-path-dev">💻 Développeur Web</option>
+                    <option value="designer" data-i18n="auth-path-designer">🎨 Designer UI/UX</option>
                 </select>
-                <button type="submit" class="btn-auth">S'inscrire</button>
-                <div class="mobile-toggle" onclick="container.classList.remove('right-panel-active')">
+                <button type="submit" class="btn-auth" data-i18n="auth-btn-signup">S'inscrire</button>
+                <div class="mobile-toggle" onclick="container.classList.remove('right-panel-active')" data-i18n="auth-has-account">
                     Déjà un compte ? Se connecter
                 </div>
             </form>
@@ -345,14 +372,14 @@
         <!-- Connexion (Sign In) -->
         <div class="form-container sign-in-container">
             <form id="signInForm">
-                <h1 class="text-3xl font-bold mb-4">Se connecter</h1>
-                <p class="text-sm text-gray-500 mb-6">Continue ton apprentissage</p>
-                <input type="email" id="login-email" placeholder="Email" required />
-                <input type="password" id="login-password" placeholder="Mot de passe" required />
-                <a href="#" class="text-sm text-gray-400 mt-2 mb-4 hover:text-purple-600 transition">Mot de passe oublié
+                <h1 class="text-3xl font-bold mb-4" data-i18n="auth-signin-title">Se connecter</h1>
+                <p class="text-sm text-gray-500 mb-6" data-i18n="auth-signin-desc">Continue ton apprentissage</p>
+                <input type="email" id="login-email" placeholder="Email" data-i18n="auth-email-placeholder" required />
+                <input type="password" id="login-password" placeholder="Mot de passe" data-i18n="auth-pass-placeholder" required />
+                <a href="#" class="text-sm text-gray-400 mt-2 mb-4 hover:text-purple-600 transition" data-i18n="auth-forgot-pass">Mot de passe oublié
                     ?</a>
-                <button type="submit" class="btn-auth">Connexion</button>
-                <div class="mobile-toggle" onclick="container.classList.add('right-panel-active')">
+                <button type="submit" class="btn-auth" data-i18n="auth-btn-signin">Connexion</button>
+                <div class="mobile-toggle" onclick="container.classList.add('right-panel-active')" data-i18n="auth-no-account">
                     Pas encore de compte ? S'inscrire
                 </div>
             </form>
@@ -362,16 +389,16 @@
         <div class="overlay-container">
             <div class="overlay">
                 <div class="overlay-panel overlay-left">
-                    <h1 class="text-4xl font-bold mb-4">Heureux de vous revoir !</h1>
-                    <p class="mb-8 opacity-90">Pour rester connecté avec nous, veuillez vous connecter avec vos
+                    <h1 class="text-4xl font-bold mb-4" data-i18n="auth-welcome-back">Heureux de vous revoir !</h1>
+                    <p class="mb-8 opacity-90" data-i18n="auth-welcome-back-desc">Pour rester connecté avec nous, veuillez vous connecter avec vos
                         informations personnelles</p>
-                    <button class="btn-auth ghost" id="signIn">Se connecter</button>
+                    <button class="btn-auth ghost" id="signIn" data-i18n="auth-btn-signin">Se connecter</button>
                 </div>
                 <div class="overlay-panel overlay-right">
-                    <h1 class="text-4xl font-bold mb-4">Salut, l'ami !</h1>
-                    <p class="mb-8 opacity-90">Entrez vos coordonnées personnelles et commencez votre voyage avec nous
+                    <h1 class="text-4xl font-bold mb-4" data-i18n="auth-hello-friend">Salut, l'ami !</h1>
+                    <p class="mb-8 opacity-90" data-i18n="auth-hello-friend-desc">Entrez vos coordonnées personnelles et commencez votre voyage avec nous
                     </p>
-                    <button class="btn-auth ghost" id="signUp">S'inscrire</button>
+                    <button class="btn-auth ghost" id="signUp" data-i18n="auth-btn-signup">S'inscrire</button>
                 </div>
             </div>
         </div>
@@ -396,8 +423,7 @@
         function showMessage(msg, type = 'success') {
             const container = document.getElementById('messageContainer');
             container.textContent = msg;
-            container.className = `fixed top-20 right-20 z-[1000] padding-15-25 border-radius-15 shadow-lg transform transition-transform duration-400 ${type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                } show`;
+            container.className = `${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white shadow-xl show`;
             container.classList.remove('hidden');
             setTimeout(() => {
                 container.classList.remove('show');
@@ -519,6 +545,11 @@
                 document.getElementById('reg-path').value = pathMap[pathParam];
                 container.classList.add("right-panel-active");
             }
+        }
+
+        // Init Lucide
+        if (window.lucide) {
+            window.lucide.createIcons();
         }
     </script>
 </body>

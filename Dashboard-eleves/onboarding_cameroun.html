@@ -12,6 +12,7 @@
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/secrets.js"></script>
+    <script src="../js/i18n.js"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -427,7 +428,7 @@
     <div class="onboarding-wrapper">
         <div class="onboarding-container">
             <div class="onboarding-header">
-                <h1>Configuration du profil</h1>
+                <h1 data-i18n="onboarding-title">Configuration du profil</h1>
                 <div class="stepper">
                     <div class="step-dot active" id="dot1"></div>
                     <div class="step-dot" id="dot2"></div>
@@ -439,31 +440,31 @@
             <div class="content">
                 <!-- ÉTAPE 1: Identité & Section -->
                 <div class="step active" id="step1">
-                    <h2 class="step-title">Bienvenue ! Qui êtes-vous ?</h2>
-                    <p class="step-subtitle">Commençons par faire connaissance pour personnaliser votre espace.</p>
+                    <h2 class="step-title" data-i18n="onboarding-step1-title">Bienvenue ! Qui êtes-vous ?</h2>
+                    <p class="step-subtitle" data-i18n="onboarding-step1-desc">Commençons par faire connaissance pour personnaliser votre espace.</p>
 
                     <div class="input-group">
-                        <label class="input-label">Votre nom complet</label>
+                        <label class="input-label" data-i18n="onboarding-name-label">Votre nom complet</label>
                         <input type="text" id="userName" class="input-field" placeholder="Ex: Jean-Paul Mbongo"
                             oninput="validateStep1()">
                     </div>
 
-                    <h2 class="step-title" style="font-size: 1.2rem; margin-top: 2rem;">Quelle est votre section ?</h2>
-                    <p class="step-subtitle" style="margin-bottom: 1rem;">Sélectionnez votre système éducatif.</p>
+                    <h2 class="step-title" style="font-size: 1.2rem; margin-top: 2rem;" data-i18n="onboarding-section-title">Quelle est votre section ?</h2>
+                    <p class="step-subtitle" style="margin-bottom: 1rem;" data-i18n="onboarding-section-desc">Sélectionnez votre système éducatif.</p>
 
                     <div class="section-choice">
                         <div class="choice-card" data-section="francophone" onclick="selectSection('francophone')">
                             <div class="checkmark">✓</div>
                             <div class="flag">🇫🇷</div>
-                            <div class="title">Francophone</div>
-                            <div class="subtitle">Système français classique (6ème à la Terminale)</div>
+                            <div class="title" data-i18n="onboarding-fr-title">Francophone</div>
+                            <div class="subtitle" data-i18n="onboarding-fr-desc">Système français classique (6ème à la Terminale)</div>
                         </div>
 
                         <div class="choice-card" data-section="anglophone" onclick="selectSection('anglophone')">
                             <div class="checkmark">✓</div>
                             <div class="flag">🇬🇧</div>
-                            <div class="title">Anglophone</div>
-                            <div class="subtitle">British System (Form 1 to Upper Sixth)</div>
+                            <div class="title" data-i18n="onboarding-en-title">Anglophone</div>
+                            <div class="subtitle" data-i18n="onboarding-en-desc">British System (Form 1 to Upper Sixth)</div>
                         </div>
                     </div>
 
@@ -473,7 +474,7 @@
                     </div>
 
                     <div class="btn-row">
-                        <button class="btn btn-primary" id="btn-step1" onclick="nextStep(1)" disabled>
+                        <button class="btn btn-primary" id="btn-step1" onclick="nextStep(1)" disabled data-i18n="onboarding-btn-continue">
                             Continuer
                         </button>
                     </div>

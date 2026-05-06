@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-tab-title">Dashboard Professeur — KMERSCHOOL</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="secrets.js"></script>
@@ -359,8 +359,17 @@
             padding: 1.75rem
         }
 
+        /* Animations des sections */
         .sec {
-            display: none
+            display: none;
+            animation: fadeIn .4s ease-out forwards;
+            position: relative;
+            z-index: 1
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .sec.active {
@@ -1115,9 +1124,13 @@
                 <span class="ni-ico"><i data-lucide="code-2" class="w-4 h-4"></i></span>
                 <span data-i18n="ni_exos">Mes Exercices</span>
             </div>
-            <div class="ni" onclick="go('proposer-exercice')">
-                <span class="ni-ico"><i data-lucide="plus-circle" class="w-4 h-4"></i></span>
-                <span data-i18n="ni_prop_exo">Proposer un exo</span>
+            <div class="ni" onclick="go('proposer-exercice-simple')">
+                <span class="ni-ico"><i data-lucide="help-circle" class="w-4 h-4"></i></span>
+                <span data-i18n="ni_prop_exo_simple">Exercice Simple</span>
+            </div>
+            <div class="ni" onclick="go('proposer-exercice-code')">
+                <span class="ni-ico"><i data-lucide="terminal" class="w-4 h-4"></i></span>
+                <span data-i18n="ni_prop_exo_code">Exercice Code (TI)</span>
             </div>
 
             <div class="sb-sec" id="lbl-sec-comm" data-i18n="nav_sec_community">Communauté</div>
@@ -1165,10 +1178,6 @@
                     <button class="btn btn-g relative">
                         <i data-lucide="bell" class="w-4 h-4"></i>
                         <span class="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                    </button>
-                    <button class="btn btn-p hidden sm:flex items-center gap-2" onclick="go('proposer-cours')">
-                        <i data-lucide="plus" class="w-4 h-4"></i>
-                        <span data-t="btn_new_course">Proposer un cours</span>
                     </button>
                 </div>
             </header>
@@ -1317,10 +1326,6 @@
                                     </select>
                                 </div>
                             </div>
-                                        <option value="video" data-i18n-opt="type_video">🎥 Vidéo</option>
-                                    </select>
-                                </div>
-                            </div>
                             <div class="g2">
                                 <div class="fd"><label data-i18n="field_duration">Durée (min)</label><input
                                         type="number" id="c-dur" placeholder="45" min="5"></div>
@@ -1370,12 +1375,21 @@
                 <!-- ══ MES EXERCICES ══ -->
                 <div id="sec-mes-exercices" class="sec">
                     <div class="gl">
-                        <div class="gh">
-                            <div class="gtitle" data-i18n="my_exercises_title">Mes Exercices Code</div><button
-                                class="btn btn-p" onclick="go('proposer-exercice')" data-i18n="btn_new_exercise">+
-                                Nouveau</button>
+                        <div class="gh" style="border-bottom: none; margin-bottom: 0;">
+                            <div>
+                                <div class="gtitle" data-i18n="my_exercises_title">Mes Exercices</div>
+                                <p style="font-size: 0.8rem; color: var(--mu); margin-top: 2px;">Tous vos exercices (Simples et Code) enregistrés.</p>
+                            </div>
+                            <div style="display:flex; gap:0.5rem">
+                                <button class="btn btn-g" onclick="go('proposer-exercice-simple')" style="font-size:0.75rem">
+                                    + Simple
+                                </button>
+                                <button class="btn btn-p" onclick="go('proposer-exercice-code')" style="font-size:0.75rem">
+                                    + Code (TI)
+                                </button>
+                            </div>
                         </div>
-                        <div id="xl-wrap">
+                        <div id="xl-wrap" class="mt-4">
                             <div class="emp">
                                 <div class="emp-ico">⏳</div>
                                 <h4 data-i18n="loading">Chargement…</h4>
@@ -1384,21 +1398,30 @@
                     </div>
                 </div>
 
-                <!-- ══ PROPOSER EXERCICE ══ -->
-                <div id="sec-proposer-exercice" class="sec">
-                    <div class="gl" style="max-width:900px">
-                        <div class="gh">
-                            <div class="gtitle" id="xf-title" data-i18n="propose_exercise_title">💻 Proposer un exercice
-                                de code</div>
+                <!-- ══ PROPOSER EXERCICE CODE (TI) ══ -->
+                <div id="sec-proposer-exercice-code" class="sec">
+                    <div class="gl" style="max-width:1000px; margin: 0 auto;">
+                        <div class="gh" style="border-bottom: none; margin-bottom: 1.5rem;">
+                            <div>
+                                <div class="gtitle" id="xf-title" data-i18n="propose_exercise_title">💻 Proposer un exercice de code</div>
+                                <p style="font-size: 0.8rem; color: var(--mu); margin-top: 2px;">Créez un nouvel exercice technique (Algorithmique, Python, JS...).</p>
+                                <div style="margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.8rem; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.1); border-radius: 0.5rem; font-size: 0.75rem; color: var(--am);">
+                                    <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+                                    <span>Rappel : Ces exercices concernent les programmes de <b>TI (Technologies de l'Information)</b>.</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="gb">
+                        <div class="gb" style="background: rgba(255,255,255,0.4); backdrop-filter: blur(10px); border-radius: 1.25rem; padding: 2rem; border: 1px solid var(--border);">
                             <div id="al-exo" class="al"></div>
                             <div class="g2">
-                                <div class="fd"><label data-i18n="field_title">Titre *</label><input type="text"
-                                        id="x-tit"></div>
-                                <div class="fd"><label data-i18n="field_language">Langage *</label>
-                                    <select id="x-lang" onchange="syncLang()">
-                                        <option value="">…</option>
+                                <div class="fd">
+                                    <label data-i18n="field_title">Titre du défi *</label>
+                                    <input type="text" id="x-tit" placeholder="Ex: Algorithme de tri rapide">
+                                </div>
+                                <div class="fd">
+                                    <label data-i18n="field_language">Langage de programmation *</label>
+                                    <select id="x-lang" onchange="syncLang()" style="height: 45px;">
+                                        <option value="">Sélectionner un langage…</option>
                                         <option value="javascript">JavaScript</option>
                                         <option value="python">Python</option>
                                         <option value="html">HTML</option>
@@ -1452,6 +1475,73 @@
                                     Réinitialiser</button>
                                 <button class="btn btn-p" id="btn-exo" onclick="saveExo()"><span
                                         data-i18n="btn_submit_exercise">📤 Soumettre l'exercice</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ PROPOSER EXERCICE SIMPLE (QCM, etc.) ══ -->
+                <div id="sec-proposer-exercice-simple" class="sec">
+                    <div class="gl" style="max-width:900px; margin: 0 auto;">
+                        <div class="gh" style="border-bottom: none; margin-bottom: 1.5rem;">
+                            <div>
+                                <div class="gtitle" data-i18n="ni_prop_exo_simple">📝 Proposer un exercice simple</div>
+                                <p style="font-size: 0.8rem; color: var(--mu); margin-top: 2px;" data-i18n="propose_simple_exo_desc">Créez des exercices pédagogiques (QCM, Ouvert...) liés à un cours.</p>
+                            </div>
+                        </div>
+                        <div class="gb" style="background: rgba(255,255,255,0.4); backdrop-filter: blur(10px); border-radius: 1.25rem; padding: 2rem; border: 1px solid var(--border);">
+                            <div id="al-exs" class="al"></div>
+                            
+                            <div class="fd">
+                                <label data-i18n="field_exercise_title">Titre de l'exercice *</label>
+                                <input type="text" id="xs-tit" placeholder="Ex: Quiz sur les fonctions linéaires">
+                            </div>
+
+                            <div class="g2">
+                                <div class="fd"><label data-i18n="field_course">Cours associé *</label>
+                                    <select id="xs-cours">
+                                        <option value="">—</option>
+                                    </select>
+                                </div>
+                                <div class="fd"><label data-i18n="field_class">Classe *</label>
+                                    <select id="xs-niv" onchange="loadSeries('xs-niv','xs-ser-wrap','xs-ser')">
+                                        <option value="" data-i18n-opt="select_placeholder">Sélectionner…</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="g2">
+                                <div class="fd" id="xs-ser-wrap" style="display:none"><label data-i18n="field_series">Série/Spécialité</label>
+                                    <select id="xs-ser">
+                                        <option value="">—</option>
+                                    </select>
+                                </div>
+                                <div class="fd"><label data-i18n="field_difficulty">Difficulté</label>
+                                    <select id="xs-diff">
+                                        <option value="facile">🟢 Facile</option>
+                                        <option value="moyen" selected>🟡 Moyen</option>
+                                        <option value="difficile">🔴 Difficile</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="sep"></div>
+                            
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+                                <div style="font-weight:700;font-size:.85rem;color:var(--txt)">Questions <span id="qsc-count" style="color:var(--mu)">(0)</span></div>
+                                <div style="display:flex;gap:.4rem">
+                                    <button class="btn btn-g" style="font-size:.7rem" onclick="addQ('qcm_unique', 'qss', 'qbox-simple', 'qsc-count')">+ QCM</button>
+                                    <button class="btn btn-g" style="font-size:.7rem" onclick="addQ('vrai_faux', 'qss', 'qbox-simple', 'qsc-count')">+ Vrai/Faux</button>
+                                    <button class="btn btn-g" style="font-size:.7rem" onclick="addQ('texte_long', 'qss', 'qbox-simple', 'qsc-count')">+ Ouverte</button>
+                                </div>
+                            </div>
+                            
+                            <div id="qbox-simple"></div>
+
+                            <div class="sep"></div>
+                            <div style="display:flex;gap:.7rem;justify-content:flex-end">
+                                <button class="btn btn-g" onclick="resetExoSimple()" data-i18n="btn_reset">🔄 Réinitialiser</button>
+                                <button class="btn btn-p" id="btn-save-exs" onclick="saveExoSimple()" data-i18n="btn_save_simple_exo">💾 Enregistrer l'exercice</button>
                             </div>
                         </div>
                     </div>
@@ -1703,7 +1793,7 @@
                                     </select>
                                 </div>
                                 <div class="sep"></div>
-                                <p style="font-size:.8rem;color:var(--mu);margin-bottom:1.5rem" data-i18n="subsystems_readonly">
+                                <p style="font-size:.8rem;color:var(--mu);margin-bottom:1.5rem" data-i18n="settings_hint">
                                     Les informations critiques comme vos sections d'enseignement sont modifiables uniquement par l'administrateur pour garantir la cohérence des données.
                                 </p>
                             </div>
@@ -1744,7 +1834,7 @@
 
         let prof = null, uid = null
         let imgUrl = null, pdfUrl = null
-        let qs = [], editEpId = null, tests = [], editCId = null, editXId = null
+        let qs = [], qss = [], editEpId = null, tests = [], editCId = null, editXId = null, editXsId = null
         let specialites = [], matieresCache = []
         let niveauxCache = []   // niveaux accessibles au prof courant
         let LANG = 'fr'         // langue courante
@@ -1769,6 +1859,10 @@
                 ni_dash: 'Tableau de bord', ni_cours: 'Mes Cours', ni_prop_cours: 'Proposer un cours',
                 ni_exos: 'Mes Exercices', ni_prop_exo: 'Proposer un exo', ni_forum: 'Forum & Aide',
                 ni_profile: 'Mon Profil', ni_settings: 'Paramètres',
+                ni_prop_exo_simple: "Exercice Simple", ni_prop_exo_code: "Exercice Code (TI)",
+                field_exercise_title: "Titre de l'exercice",
+                btn_save_simple_exo: "💾 Enregistrer l'exercice",
+                propose_simple_exo_desc: "Créez des exercices pédagogiques (QCM, Ouvert...) liés à un cours.",
                 /* Statuts & Labels */
                 status_active: 'Compte actif', btn_logout: '🚪 Déconnexion',
                 /* Topbar */
@@ -1801,6 +1895,7 @@
                 security_title: 'Sécurité & Accès', field_new_password: 'Nouveau mot de passe',
                 field_confirm_password: 'Confirmer', btn_change_password: '🔐 Modifier le mot de passe',
                 settings_title: 'Paramètres du compte',
+                settings_hint: 'Les informations critiques comme vos sections d\'enseignement sont modifiables uniquement par l\'administrateur pour garantir la cohérence des données.',
                 /* Champs formulaires */
                 field_subject: 'Matière *', field_chapter: 'Chapitre *', field_title: 'Titre *',
                 field_class: 'Classe *', field_specialty: 'Spécialité', field_content_type: 'Type de contenu',
@@ -1834,7 +1929,9 @@
                 badge_published: '✅ Publié', badge_pending: '⏳ En révision',
                 badge_draft_s: '📝 Brouillon', badge_submitted: '⏳ Soumis',
                 badge_in_review: '🔍 En révision', badge_validated: '✅ Validé', badge_rejected: '❌ Rejeté',
-                badge_en: '🇬🇧 Anglophone', badge_fr: '🇫🇷 Francophone', badge_bi: '🌍 Bilingue',
+                badge_en: '🇬🇧 Anglophone', badge_fr: '🇫🇷 Francophone', badge_bi: '🌍 Bilingual',
+                badge_easy: '🟢 Easy', badge_medium: '🟡 Medium', badge_hard: '🔴 Hard',
+                pay_paid: 'Paid', pay_pending: 'Pending', pay_failed: 'Failed',
                 /* Messages */
                 msg_course_submitted: '✅ Cours soumis ! L\'admin le publiera après vérification.',
                 msg_course_updated: '✅ Cours mis à jour — en attente de publication.',
@@ -1867,6 +1964,11 @@
                 ni_dash: 'Dashboard', ni_cours: 'My Courses', ni_prop_cours: 'Submit a Course',
                 ni_exos: 'My Exercises', ni_prop_exo: 'Submit an Exo', ni_forum: 'Forum & Help',
                 ni_profile: 'My Profile', ni_settings: 'Settings',
+                ni_prop_exo_simple: "Simple Exercise", ni_prop_exo_code: "Code Exercise (TI)",
+                field_exercise_title: "Exercise Title",
+                field_course: "Associated Course",
+                btn_save_simple_exo: "💾 Save Exercise",
+                propose_simple_exo_desc: "Create pedagogical exercises (MCQ, Open...) linked to a course.",
                 /* Statuts & Labels */
                 status_active: 'Account active', btn_logout: '🚪 Log out',
                 /* Topbar */
@@ -1899,6 +2001,7 @@
                 security_title: 'Security & Access', field_new_password: 'New password',
                 field_confirm_password: 'Confirm', btn_change_password: '🔐 Change password',
                 settings_title: 'Account Settings',
+                settings_hint: 'Critical information such as your teaching sub-systems can only be modified by the administrator to ensure data consistency.',
                 /* Champs formulaires */
                 field_subject: 'Subject *', field_specialty: 'Specialty *', field_chapter: 'Chapter *', field_title: 'Title *',
                 field_class: 'Class *', field_series: 'Series/Stream', field_content_type: 'Content type',
@@ -1933,6 +2036,8 @@
                 badge_draft_s: '📝 Draft', badge_submitted: '⏳ Submitted',
                 badge_in_review: '🔍 Under review', badge_validated: '✅ Validated', badge_rejected: '❌ Rejected',
                 badge_en: '🇬🇧 Anglophone', badge_fr: '🇫🇷 Francophone', badge_bi: '🌍 Bilingual',
+                badge_easy: '🟢 Easy', badge_medium: '🟡 Medium', badge_hard: '🔴 Hard',
+                pay_paid: 'Paid', pay_pending: 'Pending', pay_failed: 'Failed',
                 /* Messages */
                 msg_course_submitted: '✅ Course submitted! The admin will publish it after review.',
                 msg_course_updated: '✅ Course updated — awaiting publication.',
@@ -1969,6 +2074,12 @@
                 if (t[key] !== undefined) el.textContent = t[key]
             })
 
+            // Éléments data-i18n-opt (pour les select options)
+            document.querySelectorAll('[data-i18n-opt]').forEach(el => {
+                const key = el.getAttribute('data-i18n-opt')
+                if (t[key] !== undefined) el.textContent = t[key]
+            })
+
             // Placeholder de l'éditeur de contenu
             const ec = document.getElementById('c-cont')
             if (ec) ec.setAttribute('data-ph', lang === 'en' ? 'Write the full course content here…' : 'Rédigez le contenu du cours ici…')
@@ -1976,6 +2087,12 @@
             // Placeholder des exercices
             const xDesc = document.getElementById('x-desc')
             if (xDesc) xDesc.placeholder = lang === 'en' ? 'Clearly describe what the student must implement…' : 'Décrivez clairement ce que l\'étudiant doit implémenter…'
+
+            const xInit = document.getElementById('x-init')
+            if (xInit) xInit.placeholder = lang === 'en' ? '// Optional: starter code for the student' : '// Optionnel : code de départ pour l\'étudiant'
+
+            const xSol = document.getElementById('x-sol')
+            if (xSol) xSol.placeholder = lang === 'en' ? '// Write the correct solution here' : '// Rédigez la solution correcte ici'
 
             // Placeholder spécialités
             const tagInput = document.getElementById('tag-input')
@@ -2152,12 +2269,12 @@
         // ════════════════════════════════════════════════════════════
         const PAGE_TITLES_KEY = {
             'dashboard': 'nav_dashboard', 'mes-cours': 'my_courses_title', 'proposer-cours': 'propose_course_title',
-            'mes-exercices': 'my_exercises_title', 'proposer-exercice': 'propose_exercise_title',
+            'mes-exercices': 'my_exercises_title', 'proposer-exercice-simple': 'ni_prop_exo_simple', 'proposer-exercice-code': 'ni_prop_exo_code',
             'mes-epreuves': 'my_exams_title', 'soumettre': 'submit_exam_title',
-            'paiements': 'payments_title', 'profil': 'edit_profile', 'settings': 'nav_settings', 'forum': 'ni_forum'
+            'paiements': 'payments_title', 'profil': 'edit_profile', 'settings': 'settings_title', 'forum': 'ni_forum'
         }
 
-        function go(section, pushToHistory = true) {
+        async function go(section, pushToHistory = true) {
             
             if (pushToHistory) {
                 history.pushState({ section }, t(PAGE_TITLES_KEY[section] || 'nav_dashboard'), "#" + section);
@@ -2169,6 +2286,9 @@
             if (nav) nav.classList.add('active')
             const sec = document.getElementById(`sec-${section}`)
             if (sec) sec.classList.add('active')
+            
+            // Remonter en haut de la page
+            window.scrollTo(0, 0)
             
             // Fermer la sidebar sur mobile après clic
             document.querySelector('.sidebar').classList.remove('active')
@@ -2185,6 +2305,21 @@
             if (section === 'mes-epreuves') loadEp()
             if (section === 'paiements') loadPay()
             if (section === 'profil' || section === 'settings') loadProfil()
+
+            if (section === 'proposer-exercice-simple') {
+                qss = []
+                document.getElementById('qbox-simple').innerHTML = ''
+                document.getElementById('qsc-count').textContent = '(0)'
+                document.getElementById('xs-tit').value = ''
+                document.getElementById('xs-niv').value = ''
+                document.getElementById('xs-ser-wrap').style.display = 'none'
+                
+                // Charger les cours du prof pour le sélecteur
+                const { data: mc } = await sb.from('cours').select('id, titre').eq('soumis_par', uid).order('titre')
+                const sel = document.getElementById('xs-cours')
+                sel.innerHTML = '<option value="">—</option>'
+                if (mc) mc.forEach(c => sel.innerHTML += `<option value="${c.id}">${c.titre}</option>`)
+            }
         }
 
         window.addEventListener('popstate', (e) => {
@@ -2201,43 +2336,27 @@
         // ════════════════════════════════════════════════════════════
         async function loadNiveauxForProf() {
             try {
-                // Essayer l'appel RPC avec le prof_id si ça a été défini ainsi dans Supabase, 
-                // sinon un appel simple. On attrapera l'erreur 400 pour le fallback en toute sécurité.
                 let data = null, error = null;
-                try {
-                    const rpcRes = await sb.rpc('get_niveaux_for_prof', { p_prof_id: uid })
-                    data = rpcRes.data
-                    error = rpcRes.error
-                    if (error) {
-                        const rpcRes2 = await sb.rpc('get_niveaux_for_prof')
-                        data = rpcRes2.data
-                        error = rpcRes2.error
-                    }
-                } catch(err) {
-                    error = err
+                // On tente l'RPC uniquement si on est sûr que la fonction pourrait exister
+                // Sinon on passe directement au fallback pour éviter les 404/400 console
+                const ss = prof.sous_systemes || []
+                
+                // Fallback direct si pas de SS défini ou pour être plus propre
+                const { data: allSS } = await sb.from('sous_systemes').select('id,code')
+                const filteredSS = allSS?.filter(s => ss.includes(s.code) || ss.length === 0).map(s => s.id) || []
+                
+                let query = sb.from('niveaux_scolaires')
+                    .select('id,code,nom_fr,nom_en,nom_court,est_classe_examen,type_examen,cycles!inner(sous_systeme_id)')
+                    .order('ordre')
+                    
+                if (filteredSS.length > 0) {
+                    query = query.in('cycles.sous_systeme_id', filteredSS)
                 }
-
-                if (!error && data?.length) {
-                    niveauxCache = data
-                } else {
-                    console.warn('RPC get_niveaux_for_prof non disponible ou vide, fallback activé.')
-                    const ss = prof.sous_systemes || []
-                    const { data: allSS } = await sb.from('sous_systemes').select('id,code')
-                    const filteredSS = allSS?.filter(s => ss.includes(s.code) || ss.length === 0).map(s => s.id) || []
-                    
-                    let query = sb.from('niveaux_scolaires')
-                        .select('id,code,nom_fr,nom_en,nom_court,est_classe_examen,type_examen,cycles!inner(sous_systeme_id)')
-                        .order('ordre')
-                        
-                    if (filteredSS.length > 0) {
-                        query = query.in('cycles.sous_systeme_id', filteredSS)
-                    }
-                    
-                    const { data: niv, error: errNiv } = await query
-                    
-                    if (errNiv) throw errNiv
-                    niveauxCache = niv || []
-                }
+                
+                const { data: niv, error: errNiv } = await query
+                if (errNiv) throw errNiv
+                niveauxCache = niv || []
+                
                 populateNiveauSelects()
                 populateSpecialiteSelects()
             } catch (e) {
@@ -2306,13 +2425,14 @@
         //  DASHBOARD
         // ════════════════════════════════════════════════════════════
         async function loadDash() {
-            const [{ count: nc }, { count: nx }, epR] = await Promise.all([
+            const [{ count: nc }, { count: nx1 }, { data: exS }, epR] = await Promise.all([
                 sb.from('cours').select('*', { count: 'exact', head: true }).eq('soumis_par', uid),
                 sb.from('exercices_code').select('*', { count: 'exact', head: true }).eq('soumis_par', uid),
+                sb.from('exercices').select('id, cours!inner(soumis_par)').eq('cours.soumis_par', uid),
                 sb.from('soumissions_epreuves').select('statut').eq('prof_id', uid)
             ])
             document.getElementById('st-c').textContent = nc ?? 0
-            document.getElementById('st-x').textContent = nx ?? 0
+            document.getElementById('st-x').textContent = (nx1 ?? 0) + (exS?.length ?? 0)
             document.getElementById('st-v').textContent = epR.data?.filter(e => e.statut === 'valide').length ?? 0
             document.getElementById('st-g').textContent = parseFloat(prof.gains_total ?? 0).toLocaleString('fr-FR')
             document.getElementById('perf-taux').textContent = (prof.taux_acceptation ?? 0) + '%'
@@ -2320,15 +2440,21 @@
             document.getElementById('perf-attente').textContent = parseFloat(prof.gains_en_attente ?? 0).toLocaleString('fr-FR') + ' XAF'
             document.getElementById('perf-verses').textContent = parseFloat(prof.gains_verses ?? 0).toLocaleString('fr-FR') + ' XAF'
 
-            const [{ data: cours }, { data: eps }, { data: exos }] = await Promise.all([
+            const [{ data: cours }, { data: eps }, { data: exosCode }, { data: exosSimple }] = await Promise.all([
                 sb.from('cours').select('titre,matiere,est_publie').eq('soumis_par', uid).order('created_at', { ascending: false }).limit(5),
                 sb.from('soumissions_epreuves').select('titre,statut').eq('prof_id', uid).order('created_at', { ascending: false }).limit(5),
-                sb.from('exercices_code').select('titre,langage,difficulte,est_actif').eq('soumis_par', uid).order('created_at', { ascending: false }).limit(5)
+                sb.from('exercices_code').select('titre,langage,difficulte,est_actif').eq('soumis_par', uid).order('created_at', { ascending: false }).limit(5),
+                sb.from('exercices').select('titre,consigne,difficulte,est_publie, cours!inner(soumis_par)').eq('cours.soumis_par', uid).order('created_at', { ascending: false }).limit(5)
             ])
+
+            const allExos = [
+                ...(exosCode || []).map(x => ({ ...x, _t: 'code' })),
+                ...(exosSimple || []).map(x => ({ ...x, titre: x.titre || x.consigne, langage: 'Simple', est_actif: x.est_publie, _t: 'simple' }))
+            ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5)
 
             mini('d-cours', cours ?? [], c => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div><div style="font-size:.83rem;font-weight:600;color:var(--txt)">${c.titre}</div><div style="font-size:.7rem;color:var(--mu)">${c.matiere}</div></div>${c.est_publie ? `<span class="badge bok">${t('badge_published')}</span>` : `<span class="badge bwt">${t('badge_pending')}</span>`}</div>`, '📚', t('stat_courses'))
             mini('d-ep', eps ?? [], e => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div style="font-size:.83rem;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)">${e.titre}</div>${bep(e.statut)}</div>`, '📝', t('stat_validated'))
-            mini('d-ex', exos ?? [], x => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div><div style="font-size:.83rem;font-weight:600;color:var(--txt)">${x.titre}</div><span style="font-size:.7rem;color:var(--mu)">${x.langage} · ${x.difficulte}</span></div>${x.est_actif ? `<span class="badge bok">${t('badge_published')}</span>` : `<span class="badge bwt">${t('badge_pending')}</span>`}</div>`, '💻', t('stat_exercises'))
+            mini('d-ex', allExos, x => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div><div style="font-size:.83rem;font-weight:600;color:var(--txt)">${x.titre}</div><span style="font-size:.7rem;color:var(--mu)">${x.langage} · ${x.difficulte}</span></div>${x.est_actif ? `<span class="badge bok">${t('badge_published')}</span>` : `<span class="badge bwt">${t('badge_pending')}</span>`}</div>`, '💻', t('stat_exercises'))
         }
 
         function mini(id, items, fn, ico, empty) {
@@ -2495,16 +2621,153 @@
         async function loadExos() {
             const w = document.getElementById('xl-wrap')
             try {
-                const { data, error } = await sb.from('exercices_code').select('id,titre,langage,difficulte,points_recompense,est_actif,created_at').eq('soumis_par', uid).order('created_at', { ascending: false })
-                if (error) throw error
-                if (!data?.length) { w.innerHTML = `<div class="emp"><div class="emp-ico">💻</div><h4>${t('my_exercises_title')}</h4></div>`; return }
+                // Charger les deux types d'exercices en parallèle
+                const [{ data: codeExos, error: err1 }, { data: simpleExos, error: err2 }] = await Promise.all([
+                    sb.from('exercices_code').select('id,titre,langage,difficulte,points_recompense,est_actif,created_at').eq('soumis_par', uid).order('created_at', { ascending: false }),
+                    sb.from('exercices').select('id,titre,consigne,type_exercice,difficulte,points,est_publie,created_at, cours!inner(soumis_par)').eq('cours.soumis_par', uid).order('created_at', { ascending: false })
+                ])
+                
+                if (err1) throw err1
+                if (err2) throw err2
+
+                const allExos = [
+                    ...(codeExos || []).map(x => ({ ...x, _type: 'code' })),
+                    ...(simpleExos || []).map(x => ({ ...x, _type: 'simple', points_recompense: x.points, est_actif: x.est_publie, titre: x.titre || x.consigne }))
+                ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+
+                if (!allExos.length) { w.innerHTML = `<div class="emp"><div class="emp-ico">💻</div><h4>${t('my_exercises_title')}</h4></div>`; return }
+                
                 const pub = t('badge_published'), pend = t('badge_pending')
-                const diffs = { 'facile': t('diff_easy'), 'moyen': t('diff_medium'), 'difficile': t('diff_hard') }
-                w.innerHTML = `<table><tr><th>${t('field_title')}</th><th>${t('field_language')}</th><th>${t('field_difficulty')}</th><th>XP</th><th>Statut</th><th></th></tr>${data.map(x => `<tr><td style="font-weight:600;color:var(--txt)">${x.titre}</td><td><span style="font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:.18rem .48rem;background:rgba(79,70,229,.08);color:var(--ind);border-radius:.32rem">${x.langage}</span></td><td>${dbadge(x.difficulte)}</td><td style="color:var(--am)">${x.points_recompense} XP</td><td>${x.est_actif ? `<span class="badge bok">${pub}</span>` : `<span class="badge bwt">${pend}</span>`}</td><td>${!x.est_actif ? `<button onclick="loadEditExo(${x.id})" style="padding:.28rem .55rem;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);color:var(--ind);border-radius:.38rem;cursor:pointer;font-size:.73rem">✏️</button>` : ''}</td></tr>`).join('')}</table>`
+                const dmap = { 'facile': 'badge_easy', 'moyen': 'badge_medium', 'difficile': 'badge_hard' }
+                
+                w.innerHTML = `<table>
+                    <tr><th>${t('field_title')}</th><th>Type</th><th>Détails</th><th>XP</th><th>Statut</th><th></th></tr>
+                    ${allExos.map(x => `
+                        <tr>
+                            <td style="font-weight:600;color:var(--txt)">${x.titre}</td>
+                            <td><span class="badge ${x._type === 'code' ? 'bbl' : 'bor'}">${x._type === 'code' ? 'CODE (TI)' : 'SIMPLE'}</span></td>
+                            <td>
+                                ${x._type === 'code' ? `<span style="font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:.18rem .48rem;background:rgba(79,70,229,.08);color:var(--ind);border-radius:.32rem">${x.langage}</span>` : `<span style="font-size:.73rem;color:var(--mu)">${x.type_exercice || 'Question'}</span>`}
+                            </td>
+                            <td style="color:var(--am)">${x.points_recompense} XP</td>
+                            <td>${x.est_actif ? `<span class="badge bok">${pub}</span>` : `<span class="badge bwt">${pend}</span>`}</td>
+                            <td>${!x.est_actif ? `<button onclick="loadEditExoGeneric('${x.id}', '${x._type}')" style="padding:.28rem .55rem;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);color:var(--ind);border-radius:.38rem;cursor:pointer;font-size:.73rem">✏️</button>` : ''}</td>
+                        </tr>`).join('')}
+                </table>`
             } catch (e) {
                 console.error(e)
                 w.innerHTML = `<div class="emp"><div class="emp-ico">⚠️</div><h4>Error</h4><p>${e.message}</p></div>`
             }
+        }
+
+        function loadEditExoGeneric(id, type) {
+            if (type === 'code') loadEditExo(id)
+            else loadEditExoSimple(id)
+        }
+
+        async function saveExoSimple() {
+            const tit = document.getElementById('xs-tit').value.trim()
+            const niv = document.getElementById('xs-niv').value
+            if (!tit || !niv) return shAl('al-exs', t('msg_required_fields'), 'err')
+            if (!qss.length) return shAl('al-exs', t('msg_add_question'), 'err')
+            
+            const btn = document.getElementById('btn-save-exs')
+            btn.disabled = true; btn.innerHTML = '<span class="spin spin-dark"></span>'
+            
+            try {
+                const cId = document.getElementById('xs-cours').value
+                if (!cId) throw new Error("Veuillez sélectionner un cours associé.")
+
+                const exData = {
+                    cours_id: parseInt(cId),
+                    titre: tit,
+                    consigne: tit,
+                    type_exercice: qss[0].type_question === 'qcm_unique' || qss[0].type_question === 'qcm_multiple' ? 'qcm' : 'libre',
+                    difficulte: document.getElementById('xs-diff').value,
+                    points: qss.reduce((s, q) => s + (q.points || 0), 0),
+                    est_publie: false,
+                    niveau_scolaire_id: niv,
+                    serie_id: document.getElementById('xs-ser')?.value || null
+                }
+                
+                let exId = editXsId, err
+                if (editXsId) { ({ error: err } = await sb.from('exercices').update(exData).eq('id', editXsId)) }
+                else { 
+                    const { data, error } = await sb.from('exercices').insert([exData]).select().single()
+                    err = error; exId = data?.id
+                }
+                if (err) throw err
+
+                // Sauvegarder les questions
+                // Pour simplifier, on supprime et on recréé (comme dans l'admin)
+                if (editXsId) {
+                    const { data: oldQs } = await sb.from('questions').select('id').eq('exercice_id', exId)
+                    if (oldQs?.length) {
+                        const qIds = oldQs.map(q => q.id)
+                        await sb.from('reponses').delete().in('question_id', qIds)
+                        await sb.from('questions').delete().eq('exercice_id', exId)
+                    }
+                }
+
+                for (let i = 0; i < qss.length; i++) {
+                    const q = qss[i]
+                    const { data: newQ, error: qErr } = await sb.from('questions').insert([{
+                        exercice_id: exId,
+                        question_texte: q.question_texte,
+                        type_question: q.type_question === 'qcm_unique' ? 'choix_unique' : (q.type_question === 'qcm_multiple' ? 'choix_multiple' : 'texte'),
+                        points: q.points,
+                        ordre: i + 1
+                    }]).select().single()
+                    
+                    if (qErr) throw qErr
+                    
+                    if (q.choix?.length) {
+                        const reps = q.choix.map((c, ci) => ({
+                            question_id: newQ.id,
+                            texte_reponse: c.texte,
+                            est_correcte: c.est_correct,
+                            ordre: ci + 1
+                        }))
+                        await sb.from('reponses').insert(reps)
+                    }
+                }
+
+                shAl('al-exs', t('msg_exercise_submitted'), 'ok')
+                editXsId = null; resetExoSimple(); loadDash()
+            } catch (e) {
+                console.error(e)
+                shAl('al-exs', e.message, 'err')
+            } finally {
+                btn.disabled = false; btn.innerHTML = t('btn_save_simple_exo')
+            }
+        }
+
+        function resetExoSimple() {
+            document.getElementById('xs-tit').value = ''
+            document.getElementById('xs-niv').value = ''
+            document.getElementById('xs-ser-wrap').style.display = 'none'
+            qss = []; renderQs('qss', 'qbox-simple', 'qsc-count')
+            editXsId = null
+        }
+
+        async function loadEditExoSimple(id) {
+            const { data, error } = await sb.from('exercices').select(`*, questions(*, reponses(*))`).eq('id', id).single()
+            if (!data) return
+            editXsId = id
+            document.getElementById('xs-tit').value = data.titre || ''
+            document.getElementById('xs-niv').value = data.niveau_scolaire_id || ''
+            document.getElementById('xs-diff').value = data.difficulte || 'moyen'
+            
+            qss = (data.questions || []).map(q => ({
+                id: q.id,
+                type_question: q.type_question === 'choix_unique' ? 'qcm_unique' : (q.type_question === 'choix_multiple' ? 'qcm_multiple' : 'texte_long'),
+                question_texte: q.question_texte,
+                points: q.points,
+                choix: (q.reponses || []).map(r => ({ texte: r.texte_reponse, est_correct: r.est_correcte }))
+            }))
+            
+            renderQs('qss', 'qbox-simple', 'qsc-count')
+            go('proposer-exercice-simple')
         }
 
         async function loadEditExo(id) {
@@ -2660,30 +2923,50 @@
         // ════════════════════════════════════════════════════════════
         //  QUESTION BUILDER
         // ════════════════════════════════════════════════════════════
-        function addQ(type) { qs.push({ id: Date.now(), type_question: type, question_texte: '', points: 1, choix: type !== 'texte_long' ? [{ texte: '', est_correct: false }, { texte: '', est_correct: false }] : [], explication: '' }); renderQs() }
-        function removeQ(i) { qs.splice(i, 1); renderQs() }
-        function addChoix(qi) { qs[qi].choix.push({ texte: '', est_correct: false }); renderQs() }
-        function removeChoix(qi, ci) { qs[qi].choix.splice(ci, 1); renderQs() }
+        function addQ(type, listName = 'qs', boxId = 'qbox', countId = 'qc') {
+            const targetList = listName === 'qs' ? qs : qss
+            targetList.push({ id: Date.now(), type_question: type, question_texte: '', points: 1, choix: type !== 'texte_long' ? [{ texte: '', est_correct: false }, { texte: '', est_correct: false }] : [], explication: '' })
+            renderQs(listName, boxId, countId)
+        }
+        function removeQ(i, listName = 'qs', boxId = 'qbox', countId = 'qc') {
+            const targetList = listName === 'qs' ? qs : qss
+            targetList.splice(i, 1)
+            renderQs(listName, boxId, countId)
+        }
+        function addChoix(qi, listName = 'qs', boxId = 'qbox', countId = 'qc') {
+            const targetList = listName === 'qs' ? qs : qss
+            targetList[qi].choix.push({ texte: '', est_correct: false })
+            renderQs(listName, boxId, countId)
+        }
+        function removeChoix(qi, ci, listName = 'qs', boxId = 'qbox', countId = 'qc') {
+            const targetList = listName === 'qs' ? qs : qss
+            targetList[qi].choix.splice(ci, 1)
+            renderQs(listName, boxId, countId)
+        }
 
         function lq(type) {
             const m = { fr: { qcm_unique: 'QCM unique', qcm_multiple: 'QCM multiple', vrai_faux: 'Vrai/Faux', texte_court: 'Réponse courte', texte_long: 'Question ouverte' }, en: { qcm_unique: 'MCQ single', qcm_multiple: 'MCQ multiple', vrai_faux: 'True/False', texte_court: 'Short answer', texte_long: 'Open question' } }
             return (m[LANG] || m.fr)[type] || type
         }
 
-        function renderQs() {
-            document.getElementById('qc').textContent = `(${qs.length})`
-            const c = document.getElementById('qbox')
-            if (!qs.length) { c.innerHTML = `<div class="emp" style="border:1.5px dashed var(--border);border-radius:.65rem;margin-bottom:.85rem"><div class="emp-ico">❓</div><h4>${LANG === 'en' ? 'No questions yet' : 'Aucune question'}</h4></div>`; return }
-            c.innerHTML = qs.map((q, i) => `<div style="background:var(--bg);border:1.5px solid var(--border);border-radius:.65rem;padding:.9rem;margin-bottom:.65rem">
+        function renderQs(listName = 'qs', boxId = 'qbox', countId = 'qc') {
+            const targetList = listName === 'qs' ? qs : qss
+            const countEl = document.getElementById(countId)
+            if (countEl) countEl.textContent = `(${targetList.length})`
+            
+            const c = document.getElementById(boxId)
+            if (!targetList.length) { c.innerHTML = `<div class="emp" style="border:1.5px dashed var(--border);border-radius:.65rem;margin-bottom:.85rem"><div class="emp-ico">❓</div><h4>${LANG === 'en' ? 'No questions yet' : 'Aucune question'}</h4></div>`; return }
+            
+            c.innerHTML = targetList.map((q, i) => `<div style="background:var(--bg);border:1.5px solid var(--border);border-radius:.65rem;padding:.9rem;margin-bottom:.65rem">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
       <span style="font-size:.7rem;font-weight:700;color:var(--ind);letter-spacing:.06em">Q${i + 1} — ${lq(q.type_question)}</span>
-      <button onclick="removeQ(${i})" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);color:var(--red);padding:.22rem .5rem;border-radius:.32rem;cursor:pointer;font-size:.75rem">✕</button>
+      <button onclick="removeQ(${i}, '${listName}', '${boxId}', '${countId}')" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);color:var(--red);padding:.22rem .5rem;border-radius:.32rem;cursor:pointer;font-size:.75rem">✕</button>
     </div>
     <div style="display:grid;grid-template-columns:1fr 65px;gap:.6rem;margin-bottom:.6rem">
-      <input type="text" value="${esc(q.question_texte)}" placeholder="${LANG === 'en' ? 'Question statement…' : 'Énoncé de la question…'}" oninput="qs[${i}].question_texte=this.value" style="padding:.52rem .82rem;background:var(--surface);border:1.5px solid var(--border);border-radius:.48rem;color:var(--txt);font-size:.84rem;outline:none">
-      <input type="number" value="${q.points}" min=".5" max="20" step=".5" oninput="qs[${i}].points=parseFloat(this.value)" style="padding:.52rem;background:var(--surface);border:1.5px solid var(--border);border-radius:.48rem;color:var(--am);font-size:.84rem;outline:none;text-align:center" title="${LANG === 'en' ? 'Points' : 'Points'}">
+      <input type="text" value="${esc(q.question_texte)}" placeholder="${LANG === 'en' ? 'Question statement…' : 'Énoncé de la question…'}" oninput="${listName}[${i}].question_texte=this.value" style="padding:.52rem .82rem;background:var(--surface);border:1.5px solid var(--border);border-radius:.48rem;color:var(--txt);font-size:.84rem;outline:none">
+      <input type="number" value="${q.points}" min=".5" max="20" step=".5" oninput="${listName}[${i}].points=parseFloat(this.value)" style="padding:.52rem;background:var(--surface);border:1.5px solid var(--border);border-radius:.48rem;color:var(--am);font-size:.84rem;outline:none;text-align:center" title="${LANG === 'en' ? 'Points' : 'Points'}">
     </div>
-    ${q.type_question !== 'texte_long' ? `<div style="margin-left:.4rem">${q.choix.map((ch, ci) => `<div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.3rem"><input type="${q.type_question === 'qcm_multiple' ? 'checkbox' : 'radio'}" name="r${i}" ${ch.est_correct ? 'checked' : ''} onchange="${q.type_question === 'qcm_multiple' ? `qs[${i}].choix[${ci}].est_correct=this.checked` : `qs[${i}].choix.forEach((c,k)=>c.est_correct=(k===${ci}))`}" style="accent-color:var(--em);flex-shrink:0"><input type="text" value="${esc(ch.texte)}" placeholder="${LANG === 'en' ? 'Choice' : 'Choix'} ${ci + 1}…" oninput="qs[${i}].choix[${ci}].texte=this.value" style="flex:1;padding:.38rem .7rem;background:var(--surface);border:1.5px solid var(--border);border-radius:.38rem;color:var(--txt);font-size:.78rem;outline:none">${q.choix.length > 2 ? `<button onclick="removeChoix(${i},${ci})" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:.95rem;padding:0 .2rem">×</button>` : ''}</div>`).join('')}<button onclick="addChoix(${i})" style="background:none;border:1px dashed rgba(79,70,229,.3);color:var(--ind);padding:.28rem .65rem;border-radius:.38rem;font-size:.73rem;cursor:pointer;margin-top:.2rem">+ ${LANG === 'en' ? 'Choice' : 'Choix'}</button></div>` : `<div style="padding:.45rem .72rem;background:var(--bg);border:1.5px solid var(--border);border-radius:.38rem;font-size:.76rem;color:var(--mu)">${LANG === 'en' ? 'Open answer — student types a free response' : 'Réponse libre — l\'élève répondra par texte'}</div>`}
+    ${q.type_question !== 'texte_long' ? `<div style="margin-left:.4rem">${q.choix.map((ch, ci) => `<div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.3rem"><input type="${q.type_question === 'qcm_multiple' ? 'checkbox' : 'radio'}" name="r${i}_${listName}" ${ch.est_correct ? 'checked' : ''} onchange="${q.type_question === 'qcm_multiple' ? `${listName}[${i}].choix[${ci}].est_correct=this.checked` : `${listName}[${i}].choix.forEach((c,k)=>c.est_correct=(k===${ci}))`}" style="accent-color:var(--em);flex-shrink:0"><input type="text" value="${esc(ch.texte)}" placeholder="${LANG === 'en' ? 'Choice' : 'Choix'} ${ci + 1}…" oninput="${listName}[${i}].choix[${ci}].texte=this.value" style="flex:1;padding:.38rem .7rem;background:var(--surface);border:1.5px solid var(--border);border-radius:.38rem;color:var(--txt);font-size:.78rem;outline:none">${q.choix.length > 2 ? `<button onclick="removeChoix(${i},${ci}, '${listName}', '${boxId}', '${countId}')" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:.95rem;padding:0 .2rem">×</button>` : ''}</div>`).join('')}<button onclick="addChoix(${i}, '${listName}', '${boxId}', '${countId}')" style="background:none;border:1px dashed rgba(79,70,229,.3);color:var(--ind);padding:.28rem .65rem;border-radius:.38rem;font-size:.73rem;cursor:pointer;margin-top:.2rem">+ ${LANG === 'en' ? 'Choice' : 'Choix'}</button></div>` : `<div style="padding:.45rem .72rem;background:var(--bg);border:1.5px solid var(--border);border-radius:.38rem;font-size:.76rem;color:var(--mu)">${LANG === 'en' ? 'Open answer — student types a free response' : 'Réponse libre — l\'élève répondra par texte'}</div>`}
   </div>`).join('')
         }
 
@@ -2708,40 +2991,46 @@
         //  PROFIL COMPLET
         // ════════════════════════════════════════════════════════════
         async function loadProfil() {
-            document.getElementById('p-pr').value = prof.prenom || ''
-            document.getElementById('p-no').value = prof.nom || ''
-            document.getElementById('p-ph').value = prof.telephone || ''
-            document.getElementById('p-et').value = prof.etablissement || ''
-            document.getElementById('p-ex').value = prof.annees_experience || 0
-            document.getElementById('p-bi').value = prof.bio || ''
-            document.getElementById('p-lang').value = LANG
+            const setV = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || '' }
+            const setT = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v || '' }
+
+            setV('p-pr', prof.prenom)
+            setV('p-no', prof.nom)
+            setV('p-ph', prof.telephone)
+            setV('p-et', prof.etablissement)
+            setV('p-ex', prof.annees_experience || 0)
+            setV('p-bi', prof.bio)
+            setV('p-lang', LANG)
 
             // Header profil
-            document.getElementById('prof-fullname').textContent = `${prof.prenom} ${prof.nom}`
-            document.getElementById('prof-email-disp').textContent = prof.email || ''
-            document.getElementById('prof-av-initials').textContent = (prof.prenom[0] + prof.nom[0]).toUpperCase()
-            document.getElementById('prof-stat-v').textContent = prof.epreuves_validees ?? '—'
-            document.getElementById('prof-stat-t').textContent = (prof.taux_acceptation ?? 0) + '%'
-            document.getElementById('prof-stat-g').textContent = parseFloat(prof.gains_total ?? 0).toLocaleString('fr-FR') + ' XAF'
+            setT('prof-fullname', `${prof.prenom} ${prof.nom}`)
+            setT('prof-email-disp', prof.email)
+            setT('prof-av-initials', (prof.prenom[0] + prof.nom[0]).toUpperCase())
+            setT('prof-stat-v', prof.epreuves_validees ?? '—')
+            setT('prof-stat-t', (prof.taux_acceptation ?? 0) + '%')
+            setT('prof-stat-g', parseFloat(prof.gains_total ?? 0).toLocaleString('fr-FR') + ' XAF')
 
             // Avatar large
-            if (prof.avatar_url) {
-                document.getElementById('prof-av-large').innerHTML = `<img src="${prof.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><label class="av-upload-btn" for="av-file-input">📷<br><span style="font-size:.58rem">${t('change_photo')}</span></label><input type="file" id="av-file-input" accept="image/*" style="display:none" onchange="uploadAvatar(event)">`
+            const avL = document.getElementById('prof-av-large')
+            if (avL && prof.avatar_url) {
+                avL.innerHTML = `<img src="${prof.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><label class="av-upload-btn" for="av-file-input">📷<br><span style="font-size:.58rem">${t('change_photo')}</span></label><input type="file" id="av-file-input" accept="image/*" style="display:none" onchange="uploadAvatar(event)">`
             }
 
             // Badges sous-systèmes
             const ssList = prof.sous_systemes || []
             const isBi = ssList.includes('francophone') && ssList.includes('anglophone')
-            const badgesContainer = document.getElementById('prof-badges-disp')
-            badgesContainer.innerHTML = ''
-            if (isBi) { badgesContainer.innerHTML = `<span class="badge b-bi">${t('badge_bi')}</span>` }
-            else if (ssList.includes('anglophone')) { badgesContainer.innerHTML = `<span class="badge b-en">${t('badge_en')}</span>` }
-            else { badgesContainer.innerHTML = `<span class="badge b-fr">${t('badge_fr')}</span>` }
-            if (prof.annees_experience) { badgesContainer.innerHTML += `<span class="badge bdr">📅 ${prof.annees_experience} ${LANG === 'en' ? 'yrs exp.' : 'ans exp.'}</span>` }
+            const bc = document.getElementById('prof-badges-disp')
+            if (bc) {
+                bc.innerHTML = ''
+                if (isBi) { bc.innerHTML = `<span class="badge b-bi">${t('badge_bi')}</span>` }
+                else if (ssList.includes('anglophone')) { bc.innerHTML = `<span class="badge b-en">${t('badge_en')}</span>` }
+                else { bc.innerHTML = `<span class="badge b-fr">${t('badge_fr')}</span>` }
+                if (prof.annees_experience) { bc.innerHTML += `<span class="badge bdr">📅 ${prof.annees_experience} ${LANG === 'en' ? 'yrs exp.' : 'ans exp.'}</span>` }
+            }
 
             // Sous-systèmes display (lecture seule)
             const ssDisp = document.getElementById('ss-display')
-            ssDisp.innerHTML = ssList.map(ss => `<span class="badge ${ss === 'francophone' ? 'b-fr' : 'b-en'}">${ss === 'francophone' ? '🇫🇷 Francophone' : '🇬🇧 Anglophone'}</span>`).join('')
+            if (ssDisp) ssDisp.innerHTML = ssList.map(ss => `<span class="badge ${ss === 'francophone' ? 'b-fr' : 'b-en'}">${ss === 'francophone' ? '🇫🇷 Francophone' : '🇬🇧 Anglophone'}</span>`).join('')
 
             // Spécialités (tags éditables)
             specialites = [...(prof.specialites || [])]
@@ -2749,17 +3038,18 @@
         }
 
         async function saveProfil() {
-            const prenom = document.getElementById('p-pr').value.trim()
-            const nom = document.getElementById('p-no').value.trim()
+            const gv = (id) => document.getElementById(id)?.value?.trim() || ''
+            const prenom = gv('p-pr')
+            const nom = gv('p-no')
             if (!prenom || !nom) return shAl('al-prof', t('msg_required_fields'), 'err')
 
-            const newLang = document.getElementById('p-lang').value
+            const newLang = gv('p-lang')
             const u = {
                 prenom, nom,
-                telephone: document.getElementById('p-ph').value.trim() || null,
-                etablissement: document.getElementById('p-et').value.trim() || null,
-                annees_experience: parseInt(document.getElementById('p-ex').value) || 0,
-                bio: document.getElementById('p-bi').value.trim() || null,
+                telephone: gv('p-ph') || null,
+                etablissement: gv('p-et') || null,
+                annees_experience: parseInt(gv('p-ex')) || 0,
+                bio: gv('p-bi') || null,
                 specialites,
                 langue_interface: newLang,
                 updated_at: new Date().toISOString()
