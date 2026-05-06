@@ -242,15 +242,14 @@
             33.33%, 100% { opacity: 0; }
         }
 
-        /* Premium Language Switcher */
         .lang-switcher {
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
-            padding: 0.3rem;
+            padding: 0.25rem;
             border-radius: 1rem;
             display: flex;
             gap: 0.2rem;
-            border: 1px solid rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.08);
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
         .dark .lang-switcher {
@@ -286,8 +285,11 @@
     <nav class="fixed top-0 w-full z-50 glass border-b border-slate-200 dark:border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-24">
-                <div class="flex items-center" data-aos="fade-right">
-                    <span class="text-2xl md:text-3xl font-black tracking-tighter hover:scale-105 transition-transform duration-300 cursor-pointer">
+                <div class="flex items-center gap-2" data-aos="fade-right">
+                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                        <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-xl md:text-3xl font-black tracking-tighter hover:scale-105 transition-transform duration-300 cursor-pointer">
                         <span class="kmer-text">KMER</span><span class="sch-text">SCH</span><span class="ool-text">OOL</span>
                     </span>
                 </div>
@@ -317,7 +319,7 @@
 
                 <div class="flex items-center space-x-3 md:hidden">
                     <!-- Language Switcher Mobile -->
-                    <div class="lang-switcher scale-90">
+                    <div class="lang-switcher scale-[0.8] origin-right">
                         <button onclick="window.i18n.setLanguage('fr')" class="lang-option" data-lang="fr">FR</button>
                         <button onclick="window.i18n.setLanguage('en')" class="lang-option" data-lang="en">EN</button>
                     </div>

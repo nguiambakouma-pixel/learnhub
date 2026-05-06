@@ -111,7 +111,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .brand-logo { 
-            font-size: 3.5rem; 
+            font-size: 2.2rem; 
             font-weight: 900; 
             letter-spacing: -0.05em; 
             margin-bottom: 0.5rem;
@@ -120,8 +120,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 2px;
+            gap: 8px;
         }
+        .brand-logo i { color: var(--primary); width: 32px; height: 32px; }
         .brand-logo:hover { transform: scale(1.02) translateY(-5px); }
         .brand-badge {
             display: inline-flex;
@@ -237,9 +238,7 @@
         .alert-error { background: #fee2e2; color: #991b1b; border-left: 5px solid var(--secondary); }
 
         .lang-switcher {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
+            margin-bottom: 2rem;
             z-index: 1000;
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
@@ -290,6 +289,7 @@
 
     <div class="brand">
         <div class="brand-logo" onclick="window.location.href='../index.html'">
+            <i data-lucide="graduation-cap"></i>
             <span style="color:var(--primary)">KMER</span><span style="color:var(--secondary)">SCH</span><span style="color:var(--accent)">OOL</span>
         </div>
         <div class="brand-badge" data-i18n="prof-login-title">Portail Professeur</div>

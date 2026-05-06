@@ -29,9 +29,7 @@
         }
 
         .lang-switcher {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
+            margin-bottom: 2rem;
             z-index: 1000;
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
@@ -76,11 +74,12 @@
             background: #f8fafc;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            padding: 2rem;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         /* ── Effet Background Spécial : Orbes Dynamiques ── */
@@ -272,16 +271,17 @@
         }
 
         .logo-container {
-            position: absolute;
-            top: 40px;
-            left: 0;
-            right: 0;
+            margin-bottom: 2.5rem;
             display: flex;
             justify-content: center;
+            align-items: center;
             z-index: 101;
             cursor: pointer;
             transition: transform 0.3s;
+            gap: 10px;
         }
+        .logo-container i { color: var(--primary); width: 32px; height: 32px; }
+        .logo-container span { font-size: 2.2rem; }
 
         .logo-container:hover {
             transform: scale(1.05);
@@ -342,7 +342,8 @@
     <div id="messageContainer" class="hidden"></div>
 
     <div class="logo-container" onclick="window.location.href='index.html'">
-        <span class="text-3xl font-black tracking-tighter">
+        <i data-lucide="graduation-cap"></i>
+        <span class="font-black tracking-tighter">
             <span style="color:var(--primary)">KMER</span><span style="color:var(--secondary)">SCH</span><span style="color:var(--accent)">OOL</span>
         </span>
     </div>
