@@ -552,7 +552,7 @@
                         </div>
                         <div class="summary-item">
                             <span class="summary-label">Année Scolaire</span>
-                            <span class="summary-val">2024-2025</span>
+                            <span class="summary-val" id="summary-annee">-</span>
                         </div>
                     </div>
 
@@ -602,8 +602,24 @@
             classe: null,
             classeId: null,
             specialite: null,
-            specialiteId: null
+            specialiteId: null,
+            anneeScolaire: null
         };
+
+        // Calcul automatique de l'année scolaire
+        function getAcademicYear() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth(); // 0-11
+            // Si on est en Septembre (8) ou plus, on est dans l'année N / N+1
+            // Sinon on est encore dans l'année N-1 / N
+            if (month >= 8) {
+                return `${year}-${year + 1}`;
+            } else {
+                return `${year - 1}-${year}`;
+            }
+        }
+        userData.anneeScolaire = getAcademicYear();
 
         // Données statiques (seront chargées depuis la BDD en production)
         const niveauxFrancophone = [
@@ -895,6 +911,7 @@
             } else {
                 document.getElementById('summary-specialite-row').style.display = 'none';
             }
+            document.getElementById('summary-annee').textContent = userData.anneeScolaire;
         }
 
         // Finaliser et sauvegarder dans Supabase
@@ -973,7 +990,7 @@
                     sous_systeme_id: sousSysteme.id,          // UUID ✅
                     niveau_scolaire_id: niveau.id,            // UUID ✅
                     serie_id: serieId,                        // UUID ou NULL ✅
-                    annee_scolaire: '2024-2025',
+                    annee_scolaire: userData.anneeScolaire,
                     updated_at: new Date().toISOString()
                 };
 
