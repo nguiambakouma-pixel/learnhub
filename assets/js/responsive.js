@@ -46,7 +46,13 @@
   window.toggleSidebar = function() {
     const sidebar = document.querySelector('.sidebar, aside.sidebar, #sidebar-menu');
     if (!sidebar) return;
-    const isOpen = sidebar.classList.contains('open') || sidebar.classList.contains('active') || !sidebar.classList.contains('-translate-x-full');
+    
+    let isOpen = sidebar.classList.contains('open') || sidebar.classList.contains('active');
+    
+    if (sidebar.id === 'sidebar-menu') {
+        isOpen = isOpen || !sidebar.classList.contains('-translate-x-full');
+    }
+    
     if (isOpen) closeSidebar();
     else openSidebar();
   };
