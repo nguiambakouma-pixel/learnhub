@@ -802,6 +802,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="../responsive.css">
 </head>
 
 <body>
@@ -813,7 +814,7 @@
     <!-- ═══ TOPBAR ═══ -->
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:.85rem;">
-            <button onclick="document.querySelector('.filter-sidebar').classList.toggle('open')" class="vtBtn lg:hidden">
+            <button onclick="toggleSidebar()" class="vtBtn lg:hidden">
                 <i data-lucide="filter"></i>
             </button>
             <button onclick="goBack()" class="btn btn-ghost btn-sm" data-i18n="nav_back">← Retour</button>
@@ -1837,6 +1838,7 @@
 
         init().catch(console.error);
     </script>
+    <script src="../assets/js/responsive.js"></script>
 </body>
 
 </html>

@@ -1048,6 +1048,7 @@
         .spinner-sm { width: 14px; height: 14px; border-width: 1.5px; }
         .spinner-lg { width: 40px; height: 40px; border-width: 3px; }
     </style>
+    <link rel="stylesheet" href="../responsive.css">
 </head>
 
 <body>
@@ -1060,7 +1061,7 @@
     <!-- ═══ TOPBAR ═══ -->
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:1rem;">
-            <button onclick="document.querySelector('.filter-sidebar').classList.toggle('open')" class="btn-icon lg:hidden">
+            <button onclick="toggleSidebar()" class="btn-icon lg:hidden">
                 <i data-lucide="filter"></i>
             </button>
             <div class="logo">KMERSCHOOL</div>
@@ -2419,6 +2420,7 @@
         // ── START ─────────────────────────────────────────────────────────
         init().catch(console.error);
     </script>
+    <script src="../assets/js/responsive.js"></script>
 </body>
 
 </html>

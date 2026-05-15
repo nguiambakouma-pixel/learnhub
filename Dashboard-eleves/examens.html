@@ -1372,6 +1372,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="../responsive.css">
 </head>
 
 <body>
@@ -1383,7 +1384,7 @@
     <!-- TOPBAR -->
     <header class="topbar">
         <div style="display:flex;align-items:center;gap:.85rem">
-            <button onclick="document.querySelector('.sidebar').classList.toggle('open')" class="btn-icon lg:hidden">
+            <button onclick="toggleSidebar()" class="btn-icon lg:hidden">
                 <i data-lucide="menu"></i>
             </button>
             <button onclick="goBack()" class="btn btn-ghost btn-sm" data-i18n="nav_back">← Retour</button>
@@ -2692,6 +2693,7 @@
 
         init().catch(console.error);
     </script>
+    <script src="../assets/js/responsive.js"></script>
 </body>
 
 </html>

@@ -1749,6 +1749,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="../responsive.css">
 </head>
 
 <body>
@@ -1768,7 +1769,7 @@
 
     <div class="mobile-header">
         <div class="logo-mark">KMERSCHOOL</div>
-        <button onclick="document.querySelector('.sidebar').classList.toggle('open')" class="menu-toggle">
+        <button onclick="toggleSidebar()" class="menu-toggle">
             <i data-lucide="menu" class="w-6 h-6"></i>
         </button>
     </div>
@@ -3161,6 +3162,7 @@
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
+    <script src="../assets/js/responsive.js"></script>
 </body>
 
 </html>

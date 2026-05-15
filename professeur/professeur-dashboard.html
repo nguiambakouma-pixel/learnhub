@@ -1077,6 +1077,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="../responsive.css">
 </head>
 
 <body>
@@ -1169,7 +1170,7 @@
             <!-- Topbar -->
             <header class="topbar">
                 <div class="flex items-center gap-3">
-                    <button class="lg:hidden p-2 text-mu" onclick="document.querySelector('.sidebar').classList.toggle('active')">
+                    <button class="lg:hidden p-2 text-mu" onclick="toggleSidebar()">
                         <i data-lucide="menu"></i>
                     </button>
                     <div class="ptitle" id="page-content-title">Dashboard Professeur</div>
@@ -3184,6 +3185,7 @@
             window.lucide.createIcons();
         }
     </script>
+    <script src="../assets/js/responsive.js"></script>
 </body>
 
 </html>

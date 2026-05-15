@@ -1,0 +1,993 @@
+/* ============================================================
+   KMERSCHOOL — RESPONSIVE GLOBAL CSS
+   À inclure dans TOUS les fichiers HTML du site
+   <link rel="stylesheet" href="../assets/css/responsive-global.css">
+   (ajuster le chemin selon la profondeur du fichier)
+   ============================================================ */
+
+/* ── RESET & BASE ── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+}
+
+body {
+    overflow-x: hidden;
+    min-width: 0;
+}
+
+img,
+video,
+iframe,
+canvas,
+svg {
+    max-width: 100%;
+    display: block;
+}
+
+/* ── UTILITAIRES RESPONSIVE UNIVERSELS ── */
+
+/* Masquer/Afficher selon l'écran */
+@media (max-width: 768px) {
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .hide-desktop {
+        display: none !important;
+    }
+
+    .show-mobile-only {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .show-mobile-only {
+        display: block !important;
+    }
+}
+
+/* ============================================================
+   1. SIDEBARS — PATTERN UNIFIÉ
+   Toutes les sidebars du site utilisent ces classes
+   ============================================================ */
+
+.sidebar,
+.filter-sidebar,
+aside.sidebar {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 1024px) {
+
+    /* Sidebar principale (dashboard) */
+    .sidebar,
+    aside.sidebar {
+        position: fixed !important;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 200;
+        transform: translateX(-100%);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar.open,
+    .sidebar.active,
+    aside.sidebar.open {
+        transform: translateX(0) !important;
+    }
+
+    /* Sidebar filtres (annales, examens, exercices) */
+    .filter-sidebar {
+        position: fixed !important;
+        left: 0;
+        top: 56px;
+        bottom: 0;
+        z-index: 150;
+        transform: translateX(-100%);
+        width: min(280px, 85vw) !important;
+    }
+
+    .filter-sidebar.open {
+        transform: translateX(0) !important;
+    }
+
+    /* Contenu principal prend toute la largeur */
+    .main,
+    .main-content,
+    .right-col-main,
+    .flex-1 {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+/* Overlay pour fermer la sidebar sur mobile */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 149;
+    backdrop-filter: blur(2px);
+}
+
+.sidebar-backdrop.show {
+    display: block;
+}
+
+/* ============================================================
+   2. GRILLES — ADAPTATION AUTOMATIQUE
+   ============================================================ */
+
+/* Grilles 4 colonnes → 2 → 1 */
+@media (max-width: 1024px) {
+
+    .grid-cols-4,
+    .sg,
+    /* stat grid dashboard élève */
+    .stats-row,
+    .grid.grid-cols-1.md\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .profil-stats-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 640px) {
+
+    .grid-cols-4,
+    .sg,
+    .stats-row,
+    .grid.grid-cols-1.md\:grid-cols-4 {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    /* 3 colonnes → 1 */
+    .matieres-grid,
+    .badges-grid,
+    .grid-cols-3,
+    .g3 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Grille principale 2/3 - 1/3 → 1 colonne */
+    .main-grid,
+    .lg\:col-span-2,
+    .lg\:col-span-3 {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Stats profil → 2 colonnes */
+    .profil-stats-row {
+        grid-template-columns: 1fr 1fr !important;
+    }
+}
+
+/* Formulaires en 2 colonnes → 1 colonne sur mobile */
+@media (max-width: 640px) {
+
+    .g2,
+    .form-row,
+    .grid-cols-2,
+    .field-group {
+        grid-template-columns: 1fr !important;
+    }
+
+    .section-choice {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ============================================================
+   3. TOPBAR / HEADER — ADAPTATION
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Topbar : titre court */
+    .topbar-title,
+    .ptitle {
+        font-size: 0.85rem !important;
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Barre de recherche cachée ou réduite */
+    .topbar-search,
+    .topbar .search-wrap {
+        display: none !important;
+    }
+
+    /* Actions topbar : serrer */
+    .topbar-actions,
+    .topbar>div:last-child {
+        gap: 0.4rem !important;
+    }
+
+    /* Padding topbar */
+    .topbar,
+    header.topbar {
+        padding: 0 0.75rem !important;
+        gap: 0.5rem !important;
+    }
+}
+
+/* ============================================================
+   4. BOUTON MENU HAMBURGER — UNIVERSEL
+   ============================================================ */
+
+.hamburger-btn {
+    display: none;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+    color: inherit;
+    font-size: 1.1rem;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.hamburger-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 1024px) {
+    .hamburger-btn {
+        display: flex !important;
+    }
+}
+
+/* ============================================================
+   5. TABLES — SCROLL HORIZONTAL
+   ============================================================ */
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 0.5rem;
+}
+
+/* Toutes les tables dans des conteneurs → scroll auto */
+@media (max-width: 768px) {
+    table {
+        min-width: 500px;
+    }
+
+    /* Wrapper automatique pour les tables non enveloppées */
+    .gl table,
+    .glass-card table,
+    .bg-white table {
+        overflow-x: auto;
+        display: block;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    th,
+    td {
+        padding: 0.5rem 0.6rem !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+/* ============================================================
+   6. CARTES & CONTENEURS — PADDING
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Content padding */
+    .content,
+    .page-content,
+    .catalog,
+    .content-zone {
+        padding: 1rem !important;
+    }
+
+    /* Cards */
+    .card-body,
+    .gb,
+    .glass-card {
+        padding: 1rem !important;
+    }
+
+    /* Hero banner */
+    .welcome-hero,
+    .gradient-designer,
+    .gradient-dev {
+        padding: 1.25rem !important;
+        border-radius: 1rem !important;
+    }
+
+    .hero-content {
+        flex-direction: column !important;
+        text-align: center !important;
+        gap: 1.5rem !important;
+    }
+
+    .hero-right {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .hero-title,
+    .hero-content h1 {
+        font-size: 1.4rem !important;
+    }
+
+    .hero-tags {
+        justify-content: center !important;
+    }
+}
+
+/* ============================================================
+   7. COURS / CATALOG GRID
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Catalog cards → 1 colonne */
+    .cours-catalog,
+    .catalog-grid,
+    .grid-view {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Course item layout */
+    .cours-item {
+        flex-wrap: wrap !important;
+        gap: 0.75rem !important;
+    }
+
+    .cours-thumb {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 1.2rem !important;
+    }
+
+    /* Exam/exercise cards */
+    .exam-card,
+    .exo-card,
+    .ann-card {
+        min-width: 0 !important;
+    }
+}
+
+/* ============================================================
+   8. ARENA / OVERLAY PLEIN ÉCRAN (examens, exercices)
+   ============================================================ */
+
+@media (max-width: 640px) {
+
+    /* Arena header */
+    .arena-header {
+        flex-wrap: wrap !important;
+        height: auto !important;
+        padding: 0.6rem !important;
+        gap: 0.5rem !important;
+    }
+
+    /* Progress dots cachés */
+    .progress-nav {
+        display: none !important;
+    }
+
+    /* Footer arena */
+    .arena-footer {
+        flex-wrap: wrap !important;
+        padding: 0.6rem !important;
+        gap: 0.5rem !important;
+    }
+
+    .arena-footer-right {
+        flex-wrap: wrap !important;
+        gap: 0.4rem !important;
+    }
+
+    /* Body arena */
+    .arena-body {
+        padding: 0.75rem !important;
+    }
+
+    /* Question card */
+    .question-card {
+        padding: 1rem !important;
+    }
+
+    /* Code arena → colonne */
+    .code-arena-wrap {
+        flex-direction: column !important;
+    }
+
+    .code-description {
+        width: 100% !important;
+        max-height: 200px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border) !important;
+    }
+
+    /* Options */
+    .option,
+    .qcm-option {
+        padding: 0.65rem 0.75rem !important;
+        font-size: 0.82rem !important;
+    }
+
+    /* VF grid */
+    .vf-row {
+        grid-template-columns: 1fr 1fr !important;
+    }
+}
+
+/* ============================================================
+   9. VIEWER (annales, cours)
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+    /* Info sidebar du viewer */
+    .info-side,
+    .controls-overlay {
+        display: none !important;
+    }
+
+    /* PDF frame hauteur réduite */
+    .pdf-frame {
+        height: 300px !important;
+    }
+
+    .viewer-header {
+        flex-wrap: wrap !important;
+        height: auto !important;
+        padding: 0.6rem !important;
+    }
+
+    .viewer-tabs {
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .vtab {
+        flex-shrink: 0 !important;
+        padding: 0.6rem 0.75rem !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+/* ============================================================
+   10. RIGHT SIDEBAR COURS (cours.html)
+   ============================================================ */
+
+@media (max-width: 900px) {
+    .right-sidebar {
+        position: fixed !important;
+        right: -100% !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        z-index: 300 !important;
+        width: min(320px, 90vw) !important;
+        transition: right 0.3s ease !important;
+    }
+
+    .right-sidebar.open {
+        right: 0 !important;
+    }
+
+    .main-content {
+        margin-right: 0 !important;
+    }
+}
+
+/* ============================================================
+   11. FORMULAIRES — INPUTS, SELECTS
+   ============================================================ */
+
+@media (max-width: 640px) {
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="date"],
+    select,
+    textarea {
+        font-size: 16px !important;
+        /* Empêche le zoom iOS */
+    }
+
+    /* Boutons côte à côte → colonne */
+    .btn-row,
+    .flex.space-x-3,
+    .flex.gap-3 {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+    }
+
+    .btn-row .btn,
+    .btn-row button {
+        width: 100% !important;
+    }
+}
+
+/* ============================================================
+   12. MOBILE HEADER (pour les pages sans sidebar mobile)
+   ============================================================ */
+
+.mobile-header {
+    display: none;
+    height: 56px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 1024px) {
+    .mobile-header {
+        display: flex !important;
+    }
+}
+
+/* ============================================================
+   13. CANVAS CRÉATIF (dashboard designer)
+   ============================================================ */
+
+@media (max-width: 768px) {
+    #designCanvas {
+        width: 100% !important;
+        height: 250px !important;
+    }
+
+    .tool-btn {
+        padding: 0.4rem 0.6rem !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+/* ============================================================
+   14. CHATBOT IA
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+    /* Sidebar chatbot */
+    .sidebar#sidebar {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        z-index: 200 !important;
+        transform: translateX(-100%) !important;
+    }
+
+    .sidebar#sidebar.open {
+        transform: translateX(0) !important;
+    }
+
+    /* Chips grid → 1 colonne */
+    .chips-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Input area */
+    .input-area {
+        padding: 0.75rem !important;
+    }
+
+    /* Messages */
+    .message-row {
+        padding: 0.5rem 0.75rem !important;
+    }
+
+    .msg-bubble.user {
+        max-width: 90% !important;
+    }
+
+    /* Subject pills → scroll */
+    .subject-pills {
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+    }
+}
+
+/* ============================================================
+   15. LABORATOIRE SIMULATIONS
+   ============================================================ */
+
+@media (max-width: 768px) {
+    #sim-container {
+        flex-direction: column !important;
+    }
+
+    .controls-overlay {
+        width: 100% !important;
+        max-height: 280px !important;
+        border-left: none !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
+        overflow-y: auto;
+    }
+
+    .sim-card {
+        min-width: 0 !important;
+    }
+
+    #gallery {
+        grid-template-columns: 1fr !important;
+        padding: 1rem !important;
+    }
+}
+
+/* ============================================================
+   16. ONBOARDING & AUTH
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Auth container */
+    .container.auth-container {
+        min-height: auto !important;
+        border-radius: 1.5rem !important;
+    }
+
+    /* Overlay panel caché sur mobile */
+    .overlay-container {
+        display: none !important;
+    }
+
+    /* Forms prennent toute la largeur */
+    .sign-in-container,
+    .sign-up-container {
+        width: 100% !important;
+        position: static !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    form {
+        padding: 2rem 1.25rem !important;
+    }
+
+    /* Champ téléphone, etc. */
+    .field-group {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ============================================================
+   17. ADMIN DASHBOARD
+   ============================================================ */
+
+@media (max-width: 1024px) {
+
+    /* Admin sidebar */
+    #sidebar-menu {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        z-index: 200 !important;
+        width: min(260px, 85vw) !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s ease !important;
+    }
+
+    #sidebar-menu.open,
+    #sidebar-menu:not(.-translate-x-full) {
+        transform: translateX(0) !important;
+    }
+
+    /* Tables admin */
+    .admin-table-wrap {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* Grille stats admin */
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4 {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    .sg {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    /* Content padding admin */
+    .content,
+    #elevesMainContent,
+    #professeursMainContent {
+        padding: 1rem !important;
+    }
+
+    /* Dashboard cards admin */
+    .dashboard-card {
+        padding: 1.25rem !important;
+    }
+
+    /* Stats cards admin → scroll */
+    .grid.grid-cols-1.md\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.75rem !important;
+    }
+}
+
+/* ============================================================
+   18. DASHBOARD PROFESSEUR
+   ============================================================ */
+
+@media (max-width: 1024px) {
+    .layout>.sidebar {
+        transform: translateX(-100%) !important;
+        position: fixed !important;
+        z-index: 200 !important;
+    }
+
+    .layout>.sidebar.active {
+        transform: translateX(0) !important;
+    }
+
+    .layout>.main {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* Formulaire épreuve en colonnes → 1 */
+    .g2,
+    .g3 {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    /* Question builder */
+    .tr-row {
+        grid-template-columns: 1fr 1fr auto !important;
+        gap: 0.3rem !important;
+    }
+
+    /* Formulaire profil hero */
+    .profile-header {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 1rem !important;
+    }
+
+    .prof-av-large {
+        width: 70px !important;
+        height: 70px !important;
+    }
+}
+
+/* ============================================================
+   19. ANNALES VIEWER / EXAMENS
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Stats strip → scroll */
+    .stats-strip {
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    .stat-chip {
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
+    }
+
+    /* Grid → 1 colonne */
+    .grid-view {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+
+    /* Content top → colonne */
+    .content-top {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem !important;
+    }
+
+    .search-bar,
+    .search-wrap {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Résultats overlay */
+    .results-wrap {
+        padding: 1rem !important;
+    }
+
+    .result-chips {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .modal-box {
+        width: 95vw !important;
+        padding: 1.25rem !important;
+    }
+}
+
+/* ============================================================
+   20. DRAWERS & MODALS
+   ============================================================ */
+
+@media (max-width: 640px) {
+
+    /* Drawer profil → pleine largeur */
+    .drawer {
+        max-width: 100% !important;
+        width: 100% !important;
+        right: -100% !important;
+    }
+
+    .drawer.open {
+        right: 0 !important;
+    }
+
+    /* Modals → pleine largeur */
+    .modal-box,
+    .results-box {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        padding: 1.25rem !important;
+    }
+
+    /* XP Popup */
+    .xp-popup {
+        width: 90vw !important;
+        padding: 1.5rem !important;
+    }
+}
+
+/* ============================================================
+   21. CORRECTIONS SPÉCIFIQUES TAILWIND
+   ============================================================ */
+
+/* Empêche les débordements des éléments Tailwind */
+@media (max-width: 768px) {
+    .max-w-7xl {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* Grilles Tailwind communes */
+    .md\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .md\:grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .lg\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Space entre éléments */
+    .space-x-4>*+* {
+        margin-left: 0.5rem !important;
+    }
+
+    .space-x-3>*+* {
+        margin-left: 0.4rem !important;
+    }
+
+    /* Flex wrap forcé */
+    .flex.items-center {
+        flex-wrap: wrap;
+    }
+}
+
+/* ============================================================
+   22. SCROLL VERTICAL INDICATOR
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .scroll-v-track {
+        display: none !important;
+    }
+}
+
+/* ============================================================
+   23. ORIENTATION PAYSAGE SUR MOBILE
+   ============================================================ */
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+    .sidebar,
+    aside.sidebar {
+        width: 220px !important;
+    }
+
+    .topbar,
+    header.topbar {
+        height: 48px !important;
+    }
+
+    .arena-header {
+        height: 48px !important;
+    }
+
+    .content,
+    .page-content {
+        padding: 0.75rem !important;
+    }
+}
+
+/* ============================================================
+   24. FIX SPÉCIFIQUE iOS — SAFARI
+   ============================================================ */
+
+/* Fix viewport height iOS */
+.min-h-screen {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+}
+
+/* Fix position sticky iOS */
+.topbar,
+.sticky {
+    position: -webkit-sticky;
+    position: sticky;
+}
+
+/* Empêche le zoom sur input focus iOS */
+@media (max-width: 768px) {
+
+    input,
+    select,
+    textarea {
+        font-size: max(16px, 1em) !important;
+    }
+}
+
+/* ============================================================
+   25. ANIMATIONS — RÉDUIRE SUR MOBILE LENT
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================================
+   HELPER SCRIPT — A ETE DEPLACE DANS assets/js/responsive.js
+   ============================================================ */
