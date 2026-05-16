@@ -339,12 +339,19 @@
                 </div>
 
                 <!-- Mobile Icons à droite -->
-                <div class="flex items-center space-x-1.5 md:hidden">
-                    <div class="lang-switcher scale-90 sm:scale-100">
+                <div class="flex items-center space-x-2 md:hidden">
+                    <!-- Theme Toggle Mobile -->
+                    <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 flex-shrink-0">
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                        <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                    </button>
+                    <!-- Language Switcher Mobile -->
+                    <div class="lang-switcher scale-90">
                         <button onclick="window.i18n.setLanguage('fr')" class="lang-option" data-lang="fr">FR</button>
                         <button onclick="window.i18n.setLanguage('en')" class="lang-option" data-lang="en">EN</button>
                     </div>
-                    <button id="mobile-menu-button" class="p-2 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 flex items-center justify-center active:scale-95 transition-all">
+                    <!-- Menu Button -->
+                    <button id="mobile-menu-button" class="p-2.5 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 flex items-center justify-center active:scale-95 transition-all flex-shrink-0">
                         <i data-lucide="menu" class="w-5 h-5"></i>
                     </button>
                 </div>
@@ -527,9 +534,9 @@
                 </p>
             </div>
 
-            <div class="flex overflow-x-auto pb-8 md:grid md:grid-cols-3 gap-5 md:gap-10 snap-x snap-mandatory no-scrollbar">
+            <div class="flex overflow-x-auto pb-10 md:grid md:grid-cols-3 gap-5 md:gap-10 snap-x snap-mandatory no-scrollbar px-4 md:px-0">
                 <!-- Path 1: Student -->
-                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex-shrink-0 w-[85vw] md:w-auto snap-center" data-aos="fade-up"
+                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex-shrink-0 w-[80vw] md:w-auto snap-center border border-slate-100 dark:border-slate-800" data-aos="fade-up"
                     data-aos-delay="100">
                     <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
                         <img src="assets/eleve.jpg"
@@ -558,7 +565,7 @@
                 </div>
 
                 <!-- Path 2: Web Dev -->
-                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm border-primary/30 ring-4 ring-primary/5 flex-shrink-0 w-[85vw] md:w-auto snap-center"
+                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm border-primary/30 ring-4 ring-primary/5 flex-shrink-0 w-[80vw] md:w-auto snap-center"
                     data-aos="fade-up" data-aos-delay="200">
                     <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
                         <img src="assets/dev-web.jpg"
@@ -590,7 +597,7 @@
                 </div>
 
                 <!-- Path 3: Designer -->
-                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex-shrink-0 w-[85vw] md:w-auto snap-center" data-aos="fade-up"
+                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex-shrink-0 w-[80vw] md:w-auto snap-center border border-slate-100 dark:border-slate-800" data-aos="fade-up"
                     data-aos-delay="300">
                     <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
                         <img src="assets/web-designer.jpg"
