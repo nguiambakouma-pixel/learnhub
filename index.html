@@ -136,10 +136,15 @@
         .sch-text { color: #CE1126; }
         .ool-text { color: #FCD116; }
 
+        .lang-option {}
+
         .card-premium {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid rgba(226, 232, 240, 0.8);
             background: var(--card-light);
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
         .dark .card-premium {
@@ -477,7 +482,7 @@
     <!-- Pathways Section -->
     <section id="parcours" class="py-32 bg-white dark:bg-slate-950">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-24" data-aos="fade-up">
+            <div class="text-center max-w-3xl mx-auto mb-12 md:mb-24" data-aos="fade-up">
                 <h2 class="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-6 uppercase tracking-tight" data-i18n="pathways-title">Nos 3 Parcours
                     <span class="gradient-text">Phares</span>
                 </h2>
@@ -488,7 +493,7 @@
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-10">
+            <div class="grid md:grid-cols-3 gap-6 md:gap-10">
                 <!-- Path 1: Student -->
                 <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm" data-aos="fade-up"
                     data-aos-delay="100">
@@ -502,7 +507,7 @@
                             class="absolute top-6 left-6 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-primary uppercase tracking-widest shadow-lg" data-i18n="path-student-badge">
                             Fondamentaux</div>
                     </div>
-                    <div class="p-10">
+                    <div class="p-6 md:p-10">
                         <i data-lucide="graduation-cap" class="w-10 h-10 text-primary mb-6"></i>
                         <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight" data-i18n="path-student-title">PARCOURS<br>ÉLÈVE</h3>
                         <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed font-medium" data-i18n="path-student-desc">Relevez le défi de l'excellence
@@ -534,7 +539,7 @@
                             class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
                             Bientôt Disponible</div>
                     </div>
-                    <div class="p-10">
+                    <div class="p-6 md:p-10">
                         <i data-lucide="code" class="w-10 h-10 text-primary mb-6"></i>
                         <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight" data-i18n="path-dev-title">PARCOURS<br>DÉV-WEB</h3>
                         <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed font-medium" data-i18n="path-dev-desc">Apprenez à coder les technologies du
@@ -566,7 +571,7 @@
                             class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
                             Bientôt Disponible</div>
                     </div>
-                    <div class="p-10">
+                    <div class="p-6 md:p-10">
                         <i data-lucide="palette" class="w-10 h-10 text-primary mb-6"></i>
                         <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight" data-i18n="path-designer-title">PARCOURS<br>DESIGNER</h3>
                         <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed font-medium" data-i18n="path-designer-desc">Maîtrisez l'UX/UI Design et apprenez
@@ -586,7 +591,7 @@
     </section>
 
     <!-- Methodology Section -->
-    <section id="methode" class="py-32 bg-slate-900 dark:bg-black text-white overflow-hidden">
+    <section id="methode" class="py-16 md:py-32 bg-slate-900 dark:bg-black text-white overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid lg:grid-cols-2 gap-20 items-center">
                 <div data-aos="fade-right">
@@ -648,12 +653,12 @@
     </section>
 
     <!-- Final Call to Action -->
-    <section class="py-32 bg-white dark:bg-slate-950 relative overflow-hidden">
+    <section class="py-16 md:py-32 bg-white dark:bg-slate-950 relative overflow-hidden">
         <div class="max-w-5xl mx-auto px-4 text-center relative z-10" data-aos="zoom-in">
-            <h2 class="text-5xl lg:text-7xl font-black text-slate-900 dark:text-white mb-10 tracking-tight" data-i18n="cta-title">Prêt à transformer <br>votre
+            <h2 class="text-4xl md:text-7xl font-black text-slate-900 dark:text-white mb-10 tracking-tight" data-i18n="cta-title">Prêt à transformer <br>votre
                 <span class="gradient-text">destin ?</span>
             </h2>
-            <p class="text-2xl text-slate-600 dark:text-slate-400 font-medium mb-16 max-w-2xl mx-auto" data-i18n="cta-desc">Rejoignez 25,000+ apprenants et
+            <p class="text-xl md:text-2xl text-slate-600 dark:text-slate-400 font-medium mb-16 max-w-2xl mx-auto" data-i18n="cta-desc">Rejoignez 25,000+ apprenants et
                 commencez à construire votre futur dès aujourd'hui.</p>
             <div class="flex flex-col sm:flex-row justify-center gap-6">
                 <a href="auth.html?mode=register" data-i18n="cta-btn-register"

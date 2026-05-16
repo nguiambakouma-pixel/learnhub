@@ -271,6 +271,58 @@
             background: rgba(0, 122, 94, 0.05);
             color: var(--primary);
         }
+        .tags-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.7rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 0.8rem;
+            background: #f8fafc;
+            min-height: 45px;
+            cursor: text;
+        }
+        .tag-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.3rem 0.7rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .tag-pill button {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+        .tag-pill button:hover { opacity: 1; }
+        #tag-input {
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 120px !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 1rem; }
+            .container { border-radius: 1.5rem; }
+            .form-body { padding: 1.5rem 1.25rem; }
+            .field { margin-bottom: 0.75rem; }
+            .field input, .field select, .field textarea { padding: 0.7rem 0.9rem; font-size: 0.9rem; }
+            .brand-logo { font-size: 1.8rem; }
+            .brand-sub { font-size: 0.85rem; padding: 0 1rem; }
+            .tab-btn { padding: 1rem; font-size: 0.9rem; }
+            .btn-primary { padding: 1rem; border-radius: 1rem; }
+        }
     </style>
     <link rel="stylesheet" href="../responsive.css">
 </head>

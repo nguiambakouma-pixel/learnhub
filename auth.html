@@ -312,16 +312,20 @@
         #messageContainer.show { transform: translateY(0); }
 
         @media (max-width: 768px) {
-            body { padding: 1.5rem; align-items: center; }
-            .logo-container { top: 20px; left: 20px; }
-            .container { min-height: auto; width: 100%; border-radius: 1.5rem; }
+            body { padding: 1rem; align-items: center; }
+            .logo-container { margin-bottom: 1.5rem; }
+            .container { min-height: auto; width: 100%; border-radius: 1.5rem; margin-top: 1rem; }
             .form-container { width: 100%; height: auto; position: static; }
             .sign-in-container, .sign-up-container { width: 100%; position: static; opacity: 1; z-index: 1; transform: none !important; }
             .container.right-panel-active .sign-in-container { display: none; }
             .container:not(.right-panel-active) .sign-up-container { display: none; }
             .overlay-container { display: none; }
-            form { padding: 50px 30px; height: auto; }
-            .mobile-toggle { display: block; }
+            form { padding: 30px 20px; height: auto; }
+            input, select { padding: 12px 15px; margin: 6px 0; font-size: 14px; }
+            .btn-auth { margin-top: 15px; padding: 14px 30px; }
+            .mobile-toggle { display: block; margin-top: 15px; }
+            h1 { font-size: 1.5rem !important; margin-bottom: 0.5rem !important; }
+            p.text-sm { margin-bottom: 1rem !important; }
         }
     </style>
     <link rel="stylesheet" href="./responsive.css">
