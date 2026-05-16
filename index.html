@@ -143,8 +143,9 @@
             border: 1px solid rgba(226, 232, 240, 0.8);
             background: var(--card-light);
             width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .dark .card-premium {
@@ -497,7 +498,7 @@
                 <!-- Path 1: Student -->
                 <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm" data-aos="fade-up"
                     data-aos-delay="100">
-                    <div class="h-72 overflow-hidden relative">
+                    <div class="h-48 md:h-72 overflow-hidden relative">
                         <img src="assets/eleve.jpg"
                             alt="Élève" class="path-img w-full h-full object-cover">
                         <div
@@ -507,10 +508,10 @@
                             class="absolute top-6 left-6 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-primary uppercase tracking-widest shadow-lg" data-i18n="path-student-badge">
                             Fondamentaux</div>
                     </div>
-                    <div class="p-6 md:p-10">
-                        <i data-lucide="graduation-cap" class="w-10 h-10 text-primary mb-6"></i>
-                        <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight" data-i18n="path-student-title">PARCOURS<br>ÉLÈVE</h3>
-                        <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed font-medium" data-i18n="path-student-desc">Relevez le défi de l'excellence
+                    <div class="p-5 md:p-10 flex-grow flex flex-col">
+                        <i data-lucide="graduation-cap" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
+                        <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-student-title">PARCOURS ÉLÈVE</h3>
+                        <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-student-desc">Relevez le défi de l'excellence
                             académique avec des outils interactifs et un tutorat personnalisé.</p>
                         <a href="auth.html?path=student" data-i18n="path-student-btn"
                             class="flex items-center text-primary font-black tracking-widest text-sm uppercase group-hover:translate-x-3 transition-transform">
@@ -526,7 +527,7 @@
                 <!-- Path 2: Web Dev -->
                 <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm border-primary/30 ring-4 ring-primary/5"
                     data-aos="fade-up" data-aos-delay="200">
-                    <div class="h-72 overflow-hidden relative">
+                    <div class="h-48 md:h-72 overflow-hidden relative">
                         <img src="assets/dev-web.jpg"
                             alt="Développeur Web" class="path-img w-full h-full object-cover">
                         <div
@@ -539,10 +540,10 @@
                             class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
                             Bientôt Disponible</div>
                     </div>
-                    <div class="p-6 md:p-10">
-                        <i data-lucide="code" class="w-10 h-10 text-primary mb-6"></i>
-                        <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight" data-i18n="path-dev-title">PARCOURS<br>DÉV-WEB</h3>
-                        <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed font-medium" data-i18n="path-dev-desc">Apprenez à coder les technologies du
+                    <div class="p-5 md:p-10 flex-grow flex flex-col">
+                        <i data-lucide="code" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
+                        <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-dev-title">PARCOURS DÉV-WEB</h3>
+                        <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-dev-desc">Apprenez à coder les technologies du
                             futur et intégrez les meilleures entreprises de la tech.</p>
                         <a href="auth.html?path=dev" data-i18n="path-dev-btn"
                             class="flex items-center text-primary font-black tracking-widest text-sm uppercase group-hover:translate-x-3 transition-transform">
@@ -558,7 +559,7 @@
                 <!-- Path 3: Designer -->
                 <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm" data-aos="fade-up"
                     data-aos-delay="300">
-                    <div class="h-72 overflow-hidden relative">
+                    <div class="h-48 md:h-72 overflow-hidden relative">
                         <img src="assets/web-designer.jpg"
                             alt="Designer" class="path-img w-full h-full object-cover">
                         <div
@@ -571,10 +572,10 @@
                             class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
                             Bientôt Disponible</div>
                     </div>
-                    <div class="p-6 md:p-10">
-                        <i data-lucide="palette" class="w-10 h-10 text-primary mb-6"></i>
-                        <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight" data-i18n="path-designer-title">PARCOURS<br>DESIGNER</h3>
-                        <p class="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed font-medium" data-i18n="path-designer-desc">Maîtrisez l'UX/UI Design et apprenez
+                    <div class="p-5 md:p-10 flex-grow flex flex-col">
+                        <i data-lucide="palette" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
+                        <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-designer-title">PARCOURS DESIGNER</h3>
+                        <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-designer-desc">Maîtrisez l'UX/UI Design et apprenez
                             à créer des expériences utilisateur inoubliables.</p>
                         <a href="auth.html?path=designer" data-i18n="path-designer-btn"
                             class="flex items-center text-primary font-black tracking-widest text-sm uppercase group-hover:translate-x-3 transition-transform">
