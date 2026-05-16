@@ -304,15 +304,28 @@
     <nav class="fixed top-0 w-full z-50 glass border-b border-slate-200 dark:border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20 md:h-24">
-                <div class="flex items-center gap-1.5 md:gap-2" data-aos="fade-right">
-                    <div class="w-8 h-8 md:w-10 md:h-10 bg-primary rounded-lg md:rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
-                        <i data-lucide="graduation-cap" class="w-5 h-5 md:w-6 md:h-6"></i>
+                <!-- Version Mobile : Icônes à gauche, Logo à droite -->
+                <div class="flex items-center space-x-2 md:hidden">
+                    <button id="mobile-menu-button" class="p-2.5 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 flex items-center justify-center">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                    <div class="lang-switcher">
+                        <button onclick="window.i18n.setLanguage('fr')" class="lang-option" data-lang="fr">FR</button>
+                        <button onclick="window.i18n.setLanguage('en')" class="lang-option" data-lang="en">EN</button>
+                    </div>
+                </div>
+
+                <!-- Logo (Centre sur mobile via flex-grow ou à droite) -->
+                <div class="flex items-center gap-2 md:order-first" data-aos="fade-right">
+                    <div class="hidden md:flex w-10 h-10 bg-primary rounded-xl items-center justify-center text-white shadow-lg shadow-primary/20">
+                        <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                     </div>
                     <span class="text-lg md:text-3xl font-black tracking-tighter hover:scale-105 transition-transform duration-300 cursor-pointer">
                         <span class="kmer-text">KMER</span><span class="sch-text">SCH</span><span class="ool-text">OOL</span>
                     </span>
                 </div>
 
+                <!-- Version Desktop : Menu classique -->
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="#parcours" data-i18n="nav-parcours" class="font-bold text-sm uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Parcours</a>
                     <div class="w-px h-6 bg-slate-200 dark:bg-slate-800 mx-2"></div>
@@ -322,34 +335,13 @@
                         class="px-8 py-3.5 bg-primary text-white text-xs font-black uppercase tracking-[0.2em] rounded-full btn-premium shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all">
                         S'inscrire
                     </a>
-                    
-                    <!-- Language Switcher -->
                     <div class="lang-switcher">
                         <button onclick="window.i18n.setLanguage('fr')" class="lang-option" data-lang="fr">FR</button>
                         <button onclick="window.i18n.setLanguage('en')" class="lang-option" data-lang="en">EN</button>
                     </div>
-
-                    <!-- Theme Toggle -->
                     <button onclick="toggleTheme()" class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-900 hover:scale-110 transition-all text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
                         <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
                         <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
-                    </button>
-                </div>
-
-                <div class="flex items-center space-x-1.5 md:hidden">
-                    <!-- Language Switcher Mobile -->
-                    <div class="lang-switcher">
-                        <button onclick="window.i18n.setLanguage('fr')" class="lang-option" data-lang="fr">FR</button>
-                        <button onclick="window.i18n.setLanguage('en')" class="lang-option" data-lang="en">EN</button>
-                    </div>
-                    <!-- Theme Toggle Mobile -->
-                    <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 scale-90">
-                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
-                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
-                    </button>
-                    <!-- Mobile Menu Button -->
-                    <button id="mobile-menu-button" class="p-2.5 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 flex items-center justify-center">
-                        <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                 </div>
             </div>
@@ -531,11 +523,11 @@
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-6 md:gap-10">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-10">
                 <!-- Path 1: Student -->
                 <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm" data-aos="fade-up"
                     data-aos-delay="100">
-                    <div class="h-48 md:h-72 overflow-hidden relative">
+                    <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
                         <img src="assets/eleve.jpg"
                             alt="Élève" class="path-img w-full h-full object-cover">
                         <div
@@ -545,7 +537,7 @@
                             class="absolute top-6 left-6 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-primary uppercase tracking-widest shadow-lg" data-i18n="path-student-badge">
                             Fondamentaux</div>
                     </div>
-                    <div class="p-5 md:p-10 flex-grow flex flex-col">
+                    <div class="p-3 md:p-10 flex-grow flex flex-col">
                         <i data-lucide="graduation-cap" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
                         <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-student-title">PARCOURS ÉLÈVE</h3>
                         <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-student-desc">Relevez le défi de l'excellence
@@ -564,7 +556,7 @@
                 <!-- Path 2: Web Dev -->
                 <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm border-primary/30 ring-4 ring-primary/5"
                     data-aos="fade-up" data-aos-delay="200">
-                    <div class="h-48 md:h-72 overflow-hidden relative">
+                    <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
                         <img src="assets/dev-web.jpg"
                             alt="Développeur Web" class="path-img w-full h-full object-cover">
                         <div
@@ -577,7 +569,7 @@
                             class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
                             Bientôt Disponible</div>
                     </div>
-                    <div class="p-5 md:p-10 flex-grow flex flex-col">
+                    <div class="p-3 md:p-10 flex-grow flex flex-col">
                         <i data-lucide="code" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
                         <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-dev-title">PARCOURS DÉV-WEB</h3>
                         <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-dev-desc">Apprenez à coder les technologies du
@@ -594,9 +586,9 @@
                 </div>
 
                 <!-- Path 3: Designer -->
-                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm" data-aos="fade-up"
+                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm col-span-2 md:col-span-1" data-aos="fade-up"
                     data-aos-delay="300">
-                    <div class="h-48 md:h-72 overflow-hidden relative">
+                    <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
                         <img src="assets/web-designer.jpg"
                             alt="Designer" class="path-img w-full h-full object-cover">
                         <div
@@ -609,7 +601,7 @@
                             class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
                             Bientôt Disponible</div>
                     </div>
-                    <div class="p-5 md:p-10 flex-grow flex flex-col">
+                    <div class="p-3 md:p-10 flex-grow flex flex-col">
                         <i data-lucide="palette" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
                         <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-designer-title">PARCOURS DESIGNER</h3>
                         <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-designer-desc">Maîtrisez l'UX/UI Design et apprenez
