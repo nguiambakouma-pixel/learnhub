@@ -326,7 +326,7 @@
 
                 <div class="flex items-center space-x-1.5 md:hidden">
                     <!-- Language Switcher Mobile -->
-                    <div class="lang-switcher scale-[0.7] origin-right -mr-2">
+                    <div class="lang-switcher">
                         <button onclick="window.i18n.setLanguage('fr')" class="lang-option" data-lang="fr">FR</button>
                         <button onclick="window.i18n.setLanguage('en')" class="lang-option" data-lang="en">EN</button>
                     </div>
@@ -336,10 +336,8 @@
                         <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
                     </button>
                     <!-- Mobile Menu Button -->
-                    <button id="mobile-menu-button" class="p-2.5 rounded-xl bg-primary text-white shadow-lg shadow-primary/20">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
+                    <button id="mobile-menu-button" class="p-2.5 rounded-xl bg-primary text-white shadow-lg shadow-primary/20 flex items-center justify-center">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                 </div>
             </div>
@@ -358,16 +356,43 @@
                 </button>
             </div>
             
-            <nav class="flex flex-col space-y-6">
-                <a href="#parcours" class="mobile-link text-lg font-bold text-slate-900 dark:text-white flex items-center justify-between">
-                    Parcours <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+            <nav class="flex flex-col space-y-4">
+                <a href="#parcours" class="mobile-link group p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex items-center justify-between transition-all active:scale-95">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                            <i data-lucide="map" class="w-5 h-5"></i>
+                        </div>
+                        <span class="font-bold text-slate-900 dark:text-white" data-i18n="nav-parcours">Parcours</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 group-hover:text-primary"></i>
                 </a>
-                <div class="h-px bg-slate-100 dark:bg-slate-800 my-4"></div>
-                <a href="professeur/login.html" class="text-lg font-bold text-secondary">Espace Professeur</a>
-                <a href="auth.html" class="text-lg font-bold text-slate-900 dark:text-white">Connexion</a>
-                <a href="auth.html?mode=register" class="py-4 bg-primary text-white text-center font-bold rounded-2xl shadow-lg">
-                    S'inscrire
+
+                <a href="professeur/login.html" class="mobile-link group p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex items-center justify-between transition-all active:scale-95">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-secondary/10 rounded-xl flex items-center justify-center text-secondary">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                        </div>
+                        <span class="font-bold text-secondary" data-i18n="nav-prof">Espace Professeur</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 group-hover:text-secondary"></i>
                 </a>
+
+                <a href="auth.html" class="mobile-link group p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex items-center justify-between transition-all active:scale-95">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300">
+                            <i data-lucide="log-in" class="w-5 h-5"></i>
+                        </div>
+                        <span class="font-bold text-slate-900 dark:text-white" data-i18n="nav-login">Connexion</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 group-hover:text-primary"></i>
+                </a>
+
+                <div class="pt-4">
+                    <a href="auth.html?mode=register" class="flex items-center justify-center gap-3 w-full py-5 bg-primary text-white font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 active:scale-95 transition-all">
+                        <i data-lucide="user-plus" class="w-6 h-6"></i>
+                        <span data-i18n="nav-register">S'inscrire</span>
+                    </a>
+                </div>
             </nav>
             
             <div class="mt-auto pt-10 text-center">
