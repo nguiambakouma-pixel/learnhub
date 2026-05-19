@@ -916,15 +916,51 @@
         // Finaliser et sauvegarder dans Supabase
         window.finaliser = async function () {
             try {
-                // Récupérer l'utilisateur actuel
-                const { data: { user } } = await supabaseClient.auth.getUser();
+                let user = null;
+                const pendingDataStr = sessionStorage.getItem('pending_signup');
+
+                if (pendingDataStr) {
+                    const pending = JSON.parse(pendingDataStr);
+                    console.log('💾 Création du compte en cours (onboarding finalisé)...', pending.email);
+
+                    // ÉTAPE A: Création du compte Auth Supabase
+                    const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({
+                        email: pending.email,
+                        password: pending.password,
+                        options: { data: { nom: pending.name, type_parcours: pending.path } }
+                    });
+
+                    if (signUpError) throw signUpError;
+                    user = signUpData.user;
+
+                    // ÉTAPE B: Création du profil initial
+                    const { error: profileInitError } = await supabaseClient
+                        .from('profiles')
+                        .upsert({
+                            id: user.id,
+                            nom: pending.name,
+                            email: pending.email,
+                            type_parcours: pending.path,
+                            points_total: 0,
+                            streak_jours: 0
+                        });
+
+                    if (profileInitError) throw profileInitError;
+
+                    // Nettoyer la session
+                    sessionStorage.removeItem('pending_signup');
+                } else {
+                    // Flux classique de fallback (utilisateur déjà connecté via un autre moyen)
+                    const { data } = await supabaseClient.auth.getUser();
+                    user = data?.user;
+                }
 
                 if (!user) {
-                    alert('Erreur: Utilisateur non connecté');
+                    alert('Erreur: Aucun compte connecté ou en cours de création.');
                     return;
                 }
 
-                console.log('💾 Sauvegarde du profil...', {
+                console.log('💾 Liaison des données scolaires au profil...', {
                     userId: user.id,
                     section: userData.section,
                     classe: userData.classe,
@@ -1055,9 +1091,6 @@
                 const target = dashboards[profile.type_parcours] || 'dashboard-eleve.html';
 
                 console.log('🚀 Redirection vers:', target);
-
-                // Petit délai pour laisser l'utilisateur voir le succès si besoin
-                // Mais ici on veut du "DIRECTEMENT REDIRIGER" comme demandé
                 window.location.href = target;
             } catch (err) {
                 console.error('Erreur lors de la redirection:', err);
@@ -1071,6 +1104,25 @@
                 else window.location.href = 'dashboard-eleve.html';
             });
         }
+
+        // Préremplissage automatique du nom s'il y a une inscription en attente
+        document.addEventListener('DOMContentLoaded', () => {
+            const pendingDataStr = sessionStorage.getItem('pending_signup');
+            if (pendingDataStr) {
+                try {
+                    const pending = JSON.parse(pendingDataStr);
+                    if (pending.name) {
+                        const nameInput = document.getElementById('userName');
+                        if (nameInput) {
+                            nameInput.value = pending.name;
+                            validateStep1();
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error parsing pending signup data:', e);
+                }
+            }
+        });
     </script>
     <script src="../assets/js/responsive.js"></script>
 </body>

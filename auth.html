@@ -501,6 +501,17 @@
             const path = document.getElementById('reg-path').value;
 
             try {
+                if (path === 'eleve') {
+                    // Pour éviter les profils incomplets, on ne crée le compte qu'À LA FIN de l'onboarding
+                    sessionStorage.setItem('pending_signup', JSON.stringify({ name, email, password, path }));
+                    showMessage('Préparation de votre onboarding...');
+                    setTimeout(() => {
+                        window.location.href = 'Dashboard-eleves/onboarding_cameroun.html';
+                    }, 1000);
+                    return;
+                }
+
+                // Inscription directe pour les autres parcours (dev-web, designer)
                 const { data, error } = await supabase.auth.signUp({
                     email,
                     password,
@@ -522,11 +533,7 @@
                 showMessage('Compte créé ! Bienvenue.');
 
                 setTimeout(() => {
-                    if (path === 'eleve') {
-                        window.location.href = 'Dashboard-eleves/onboarding_cameroun.html';
-                    } else {
-                        redirectToDashboard(data.user.id);
-                    }
+                    redirectToDashboard(data.user.id);
                 }, 1500);
 
             } catch (error) {
