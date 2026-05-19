@@ -194,7 +194,7 @@ const ElevesManager = {
                             <p class="text-gray-500 text-xs">${eleve.email || ''}</p>
                         </div>
                     </div>
-                </td>
+                <td class="px-5 py-4">
                     <span class="font-bold text-yellow-400">${eleve.points_total || 0}</span>
                     <span class="text-gray-500 text-xs"> pts</span>
                 </td>
