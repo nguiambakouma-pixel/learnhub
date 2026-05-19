@@ -943,19 +943,27 @@
             </div>
         </main>
 
-        <!-- ═══ RIGHT SIDEBAR ═══ -->
-        <aside class="right-sidebar" id="rightSidebar">
-            <div class="sidebar-tabs">
-                <div class="sidebar-tab active" onclick="switchTab('info')" id="tab-info" data-i18n="lbl_info">ℹ️ Infos</div>
-                <div class="sidebar-tab" onclick="switchTab('notes')" id="tab-notes" data-i18n="lbl_notes">📝 Notes</div>
-                <div class="sidebar-tab" onclick="switchTab('progress')" id="tab-progress" data-i18n="lbl_progress">📊 Progrès</div>
+        <!-- �            <div class="sidebar-tabs">
+                <div class="sidebar-tab active" onclick="switchTab('info')" id="tab-info" style="display:flex;align-items:center;gap:.35rem;">
+                    <i data-lucide="info" class="w-4 h-4"></i>
+                    <span data-i18n="lbl_info">Infos</span>
+                </div>
+                <div class="sidebar-tab" onclick="switchTab('notes')" id="tab-notes" style="display:flex;align-items:center;gap:.35rem;">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    <span data-i18n="lbl_notes">Notes</span>
+                </div>
+                <div class="sidebar-tab" onclick="switchTab('progress')" id="tab-progress" style="display:flex;align-items:center;gap:.35rem;">
+                    <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                    <span data-i18n="lbl_progress">Progrès</span>
+                </div>
             </div>
 
             <!-- INFO -->
             <div class="sidebar-panel active" id="panel-info">
                 <div id="sbThumb"
-                    style="width:100%;height:130px;background:linear-gradient(135deg,#1e1b4b,#0d2a1e);border-radius:.75rem;display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem;overflow:hidden;">
-                    📚</div>
+                    style="width:100%;height:130px;background:linear-gradient(135deg,#1e1b4b,#0d2a1e);border-radius:.75rem;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;overflow:hidden;">
+                    <i data-lucide="book-open" style="width:48px; height:48px; color:var(--gold)"></i>
+                </div>
                 <div id="sbTitle"
                     style="font-family:'Outfit',sans-serif;font-weight:700;font-size:.92rem;color:#f1f5f9;margin-bottom:1rem;line-height:1.35;">
                 </div>
@@ -972,10 +980,17 @@
                 </div>
                 <div style="margin-top:.75rem;display:flex;flex-direction:column;gap:.4rem;">
                     <button id="favBtn" onclick="toggleFavori()"
-                        style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#94a3b8;border-radius:.6rem;padding:.55rem;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;" data-i18n="btn_fav_add">🤍
-                        Ajouter aux favoris</button>
+                        style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#94a3b8;border-radius:.6rem;padding:.55rem;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s;">
+                        <i data-lucide="heart" class="w-4 h-4"></i>
+                        <span data-i18n="btn_fav_add">Ajouter aux favoris</span>
+                    </button>
                     <button onclick="shareUrl()"
-                        style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#94a3b8;border-radius:.6rem;padding:.55rem;font-size:.8rem;font-weight:600;cursor:pointer;" data-i18n="btn_share">🔗
+                        style="display:flex;align-items:center;justify-content:center;gap:.5rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#94a3b8;border-radius:.6rem;padding:.55rem;font-size:.8rem;font-weight:600;cursor:pointer;">
+                        <i data-lucide="share-2" class="w-4 h-4"></i>
+                        <span data-i18n="btn_share">Partager</span>
+                    </button>
+                </div>
+            </div>" data-i18n="btn_share">🔗
                         Partager</button>
                 </div>
             </div>

@@ -2478,6 +2478,116 @@
             if (window.lucide) lucide.createIcons();
         }
 
+        // ── Custom Premium SVG Subject Icons ──
+        function getSubjectIcon(subjectName, size = 32) {
+            const name = (subjectName || '').toLowerCase().trim();
+            const norm = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            
+            const getGradient = (id, c1, c2) => `
+                <defs>
+                    <linearGradient id="${id}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="${c1}" />
+                        <stop offset="100%" stop-color="${c2}" />
+                    </linearGradient>
+                </defs>
+            `;
+
+            // 1. MATHEMATICS
+            if (norm.includes('math') || norm.includes('calcul') || norm.includes('algebre') || norm.includes('geometrie')) {
+                return `
+                <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle;">
+                    ${getGradient('grad-math', '#3b82f6', '#1d4ed8')}
+                    <path d="M4 19h16M4 5h16M12 5v14M16 9l4 4m0-4l-4 4M4 11h4m-2-2v4" stroke="url(#grad-math)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>`;
+            }
+            
+            // 2. PHYSICS & CHEMISTRY
+            if (norm.includes('physique') || norm.includes('chimie') || norm.includes('chemistry') || norm.includes('physics') || norm.includes('science')) {
+                return `
+                <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle;">
+                    ${getGradient('grad-physics', '#ec4899', '#8b5cf6')}
+                    <path d="M10 2h4M12 2v7M6 22h12M12 9l-6 11a2 2 0 002 3h8a2 2 0 002-3l-6-11z" stroke="url(#grad-physics)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="17" r="1" fill="url(#grad-physics)"/>
+                    <circle cx="14" cy="15" r="0.8" fill="url(#grad-physics)"/>
+                </svg>`;
+            }
+
+            // 3. SVT / BIOLOGY
+            if (norm.includes('svt') || norm.includes('biologie') || norm.includes('biology') || norm.includes('vie') || norm.includes('terre') || norm.includes('geologie')) {
+                return `
+                <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle;">
+                    ${getGradient('grad-bio', '#10b981', '#059669')}
+                    <path d="M2 22c0-5.5 4.5-10 10-10s10 4.5 10 10M12 2a15.3 15.3 0 014 10H8a15.3 15.3 0 014-10zM12 12v10" stroke="url(#grad-bio)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 7h6" stroke="url(#grad-bio)" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>`;
+            }
+
+            // 4. COMPUTER SCIENCE & ICT
+            if (norm.includes('informatique') || norm.includes('ict') || norm.includes('computer') || norm.includes('techno') || norm.includes('code') || norm.includes('ti')) {
+                return `
+                <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle;">
+                    ${getGradient('grad-cs', '#8b5cf6', '#d946ef')}
+                    <rect x="2" y="3" width="20" height="14" rx="2" stroke="url(#grad-cs)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 21h8M12 17v4M7 8l-3 3 3 3M17 8l3 3-3 3" stroke="url(#grad-cs)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>`;
+            }
+
+            // 5. HISTORY & GEOGRAPHY
+            if (norm.includes('histoire') || norm.includes('geographie') || norm.includes('history') || norm.includes('geography')) {
+                return `
+                <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle;">
+                    ${getGradient('grad-hist', '#f59e0b', '#d97706')}
+                    <circle cx="12" cy="12" r="10" stroke="url(#grad-hist)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10zM2 12h20" stroke="url(#grad-hist)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>`;
+            }
+
+            // 6. LANGUAGES & LITERATURE
+            if (norm.includes('francais') || norm.includes('anglais') || norm.includes('english') || norm.includes('french') || norm.includes('langue') || norm.includes('allemand') || norm.includes('espagnol') || norm.includes('chinois') || norm.includes('literature') || norm.includes('quill') || norm.includes('book')) {
+                return `
+                <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle;">
+                    ${getGradient('grad-lang', '#ef4444', '#f43f5e')}
+                    <path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5A2.5 2.5 0 006.5 22H20M4 19.5V3.5A2.5 2.5 0 016.5 1h12A2.5 2.5 0 0121 3.5V17" stroke="url(#grad-lang)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 6h8M8 10h8" stroke="url(#grad-lang)" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>`;
+            }
+
+            // 7. PHILOSOPHY
+            if (norm.includes('philosophie') || norm.includes('philosophy') || norm.includes('pensee') || norm.includes('mind')) {
+                return `
+                <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle;">
+                    ${getGradient('grad-philo', '#6366f1', '#4338ca')}
+                    <path d="M4 22h16M9 22V8M15 22V8M12 5V2M12 2L9 5M12 2l3 3M6 8h12" stroke="url(#grad-philo)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>`;
+            }
+
+            // 8. ECONOMICS & COMMERCE
+            if (norm.includes('economie') || norm.includes('economics') || norm.includes('commerce') || norm.includes('compta') || norm.includes('accounting')) {
+                return `
+                <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle;">
+                    ${getGradient('grad-eco', '#eab308', '#ca8a04')}
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke="url(#grad-eco)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>`;
+            }
+
+            // 9. ECM & CITIZENSHIP
+            if (norm.includes('ecm') || norm.includes('education civique') || norm.includes('citizenship') || norm.includes('droit') || norm.includes('civic')) {
+                return `
+                <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle;">
+                    ${getGradient('grad-ecm', '#10b981', '#ef4444')}
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="url(#grad-ecm)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 8l1 2.5h2.5L13.5 12l1 2.5-2.5-1.5-2.5 1.5 1-2.5-2-1.5H11z" fill="url(#grad-ecm)"/>
+                </svg>`;
+            }
+
+            // FALLBACK DEFAULT
+            return `
+            <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block; vertical-align:middle;">
+                ${getGradient('grad-default', '#4f46e5', '#312e81')}
+                <path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5A2.5 2.5 0 006.5 22H20M4 19.5V3.5A2.5 2.5 0 016.5 1h12A2.5 2.5 0 0121 3.5V17" stroke="url(#grad-default)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>`;
+        }
+
         function animateCount(id, from, to, dur) {
             const el = document.getElementById(id);
             if (!el) return;
@@ -2501,10 +2611,11 @@
             const barColors = ['linear-gradient(90deg,#F5B800,#FDE68A)', 'linear-gradient(90deg,#10B981,#6EE7B7)', 'linear-gradient(90deg,#3B82F6,#93C5FD)'];
             list.innerHTML = progs.map((p, i) => {
                 const c = p.cours;
+                const mName = c.matiere || t('subject');
                 return `<div class="cours-item" onclick="openCours(${c.id})">
-      <div class="cours-thumb">📚</div>
+      <div class="cours-thumb" style="display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border-radius:12px;width:48px;height:48px;padding:8px">${getSubjectIcon(mName, 32)}</div>
       <div class="cours-info">
-        <div class="cours-matiere-tag" style="color:var(--gold)">${c.matiere || t('subject')}</div>
+        <div class="cours-matiere-tag" style="color:var(--gold)">${mName}</div>
         <div class="cours-titre">${c.titre}</div>
         <div class="prog-bar"><div class="prog-bar-fill" style="width:${p.progression_pourcentage}%;background:${barColors[i % 3]}"></div></div>
         <div class="pct-text">${t('pct_done', p.progression_pourcentage)}</div>
@@ -2525,7 +2636,7 @@
                 return `
     <div class="matiere-card" onclick="${clickAction}" style="border-color:${m.couleur}22">
       <div style="width:100%;height:3px;background:${m.couleur};border-radius:2px;margin-bottom:10px;opacity:0.6"></div>
-      <div class="mat-icon">${m.icone}</div>
+      <div class="mat-icon" style="display:flex;align-items:center;justify-content:center;margin:0 auto 10px">${getSubjectIcon(m.nom, 42)}</div>
       <div class="mat-name">${m.nom}</div>
       <div class="mat-count">${t('courses_count', m.nb_cours)}</div>
     </div>`;
@@ -2630,10 +2741,9 @@
                 const label = x.pct === 100 ? t('label_done') : x.pct > 0 ? t('label_prog', x.pct) : t('label_new');
                 const mName = x.mat?.nom || x.matiere || t('subject');
                 const mColor = x.mat?.couleur || '#4F46E5';
-                const mIcon = x.mat?.icone || '📚';
 
                 return `<div class="catalog-card" onclick="openCours(${x.id})">
-      <div class="catalog-thumb" style="background:linear-gradient(135deg,${mColor}22,${mColor}11)">${mIcon}</div>
+      <div class="catalog-thumb" style="background:linear-gradient(135deg,${mColor}22,${mColor}11);display:flex;align-items:center;justify-content:center">${getSubjectIcon(mName, 36)}</div>
       <div class="catalog-body">
         <div class="catalog-matiere" style="color:${mColor}">${mName}</div>
         <div class="catalog-titre">${x.titre}</div>

@@ -1189,22 +1189,22 @@
                 <div id="sec-dashboard" class="sec active">
                     <div class="sg">
                         <div class="sc ci">
-                            <div class="sico">📚</div>
+                            <div class="sico"><i data-lucide="book-open" style="width:28px;height:28px;color:#6366F1;"></i></div>
                             <div class="sv" id="st-c">—</div>
                             <div class="sl" data-i18n="stat_courses">Cours proposés</div>
                         </div>
                         <div class="sc cp">
-                            <div class="sico">💻</div>
+                            <div class="sico"><i data-lucide="terminal" style="width:28px;height:28px;color:#10B981;"></i></div>
                             <div class="sv" id="st-x">—</div>
                             <div class="sl" data-i18n="stat_exercises">Exercices Code</div>
                         </div>
                         <div class="sc ce">
-                            <div class="sico">✅</div>
+                            <div class="sico"><i data-lucide="check-circle" style="width:28px;height:28px;color:#3B82F6;"></i></div>
                             <div class="sv" id="st-v">—</div>
                             <div class="sl" data-i18n="stat_validated">Épreuves validées</div>
                         </div>
                         <div class="sc ca">
-                            <div class="sico">💰</div>
+                            <div class="sico"><i data-lucide="dollar-sign" style="width:28px;height:28px;color:#F59E0B;"></i></div>
                             <div class="sv" id="st-g">—</div>
                             <div class="sl">Gains (XAF)</div>
                         </div>
@@ -1292,8 +1292,7 @@
                 <div id="sec-proposer-cours" class="sec">
                     <div class="gl" style="max-width:820px">
                         <div class="gh">
-                            <div class="gtitle" id="cf-title" data-i18n="propose_course_title">✏️ Proposer un nouveau
-                                cours</div>
+                            <div class="gtitle" id="cf-title" style="display:flex;align-items:center;gap:8px"><i data-lucide="pen-tool" style="width:20px;height:20px;color:var(--primary)"></i><span data-i18n="propose_course_title">Proposer un nouveau cours</span></div>
                         </div>
                         <div class="gb">
                             <div id="al-cours" class="al"></div>
@@ -1337,15 +1336,15 @@
                                     (optionnel)</label><input type="url" id="c-vid"
                                     placeholder="https://youtube.com/watch?v=…"></div>
                             <div class="fd"><label data-i18n="field_image">Image de couverture</label>
-                                <label class="uz" id="iz"><input type="file" id="c-img" accept="image/*"
-                                        onchange="uploadImg(event)"><span style="font-size:1.3rem">🖼️</span>
+                                <label class="uz" id="iz" style="display:flex;align-items:center;gap:12px;padding:15px;cursor:pointer;"><input type="file" id="c-img" accept="image/*"
+                                        onchange="uploadImg(event)" style="display:none;"><i data-lucide="image" style="width:24px;height:24px;color:var(--primary);flex-shrink:0;"></i>
                                     <div class="ut"><strong id="iname" data-i18n="choose_image">Choisir une
                                             image</strong><span data-i18n="img_hint">JPG, PNG — Max 5 MB</span></div>
                                 </label>
                             </div>
                             <div class="fd"><label data-i18n="field_pdf">PDF du cours (optionnel)</label>
-                                <label class="uz" id="pz"><input type="file" id="c-pdf" accept=".pdf"
-                                        onchange="uploadPdf(event)"><span style="font-size:1.3rem">📄</span>
+                                <label class="uz" id="pz" style="display:flex;align-items:center;gap:12px;padding:15px;cursor:pointer;"><input type="file" id="c-pdf" accept=".pdf"
+                                        onchange="uploadPdf(event)" style="display:none;"><i data-lucide="file-text" style="width:24px;height:24px;color:var(--primary);flex-shrink:0;"></i>
                                     <div class="ut"><strong id="pname" data-i18n="choose_pdf">Choisir un
                                             PDF</strong><span data-i18n="pdf_hint">Max 10 MB</span></div>
                                 </label>
@@ -1364,10 +1363,8 @@
                             </div>
                             <div class="sep"></div>
                             <div style="display:flex;gap:.7rem;justify-content:flex-end">
-                                <button class="btn btn-g" onclick="resetCours()" data-i18n="btn_reset">🔄
-                                    Réinitialiser</button>
-                                <button class="btn btn-p" id="btn-cours" onclick="saveCours()"><span
-                                        data-i18n="btn_submit_course">📤 Soumettre le cours</span></button>
+                                <button class="btn btn-g" onclick="resetCours()" style="display:flex;align-items:center;gap:6px"><i data-lucide="rotate-ccw" style="width:16px;height:16px"></i><span data-i18n="btn_reset">Réinitialiser</span></button>
+                                <button class="btn btn-p" id="btn-cours" onclick="saveCours()" style="display:flex;align-items:center;gap:6px"><i data-lucide="send" style="width:16px;height:16px"></i><span data-i18n="btn_submit_course">Soumettre le cours</span></button>
                             </div>
                         </div>
                     </div>
@@ -2472,9 +2469,16 @@
             try {
                 const { data, error } = await sb.from('cours').select('id,titre,matiere,chapitre,est_publie,type_contenu,duree_lecture,points_recompense,created_at').eq('soumis_par', uid).order('created_at', { ascending: false })
                 if (error) throw error
-                if (!data?.length) { w.innerHTML = `<div class="emp"><div class="emp-ico">📚</div><h4>${t('my_courses_title')}</h4></div>`; return }
+                if (!data?.length) {
+                    w.innerHTML = `<div class="emp" style="display:flex;flex-direction:column;align-items:center;padding:2rem;"><div class="emp-ico" style="margin-bottom:10px;"><i data-lucide="book" style="width:36px;height:36px;color:var(--primary);"></i></div><h4 style="color:var(--mu);">${t('my_courses_title')}</h4></div>`
+                    if (window.lucide) window.lucide.createIcons()
+                    return
+                }
                 const pub = t('badge_published'), pend = t('badge_pending')
-                w.innerHTML = `<table><tr><th>${t('field_title')}</th><th>${t('field_subject')}</th><th>${t('field_content_type')}</th><th>${t('field_duration')}</th><th>XP</th><th>Statut</th><th></th></tr>${data.map(c => `<tr><td style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)">${c.titre}</td><td style="color:var(--mu)">${c.matiere}</td><td style="font-size:.74rem;color:#94a3b8">${c.type_contenu === 'video' ? '🎥' : '📄'}</td><td style="color:var(--mu)">${c.duree_lecture ? c.duree_lecture + ' min' : '—'}</td><td style="color:var(--am)">${c.points_recompense} XP</td><td>${c.est_publie ? `<span class="badge bok">${pub}</span>` : `<span class="badge bwt">${pend}</span>`}</td><td>${!c.est_publie ? `<button onclick="loadEditCours('${c.id}')" style="padding:.28rem .6rem;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);color:var(--ind);border-radius:.38rem;cursor:pointer;font-size:.73rem">✏️</button>` : ''}</td></tr>`).join('')}</table>`
+                w.innerHTML = `<table><tr><th>${t('field_title')}</th><th>${t('field_subject')}</th><th>${t('field_content_type')}</th><th>${t('field_duration')}</th><th>XP</th><th>Statut</th><th></th></tr>${data.map(c => `<tr><td style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)">${c.titre}</td><td style="color:var(--mu)">${c.matiere}</td><td style="font-size:.74rem;color:#94a3b8">${c.type_contenu === 'video' ? '<i data-lucide="video" style="width:16px;height:16px;color:#ec4899;display:inline-block;vertical-align:middle;"></i>' : '<i data-lucide="file-text" style="width:16px;height:16px;color:#3b82f6;display:inline-block;vertical-align:middle;"></i>'}</td><td style="color:var(--mu)">${c.duree_lecture ? c.duree_lecture + ' min' : '—'}</td><td style="color:var(--am)">${c.points_recompense} XP</td><td>${c.est_publie ? `<span class="badge bok">${pub}</span>` : `<span class="badge bwt">${pend}</span>`}</td><td>${!c.est_publie ? `<button onclick="loadEditCours('${c.id}')" style="padding:.28rem .6rem;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);color:var(--ind);border-radius:.38rem;cursor:pointer;font-size:.73rem;display:inline-flex;align-items:center;justify-content:center;"><i data-lucide="edit-2" style="width:12px;height:12px;"></i></button>` : ''}</td></tr>`).join('')}</table>`
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
             } catch (e) {
                 console.error(e)
                 w.innerHTML = `<div class="emp"><div class="emp-ico">⚠️</div><h4>Error</h4><p>${e.message}</p></div>`

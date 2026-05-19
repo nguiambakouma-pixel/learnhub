@@ -11,6 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="../js/secrets.js"></script>
     <script src="../js/i18n.js"></script>
     <style>
@@ -468,7 +469,7 @@
                     </div>
 
                     <div class="banner" id="sectionInfo" style="display: none;">
-                        <span class="banner-icon">💡</span>
+                        <span class="banner-icon flex items-center justify-center"><i data-lucide="lightbulb" style="width:20px; height:20px; color:#0284c7"></i></span>
                         <div class="banner-text" id="sectionInfoText"></div>
                     </div>
 
@@ -493,7 +494,7 @@
                     </div>
 
                     <div class="banner" id="classeInfo" style="display: none;">
-                        <span class="banner-icon">📓</span>
+                        <span class="banner-icon flex items-center justify-center"><i data-lucide="book-open" style="width:20px; height:20px; color:#4f46e5"></i></span>
                         <div class="banner-text" id="classeInfoText"></div>
                     </div>
 
@@ -516,7 +517,7 @@
                     </div>
 
                     <div class="banner" id="specialiteInfo" style="display: none;">
-                        <span class="banner-icon">🎯</span>
+                        <span class="banner-icon flex items-center justify-center"><i data-lucide="target" style="width:20px; height:20px; color:#10b981"></i></span>
                         <div class="banner-text" id="specialiteInfoText"></div>
                     </div>
 
@@ -556,7 +557,7 @@
                     </div>
 
                     <div class="banner">
-                        <span class="banner-icon">🚀</span>
+                        <span class="banner-icon flex items-center justify-center"><i data-lucide="rocket" style="width:20px; height:20px; color:#f97316"></i></span>
                         <div class="banner-text">En validant, votre dashboard sera instantanément configuré avec vos
                             matières et cours.</div>
                     </div>
@@ -570,7 +571,7 @@
                 <!-- ÉTAPE 5: Succès -->
                 <div class="step" id="step5">
                     <div class="success-hero">
-                        <span class="icon">✨</span>
+                        <span class="icon flex justify-center mb-6"><i data-lucide="sparkles" style="width:64px; height:64px; color:#eab308; margin: 0 auto;"></i></span>
                         <h2 class="step-title">C'est parti !</h2>
                         <p class="step-subtitle">Profil sauvegardé. Bienvenue dans la communauté KMERSCHOOL.</p>
                     </div>
@@ -848,6 +849,8 @@
                     dot.classList.add('completed');
                 }
             });
+
+            if (window.lucide) lucide.createIcons();
         }
 
         // Charger les classes selon la section
@@ -860,7 +863,7 @@
             niveaux.forEach(niveau => {
                 const option = document.createElement('option');
                 option.value = niveau.code;
-                option.textContent = niveau.nom + (niveau.examen ? ' ⭐' : '');
+                option.textContent = niveau.nom + (niveau.examen ? ' [Examen]' : '');
                 select.appendChild(option);
             });
         }
@@ -1107,6 +1110,7 @@
 
         // Préremplissage automatique du nom s'il y a une inscription en attente
         document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) lucide.createIcons();
             const pendingDataStr = sessionStorage.getItem('pending_signup');
             if (pendingDataStr) {
                 try {

@@ -327,6 +327,135 @@
             h1 { font-size: 1.5rem !important; margin-bottom: 0.5rem !important; }
             p.text-sm { margin-bottom: 1rem !important; }
         }
+
+        /* ── Custom Select Path Selector ── */
+        .custom-select-wrapper {
+            position: relative;
+            width: 100%;
+            margin: 10px 0;
+            user-select: none;
+            text-align: left;
+        }
+
+        .custom-select-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f1f5f9;
+            padding: 14px 18px;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            font-size: 15px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .custom-select-trigger:focus, .custom-select-trigger.open {
+            background-color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 122, 94, 0.1);
+        }
+
+        .custom-select-trigger .trigger-icon {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .custom-select-trigger .arrow-icon {
+            width: 16px;
+            height: 16px;
+            margin-left: auto;
+            color: #64748b;
+            transition: transform 0.2s;
+        }
+
+        .custom-select-trigger.open .arrow-icon {
+            transform: rotate(180deg);
+        }
+
+        .custom-options {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-radius: 1.2rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border);
+            z-index: 999;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            padding: 8px;
+            gap: 4px;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+        }
+
+        .custom-options.open {
+            display: flex;
+            transform: translateY(0);
+        }
+
+        .custom-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            gap: 12px;
+        }
+
+        .custom-option:hover {
+            background-color: #f8fafc;
+        }
+
+        .custom-option.selected {
+            background-color: #eff6ff;
+            border: 1px solid rgba(0, 122, 94, 0.1);
+        }
+
+        .option-icon-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .option-student { background: linear-gradient(135deg, #007A5E, #10b981); }
+        .option-dev { background: linear-gradient(135deg, #CE1126, #ef4444); }
+        .option-designer { background: linear-gradient(135deg, #FCD116, #f59e0b); color: #000; }
+
+        .option-icon-wrapper i {
+            width: 18px;
+            height: 18px;
+        }
+
+        .option-text-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .option-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .option-subtitle {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 1px;
+        }
     </style>
     <link rel="stylesheet" href="./responsive.css">
 </head>
@@ -362,12 +491,42 @@
                 <input type="text" id="reg-name" placeholder="Nom complet" data-i18n="auth-name-placeholder" required />
                 <input type="email" id="reg-email" placeholder="Email" data-i18n="auth-email-placeholder" required />
                 <input type="password" id="reg-password" placeholder="Mot de passe" data-i18n="auth-pass-placeholder" required />
-                <select id="reg-path" required>
+                <select id="reg-path" required style="position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; z-index: -1;">
                     <option value="" disabled selected data-i18n="auth-path-placeholder">Choisis ton parcours</option>
                     <option value="eleve" data-i18n="auth-path-student">🎓 Élève (Collège/Lycée)</option>
                     <option value="dev-web" data-i18n="auth-path-dev">💻 Développeur Web</option>
                     <option value="designer" data-i18n="auth-path-designer">🎨 Designer UI/UX</option>
                 </select>
+                <div class="custom-select-wrapper" id="custom-path-wrapper">
+                    <div class="custom-select-trigger" id="custom-path-trigger">
+                        <i data-lucide="compass" class="trigger-icon"></i>
+                        <span data-i18n="auth-path-placeholder">Choisis ton parcours</span>
+                        <i data-lucide="chevron-down" class="arrow-icon"></i>
+                    </div>
+                    <div class="custom-options" id="custom-path-options">
+                        <div class="custom-option" data-value="eleve">
+                            <div class="option-icon-wrapper option-student"><i data-lucide="graduation-cap"></i></div>
+                            <div class="option-text-wrapper">
+                                <span class="option-title">Élève (Collège/Lycée)</span>
+                                <span class="option-subtitle">Suis tes cours officiels camerounais</span>
+                            </div>
+                        </div>
+                        <div class="custom-option" data-value="dev-web">
+                            <div class="option-icon-wrapper option-dev"><i data-lucide="code-2"></i></div>
+                            <div class="option-text-wrapper">
+                                <span class="option-title">Développeur Web</span>
+                                <span class="option-subtitle">Apprends à coder des applications web</span>
+                            </div>
+                        </div>
+                        <div class="custom-option" data-value="designer">
+                            <div class="option-icon-wrapper option-designer"><i data-lucide="palette"></i></div>
+                            <div class="option-text-wrapper">
+                                <span class="option-title">Designer UI/UX</span>
+                                <span class="option-subtitle">Conçois des interfaces magnifiques</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <button type="submit" class="btn-auth" data-i18n="auth-btn-signup">S'inscrire</button>
                 <div class="mobile-toggle" onclick="container.classList.remove('right-panel-active')" data-i18n="auth-has-account">
                     Déjà un compte ? Se connecter
@@ -553,6 +712,108 @@
             }
         });
 
+        // ── Custom Path Select Translation & Sync ──
+        function updateCustomSelectTranslation() {
+            const lang = window.i18n ? window.i18n.lang : 'fr';
+            const paths = {
+                'eleve': {
+                    title: lang === 'fr' ? 'Élève (Collège/Lycée)' : 'Student (Middle/High School)',
+                    subtitle: lang === 'fr' ? 'Suis tes cours officiels camerounais' : 'Follow your official Cameroonian courses'
+                },
+                'dev-web': {
+                    title: lang === 'fr' ? 'Développeur Web' : 'Web Developer',
+                    subtitle: lang === 'fr' ? 'Apprends à coder des applications web' : 'Learn to code web applications'
+                },
+                'designer': {
+                    title: lang === 'fr' ? 'Designer UI/UX' : 'UI/UX Designer',
+                    subtitle: lang === 'fr' ? 'Conçois des interfaces magnifiques' : 'Design gorgeous user interfaces'
+                }
+            };
+            
+            // Update trigger if a value is selected
+            const select = document.getElementById('reg-path');
+            const val = select.value;
+            const triggerText = document.querySelector('#custom-path-trigger span');
+            if (triggerText) {
+                if (val && paths[val]) {
+                    triggerText.textContent = paths[val].title;
+                } else {
+                    triggerText.textContent = lang === 'fr' ? 'Choisis ton parcours' : 'Choose your pathway';
+                }
+            }
+            
+            // Update options text
+            document.querySelectorAll('.custom-option').forEach(opt => {
+                const pathVal = opt.getAttribute('data-value');
+                if (paths[pathVal]) {
+                    const titleEl = opt.querySelector('.option-title');
+                    const subEl = opt.querySelector('.option-subtitle');
+                    if (titleEl) titleEl.textContent = paths[pathVal].title;
+                    if (subEl) subEl.textContent = paths[pathVal].subtitle;
+                }
+            });
+        }
+
+        // Custom path select handling
+        const trigger = document.getElementById('custom-path-trigger');
+        const optionsContainer = document.getElementById('custom-path-options');
+        const hiddenSelect = document.getElementById('reg-path');
+        const triggerIcon = trigger ? trigger.querySelector('.trigger-icon') : null;
+
+        if (trigger && optionsContainer) {
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                trigger.classList.toggle('open');
+                optionsContainer.classList.toggle('open');
+            });
+
+            document.querySelectorAll('.custom-option').forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    const val = opt.getAttribute('data-value');
+                    hiddenSelect.value = val;
+                    
+                    // Update trigger text
+                    updateCustomSelectTranslation();
+                    
+                    // Update trigger icon based on selection
+                    if (triggerIcon) {
+                        const iconMap = {
+                            'eleve': 'graduation-cap',
+                            'dev-web': 'code-2',
+                            'designer': 'palette'
+                        };
+                        triggerIcon.setAttribute('data-lucide', iconMap[val]);
+                        if (window.lucide) {
+                            window.lucide.createIcons();
+                        }
+                    }
+
+                    // Mark selected in list
+                    document.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+
+                    // Close list
+                    trigger.classList.remove('open');
+                    optionsContainer.classList.remove('open');
+                });
+            });
+
+            document.addEventListener('click', () => {
+                trigger.classList.remove('open');
+                optionsContainer.classList.remove('open');
+            });
+        }
+
+        // Hook i18n
+        if (window.i18n) {
+            const originalApplyTranslations = window.i18n.applyTranslations;
+            window.i18n.applyTranslations = function() {
+                originalApplyTranslations.call(window.i18n);
+                updateCustomSelectTranslation();
+            };
+            updateCustomSelectTranslation();
+        }
+
         // Check current mode from URL
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('mode') === 'register') {
@@ -567,8 +828,25 @@
                 'designer': 'designer'
             };
             if (pathMap[pathParam]) {
-                document.getElementById('reg-path').value = pathMap[pathParam];
+                const val = pathMap[pathParam];
+                document.getElementById('reg-path').value = val;
                 container.classList.add("right-panel-active");
+
+                // Sync custom select UI
+                const opt = document.querySelector(`.custom-option[data-value="${val}"]`);
+                if (opt) {
+                    document.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    if (triggerIcon) {
+                        const iconMap = {
+                            'eleve': 'graduation-cap',
+                            'dev-web': 'code-2',
+                            'designer': 'palette'
+                        };
+                        triggerIcon.setAttribute('data-lucide', iconMap[val]);
+                    }
+                }
+                updateCustomSelectTranslation();
             }
         }
 
