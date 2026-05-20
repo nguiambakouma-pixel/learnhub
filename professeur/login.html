@@ -235,7 +235,81 @@
         .steps-title { color: #b58d00; font-weight: 800; }
         .step-dot.active { background: var(--accent); }
 
-        .alert-error { background: #fee2e2; color: #991b1b; border-left: 5px solid var(--secondary); }
+        /* Alert & Notice Styles */
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .alert.show {
+            display: flex;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .alert-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fee2e2;
+            border-left: 5px solid var(--secondary);
+        }
+        .alert-success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #dcfce7;
+            border-left: 5px solid var(--primary);
+        }
+        .alert-info {
+            background: #f0f9ff;
+            color: #075985;
+            border: 1px solid #e0f2fe;
+            border-left: 5px solid #0284c7;
+        }
+        .notice {
+            text-align: center;
+            padding: 2.5rem 2rem;
+            background: rgba(0, 122, 94, 0.03);
+            border: 1px dashed var(--primary);
+            border-radius: 1.5rem;
+            margin: 1.5rem 0;
+            animation: fadeIn 0.4s ease-out;
+        }
+        .notice-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(0, 122, 94, 0.1);
+            color: var(--primary);
+            margin-bottom: 1.25rem;
+            animation: pulse-primary 2s infinite ease-in-out;
+        }
+        @keyframes pulse-primary {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 122, 94, 0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0, 122, 94, 0); }
+        }
+        .notice h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+        }
+        .notice p {
+            font-size: 0.95rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
 
         .lang-switcher {
             margin-bottom: 2rem;
@@ -368,12 +442,16 @@
 
                     <!-- Notice: compte en attente -->
                     <div id="notice-pending" class="notice" style="display:none">
-                        <div class="notice-icon">⏳</div>
-                        <h3>Dossier en cours de vérification</h3>
-                        <p>Votre inscription est enregistrée. L'équipe KMERSCHOOL examine vos documents.<br>
+                        <div class="notice-icon">
+                            <svg class="w-10 h-10 inline-block align-middle" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 40px; height: 40px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 data-i18n="prof-notice-pending-title">Dossier en cours de vérification</h3>
+                        <p data-i18n="prof-notice-pending-desc">Votre inscription est enregistrée. L'équipe KMERSCHOOL examine vos documents.<br>
                             Vous serez notifié par email dès l'approbation de votre compte.</p>
                         <button onclick="doLogout()" class="btn btn-outline"
-                            style="margin-top:1.5rem;width:auto;padding:.65rem 2rem;">
+                            style="margin-top:1.5rem;width:auto;padding:.65rem 2rem;" data-i18n="prof-notice-pending-logout">
                             Se déconnecter
                         </button>
                     </div>
@@ -418,133 +496,147 @@
                     <div id="reg-step-1">
                         <div class="field-group">
                             <div class="field">
-                                <label>Prénom *</label>
-                                <input type="text" id="regPrenom" placeholder="Jean">
+                                <label data-i18n="prof-reg-firstname">Prénom *</label>
+                                <input type="text" id="regPrenom" placeholder="Jean" data-i18n="prof-reg-placeholder-firstname">
                             </div>
                             <div class="field">
-                                <label>Nom *</label>
-                                <input type="text" id="regNom" placeholder="Dupont">
+                                <label data-i18n="prof-reg-lastname">Nom *</label>
+                                <input type="text" id="regNom" placeholder="Dupont" data-i18n="prof-reg-placeholder-lastname">
                             </div>
                         </div>
 
                         <div class="field">
-                            <label>Email *</label>
+                            <label data-i18n="prof-reg-email">Email *</label>
                             <input type="email" id="regEmail" placeholder="prof@example.com">
                         </div>
 
                         <div class="field">
-                            <label>Téléphone</label>
+                            <label data-i18n="prof-reg-phone">Téléphone</label>
                             <input type="tel" id="regPhone" placeholder="+237 6XX XXX XXX">
                         </div>
 
                         <div class="field-group">
                             <div class="field">
-                                <label>Mot de passe *</label>
-                                <input type="password" id="regPassword" placeholder="Min. 8 caractères">
+                                <label data-i18n="prof-reg-password">Mot de passe *</label>
+                                <input type="password" id="regPassword" placeholder="Min. 8 caractères" data-i18n="prof-reg-placeholder-pwd">
                             </div>
                             <div class="field">
-                                <label>Confirmer *</label>
-                                <input type="password" id="regConfirm" placeholder="Répéter">
+                                <label data-i18n="prof-reg-confirm">Confirmer *</label>
+                                <input type="password" id="regConfirm" placeholder="Répéter" data-i18n="prof-reg-placeholder-confirm">
                             </div>
                         </div>
 
                         <div class="field">
-                            <label>Établissement actuel</label>
-                            <input type="text" id="regEtablissement" placeholder="Lycée de Bonamoussadi...">
+                            <label data-i18n="prof-reg-school">Établissement actuel</label>
+                            <input type="text" id="regEtablissement" placeholder="Lycée de Bonamoussadi..." data-i18n="prof-reg-placeholder-school">
                         </div>
 
                         <div class="field">
-                            <label>Années d'expérience</label>
+                            <label data-i18n="prof-reg-experience">Années d'expérience</label>
                             <input type="number" id="regExperience" placeholder="5" min="0" max="50">
                         </div>
 
                         <div class="field">
-                            <label>Spécialités (appuyer Entrée pour ajouter)</label>
+                            <label data-i18n="prof-reg-specs">Spécialités (appuyer Entrée pour ajouter)</label>
                             <div class="tags-wrapper" id="tags-wrapper"
                                 onclick="document.getElementById('tag-input').focus()">
                                 <input type="text" id="tag-input" placeholder="ex: Mathématiques"
-                                    onkeydown="handleTag(event)">
+                                    onkeydown="handleTag(event)" data-i18n="prof-reg-placeholder-tag">
                             </div>
                         </div>
 
                         <div class="field">
-                            <label>Sous-systèmes enseignés</label>
+                            <label data-i18n="prof-reg-subsystem">Sous-systèmes enseignés</label>
                             <select id="regSousSysteme">
-                                <option value="">Sélectionner...</option>
-                                <option value="francophone">🇫🇷 Francophone (BEPC / BAC)</option>
-                                <option value="anglophone">🇬🇧 Anglophone (GCE O/A-Level)</option>
-                                <option value="les_deux">Les deux</option>
+                                <option value="" data-i18n="prof-reg-select">Sélectionner...</option>
+                                <option value="francophone" data-i18n="prof-reg-francophone">Francophone (BEPC / BAC)</option>
+                                <option value="anglophone" data-i18n="prof-reg-anglophone">Anglophone (GCE O/A-Level)</option>
+                                <option value="les_deux" data-i18n="prof-reg-both">Les deux</option>
                             </select>
                         </div>
 
                         <div class="field">
-                            <label>Brève présentation</label>
-                            <textarea id="regBio" placeholder="Décrivez votre parcours et expertise..."></textarea>
+                            <label data-i18n="prof-reg-bio">Brève présentation</label>
+                            <textarea id="regBio" placeholder="Décrivez votre parcours et expertise..." data-i18n="prof-reg-placeholder-bio"></textarea>
                         </div>
 
-                        <button class="btn btn-primary" onclick="goStep2()">Continuer →</button>
+                        <button class="btn btn-primary" onclick="goStep2()" data-i18n="prof-reg-btn-continue">Continuer →</button>
                     </div>
 
                     <!-- Step 2: KYC Documents -->
                     <div id="reg-step-2" style="display:none">
 
                         <div class="alert alert-info show">
-                            <span>ℹ️</span>
-                            <span>Vos documents sont chiffrés et accessibles uniquement aux administrateurs KMERSCHOOL
-                                pour vérification.</span>
+                            <svg class="w-5 h-5 mr-2 inline-block shrink-0 align-middle text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; display: inline-block;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span data-i18n="prof-alert-cni-required">Vos documents sont chiffrés et accessibles uniquement aux administrateurs KMERSCHOOL pour vérification.</span>
                         </div>
 
                         <div class="kyc-section" style="border-top:none;margin-top:0;padding-top:0">
-                            <div class="kyc-title">Documents requis (KYC)</div>
-                            <div class="kyc-desc">3 documents obligatoires pour validation de votre compte professeur
-                            </div>
+                            <div class="kyc-title" data-i18n="prof-kyc-title">Documents requis (KYC)</div>
+                            <div class="kyc-desc" data-i18n="prof-kyc-desc">3 documents obligatoires pour validation de votre compte professeur</div>
 
                             <!-- Diplôme -->
                             <div class="field">
-                                <label>Diplôme universitaire *</label>
+                                <label data-i18n="prof-kyc-diploma">Diplôme universitaire *</label>
                                 <label class="upload-label" id="lbl-diplome">
                                     <input type="file" id="doc-diplome" accept=".pdf,.jpg,.jpeg,.png"
                                         onchange="markDone('diplome', this)">
-                                    <span class="upload-icon">🎓</span>
+                                    <span class="upload-icon">
+                                        <svg class="w-8 h-8 text-slate-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="width: 32px; height: 32px;">
+                                            <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                                            <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0v6" />
+                                        </svg>
+                                    </span>
                                     <div class="upload-text">
-                                        <strong id="name-diplome">Choisir un fichier</strong>
-                                        PDF ou image — Licence, Master, DIPES...
+                                        <strong id="name-diplome" data-i18n="prof-kyc-choose">Choisir un fichier</strong>
+                                        <span data-i18n="prof-kyc-diploma-desc">PDF ou image — Licence, Master, DIPES...</span>
                                     </div>
                                 </label>
                             </div>
 
                             <!-- CNI -->
                             <div class="field">
-                                <label>Pièce d'identité nationale *</label>
+                                <label data-i18n="prof-kyc-cni">Pièce d'identité nationale *</label>
                                 <label class="upload-label" id="lbl-cni">
                                     <input type="file" id="doc-cni" accept=".pdf,.jpg,.jpeg,.png"
                                         onchange="markDone('cni', this)">
-                                    <span class="upload-icon">🪪</span>
+                                    <span class="upload-icon">
+                                        <svg class="w-8 h-8 text-slate-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="width: 32px; height: 32px;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.333 0 4 .667 4 2V17H5v-1c0-1.333 2.667-2 4-2z" />
+                                        </svg>
+                                    </span>
                                     <div class="upload-text">
-                                        <strong id="name-cni">Choisir un fichier</strong>
-                                        CNI, Passeport ou autre pièce valide
+                                        <strong id="name-cni" data-i18n="prof-kyc-choose">Choisir un fichier</strong>
+                                        <span data-i18n="prof-kyc-cni-desc">CNI, Passeport ou autre pièce valide</span>
                                     </div>
                                 </label>
                             </div>
 
                             <!-- Attestation -->
                             <div class="field">
-                                <label>Attestation d'enseignement *</label>
+                                <label data-i18n="prof-kyc-attestation">Attestation d'enseignement *</label>
                                 <label class="upload-label" id="lbl-attestation">
                                     <input type="file" id="doc-attestation" accept=".pdf,.jpg,.jpeg,.png"
                                         onchange="markDone('attestation', this)">
-                                    <span class="upload-icon">📋</span>
+                                    <span class="upload-icon">
+                                        <svg class="w-8 h-8 text-slate-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="width: 32px; height: 32px;">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                    </span>
                                     <div class="upload-text">
-                                        <strong id="name-attestation">Choisir un fichier</strong>
-                                        Lettre d'engagement ou attestation d'établissement
+                                        <strong id="name-attestation" data-i18n="prof-kyc-choose">Choisir un fichier</strong>
+                                        <span data-i18n="prof-kyc-attestation-desc">Lettre d'engagement ou attestation d'établissement</span>
                                     </div>
                                 </label>
                             </div>
                         </div>
 
                         <div class="btn-row">
-                            <button class="btn btn-outline" onclick="goStep1()">← Retour</button>
-                            <button class="btn btn-primary" id="btnRegister" onclick="doRegister()">
+                            <button class="btn btn-outline" onclick="goStep1()" data-i18n="prof-reg-btn-back">← Retour</button>
+                            <button class="btn btn-primary" id="btnRegister" onclick="doRegister()" data-i18n="prof-reg-btn-submit">
                                 Soumettre ma candidature
                             </button>
                         </div>
@@ -562,11 +654,197 @@
 
     <script>
         // ──────────────────────────────────
-        // CONFIG
+        // CONFIG & TRANSLATIONS
         // ──────────────────────────────────
         const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co'
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+        const specialites = []
+
+        // Bilingual Dynamic Messages Dictionary
+        const MSG_TRANSLATIONS = {
+            fr: {
+                fields_required: "Prénom, nom et email sont obligatoires.",
+                pwd_too_short: "Le mot de passe doit contenir au moins 8 caractères.",
+                pwd_mismatch: "Les mots de passe ne correspondent pas.",
+                login_fields_required: "Email et mot de passe requis.",
+                cni_docs_required: "Les 3 documents sont obligatoires pour soumettre votre candidature.",
+                account_suspended: "Votre compte est suspendu. Contactez l'administration.",
+                candidacy_rejected: "Votre candidature n'a pas été retenue. Consultez votre email pour plus d'informations.",
+                candidacy_approved: "Candidature approuvée ! Redirection...",
+                login_existing_user: "Vous avez déjà un compte KMERSCHOOL. Basculez sur l'onglet Inscription pour compléter votre candidature professeur.",
+                user_id_error: "Impossible de récupérer l'ID utilisateur.",
+                duplicate_application: "Une candidature est déjà enregistrée pour ce compte.",
+                upload_failed: "Échec de l'envoi du document ({type}). Vérifiez votre connexion.",
+                email_already_in_use: "Cet email est déjà utilisé. Si vous avez un compte KMERSCHOOL, connectez-vous d'abord sur l'onglet Connexion.",
+                register_success: "Candidature soumise avec succès, {name} ! L'équipe examine votre dossier.",
+                session_detected: "Session détectée. Si vous êtes professeur, assurez-vous d'être sur le bon compte. <a href=\"#\" onclick=\"doLogout()\" style=\"text-decoration:underline;font-weight:bold\">Déconnexion</a>",
+                invalid_credentials: "Email ou mot de passe incorrect.",
+                generic_error: "Une erreur est survenue.",
+                loading_login: "Connexion en cours...",
+                btn_login: "Se connecter",
+                loading_register: "Envoi en cours...",
+                btn_register: "Soumettre ma candidature"
+            },
+            en: {
+                fields_required: "First name, last name and email are required.",
+                pwd_too_short: "Password must be at least 8 characters long.",
+                pwd_mismatch: "Passwords do not match.",
+                login_fields_required: "Email and password are required.",
+                cni_docs_required: "All 3 documents are required to submit your application.",
+                account_suspended: "Your account is suspended. Contact administration.",
+                candidacy_rejected: "Your application was not accepted. Check your email for more information.",
+                candidacy_approved: "Application approved! Redirecting...",
+                login_existing_user: "You already have a KMERSCHOOL account. Switch to the Register tab to complete your teacher application.",
+                user_id_error: "Unable to retrieve user ID.",
+                duplicate_application: "An application is already registered for this account.",
+                upload_failed: "Failed to upload document ({type}). Please check your connection.",
+                email_already_in_use: "This email is already in use. If you have a KMERSCHOOL account, please log in first on the Login tab.",
+                register_success: "Application submitted successfully, {name}! The team is reviewing your file.",
+                session_detected: "Session detected. If you are a teacher, make sure you are on the right account. <a href=\"#\" onclick=\"doLogout()\" style=\"text-decoration:underline;font-weight:bold\">Logout</a>",
+                invalid_credentials: "Incorrect email or password.",
+                generic_error: "An error occurred.",
+                loading_login: "Logging in...",
+                btn_login: "Login",
+                loading_register: "Submitting...",
+                btn_register: "Submit my application"
+            }
+        };
+
+        function getMsg(key, params = {}) {
+            const lang = window.i18n ? window.i18n.lang : 'fr';
+            let msg = MSG_TRANSLATIONS[lang]?.[key] || MSG_TRANSLATIONS['fr']?.[key] || key;
+            for (const [k, v] of Object.entries(params)) {
+                msg = msg.replace(`{${k}}`, v);
+            }
+            return msg;
+        }
+
+        function translateAuthError(err) {
+            if (!err) return getMsg('generic_error');
+            const msg = err.message || '';
+
+            if (msg.toLowerCase().includes('invalid login credentials') || msg.toLowerCase().includes('invalid credentials')) {
+                return getMsg('invalid_credentials');
+            }
+            if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('email_exists') || msg.toLowerCase().includes('user already exists')) {
+                return getMsg('email_already_in_use');
+            }
+            if (msg.toLowerCase().includes('suspended')) {
+                return getMsg('account_suspended');
+            }
+            if (msg.toLowerCase().includes('rejected') || msg.toLowerCase().includes('not been retained')) {
+                return getMsg('candidacy_rejected');
+            }
+            if (msg.toLowerCase().includes('duplicate key') || msg.toLowerCase().includes('candidature est déjà enregistrée')) {
+                return getMsg('duplicate_application');
+            }
+            return msg;
+        }
+
+        // Extend global i18n translations dynamically for layout translation
+        if (window.translations) {
+            Object.assign(window.translations.fr, {
+                "prof-notice-pending-title": "Dossier en cours de vérification",
+                "prof-notice-pending-desc": "Votre inscription est enregistrée. L'équipe KMERSCHOOL examine vos documents.<br>Vous serez notifié par email dès l'approbation de votre compte.",
+                "prof-notice-pending-logout": "Se déconnecter",
+                "prof-notice-success-title": "Candidature envoyée !",
+                "prof-notice-success-desc": "Bienvenue <strong>{name}</strong> !<br>Votre dossier est en cours de vérification.<br>Vous recevrez une notification par email dès l'activation de votre compte.",
+                "prof-notice-success-back": "Retour à la connexion",
+                "prof-alert-cni-required": "Vos documents sont chiffrés et accessibles uniquement aux administrateurs KMERSCHOOL pour vérification.",
+                
+                // Onboarding translation
+                "prof-reg-firstname": "Prénom *",
+                "prof-reg-lastname": "Nom *",
+                "prof-reg-email": "Email *",
+                "prof-reg-phone": "Téléphone",
+                "prof-reg-password": "Mot de passe *",
+                "prof-reg-confirm": "Confirmer *",
+                "prof-reg-school": "Établissement actuel",
+                "prof-reg-experience": "Années d'expérience",
+                "prof-reg-specs": "Spécialités (appuyer Entrée pour ajouter)",
+                "prof-reg-subsystem": "Sous-systèmes enseignés",
+                "prof-reg-select": "Sélectionner...",
+                "prof-reg-francophone": "Francophone (BEPC / BAC)",
+                "prof-reg-anglophone": "Anglophone (GCE O/A-Level)",
+                "prof-reg-both": "Les deux",
+                "prof-reg-bio": "Brève présentation",
+                "prof-reg-btn-continue": "Continuer →",
+                
+                // KYC translation
+                "prof-kyc-title": "Documents requis (KYC)",
+                "prof-kyc-desc": "3 documents obligatoires pour validation de votre compte professeur",
+                "prof-kyc-diploma": "Diplôme universitaire *",
+                "prof-kyc-choose": "Choisir un fichier",
+                "prof-kyc-diploma-desc": "PDF ou image — Licence, Master, DIPES...",
+                "prof-kyc-cni": "Pièce d'identité nationale *",
+                "prof-kyc-cni-desc": "CNI, Passeport ou autre pièce valide",
+                "prof-kyc-attestation": "Attestation d'enseignement *",
+                "prof-kyc-attestation-desc": "Lettre d'engagement ou attestation d'établissement",
+                "prof-reg-btn-back": "← Retour",
+                "prof-reg-btn-submit": "Soumettre ma candidature",
+
+                // Placeholders
+                "prof-reg-placeholder-firstname": "Jean",
+                "prof-reg-placeholder-lastname": "Dupont",
+                "prof-reg-placeholder-pwd": "Min. 8 caractères",
+                "prof-reg-placeholder-confirm": "Répéter",
+                "prof-reg-placeholder-school": "Lycée de Bonamoussadi...",
+                "prof-reg-placeholder-tag": "ex: Mathématiques",
+                "prof-reg-placeholder-bio": "Décrivez votre parcours et expertise..."
+            });
+
+            Object.assign(window.translations.en, {
+                "prof-notice-pending-title": "Application under review",
+                "prof-notice-pending-desc": "Your registration has been saved. The KMERSCHOOL team is reviewing your documents.<br>You will be notified by email as soon as your account is approved.",
+                "prof-notice-pending-logout": "Logout",
+                "prof-notice-success-title": "Application submitted!",
+                "prof-notice-success-desc": "Welcome <strong>{name}</strong> !<br>Your application is being reviewed.<br>You will receive an email notification once your account is activated.",
+                "prof-notice-success-back": "Back to login",
+                "prof-alert-cni-required": "Your documents are encrypted and accessible only to KMERSCHOOL administrators for verification.",
+                
+                // Onboarding translation
+                "prof-reg-firstname": "First Name *",
+                "prof-reg-lastname": "Last Name *",
+                "prof-reg-email": "Email *",
+                "prof-reg-phone": "Phone",
+                "prof-reg-password": "Password *",
+                "prof-reg-confirm": "Confirm *",
+                "prof-reg-school": "Current School",
+                "prof-reg-experience": "Years of experience",
+                "prof-reg-specs": "Specialties (press Enter to add)",
+                "prof-reg-subsystem": "Taught Subsystems",
+                "prof-reg-select": "Select...",
+                "prof-reg-francophone": "Francophone (BEPC / BAC)",
+                "prof-reg-anglophone": "Anglophone (GCE O/A-Level)",
+                "prof-reg-both": "Both",
+                "prof-reg-bio": "Brief Presentation",
+                "prof-reg-btn-continue": "Continue →",
+                
+                // KYC translation
+                "prof-kyc-title": "Required Documents (KYC)",
+                "prof-kyc-desc": "3 mandatory documents for teacher account validation",
+                "prof-kyc-diploma": "University Diploma *",
+                "prof-kyc-choose": "Choose a file",
+                "prof-kyc-diploma-desc": "PDF or image — Bachelor, Master, DIPES...",
+                "prof-kyc-cni": "National ID Card *",
+                "prof-kyc-cni-desc": "ID Card, Passport or other valid document",
+                "prof-kyc-attestation": "Teaching Attestation *",
+                "prof-kyc-attestation-desc": "Commitment letter or school attestation",
+                "prof-reg-btn-back": "← Back",
+                "prof-reg-btn-submit": "Submit my application",
+
+                // Placeholders
+                "prof-reg-placeholder-firstname": "John",
+                "prof-reg-placeholder-lastname": "Smith",
+                "prof-reg-placeholder-pwd": "Min. 8 characters",
+                "prof-reg-placeholder-confirm": "Confirm",
+                "prof-reg-placeholder-school": "High school name...",
+                "prof-reg-placeholder-tag": "e.g. Mathematics",
+                "prof-reg-placeholder-bio": "Describe your background and expertise..."
+            });
+        }
 
         const specialites = []
 
@@ -583,11 +861,23 @@
         function showAlert(id, msg, type = 'error') {
             const el = document.getElementById(id)
             el.className = `alert alert-${type} show`
-            el.innerHTML = `<span>${type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️'}</span><span>${msg}</span>`
+            
+            let iconSvg = '';
+            if (type === 'error') {
+                iconSvg = `<svg class="w-5 h-5 mr-2 inline-block shrink-0 align-middle text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; display: inline-block;"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            } else if (type === 'success') {
+                iconSvg = `<svg class="w-5 h-5 mr-2 inline-block shrink-0 align-middle text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; display: inline-block;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            } else {
+                iconSvg = `<svg class="w-5 h-5 mr-2 inline-block shrink-0 align-middle text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; display: inline-block;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            }
+            
+            el.innerHTML = `${iconSvg}<span>${msg}</span>`
         }
 
         function hideAlert(id) {
-            document.getElementById(id).className = 'alert'
+            const el = document.getElementById(id);
+            el.className = 'alert';
+            el.innerHTML = '';
         }
 
         function setLoading(btnId, loading, text) {
@@ -611,6 +901,9 @@
             }
         }
 
+        // ──────────────────────────────────
+        // TAGS (Spécialités)
+        // ──────────────────────────────────
         function removeTag(i) {
             specialites.splice(i, 1)
             renderTags()
@@ -635,7 +928,8 @@
         function markDone(key, input) {
             if (!input.files.length) return
             const fname = input.files[0].name
-            document.getElementById(`name-${key}`).textContent = '✅ ' + fname
+            const checkIcon = `<svg class="w-4 h-4 inline-block mr-1 text-green-600 align-middle" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="width: 16px; height: 16px; display: inline-block;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>`;
+            document.getElementById(`name-${key}`).innerHTML = checkIcon + fname
             document.getElementById(`lbl-${key}`).classList.add('done')
         }
 
@@ -650,16 +944,20 @@
             const pwd = document.getElementById('regPassword').value
             const confirm = document.getElementById('regConfirm').value
 
-            if (!prenom || !nom || !email) return showAlert('alert-register', 'Prénom, nom et email sont obligatoires.')
-            if (pwd.length < 8) return showAlert('alert-register', 'Le mot de passe doit contenir au moins 8 caractères.')
-            if (pwd !== confirm) return showAlert('alert-register', 'Les mots de passe ne correspondent pas.')
+            if (!prenom || !nom || !email) return showAlert('alert-register', getMsg('fields_required'))
+            if (pwd.length < 8) return showAlert('alert-register', getMsg('pwd_too_short'))
+            if (pwd !== confirm) return showAlert('alert-register', getMsg('pwd_mismatch'))
 
             hideAlert('alert-register')
             document.getElementById('reg-step-1').style.display = 'none'
             document.getElementById('reg-step-2').style.display = 'block'
             document.getElementById('step-dot-1').className = 'step-dot done active'
             document.getElementById('step-dot-2').className = 'step-dot active'
-            document.getElementById('step-label').textContent = 'Étape 2 sur 2 — Documents de vérification'
+            
+            const isEn = window.i18n.lang === 'en'
+            document.getElementById('step-label').textContent = isEn 
+                ? 'Step 2 of 2 — Verification documents' 
+                : 'Étape 2 sur 2 — Documents de vérification'
         }
 
         function goStep1() {
@@ -667,7 +965,11 @@
             document.getElementById('reg-step-1').style.display = 'block'
             document.getElementById('step-dot-1').className = 'step-dot active'
             document.getElementById('step-dot-2').className = 'step-dot'
-            document.getElementById('step-label').textContent = 'Étape 1 sur 2 — Informations personnelles'
+            
+            const isEn = window.i18n.lang === 'en'
+            document.getElementById('step-label').textContent = isEn 
+                ? 'Step 1 of 2 — Personal information' 
+                : 'Étape 1 sur 2 — Informations personnelles'
         }
 
         // ──────────────────────────────────
@@ -677,9 +979,9 @@
             if (e) e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim()
             const pwd = document.getElementById('loginPassword').value
-            if (!email || !pwd) return showAlert('alert-login', 'Email et mot de passe requis.')
+            if (!email || !pwd) return showAlert('alert-login', getMsg('login_fields_required'))
 
-            setLoading('btnLogin', true, 'Connexion en cours...')
+            setLoading('btnLogin', true, getMsg('loading_login'))
             hideAlert('alert-login')
 
             try {
@@ -695,7 +997,7 @@
 
                 if (profErr || !prof) {
                     // C'est un utilisateur existant mais pas encore professeur
-                    showAlert('alert-login', 'Vous avez déjà un compte KMERSCHOOL. Basculez sur l\'onglet Inscription pour compléter votre candidature professeur.', 'info')
+                    showAlert('alert-login', getMsg('login_existing_user'), 'info')
                     // Session active, on peut pré-remplir l'inscription
                     document.getElementById('regEmail').value = data.user.email
                     document.getElementById('regEmail').disabled = true
@@ -705,7 +1007,7 @@
 
                 if (!prof.est_actif) {
                     await sb.auth.signOut()
-                    throw new Error('Votre compte est suspendu. Contactez l\'administration.')
+                    throw new Error(getMsg('account_suspended'))
                 }
 
                 if (prof.statut === 'en_attente' || prof.statut === 'en_revision') {
@@ -717,7 +1019,7 @@
 
                 if (prof.statut === 'rejete') {
                     await sb.auth.signOut()
-                    throw new Error('Votre candidature n\'a pas été retenue. Consultez votre email pour plus d\'informations.')
+                    throw new Error(getMsg('candidacy_rejected'))
                 }
 
                 if (prof.statut === 'approuve') {
@@ -728,9 +1030,9 @@
                 }
 
             } catch (err) {
-                showAlert('alert-login', err.message)
+                showAlert('alert-login', translateAuthError(err))
             } finally {
-                setLoading('btnLogin', false, 'Se connecter')
+                setLoading('btnLogin', false, getMsg('btn_login'))
             }
         }
 
@@ -744,10 +1046,10 @@
             const attestation = document.getElementById('doc-attestation').files[0]
 
             if (!diplome || !cni || !attestation) {
-                return showAlert('alert-register', 'Les 3 documents sont obligatoires pour soumettre votre candidature.')
+                return showAlert('alert-register', getMsg('cni_docs_required'))
             }
 
-            setLoading('btnRegister', true, 'Envoi en cours...')
+            setLoading('btnRegister', true, getMsg('loading_register'))
             hideAlert('alert-register')
 
             try {
@@ -776,14 +1078,14 @@
                     if (authError) {
                         // Gestion spécifique de l'erreur "déjà enregistré"
                         if (authError.status === 422 || authError.message.toLowerCase().includes('already registered')) {
-                            throw new Error('Cet email est déjà utilisé. Si vous avez un compte KMERSCHOOL, connectez-vous d\'abord sur l\'onglet Connexion.')
+                            throw new Error(getMsg('email_already_in_use'))
                         }
                         throw authError
                     }
                     userId = authData.user.id
                 }
 
-                if (!userId) throw new Error('Impossible de récupérer l\'ID utilisateur.')
+                if (!userId) throw new Error(getMsg('user_id_error'))
 
                 // 2. Insérer dans professeurs
                 const sousSystemes = sousSysteme === 'les_deux' ? ['francophone', 'anglophone'] : [sousSysteme]
@@ -803,7 +1105,7 @@
                 })
                 
                 if (profError) {
-                    if (profError.code === '23505') throw new Error('Une candidature est déjà enregistrée pour ce compte.')
+                    if (profError.code === '23505') throw new Error(getMsg('duplicate_application'))
                     throw profError
                 }
 
@@ -822,7 +1124,7 @@
 
                     if (upErr) {
                         console.error('Upload error:', upErr)
-                        throw new Error(`Échec de l'envoi du document (${d.type}). Vérifiez votre connexion.`)
+                        throw new Error(getMsg('upload_failed', { type: d.type }))
                     }
 
                     // On enregistre simplement le CHEMIN (key), pas une URL publique
@@ -839,27 +1141,26 @@
                 }
 
                 // Succès
-                showAlert('alert-register', `Candidature soumise avec succès, ${prenom} ! L'équipe examine votre dossier.`, 'success')
+                showAlert('alert-register', getMsg('register_success', { name: prenom }), 'success')
 
                 setTimeout(() => {
+                    const checkSvg = `<svg class="w-10 h-10 inline-block align-middle" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 40px; height: 40px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
                     document.getElementById('reg-step-2').innerHTML = `
                         <div class="notice" style="padding:1.5rem 0">
-                          <div class="notice-icon">🎉</div>
-                          <h3>Candidature envoyée !</h3>
-                          <p>Bienvenue <strong style="color:var(--text)">${prenom} ${nom}</strong> !<br>
-                          Votre dossier est en cours de vérification.<br>
-                          Vous recevrez une notification par email dès l'activation de votre compte.</p>
-                          <button onclick="switchTab('login')" class="btn btn-primary" style="margin-top:1.5rem;max-width:220px;margin-left:auto;margin-right:auto;display:block">
-                            Retour à la connexion
+                          <div class="notice-icon">${checkSvg}</div>
+                          <h3 data-i18n="prof-notice-success-title">${getMsg('prof-notice-success-title')}</h3>
+                          <p data-i18n="prof-notice-success-desc">${getMsg('prof-notice-success-desc', { name: prenom + ' ' + nom })}</p>
+                          <button onclick="switchTab('login')" class="btn btn-primary" style="margin-top:1.5rem;max-width:220px;margin-left:auto;margin-right:auto;display:block" data-i18n="prof-notice-success-back">
+                            ${getMsg('prof-notice-success-back')}
                           </button>
                         </div>
                     `
                 }, 1500)
 
             } catch (err) {
-                showAlert('alert-register', err.message || 'Erreur lors de l\'inscription.')
+                showAlert('alert-register', translateAuthError(err) || getMsg('generic_error'))
             } finally {
-                setLoading('btnRegister', false, 'Soumettre ma candidature')
+                setLoading('btnRegister', false, getMsg('btn_register'))
             }
         }
 
@@ -887,7 +1188,7 @@
                 // Not a professor or network error - DO NOT REDIRECT
                 console.error("Initial session check failed:", profErr)
                 if (user) {
-                   showAlert('alert-login', 'Session détectée. Si vous êtes professeur, assurez-vous d\'être sur le bon compte. <a href="#" onclick="doLogout()" style="text-decoration:underline;font-weight:bold">Déconnexion</a>', 'info')
+                   showAlert('alert-login', getMsg('session_detected'), 'info')
                 }
                 return
             }

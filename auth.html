@@ -584,16 +584,81 @@
             container.classList.remove("right-panel-active");
         });
 
-        // Gestion des messages
+        // Bilingual dynamic notifications & validation
+        const MSG_TRANSLATIONS = {
+            fr: {
+                invalid_credentials: "Email ou mot de passe incorrect.",
+                email_already_in_use: "Cet email est déjà utilisé par un autre compte.",
+                login_fields_required: "Email et mot de passe requis.",
+                signup_fields_required: "Tous les champs requis doivent être remplis.",
+                login_success: "Connexion réussie !",
+                signup_success: "Compte créé ! Bienvenue.",
+                generic_error: "Une erreur est survenue.",
+                onboarding_preparing: "Préparation de votre onboarding...",
+                profile_not_found: "Profil introuvable. Veuillez vous réinscrire.",
+                redirect_error: "Erreur lors de la redirection. Veuillez rafraîchir la page."
+            },
+            en: {
+                invalid_credentials: "Incorrect email or password.",
+                email_already_in_use: "This email is already in use by another account.",
+                login_fields_required: "Email and password are required.",
+                signup_fields_required: "All required fields must be filled.",
+                login_success: "Login successful!",
+                signup_success: "Account created! Welcome.",
+                generic_error: "An error occurred.",
+                onboarding_preparing: "Preparing your onboarding...",
+                profile_not_found: "Profile not found. Please register again.",
+                redirect_error: "Error redirecting. Please refresh the page."
+            }
+        };
+
+        function getMsg(key) {
+            const lang = window.i18n ? window.i18n.lang : 'fr';
+            return MSG_TRANSLATIONS[lang]?.[key] || MSG_TRANSLATIONS['fr']?.[key] || key;
+        }
+
+        function translateAuthError(err) {
+            if (!err) return getMsg('generic_error');
+            const msg = err.message || '';
+
+            if (msg.toLowerCase().includes('invalid login credentials') || msg.toLowerCase().includes('invalid credentials')) {
+                return getMsg('invalid_credentials');
+            }
+            if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('email_exists') || msg.toLowerCase().includes('user already exists')) {
+                return getMsg('email_already_in_use');
+            }
+            return msg;
+        }
+
+        // Gestion des messages premium bilingues avec icônes SVG (SANS émojis)
         function showMessage(msg, type = 'success') {
             const container = document.getElementById('messageContainer');
-            container.textContent = msg;
-            container.className = `${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white shadow-xl show`;
+            
+            let iconSvg = '';
+            if (type === 'error') {
+                iconSvg = `<svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            } else {
+                iconSvg = `<svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            }
+
+            container.innerHTML = `
+                <div class="flex items-center gap-3">
+                    ${iconSvg}
+                    <span class="font-semibold">${msg}</span>
+                </div>
+            `;
+            
+            // Premium notification look & feel, flex center aligning, custom gradients
+            container.className = `fixed top-5 right-5 z-[1000] p-4 rounded-2xl shadow-2xl transition-all duration-300 transform translate-y-0 ${type === 'success' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'} show`;
             container.classList.remove('hidden');
+            
             setTimeout(() => {
-                container.classList.remove('show');
-                setTimeout(() => container.classList.add('hidden'), 400);
-            }, 3000);
+                container.classList.add('-translate-y-24', 'opacity-0');
+                setTimeout(() => {
+                    container.classList.add('hidden');
+                    container.classList.remove('-translate-y-24', 'opacity-0');
+                }, 400);
+            }, 3500);
         }
 
         // Redirection logic
@@ -609,7 +674,7 @@
 
                 if (!profile) {
                     await supabase.auth.signOut();
-                    showMessage("Profil introuvable. Veuillez vous réinscrire.", "error");
+                    showMessage(getMsg('profile_not_found'), "error");
                     setTimeout(() => window.location.href = 'auth.html?mode=register', 2000);
                     return;
                 }
@@ -631,7 +696,7 @@
                     return redirectToDashboard(userId, retryCount + 1);
                 }
 
-                showMessage("Erreur lors de la redirection. Veuillez rafraîchir la page.", "error");
+                showMessage(getMsg('redirect_error'), "error");
             }
         }
 
@@ -644,9 +709,9 @@
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
             if (error) {
-                showMessage(error.message, 'error');
+                showMessage(translateAuthError(error), 'error');
             } else {
-                showMessage('Connexion réussie !');
+                showMessage(getMsg('login_success'));
                 setTimeout(() => redirectToDashboard(data.user.id), 1000);
             }
         });
@@ -668,14 +733,14 @@
                     .maybeSingle();
 
                 if (existingUser) {
-                    showMessage('Cet email est déjà utilisé par un autre compte.', 'error');
+                    showMessage(getMsg('email_already_in_use'), 'error');
                     return;
                 }
 
                 if (path === 'eleve') {
                     // Pour éviter les profils incomplets, on ne crée le compte qu'À LA FIN de l'onboarding
                     sessionStorage.setItem('pending_signup', JSON.stringify({ name, email, password, path }));
-                    showMessage('Préparation de votre onboarding...');
+                    showMessage(getMsg('onboarding_preparing'));
                     setTimeout(() => {
                         window.location.href = 'Dashboard-eleves/onboarding_cameroun.html';
                     }, 1000);
@@ -701,14 +766,14 @@
                     streak_jours: 0
                 });
 
-                showMessage('Compte créé ! Bienvenue.');
+                showMessage(getMsg('signup_success'));
 
                 setTimeout(() => {
                     redirectToDashboard(data.user.id);
                 }, 1500);
 
             } catch (error) {
-                showMessage(error.message, 'error');
+                showMessage(translateAuthError(error), 'error');
             }
         });
 
