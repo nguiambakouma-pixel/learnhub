@@ -288,6 +288,26 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        /* Style Premium du Carrousel des Parcours */
+        #parcours-container {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #parcours-prev, #parcours-next {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        #parcours-prev:hover, #parcours-next:hover {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 10px 25px rgba(0, 122, 94, 0.2);
+        }
+
+        #parcours-prev:active, #parcours-next:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
         @media (max-width: 768px) {
             .lang-switcher {
                 padding: 0.2rem;
@@ -534,99 +554,108 @@
                 </p>
             </div>
 
-            <div id="parcours-container" class="flex overflow-x-auto pb-6 md:pb-0 md:grid md:grid-cols-3 gap-6 md:gap-10 snap-x snap-mandatory no-scrollbar px-6 md:px-0 scroll-smooth">
-                <!-- Path 1: Student -->
-                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex-shrink-0 w-[82vw] sm:w-[350px] md:w-auto snap-center border border-slate-100 dark:border-slate-800" data-aos="fade-up"
-                    data-aos-delay="100">
-                    <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
-                        <img src="assets/eleve.jpg"
-                            alt="Élève" class="path-img w-full h-full object-cover">
-                        <div
-                            class="absolute inset-0 bg-primary/20 group-hover:bg-primary/0 transition-all duration-500">
+            <div class="relative group/slider" data-aos="fade-up" data-aos-delay="100">
+                <!-- Flèche flottante gauche (mobile) -->
+                <button id="parcours-prev" class="absolute left-1 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/95 dark:bg-slate-900/95 text-primary border border-slate-200/80 dark:border-slate-800/80 flex items-center justify-center shadow-lg active:scale-95 hover:bg-primary hover:text-white transition-all md:hidden backdrop-blur-sm" aria-label="Précédent">
+                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                </button>
+
+                <div id="parcours-container" class="flex overflow-x-auto pb-6 md:pb-0 md:grid md:grid-cols-3 gap-6 md:gap-10 snap-x snap-mandatory no-scrollbar px-6 md:px-0 scroll-smooth">
+                    <!-- Path 1: Student -->
+                    <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex-shrink-0 w-[82vw] sm:w-[350px] md:w-auto snap-center border border-slate-100 dark:border-slate-800">
+                        <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
+                            <img src="assets/eleve.jpg"
+                                alt="Élève" class="path-img w-full h-full object-cover">
+                            <div
+                                class="absolute inset-0 bg-primary/20 group-hover:bg-primary/0 transition-all duration-500">
+                            </div>
+                            <div
+                                class="absolute top-6 left-6 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-primary uppercase tracking-widest shadow-lg" data-i18n="path-student-badge">
+                                Fondamentaux</div>
                         </div>
-                        <div
-                            class="absolute top-6 left-6 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-primary uppercase tracking-widest shadow-lg" data-i18n="path-student-badge">
-                            Fondamentaux</div>
+                        <div class="p-6 md:p-10 flex-grow flex flex-col">
+                            <i data-lucide="graduation-cap" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
+                            <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-student-title">PARCOURS ÉLÈVE</h3>
+                            <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-student-desc">Relevez le défi de l'excellence
+                                académique avec des outils interactifs et un tutorat personnalisé.</p>
+                            <a href="auth.html?path=student" data-i18n="path-student-btn"
+                                class="flex items-center text-primary font-black tracking-widest text-sm uppercase group-hover:translate-x-3 transition-transform">
+                                Découvrir le programme
+                                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
-                    <div class="p-6 md:p-10 flex-grow flex flex-col">
-                        <i data-lucide="graduation-cap" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
-                        <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-student-title">PARCOURS ÉLÈVE</h3>
-                        <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-student-desc">Relevez le défi de l'excellence
-                            académique avec des outils interactifs et un tutorat personnalisé.</p>
-                        <a href="auth.html?path=student" data-i18n="path-student-btn"
-                            class="flex items-center text-primary font-black tracking-widest text-sm uppercase group-hover:translate-x-3 transition-transform">
-                            Découvrir le programme
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                    d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
-                        </a>
+
+                    <!-- Path 2: Web Dev -->
+                    <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm border-primary/30 ring-4 ring-primary/5 flex-shrink-0 w-[82vw] sm:w-[350px] md:w-auto snap-center">
+                        <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
+                            <img src="assets/dev-web.jpg"
+                                alt="Développeur Web" class="path-img w-full h-full object-cover">
+                            <div
+                                class="absolute inset-0 bg-primary/20 group-hover:bg-primary/0 transition-all duration-500">
+                            </div>
+                            <div
+                                class="absolute top-6 left-6 px-4 py-2 bg-primary text-white rounded-full text-xs font-bold uppercase tracking-widest shadow-lg" data-i18n="path-dev-badge">
+                                Le plus populaire</div>
+                            <div
+                                class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
+                                Bientôt Disponible</div>
+                        </div>
+                        <div class="p-6 md:p-10 flex-grow flex flex-col">
+                            <i data-lucide="code" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
+                            <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-dev-title">PARCOURS DÉV-WEB</h3>
+                            <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-dev-desc">Apprenez à coder les technologies du
+                                futur et intégrez les meilleures entreprises de la tech.</p>
+                            <a href="auth.html?path=dev" data-i18n="path-dev-btn"
+                                class="flex items-center text-primary font-black tracking-widest text-sm uppercase group-hover:translate-x-3 transition-transform">
+                                Lancer sa carrière
+                                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Path 3: Designer -->
+                    <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex-shrink-0 w-[82vw] sm:w-[350px] md:w-auto snap-center border border-slate-100 dark:border-slate-800">
+                        <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
+                            <img src="assets/web-designer.jpg"
+                                alt="Designer" class="path-img w-full h-full object-cover">
+                            <div
+                                class="absolute inset-0 bg-primary/20 group-hover:bg-primary/0 transition-all duration-500">
+                            </div>
+                            <div
+                                class="absolute top-6 left-6 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-primary uppercase tracking-widest shadow-lg" data-i18n="path-designer-badge">
+                                Nouveauté</div>
+                            <div
+                                class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
+                                Bientôt Disponible</div>
+                        </div>
+                        <div class="p-6 md:p-10 flex-grow flex flex-col">
+                            <i data-lucide="palette" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
+                            <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-designer-title">PARCOURS DESIGNER</h3>
+                            <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-designer-desc">Maîtrisez l'UX/UI Design et apprenez
+                                à créer des expériences utilisateur inoubliables.</p>
+                            <a href="auth.html?path=designer" data-i18n="path-designer-btn"
+                                class="flex items-center text-primary font-black tracking-widest text-sm uppercase group-hover:translate-x-3 transition-transform">
+                                Créer la différence
+                                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Path 2: Web Dev -->
-                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm border-primary/30 ring-4 ring-primary/5 flex-shrink-0 w-[82vw] sm:w-[350px] md:w-auto snap-center"
-                    data-aos="fade-up" data-aos-delay="200">
-                    <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
-                        <img src="assets/dev-web.jpg"
-                            alt="Développeur Web" class="path-img w-full h-full object-cover">
-                        <div
-                            class="absolute inset-0 bg-primary/20 group-hover:bg-primary/0 transition-all duration-500">
-                        </div>
-                        <div
-                            class="absolute top-6 left-6 px-4 py-2 bg-primary text-white rounded-full text-xs font-bold uppercase tracking-widest shadow-lg" data-i18n="path-dev-badge">
-                            Le plus populaire</div>
-                        <div
-                            class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
-                            Bientôt Disponible</div>
-                    </div>
-                    <div class="p-6 md:p-10 flex-grow flex flex-col">
-                        <i data-lucide="code" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
-                        <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-dev-title">PARCOURS DÉV-WEB</h3>
-                        <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-dev-desc">Apprenez à coder les technologies du
-                            futur et intégrez les meilleures entreprises de la tech.</p>
-                        <a href="auth.html?path=dev" data-i18n="path-dev-btn"
-                            class="flex items-center text-primary font-black tracking-widest text-sm uppercase group-hover:translate-x-3 transition-transform">
-                            Lancer sa carrière
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                    d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Path 3: Designer -->
-                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex-shrink-0 w-[82vw] sm:w-[350px] md:w-auto snap-center border border-slate-100 dark:border-slate-800" data-aos="fade-up"
-                    data-aos-delay="300">
-                    <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
-                        <img src="assets/web-designer.jpg"
-                            alt="Designer" class="path-img w-full h-full object-cover">
-                        <div
-                            class="absolute inset-0 bg-primary/20 group-hover:bg-primary/0 transition-all duration-500">
-                        </div>
-                        <div
-                            class="absolute top-6 left-6 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-primary uppercase tracking-widest shadow-lg" data-i18n="path-designer-badge">
-                            Nouveauté</div>
-                        <div
-                            class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
-                            Bientôt Disponible</div>
-                    </div>
-                    <div class="p-6 md:p-10 flex-grow flex flex-col">
-                        <i data-lucide="palette" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
-                        <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-designer-title">PARCOURS DESIGNER</h3>
-                        <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-designer-desc">Maîtrisez l'UX/UI Design et apprenez
-                            à créer des expériences utilisateur inoubliables.</p>
-                        <a href="auth.html?path=designer" data-i18n="path-designer-btn"
-                            class="flex items-center text-primary font-black tracking-widest text-sm uppercase group-hover:translate-x-3 transition-transform">
-                            Créer la différence
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                    d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
+                <!-- Flèche flottante droite (mobile) -->
+                <button id="parcours-next" class="absolute right-1 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/95 dark:bg-slate-900/95 text-primary border border-slate-200/80 dark:border-slate-800/80 flex items-center justify-center shadow-lg active:scale-95 hover:bg-primary hover:text-white transition-all md:hidden backdrop-blur-sm" aria-label="Suivant">
+                    <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                </button>
             </div>
 
             <!-- Indicators for mobile swiping -->
@@ -840,10 +869,18 @@
             }
         });
 
-        // Pathways horizontal slider logic
+        // Logique Premium du Carrousel des Parcours (Mobile/Tablet)
         const parcoursContainer = document.getElementById('parcours-container');
         const parcoursDots = document.querySelectorAll('#parcours-dots button');
+        const prevBtn = document.getElementById('parcours-prev');
+        const nextBtn = document.getElementById('parcours-next');
         
+        let currentActiveIndex = 0;
+        let autoplayInterval = null;
+        let autoplayTimeout = null;
+        const AUTOPLAY_DELAY = 4500; // Défilement automatique toutes les 4.5 secondes
+        const RESUME_DELAY = 8000;   // Pause intelligente de 8 secondes après interaction
+
         window.scrollToPath = function(index) {
             if (!parcoursContainer) return;
             const cards = parcoursContainer.querySelectorAll('.card-premium');
@@ -853,10 +890,78 @@
                     block: 'nearest',
                     inline: 'center'
                 });
+                currentActiveIndex = index;
             }
         };
 
+        // Pause temporairement l'autoplay et le reprogramme après 8s d'inactivité
+        function pauseAutoplay() {
+            clearInterval(autoplayInterval);
+            autoplayInterval = null;
+            clearTimeout(autoplayTimeout);
+            
+            autoplayTimeout = setTimeout(() => {
+                startAutoplay();
+            }, RESUME_DELAY);
+        }
+
+        // Démarre le défilement automatique
+        function startAutoplay() {
+            if (autoplayInterval || window.innerWidth >= 768) return;
+            
+            autoplayInterval = setInterval(() => {
+                if (!parcoursContainer) return;
+                const cards = parcoursContainer.querySelectorAll('.card-premium');
+                if (cards.length === 0) return;
+                
+                let nextIndex = (currentActiveIndex + 1) % cards.length;
+                scrollToPath(nextIndex);
+            }, AUTOPLAY_DELAY);
+        }
+
+        // Intercepter scrollToPath pour suspendre l'autoplay lors d'un clic sur les dots
+        const originalScrollToPath = window.scrollToPath;
+        window.scrollToPath = function(index) {
+            pauseAutoplay();
+            originalScrollToPath(index);
+        };
+
+        // Gestion des boutons fléchés flottants
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                pauseAutoplay();
+                if (!parcoursContainer) return;
+                const cards = parcoursContainer.querySelectorAll('.card-premium');
+                if (cards.length === 0) return;
+                
+                let prevIndex = (currentActiveIndex - 1 + cards.length) % cards.length;
+                scrollToPath(prevIndex);
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                pauseAutoplay();
+                if (!parcoursContainer) return;
+                const cards = parcoursContainer.querySelectorAll('.card-premium');
+                if (cards.length === 0) return;
+                
+                let nextIndex = (currentActiveIndex + 1) % cards.length;
+                scrollToPath(nextIndex);
+            });
+        }
+
+        // Détection de l'interaction manuelle tactile / drag sur le conteneur
         if (parcoursContainer) {
+            parcoursContainer.addEventListener('touchstart', () => {
+                pauseAutoplay();
+            }, { passive: true });
+            
+            parcoursContainer.addEventListener('mousedown', () => {
+                pauseAutoplay();
+            });
+
+            // Synchronisation de l'index actif et des dots lors du défilement/swipe
             parcoursContainer.addEventListener('scroll', () => {
                 const cards = parcoursContainer.querySelectorAll('.card-premium');
                 if (!cards.length) return;
@@ -874,6 +979,8 @@
                     }
                 });
                 
+                currentActiveIndex = activeIndex;
+                
                 parcoursDots.forEach((dot, idx) => {
                     if (idx === activeIndex) {
                         dot.className = 'w-8 h-2 rounded-full bg-primary transition-all duration-300 focus:outline-none';
@@ -883,6 +990,22 @@
                 });
             });
         }
+
+        // Lancement initial de l'autoplay si mobile
+        if (window.innerWidth < 768) {
+            startAutoplay();
+        }
+
+        // Gérer le redimensionnement dynamique (orientation smartphone)
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                clearInterval(autoplayInterval);
+                autoplayInterval = null;
+                clearTimeout(autoplayTimeout);
+            } else {
+                startAutoplay();
+            }
+        });
 
         // Initialize Lucide Icons
         lucide.createIcons();
