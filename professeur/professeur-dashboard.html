@@ -2132,9 +2132,25 @@
                 if (overlay) overlay.classList.remove('hidden');
 
                 // Utiliser getSession pour une vérification rapide de la session active
-                const { data: { session } } = await sb.auth.getSession()
-                if (!session) return location.href = 'login.html'
+                let { data: { session } } = await sb.auth.getSession()
+                
+                // Fallback de secours robuste pour éviter le faux-positif de déconnexion sur mobile
+                if (!session) {
+                    console.log('⚠️ getSession() vide. Tentative de récupération via getUser()...');
+                    const { data: { user } } = await sb.auth.getUser()
+                    if (user) {
+                        console.log('✅ Utilisateur récupéré via getUser()! Récupération de la session...');
+                        const { data: sessionData } = await sb.auth.getSession()
+                        session = sessionData?.session
+                    }
+                }
+
+                if (!session) {
+                    console.log('❌ Session introuvable. Redirection vers login.html');
+                    return location.href = 'login.html'
+                }
                 uid = session.user.id
+                console.log('✅ Session active trouvée pour uid:', uid);
 
                 let retryCount = 0;
                 let data = null, error = null;

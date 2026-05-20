@@ -721,8 +721,10 @@
                 }
 
                 if (prof.statut === 'approuve') {
-                    console.log('✅ Approved! Redirecting to dashboard...');
-                    window.location.href = './professeur-dashboard.html'
+                    console.log('✅ Approved! Saving session and redirecting to dashboard in 500ms...');
+                    setTimeout(() => {
+                        window.location.href = './professeur-dashboard.html'
+                    }, 500)
                 }
 
             } catch (err) {
