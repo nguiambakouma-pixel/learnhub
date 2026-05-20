@@ -534,9 +534,9 @@
                 </p>
             </div>
 
-            <div class="flex overflow-x-auto pb-10 md:grid md:grid-cols-3 gap-5 md:gap-10 snap-x snap-mandatory no-scrollbar px-4 md:px-0">
+            <div id="parcours-container" class="flex overflow-x-auto pb-6 md:pb-0 md:grid md:grid-cols-3 gap-6 md:gap-10 snap-x snap-mandatory no-scrollbar px-6 md:px-0 scroll-smooth">
                 <!-- Path 1: Student -->
-                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex-shrink-0 w-[80vw] md:w-auto snap-center border border-slate-100 dark:border-slate-800" data-aos="fade-up"
+                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex-shrink-0 w-[82vw] sm:w-[350px] md:w-auto snap-center border border-slate-100 dark:border-slate-800" data-aos="fade-up"
                     data-aos-delay="100">
                     <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
                         <img src="assets/eleve.jpg"
@@ -548,7 +548,7 @@
                             class="absolute top-6 left-6 px-4 py-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-full text-xs font-bold text-primary uppercase tracking-widest shadow-lg" data-i18n="path-student-badge">
                             Fondamentaux</div>
                     </div>
-                    <div class="p-3 md:p-10 flex-grow flex flex-col">
+                    <div class="p-6 md:p-10 flex-grow flex flex-col">
                         <i data-lucide="graduation-cap" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
                         <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-student-title">PARCOURS ÉLÈVE</h3>
                         <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-student-desc">Relevez le défi de l'excellence
@@ -565,7 +565,7 @@
                 </div>
 
                 <!-- Path 2: Web Dev -->
-                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm border-primary/30 ring-4 ring-primary/5 flex-shrink-0 w-[80vw] md:w-auto snap-center"
+                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm border-primary/30 ring-4 ring-primary/5 flex-shrink-0 w-[82vw] sm:w-[350px] md:w-auto snap-center"
                     data-aos="fade-up" data-aos-delay="200">
                     <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
                         <img src="assets/dev-web.jpg"
@@ -580,7 +580,7 @@
                             class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
                             Bientôt Disponible</div>
                     </div>
-                    <div class="p-3 md:p-10 flex-grow flex flex-col">
+                    <div class="p-6 md:p-10 flex-grow flex flex-col">
                         <i data-lucide="code" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
                         <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-dev-title">PARCOURS DÉV-WEB</h3>
                         <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-dev-desc">Apprenez à coder les technologies du
@@ -597,7 +597,7 @@
                 </div>
 
                 <!-- Path 3: Designer -->
-                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex-shrink-0 w-[80vw] md:w-auto snap-center border border-slate-100 dark:border-slate-800" data-aos="fade-up"
+                <div class="card-premium group rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden shadow-sm flex-shrink-0 w-[82vw] sm:w-[350px] md:w-auto snap-center border border-slate-100 dark:border-slate-800" data-aos="fade-up"
                     data-aos-delay="300">
                     <div class="aspect-square md:aspect-auto md:h-72 overflow-hidden relative">
                         <img src="assets/web-designer.jpg"
@@ -612,7 +612,7 @@
                             class="absolute top-6 right-6 px-4 py-2 bg-secondary text-white rounded-full text-[10px] font-black uppercase tracking-tighter shadow-lg z-10 animate-pulse" data-i18n="path-dev-soon">
                             Bientôt Disponible</div>
                     </div>
-                    <div class="p-3 md:p-10 flex-grow flex flex-col">
+                    <div class="p-6 md:p-10 flex-grow flex flex-col">
                         <i data-lucide="palette" class="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6"></i>
                         <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-2 md:mb-4 tracking-tight" data-i18n="path-designer-title">PARCOURS DESIGNER</h3>
                         <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-6 md:mb-8 leading-relaxed font-medium flex-grow" data-i18n="path-designer-desc">Maîtrisez l'UX/UI Design et apprenez
@@ -627,6 +627,13 @@
                         </a>
                     </div>
                 </div>
+            </div>
+
+            <!-- Indicators for mobile swiping -->
+            <div class="flex justify-center items-center gap-2.5 mt-6 md:hidden" id="parcours-dots">
+                <button onclick="scrollToPath(0)" class="w-8 h-2 rounded-full bg-primary transition-all duration-300 focus:outline-none" aria-label="Go to slide 1"></button>
+                <button onclick="scrollToPath(1)" class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700 transition-all duration-300 focus:outline-none" aria-label="Go to slide 2"></button>
+                <button onclick="scrollToPath(2)" class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700 transition-all duration-300 focus:outline-none" aria-label="Go to slide 3"></button>
             </div>
         </div>
     </section>
@@ -832,6 +839,50 @@
                 nav.classList.remove('shadow-lg');
             }
         });
+
+        // Pathways horizontal slider logic
+        const parcoursContainer = document.getElementById('parcours-container');
+        const parcoursDots = document.querySelectorAll('#parcours-dots button');
+        
+        window.scrollToPath = function(index) {
+            if (!parcoursContainer) return;
+            const cards = parcoursContainer.querySelectorAll('.card-premium');
+            if (cards[index]) {
+                cards[index].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest',
+                    inline: 'center'
+                });
+            }
+        };
+
+        if (parcoursContainer) {
+            parcoursContainer.addEventListener('scroll', () => {
+                const cards = parcoursContainer.querySelectorAll('.card-premium');
+                if (!cards.length) return;
+                
+                let activeIndex = 0;
+                let minDiff = Infinity;
+                const containerCenter = parcoursContainer.scrollLeft + (parcoursContainer.offsetWidth / 2);
+                
+                cards.forEach((card, idx) => {
+                    const cardCenter = card.offsetLeft + (card.offsetWidth / 2);
+                    const diff = Math.abs(cardCenter - containerCenter);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        activeIndex = idx;
+                    }
+                });
+                
+                parcoursDots.forEach((dot, idx) => {
+                    if (idx === activeIndex) {
+                        dot.className = 'w-8 h-2 rounded-full bg-primary transition-all duration-300 focus:outline-none';
+                    } else {
+                        dot.className = 'w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700 transition-all duration-300 focus:outline-none';
+                    }
+                });
+            });
+        }
 
         // Initialize Lucide Icons
         lucide.createIcons();
