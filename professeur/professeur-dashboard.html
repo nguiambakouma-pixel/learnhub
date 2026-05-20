@@ -8,7 +8,14 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="secrets.js"></script>
+    <!-- On Vercel, secrets.js is ignored and causes a 404. We load it dynamically only on localhost to avoid production 404 console errors. -->
+    <script>
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.')) {
+            var script = document.createElement('script');
+            script.src = 'secrets.js';
+            document.head.appendChild(script);
+        }
+    </script>
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
@@ -1824,11 +1831,103 @@
 
     <script>
         // ════════════════════════════════════════════════════════════
-        //  CONFIG
+        //  CONFIG & STORAGE FALLBACKS
         // ════════════════════════════════════════════════════════════
-        const SB_URL = window.SUPABASE_SECRETS ? window.SUPABASE_SECRETS.url : 'https://votre-url-supabase.supabase.co'
-        const SB_KEY = window.SUPABASE_SECRETS ? window.SUPABASE_SECRETS.key : 'votre-cle-anonyme'
-        const sb = window.supabase.createClient(SB_URL, SB_KEY)
+        const getSafeStorage = () => {
+            // 1. Try LocalStorage
+            try {
+                const testKey = '__storage_test__';
+                window.localStorage.setItem(testKey, testKey);
+                window.localStorage.removeItem(testKey);
+                return window.localStorage;
+            } catch (e) {
+                console.warn("localStorage blocked by browser privacy/tracking prevention. Trying sessionStorage...");
+            }
+
+            // 2. Try SessionStorage
+            try {
+                const testKey = '__storage_test__';
+                window.sessionStorage.setItem(testKey, testKey);
+                window.sessionStorage.removeItem(testKey);
+                return window.sessionStorage;
+            } catch (e) {
+                console.warn("sessionStorage blocked. Trying Cookie storage...");
+            }
+
+            // 3. Try Cookies
+            try {
+                const testKey = '__storage_test__';
+                document.cookie = testKey + "=1;path=/;SameSite=Lax;Secure";
+                const hasCookie = document.cookie.indexOf(testKey) !== -1;
+                document.cookie = testKey + "=; Max-Age=-99999999;path=/;SameSite=Lax;Secure";
+                if (hasCookie) {
+                    return {
+                        getItem: (key) => {
+                            const name = key + "=";
+                            const ca = document.cookie.split(';');
+                            for (let i = 0; i < ca.length; i++) {
+                                let c = ca[i].trim();
+                                if (c.indexOf(name) === 0) return decodeURIComponent(c.substring(name.length));
+                            }
+                            return null;
+                        },
+                        setItem: (key, value) => {
+                            document.cookie = key + "=" + encodeURIComponent(value) + ";path=/;SameSite=Lax;Secure;max-age=31536000";
+                        },
+                        removeItem: (key) => {
+                            document.cookie = key + "=; Max-Age=-99999999;path=/;SameSite=Lax;Secure";
+                        }
+                    };
+                }
+            } catch (e) {
+                console.warn("Cookie storage blocked. Trying window.name storage...");
+            }
+
+            // 4. Fallback to window.name + In-Memory
+            const memoryStore = {};
+            return {
+                getItem: (key) => {
+                    if (memoryStore[key]) return memoryStore[key];
+                    try {
+                        const data = JSON.parse(window.name || '{}');
+                        return data[key] || null;
+                    } catch (e) {
+                        return null;
+                    }
+                },
+                setItem: (key, value) => {
+                    memoryStore[key] = value;
+                    try {
+                        const data = JSON.parse(window.name || '{}');
+                        data[key] = value;
+                        window.name = JSON.stringify(data);
+                    } catch (e) {
+                        // ignore
+                    }
+                },
+                removeItem: (key) => {
+                    delete memoryStore[key];
+                    try {
+                        const data = JSON.parse(window.name || '{}');
+                        delete data[key];
+                        window.name = JSON.stringify(data);
+                    } catch (e) {
+                        // ignore
+                    }
+                }
+            };
+        };
+
+        const SB_URL = window.SUPABASE_SECRETS ? window.SUPABASE_SECRETS.url : 'https://zbbulpomopfwkqipbehk.supabase.co'
+        const SB_KEY = window.SUPABASE_SECRETS ? window.SUPABASE_SECRETS.key : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A'
+        const customStorage = getSafeStorage()
+        const sb = window.supabase.createClient(SB_URL, SB_KEY, {
+            auth: {
+                storage: customStorage,
+                persistSession: true,
+                autoRefreshToken: true
+            }
+        })
 
         let prof = null, uid = null
         let imgUrl = null, pdfUrl = null
