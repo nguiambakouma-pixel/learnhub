@@ -753,7 +753,7 @@
             }
         })
 
-        const specialites = []
+        const profSpecialites = []
 
         // Bilingual Dynamic Messages Dictionary
         const MSG_TRANSLATIONS = {
@@ -984,8 +984,8 @@
             if (e.key === 'Enter' || e.key === ',') {
                 e.preventDefault()
                 const val = e.target.value.trim()
-                if (val && !specialites.includes(val)) {
-                    specialites.push(val)
+                if (val && !profSpecialites.includes(val)) {
+                    profSpecialites.push(val)
                     renderTags()
                 }
                 e.target.value = ''
@@ -996,7 +996,7 @@
         // TAGS (Spécialités)
         // ──────────────────────────────────
         function removeTag(i) {
-            specialites.splice(i, 1)
+            profSpecialites.splice(i, 1)
             renderTags()
         }
 
@@ -1004,7 +1004,7 @@
             const wrapper = document.getElementById('tags-wrapper')
             const input = document.getElementById('tag-input')
             wrapper.innerHTML = ''
-            specialites.forEach((t, i) => {
+            profSpecialites.forEach((t, i) => {
                 const pill = document.createElement('div')
                 pill.className = 'tag-pill'
                 pill.innerHTML = `${t} <button onclick="removeTag(${i})">×</button>`
@@ -1184,7 +1184,7 @@
                     id: userId,
                     nom, prenom, email,
                     telephone: phone || null,
-                    specialites: specialites,
+                    specialites: profSpecialites,
                     sous_systemes: sousSystemes,
                     niveaux_enseignes: [],
                     annees_experience: experience,
