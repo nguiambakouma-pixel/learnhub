@@ -16,6 +16,16 @@
             document.head.appendChild(script);
         }
     </script>
+    <script>
+        // Init theme early to avoid FOUC
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
@@ -33,7 +43,18 @@
             --am: #d97706;
             --red: #ef4444;
             --txt: #0f172a;
-            --mu: #64748b
+            --mu: #64748b;
+            --gb-bg: rgba(255, 255, 255, 0.4);
+        }
+
+        html.dark {
+            --bg: #0b0f19;
+            --surface: #131b2e;
+            --card: #131b2e;
+            --border: #1e293b;
+            --txt: #f8fafc;
+            --mu: #94a3b8;
+            --gb-bg: rgba(19, 27, 46, 0.4);
         }
 
         * {
@@ -751,7 +772,7 @@
             text-transform: uppercase;
             color: var(--mu);
             border-bottom: 1.5px solid var(--border);
-            background: #f8fafc
+            background: var(--bg)
         }
 
         td {
@@ -1033,43 +1054,7 @@
             border-radius: 3px
         }
 
-        /* ROTATION PROMPT */
-        .rotate-prompt {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: linear-gradient(135deg, var(--ind), #818cf8);
-            color: #fff;
-            z-index: 100000;
-            padding: 12px 20px;
-            text-align: left;
-            font-size: 14px;
-            font-weight: 700;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            align-items: center;
-            gap: 12px;
-        }
-
-        .rotate-prompt.dismissed {
-            display: none !important;
-        }
-
-        .rotate-prompt button {
-            background: rgba(0,0,0,0.2);
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            margin-left: auto;
-            color: #fff;
-            font-weight: bold;
-        }
+        /* (Rotation prompt styles removed) */
 
         /* ── LOADING OVERLAY ── */
         #loading-overlay {
@@ -1080,24 +1065,11 @@
         #loading-overlay.hidden { opacity: 0; visibility: hidden; }
         .loader-spin { width: 40px; height: 40px; border: 3px solid rgba(99,102,241,0.1); border-top-color: var(--ind); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        @media (max-width: 768px) and (orientation: portrait) {
-            .rotate-prompt:not(.dismissed) {
-                display: flex;
-            }
-        }
     </style>
     <link rel="stylesheet" href="../responsive.css">
 </head>
 
 <body>
-    <!-- ROTATION PROMPT -->
-    <div class="rotate-prompt" id="rotatePrompt">
-        <i data-lucide="smartphone"></i>
-        <span>Pivote ton téléphone pour une meilleure vue !</span>
-        <button onclick="document.getElementById('rotatePrompt').classList.add('dismissed')">✖</button>
-    </div>
-
     <div class="layout">
 
         <div id="loading-overlay">
@@ -1186,6 +1158,10 @@
                     <div class="ptitle" id="page-content-title">Dashboard Professeur</div>
                 </div>
                 <div class="flex items-center gap-4">
+                    <button class="btn btn-g" onclick="toggleTheme()" id="theme-toggle-btn" title="Toggle Theme" style="padding: 0.52rem 0.75rem; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="sun" id="theme-icon-sun" class="w-4 h-4" style="display: none;"></i>
+                        <i data-lucide="moon" id="theme-icon-moon" class="w-4 h-4"></i>
+                    </button>
                     <button class="btn btn-g relative">
                         <i data-lucide="bell" class="w-4 h-4"></i>
                         <span class="absolute top-1 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
@@ -1419,7 +1395,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="gb" style="background: rgba(255,255,255,0.4); backdrop-filter: blur(10px); border-radius: 1.25rem; padding: 2rem; border: 1px solid var(--border);">
+                        <div class="gb" style="background: var(--gb-bg); backdrop-filter: blur(10px); border-radius: 1.25rem; padding: 2rem; border: 1px solid var(--border);">
                             <div id="al-exo" class="al"></div>
                             <div class="g2">
                                 <div class="fd">
@@ -1497,7 +1473,7 @@
                                 <p style="font-size: 0.8rem; color: var(--mu); margin-top: 2px;" data-i18n="propose_simple_exo_desc">Créez des exercices pédagogiques (QCM, Ouvert...) liés à un cours.</p>
                             </div>
                         </div>
-                        <div class="gb" style="background: rgba(255,255,255,0.4); backdrop-filter: blur(10px); border-radius: 1.25rem; padding: 2rem; border: 1px solid var(--border);">
+                        <div class="gb" style="background: var(--gb-bg); backdrop-filter: blur(10px); border-radius: 1.25rem; padding: 2rem; border: 1px solid var(--border);">
                             <div id="al-exs" class="al"></div>
                             
                             <div class="fd">
@@ -3325,6 +3301,32 @@
         function fd(d) { if (!d) return '—'; return new Date(d).toLocaleDateString(LANG === 'en' ? 'en-GB' : 'fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) }
         function slugify(s) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }
         function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;') }
+
+        // ════════════════════════════════════════════════════════════
+        //  MODE SOMBRE (DARK MODE)
+        // ════════════════════════════════════════════════════════════
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcons(isDark);
+        }
+
+        function updateThemeIcons(isDark) {
+            const sun = document.getElementById('theme-icon-sun');
+            const moon = document.getElementById('theme-icon-moon');
+            if (sun && moon) {
+                if (isDark) {
+                    sun.style.display = 'inline-block';
+                    moon.style.display = 'none';
+                } else {
+                    sun.style.display = 'none';
+                    moon.style.display = 'inline-block';
+                }
+            }
+        }
+
+        // Appliquer l'état initial des icônes de thème
+        updateThemeIcons(document.documentElement.classList.contains('dark'));
 
         init()
         
