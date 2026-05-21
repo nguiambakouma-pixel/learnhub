@@ -2404,7 +2404,15 @@
             window.scrollTo(0, 0)
             
             // Fermer la sidebar sur mobile après clic
-            document.querySelector('.sidebar').classList.remove('active')
+            if (typeof window.closeSidebar === 'function') {
+                window.closeSidebar();
+            } else {
+                const sb = document.querySelector('.sidebar');
+                if (sb) sb.classList.remove('active', 'open');
+                const bd = document.querySelector('.sidebar-backdrop');
+                if (bd) bd.classList.remove('show');
+                document.body.style.overflow = '';
+            }
 
             // Appliquer les icônes si de nouvelles s'affichent
             if (window.lucide) {

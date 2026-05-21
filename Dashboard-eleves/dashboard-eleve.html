@@ -2206,6 +2206,11 @@
             // Re-initialiser les icones Lucide pour les éléments injectés dynamiquement
             if (window.lucide) lucide.createIcons();
             
+            // Fermer la sidebar sur mobile après clic
+            if (typeof window.closeSidebar === 'function') {
+                window.closeSidebar();
+            }
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 

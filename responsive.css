@@ -76,7 +76,7 @@ aside.sidebar {
         left: 0;
         top: 0;
         bottom: 0;
-        z-index: 200;
+        z-index: 200 !important;
         transform: translateX(-100%);
         box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
     }

@@ -9,7 +9,11 @@
     if (!backdrop) {
       backdrop = document.createElement('div');
       backdrop.className = 'sidebar-backdrop';
-      document.body.appendChild(backdrop);
+      if (sidebar.parentElement) {
+        sidebar.parentElement.appendChild(backdrop);
+      } else {
+        document.body.appendChild(backdrop);
+      }
     }
     
     // Fermer sidebar au clic backdrop
