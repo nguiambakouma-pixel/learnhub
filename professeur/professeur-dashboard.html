@@ -20,6 +20,9 @@
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
     <style>
+        html {
+            font-size: 17px !important;
+        }
         :root {
             --bg: #f8fafc;
             --surface: #ffffff;
@@ -1409,10 +1412,10 @@
                         <div class="gh" style="border-bottom: none; margin-bottom: 1.5rem;">
                             <div>
                                 <div class="gtitle" id="xf-title" data-i18n="propose_exercise_title">💻 Proposer un exercice de code</div>
-                                <p style="font-size: 0.8rem; color: var(--mu); margin-top: 2px;">Créez un nouvel exercice technique (Algorithmique, Python, JS...).</p>
+                                <p style="font-size: 0.8rem; color: var(--mu); margin-top: 2px;" data-i18n="propose_exercise_desc">Créez un nouvel exercice technique (Algorithmique, Python, JS...).</p>
                                 <div style="margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.8rem; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.1); border-radius: 0.5rem; font-size: 0.75rem; color: var(--am);">
                                     <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
-                                    <span>Rappel : Ces exercices concernent les programmes de <b>TI (Technologies de l'Information)</b>.</span>
+                                    <span><span data-i18n="exercise_code_reminder_label">Rappel : Ces exercices concernent les programmes de</span> <b><span data-i18n="exercise_code_reminder_subject">TI (Technologies de l'Information)</span></b>.</span>
                                 </div>
                             </div>
                         </div>
@@ -1421,12 +1424,12 @@
                             <div class="g2">
                                 <div class="fd">
                                     <label data-i18n="field_title">Titre du défi *</label>
-                                    <input type="text" id="x-tit" placeholder="Ex: Algorithme de tri rapide">
+                                    <input type="text" id="x-tit" data-i18n-placeholder="placeholder_exercise_title" placeholder="Ex: Algorithme de tri rapide">
                                 </div>
                                 <div class="fd">
                                     <label data-i18n="field_language">Langage de programmation *</label>
                                     <select id="x-lang" onchange="syncLang()" style="height: 45px;">
-                                        <option value="">Sélectionner un langage…</option>
+                                        <option value="" data-i18n-opt="select_language">Sélectionner un langage…</option>
                                         <option value="javascript">JavaScript</option>
                                         <option value="python">Python</option>
                                         <option value="html">HTML</option>
@@ -1499,7 +1502,7 @@
                             
                             <div class="fd">
                                 <label data-i18n="field_exercise_title">Titre de l'exercice *</label>
-                                <input type="text" id="xs-tit" placeholder="Ex: Quiz sur les fonctions linéaires">
+                                <input type="text" id="xs-tit" data-i18n-placeholder="placeholder_simple_exercise_title" placeholder="Ex: Quiz sur les fonctions linéaires">
                             </div>
 
                             <div class="g2">
@@ -1960,6 +1963,12 @@
                 field_exercise_title: "Titre de l'exercice",
                 btn_save_simple_exo: "💾 Enregistrer l'exercice",
                 propose_simple_exo_desc: "Créez des exercices pédagogiques (QCM, Ouvert...) liés à un cours.",
+                exercise_code_reminder_label: "Rappel : Ces exercices concernent les programmes de",
+                exercise_code_reminder_subject: "TI (Technologies de l'Information)",
+                propose_exercise_desc: "Créez un nouvel exercice technique (Algorithmique, Python, JS...).",
+                select_language: "Sélectionner un langage…",
+                placeholder_exercise_title: "Ex: Algorithme de tri rapide",
+                placeholder_simple_exercise_title: "Ex: Quiz sur les fonctions linéaires",
                 /* Statuts & Labels */
                 status_active: 'Compte actif', btn_logout: '🚪 Déconnexion',
                 /* Topbar */
@@ -2066,6 +2075,12 @@
                 field_course: "Associated Course",
                 btn_save_simple_exo: "💾 Save Exercise",
                 propose_simple_exo_desc: "Create pedagogical exercises (MCQ, Open...) linked to a course.",
+                exercise_code_reminder_label: "Reminder: These exercises concern the curriculums of",
+                exercise_code_reminder_subject: "IT (Information Technology)",
+                propose_exercise_desc: "Create a new technical exercise (Algorithms, Python, JS...).",
+                select_language: "Select a language…",
+                placeholder_exercise_title: "E.g.: Quick sort algorithm",
+                placeholder_simple_exercise_title: "E.g.: Quiz on linear functions",
                 /* Statuts & Labels */
                 status_active: 'Account active', btn_logout: '🚪 Log out',
                 /* Topbar */
@@ -2175,6 +2190,12 @@
             document.querySelectorAll('[data-i18n-opt]').forEach(el => {
                 const key = el.getAttribute('data-i18n-opt')
                 if (t[key] !== undefined) el.textContent = t[key]
+            })
+
+            // Placeholders avec data-i18n-placeholder
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder')
+                if (t[key] !== undefined) el.placeholder = t[key]
             })
 
             // Placeholder de l'éditeur de contenu
@@ -2804,7 +2825,7 @@
             
             try {
                 const cId = document.getElementById('xs-cours').value
-                if (!cId) throw new Error("Veuillez sélectionner un cours associé.")
+                if (!cId) throw new Error(LANG === 'en' ? "Please select an associated course." : "Veuillez sélectionner un cours associé.")
 
                 const exData = {
                     cours_id: parseInt(cId),
