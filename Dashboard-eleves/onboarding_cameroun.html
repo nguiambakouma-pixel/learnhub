@@ -11,7 +11,14 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.min.js"></script>
+    <script>
+        if (!window.lucide) {
+            window.lucide = {
+                createIcons: function() { console.warn("Lucide failed to load. Icons not created."); }
+            };
+        }
+    </script>
     <script src="../js/secrets.js"></script>
     <script src="../js/i18n.js"></script>
     <style>

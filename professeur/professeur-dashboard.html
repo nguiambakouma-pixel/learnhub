@@ -7,7 +7,14 @@
     <title id="page-tab-title">Dashboard Professeur — KMERSCHOOL</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.min.js"></script>
+    <script>
+        if (!window.lucide) {
+            window.lucide = {
+                createIcons: function() { console.warn("Lucide failed to load. Icons not created."); }
+            };
+        }
+    </script>
     <!-- On Vercel, secrets.js is ignored and causes a 404. We load it dynamically only on localhost to avoid production 404 console errors. -->
     <script>
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.')) {
@@ -3197,6 +3204,24 @@
             document.getElementById('prof-fullname').textContent = `${prenom} ${nom}`
         }
 
+        async function doLogout() {
+            document.getElementById('prof-modal-logout').style.display = 'flex';
+        }
+
+        async function confirmProfLogout() {
+            const btn = document.getElementById('prof-confirm-logout-btn');
+            btn.textContent = LANG === 'en' ? 'Logging out...' : 'Déconnexion...';
+            btn.disabled = true;
+            try {
+                await sb.auth.signOut();
+                location.href = 'login.html';
+            } catch(err) {
+                console.error('Erreur déconnexion:', err);
+                btn.textContent = LANG === 'en' ? 'Confirm logout' : 'Confirmer la déconnexion';
+                btn.disabled = false;
+            }
+        }
+
         // ════════════════════════════════════════════════════════════
         //  GESTION TAGS SPÉCIALITÉS
         // ════════════════════════════════════════════════════════════
@@ -3259,15 +3284,6 @@
             shAl('al-pwd', t('msg_password_changed'), 'ok')
             document.getElementById('p-pwd').value = ''
             document.getElementById('p-pwd2').value = ''
-        }
-
-        // ════════════════════════════════════════════════════════════
-        //  LOGOUT
-        // ════════════════════════════════════════════════════════════
-        async function doLogout() {
-            if (!confirm(LANG === 'en' ? 'Log out?' : 'Se déconnecter ?')) return
-            await sb.auth.signOut()
-            location.href = 'login.html'
         }
 
         // ════════════════════════════════════════════════════════════
@@ -3336,6 +3352,21 @@
         }
     </script>
     <script src="../assets/js/responsive.js"></script>
+
+    <!-- MODALE CONFIRMATION DÉCONNEXION PROFESSEUR -->
+    <div id="prof-modal-logout" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:99999;align-items:center;justify-content:center;backdrop-filter:blur(6px);">
+        <div style="background:#0f172a;border:1px solid rgba(99,102,241,0.35);border-radius:18px;padding:36px;max-width:420px;width:90%;text-align:center;animation:profFadeIn 0.3s ease;">
+            <div style="font-size:52px;margin-bottom:18px;">&#x1F6AA;</div>
+            <h3 style="font-family:'Syne',sans-serif;font-size:21px;font-weight:700;color:white;margin-bottom:10px;">Se déconnecter ?</h3>
+            <p style="color:#94a3b8;font-size:14px;line-height:1.65;margin-bottom:26px;">Votre session sera terminée sur cet appareil. Vous devrez entrer à nouveau vos identifiants pour accéder à votre espace professeur.</p>
+            <div style="display:flex;gap:12px;justify-content:center;">
+                <button onclick="document.getElementById('prof-modal-logout').style.display='none'" style="padding:12px 26px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:white;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">Annuler</button>
+                <button id="prof-confirm-logout-btn" onclick="confirmProfLogout()" style="padding:12px 26px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:10px;color:white;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Confirmer la déconnexion</button>
+            </div>
+        </div>
+    </div>
+    <style>@keyframes profFadeIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }</style>
+
 </body>
 
 </html>

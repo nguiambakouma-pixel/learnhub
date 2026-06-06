@@ -86,6 +86,24 @@ export class DashboardView {
         const devWeb = await this.getCount('profiles', { type_parcours: 'dev-web' });
         const designers = await this.getCount('profiles', { type_parcours: 'designer' });
 
+        // Compter les élèves francophones et anglophones
+        const { data: sousSystemes } = await api.client
+            .from('sous_systemes')
+            .select('id, code');
+
+        const francophoneId = sousSystemes?.find(s => s.code === 'francophone')?.id;
+        const anglophoneId = sousSystemes?.find(s => s.code === 'anglophone')?.id;
+
+        let elevesFr = 0;
+        let elevesAn = 0;
+
+        if (francophoneId) {
+            elevesFr = await this.getCount('profiles', { type_parcours: 'eleve', sous_systeme_id: francophoneId });
+        }
+        if (anglophoneId) {
+            elevesAn = await this.getCount('profiles', { type_parcours: 'eleve', sous_systeme_id: anglophoneId });
+        }
+
         const total_cours = await this.getCount('cours');
         const total_chapitres = await this.getCount('chapitres');
         const total_exercices_qcm = await this.getCount('exercices');
@@ -95,6 +113,8 @@ export class DashboardView {
 
         return {
             total_eleves: eleves,
+            eleves_fr: elevesFr,
+            eleves_an: elevesAn,
             total_dev: devWeb,
             total_designer: designers,
             total_cours,
@@ -148,7 +168,7 @@ export class DashboardView {
             <!-- Graphiques Réels -->
             <div class="grid grid-cols-2 gap-6 mb-6">
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                    <h3 class="text-lg font-bold mb-4 text-gray-800">📊 Répartition des Parcours</h3>
+                    <h3 class="text-lg font-bold mb-4 text-gray-800">📊 Répartition des Élèves</h3>
                     <div class="h-64 relative">
                         <canvas id="chartRepartitionReal"></canvas>
                     </div>
@@ -236,10 +256,10 @@ export class DashboardView {
             this.charts.repartition = new Chart(ctxRep, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Élèves', 'Dev Web', 'Designers'],
+                    labels: ['Francophone', 'Anglophone'],
                     datasets: [{
-                        data: [globalStats.total_eleves, globalStats.total_dev, globalStats.total_designer],
-                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+                        data: [globalStats.eleves_fr, globalStats.eleves_an],
+                        backgroundColor: ['#3b82f6', '#f59e0b'],
                         borderWidth: 0,
                         hoverOffset: 4
                     }]

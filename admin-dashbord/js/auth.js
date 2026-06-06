@@ -119,19 +119,32 @@ const AdminAuth = {
     },
 
     /**
-     * Déconnexion
+     * Déconnexion - ouvre la modale de confirmation
      */
-    async logout() {
-        if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
-            try {
-                await supabaseClient.auth.signOut();
-                localStorage.removeItem('ks_admin_token');
-                console.log('🚪 Déconnexion réussie');
-                this.redirectToLogin();
-            } catch (error) {
-                console.error('Erreur déconnexion:', error);
-                alert('Erreur lors de la déconnexion');
+    logout() {
+        const modal = document.getElementById('adminModalLogout');
+        if (modal) {
+            modal.style.display = 'flex';
+        } else {
+            // Fallback si la modale n'est pas encore dans le DOM
+            if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
+                this._doLogout();
             }
+        }
+    },
+
+    /**
+     * Exécute réellement la déconnexion après confirmation
+     */
+    async _doLogout() {
+        try {
+            await supabaseClient.auth.signOut();
+            localStorage.removeItem('ks_admin_token');
+            console.log('🚶 Déconnexion réussie');
+            this.redirectToLogin();
+        } catch (error) {
+            console.error('Erreur déconnexion:', error);
+            alert('Erreur lors de la déconnexion');
         }
     },
 

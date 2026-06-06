@@ -11,7 +11,14 @@
         rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="js/lucide.min.js"></script>
+    <script>
+        if (!window.lucide) {
+            window.lucide = {
+                createIcons: function() { console.warn("Lucide failed to load. Icons not created."); }
+            };
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="auth-check.js"></script>
     <script src="js/i18n.js"></script>
@@ -998,7 +1005,7 @@
         });
 
         // Initialize Lucide Icons
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
     </script>
     <script src="./assets/js/responsive.js"></script>
 </body>

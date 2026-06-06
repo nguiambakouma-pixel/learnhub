@@ -1,58 +1,58 @@
 RECOMMENCE ET MIXTE CETTE NOUVELLE PRESENTATION IMPORTER A PARTIR DE CES IDEES SUPPLEMENTAIRE POUR UNE VERSION FINALE (>15 SLIDES)lide 1 : Titre & Vision
 Objectif : Capter l'audience avec l'identité de marque unique et bilingue.
 Transition conseillée : Fondu enchaîné très lent pour installer l'ambiance.                                                          "Génère une diapositive de titre pour une présentation EdTech. Titre : 'KMER(vert)SCH(rouge)OOL (jaune or): L'Excellence Éducative pour Tous'. Sous-titre : 'La plateforme éducative premium qui fusionne Intelligence Artificielle, simulateurs 3D et alignement culturel pour l'Afrique'. Design : Fond sombre premium, graphismes modernes avec des nuances de Vert Émeraude (#007A5E) et d'Or (#F5B800), typographie géométrique imposante."
-Slide 2 : Le Défi Éducatif (Le Problème)
+ Le Défi Éducatif (Le Problème)
 Objectif : Poser les bases du problème en mettant en valeur les blocages actuels.
 Transition : Glissement vers la gauche (effet frise chronologique).
 "Génère une diapositive intitulée 'Le Défi Éducatif'. Présente 3 défis majeurs sous forme de colonnes ou de liste épurée : 1) L'inadéquation des outils numériques face au double sous-système d'enseignement francophone et anglophone. 2) Le manque de laboratoires physiques dans les établissements pour les travaux pratiques scientifiques. 3) Le faible engagement des élèves face aux formats de cours purement textuels et passifs. Visuel : Graphique minimaliste représentant la fracture numérique éducative."
-Slide 3 : La Solution Globale
+La Solution Globale
 Objectif : Introduire KMERSCHOOL comme la plateforme modulaire tout-en-un.
 Transition : Zoom avant (effet de zoom sur la solution).
  "Génère une diapositive intitulée 'KMERSCHOOL : L'Éducation Réinventée'. Explique la solution en insistant sur l'accessibilité multi-appareils (100% responsive sur mobile). Points clés : Apprentissage adaptatif, immersion scientifique, pédagogie ludique et passerelle bilingue automatique. Visuel : Une maquette de smartphone affichant un tableau de bord éducatif premium avec un style 'glassmorphic'."
-Slide 4 : Parcours Élève - Étape 1 : Inscription & Onboarding Intelligent
+Parcours Élève - Étape 1 : Inscription & Onboarding Intelligent
 Objectif : Détailler la procédure fluide d'inscription d'un élève.
 Vidéo suggérée : Intégrer un court enregistrement d'écran (10s) montrant le formulaire d'inscription dynamique et bilingue.
 Transition : Glissement de bas en haut (simulant le défilement de l'inscription).
 "Génère une diapositive intitulée 'Parcours Élève : Inscription Intuitive'. Explique le processus pas-à-pas de création de compte : 1) Choix immédiat du système scolaire (Francophone ou Anglophone) pour adapter automatiquement la langue de départ. 2) Sélection de la classe et de la série (ex: Première D ou Lower Sixth Science) qui génère instantanément le programme approprié. 3) Calcul automatique et transparent de l'année académique. Visuel : Capture d'écran ou mockup épuré du formulaire d'inscription mobile avec son style compact."
-Slide 5 : Parcours Élève - Étape 2 : Le Tableau de Bord Pédagogique
+Parcours Élève - Étape 2 : Le Tableau de Bord Pédagogique
 Objectif : Présenter l'environnement de travail de l'élève une fois connecté.
 Animation : Apparition progressive des différents widgets (Progression, Badges, XP).
  "Génère une diapositive intitulée 'Le Tableau de Bord Élève : Un Centre de Contrôle'. Présente les fonctionnalités clés du dashboard élève : widget de progression des cours en temps réel, indicateur de régularité (streak de feu) pour susciter l'habitude d'étude quotidienne, accès direct aux cours favoris sauvegardés et compteur de points d'expérience (XP). Design : Thème sombre futuriste avec des bordures lumineuses dorées pour les widgets."
-Slide 6 : Parcours Enseignant - Étape 1 : Inscription & Spécialisation
+Parcours Enseignant - Étape 1 : Inscription & Spécialisation
 Objectif : Expliquer comment la plateforme accueille les enseignants.
 Transition : Fondu croisé (changement d'acteur : de l'élève à l'enseignant).
 "Génère une diapositive intitulée 'Parcours Enseignant : Recrutement & Profils Qualifiés'. Explique le processus d'inscription rigoureux des professeurs : 1) Renseignement du profil académique complet. 2) Sélection dynamique de spécialités d'enseignement via un sélecteur de tags ultra-fluide optimisé pour mobile. 3) Liaison stricte avec un ou plusieurs sous-systèmes (Anglophone, Francophone, ou Bilingue) pour garantir des contenus conformes aux programmes. Visuel : Illustration d'un enseignant moderne doté d'outils digitaux."
-Slide 7 : Parcours Enseignant - Étape 2 : Le Dashboard & Création de Contenus
+Parcours Enseignant - Étape 2 : Le Dashboard & Création de Contenus
 Objectif : Montrer l'espace de travail du professeur et ses outils d'auteur.
 Transition : Glissement vers la gauche.
 "Génère une diapositive intitulée 'Dashboard Enseignant : L'Usine à Contenus'. Détaille les fonctionnalités clés de l'espace professeur : Outil intuitif de proposition de nouveaux cours, exercices et examens classés par matière/chapitre, suivi analytique de la progression de leurs élèves inscrits, et système de validation transparent. Visuel : Une grille de bord structurée affichant des cours soumis en cours d'évaluation."
-Slide 8 : Le Centre de Commandement - Le Dashboard Administrateur
+Le Centre de Commandement - Le Dashboard Administrateur
 Objectif : Montrer la face cachée de l'administration du projet.
 Transition : Rotation 3D ou glissement rapide.       "Génère une diapositive intitulée 'Dashboard Admin : Le Cerveau de la Plateforme'. Explique le rôle de contrôle de l'administrateur : 1) Modération des utilisateurs (élèves et enseignants). 2) Pipeline de validation des contenus (approbation finale des cours et examens soumis par les professeurs avant publication officielle). 3) Statistiques globales sur l'évolution du trafic et l'engagement des utilisateurs. Visuel : Un tableau de bord statistique minimaliste avec des graphiques de croissance épurés."
-Slide 9 : Simulateurs Scientifiques 3D (L'Innovation)
+Simulateurs Scientifiques 3D (L'Innovation)
 Objectif : Zoomer sur la force pédagogique immersive des TP virtuels.
 Vidéo suggérée : Un GIF ou une boucle vidéo montrant le simulateur d'optique ou le RLC en action.
 Prompt à copier-coller :
 Prompt : "Génère une diapositive intitulée 'Laboratoires 3D : L'Immersion Scientifique'. Explique le fonctionnement des simulateurs interactifs en physique/chimie : Optique géométrique (manipulation de lentilles et miroirs), circuits RLC (branchements électriques en temps réel) et Modélisation Atomique de Bohr. Visuel : Une esthétique technologique avec des lignes de faisceaux laser et des orbitales atomiques lumineuses."
-Slide 10 : L'IA Pédagogique - Migration Llama 3.3 via Groq
+L'IA Pédagogique - Migration Llama 3.3 via Groq
 Objectif : Mettre en avant le bond technologique réalisé avec l'IA.
 Transition : Fondu rapide avec effet d'étincelles technologiques.
 "Génère une diapositive intitulée 'KmerAI : L'Intelligence Artificielle Performante'. Présente la puissance de l'IA tuteur. Points clés : Migration vers le modèle Llama 3.3 70B (Meta) via le SDK Groq, temps de réponse quasi-instantané (faible latence) sur mobile et réponses adaptées au cadre pédagogique africain. Visuel : Graphisme symbolisant le cloud computing ultra-rapide combiné à l'intelligence artificielle."
-Slide 11 : Moteur de Gamification
+Moteur de Gamification
 Objectif : Détailler comment la plateforme maintient l'élève motivé.
 "Génère une diapositive intitulée 'Gamification & Rétention Éducative'. Présente le système de récompenses KMERSCHOOL : progression gamifiée par l'XP, badges thématiques débloqués automatiquement selon les chapitres terminés, et saine compétition via le classement hebdomadaire. Visuel : Un design dynamique illustrant des médailles dorées et une échelle de classement moderne."
-Slide 12 : Futurs Horizons - Parcours Développeur Web
+Futurs Horizons - Parcours Développeur Web
 Objectif : Dévoiler l'une des deux futures grandes filières techniques.
 Transition : Glissement vers le haut (ouverture vers le futur).
  "Génère une diapositive intitulée 'Filière Future : Parcours Développeur Web'. Explique le programme en cours de développement : Apprentissage intensif du code (HTML/CSS/JS/React), création d'applications réelles et intégration professionnelle directe dans la tech. Visuel : Une ligne de code colorée intégrée harmonieusement dans un terminal minimaliste stylisé."
-Slide 13 : Futurs Horizons - Parcours Web Designer
+Futurs Horizons - Parcours Web Designer
 Objectif : Dévoiler la seconde filière créative d'avenir.
 Transition : Glissement vers la gauche.
  "Génère une diapositive intitulée 'Filière Future : Parcours Web Designer'. Détaille la formation à venir axée sur la créativité numérique : Principes fondamentaux d'UI/UX Design, prototypage sur Figma, et création d'interfaces esthétiques de niveau mondial. Visuel : Une grille de design graphique moderne avec des vecteurs et des courbes artistiques."
-Slide 14 : Une Stack Technique Robuste
+Une Stack Technique Robuste
 Objectif : Prouver la solidité, la rapidité et la modernité de l'ingénierie de KMERSCHOOL.
 Prompt : "Génère une diapositive technique intitulée 'Architecture & Stack Technique'. Présente les composants principaux sous forme de blocs interconnectés : Supabase (Base de données PostgreSQL et Auth), API Vercel Serverless (traitement ultra-rapide), Tailwind CSS & Vanilla JS (vitesse de chargement optimale et adaptation mobile complète). Visuel : Une structure réseau moderne et connectée, propre et technique."
-Slide 15 : Conclusion & Impact
+Conclusion & Impact
 Objectif : Finir sur une note inspirante de patriotisme économique et d'innovation.
 Transition : Fondu au noir avec texte d'un or éclatant.
 "Génère une diapositive de conclusion intitulée 'KMERSCHOOL : Bâtir le Futur'. Termine sur la mission ultime de la plateforme : Démocratiser les sciences, outiller la jeunesse et inspirer l'excellence dans toute l'Afrique. Phrase finale : 'L'excellence comme horizon'. Design : Grandiose, épuré, avec des couleurs riches Vert Cameroun et Or, laissant une impression mémorable."

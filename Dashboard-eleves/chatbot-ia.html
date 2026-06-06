@@ -16,7 +16,14 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet" />
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.min.js"></script>
+    <script>
+        if (!window.lucide) {
+            window.lucide = {
+                createIcons: function() { console.warn("Lucide failed to load. Icons not created."); }
+            };
+        }
+    </script>
 
     <style>
         /* ═══════════════════════════════════════
@@ -277,8 +284,19 @@
         }
 
         .topic-icon {
-            font-size: .95rem;
             flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            color: #818cf8;
+        }
+
+        .topic-icon i {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2.5;
         }
 
         /* History */
@@ -919,6 +937,23 @@
             color: var(--text3);
             transition: all .15s;
             flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .pill i {
+            width: 12px;
+            height: 12px;
+            stroke-width: 2.5;
+        }
+
+        .logo-icon i {
+            stroke-width: 2.5;
+        }
+
+        .welcome-orb i {
+            stroke-width: 2;
         }
 
         .pill:hover {
@@ -1102,19 +1137,10 @@
     <div class="bg-canvas">
         <div class="bg-orb"></div>
         <div class="bg-orb"></div>
-        <div class="bg-orb"></div>
-    </div>
-
-    <!-- MOBILE OVERLAY -->
-    <div class="sidebar-overlay" id="sideOverlay" onclick="closeSidebar()"></div>
-
-    <!-- ═══════════════════════════════
-     SIDEBAR
-═══════════════════════════════ -->
-    <aside class="sidebar" id="sidebar">
+        <div class="bg-orb"></di    <aside class="sidebar" id="sidebar">
         <div class="sidebar-top">
             <div class="logo-mark">
-                <div class="logo-icon">🤖</div>
+                <div class="logo-icon"><i data-lucide="bot" class="w-5 h-5 text-white"></i></div>
                 <div>
                     <div class="logo-text">KmerAI</div>
                     <div class="logo-sub" data-i18n="welcome_sub_title">Assistant Éducatif</div>
@@ -1140,21 +1166,21 @@
         <div class="sidebar-section-label" data-i18n="lbl_topics">Sujets rapides</div>
         <div style="padding:0 .5rem;">
             <button class="topic-btn" onclick="insertTopic('Explique-moi ce concept en détail :')"><span
-                    class="topic-icon">💡</span> <span data-i18n="topic_explain">Expliquer un concept</span></button>
+                    class="topic-icon"><i data-lucide="lightbulb"></i></span> <span data-i18n="topic_explain">Expliquer un concept</span></button>
             <button class="topic-btn" onclick="insertTopic('Résume ce chapitre pour moi :')"><span
-                    class="topic-icon">📝</span> <span data-i18n="topic_summary">Résumer un chapitre</span></button>
+                    class="topic-icon"><i data-lucide="file-text"></i></span> <span data-i18n="topic_summary">Résumer un chapitre</span></button>
             <button class="topic-btn" onclick="insertTopic('Corrige cet exercice étape par étape :')"><span
-                    class="topic-icon">✏️</span> <span data-i18n="topic_correct">Corriger un exercice</span></button>
+                    class="topic-icon"><i data-lucide="pen-tool"></i></span> <span data-i18n="topic_correct">Corriger un exercice</span></button>
             <button class="topic-btn" onclick="insertTopic('Génère 5 questions d\'entraînement sur :')"><span
-                    class="topic-icon">❓</span> <span data-i18n="topic_generate">Générer des questions</span></button>
+                    class="topic-icon"><i data-lucide="help-circle"></i></span> <span data-i18n="topic_generate">Générer des questions</span></button>
             <button class="topic-btn" onclick="insertTopic('Aide-moi à préparer l\'examen de :')"><span
-                    class="topic-icon">🎓</span> <span data-i18n="topic_prep">Préparer un examen</span></button>
+                    class="topic-icon"><i data-lucide="graduation-cap"></i></span> <span data-i18n="topic_prep">Préparer un examen</span></button>
             <button class="topic-btn" onclick="insertTopic('Donne-moi une méthode pour résoudre :')"><span
-                    class="topic-icon">🔢</span> <span data-i18n="topic_method">Méthode de résolution</span></button>
+                    class="topic-icon"><i data-lucide="hash"></i></span> <span data-i18n="topic_method">Méthode de résolution</span></button>
             <button class="topic-btn" onclick="insertTopic('Traduis et explique ce texte :')"><span
-                    class="topic-icon">🌐</span> <span data-i18n="topic_trans">Traduction / Anglais</span></button>
+                    class="topic-icon"><i data-lucide="globe"></i></span> <span data-i18n="topic_trans">Traduction / Anglais</span></button>
             <button class="topic-btn" onclick="insertTopic('Quelles sont les erreurs dans ce code :')"><span
-                    class="topic-icon">💻</span> <span data-i18n="topic_code">Débogage de code</span></button>
+                    class="topic-icon"><i data-lucide="code"></i></span> <span data-i18n="topic_code">Débogage de code</span></button>
         </div>
 
         <!-- History -->
@@ -1165,14 +1191,14 @@
 
         <!-- Footer -->
         <div class="sidebar-footer">
-            <button class="sidebar-footer-btn" onclick="goBack()" data-i18n="lbl_dashboard">← Dashboard</button>
-            <button class="sidebar-footer-btn" onclick="clearAllHistory()" data-i18n="lbl_clear">🗑 Effacer</button>
+            <button class="sidebar-footer-btn" onclick="goBack()"><i data-lucide="layout-dashboard" class="w-4 h-4 inline mr-1"></i><span data-i18n="lbl_dashboard">Dashboard</span></button>
+            <button class="sidebar-footer-btn" onclick="clearAllHistory()"><i data-lucide="trash-2" class="w-4 h-4 inline mr-1"></i><span data-i18n="lbl_clear">Effacer</span></button>
         </div>
     </aside>
 
     <!-- ═══════════════════════════════
      MAIN AREA
-═══════════════════════════════ -->
+ ═══════════════════════════════ -->
     <div class="main-area">
 
         <!-- Topbar -->
@@ -1185,9 +1211,9 @@
                 </div>
             </div>
             <div class="topbar-actions">
-                <button class="tb-btn" onclick="exportChat()" data-i18n="lbl_export">↓ Exporter</button>
-                <button class="tb-btn" onclick="clearChat()" data-i18n="lbl_clear">🗑 Effacer</button>
-                <button class="tb-btn" onclick="goBack()" data-i18n="nav_back">← Retour</button>
+                <button class="tb-btn" onclick="exportChat()"><i data-lucide="download" class="w-4 h-4 inline mr-1"></i><span data-i18n="lbl_export">Exporter</span></button>
+                <button class="tb-btn" onclick="clearChat()"><i data-lucide="trash-2" class="w-4 h-4 inline mr-1"></i><span data-i18n="lbl_clear">Effacer</span></button>
+                <button class="tb-btn" onclick="goBack()"><i data-lucide="arrow-left" class="w-4 h-4 inline mr-1"></i><span data-i18n="nav_back">Retour</span></button>
             </div>
         </div>
 
@@ -1195,9 +1221,9 @@
         <div class="messages-wrap" id="messagesWrap">
             <!-- Welcome screen shown by default, hidden once chat starts -->
             <div class="welcome-screen" id="welcomeScreen">
-                <div class="welcome-orb">🤖</div>
+                <div class="welcome-orb"><i data-lucide="bot" class="w-10 h-10 text-white"></i></div>
                 <div>
-                    <div class="welcome-title" data-i18n="welcome_title">Bonjour, je suis KmerAI 👋</div>
+                    <div class="welcome-title" data-i18n="welcome_title">Bonjour, je suis KmerAI</div>
                     <div
                         style="font-size:.75rem;color:var(--text3);font-family:'Syne',sans-serif;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin:.4rem 0 .75rem;"
                         data-i18n="welcome_sub_title">
@@ -1208,22 +1234,22 @@
                 </div>
                 <div class="chips-grid" id="suggestionChips">
                     <div class="chip" onclick="sendSuggestion(this)">
-                        <div class="chip-icon">📐</div>
+                        <div class="chip-icon"><i data-lucide="calculator"></i></div>
                         <div class="chip-title" data-i18n="chip_math_t">Aide en Mathématiques</div>
                         <div class="chip-desc" data-i18n="chip_math_d">Trigonométrie, dérivées, probabilités…</div>
                     </div>
                     <div class="chip" onclick="sendSuggestion(this)">
-                        <div class="chip-icon">⚗️</div>
+                        <div class="chip-icon"><i data-lucide="flask-conical"></i></div>
                         <div class="chip-title" data-i18n="chip_pc_t">Physique-Chimie</div>
                         <div class="chip-desc" data-i18n="chip_pc_d">Lois, formules, exercices de calcul</div>
                     </div>
                     <div class="chip" onclick="sendSuggestion(this)">
-                        <div class="chip-icon">📖</div>
+                        <div class="chip-icon"><i data-lucide="book-marked"></i></div>
                         <div class="chip-title" data-i18n="chip_fr_t">Français & Littérature</div>
                         <div class="chip-desc" data-i18n="chip_fr_d">Dissertation, commentaire de texte</div>
                     </div>
                     <div class="chip" onclick="sendSuggestion(this)">
-                        <div class="chip-icon">🎓</div>
+                        <div class="chip-icon"><i data-lucide="graduation-cap"></i></div>
                         <div class="chip-title" data-i18n="chip_prep_t">Préparer le BAC / GCE</div>
                         <div class="chip-desc" data-i18n="chip_prep_d">Stratégies, révisions, exercices types</div>
                     </div>
@@ -1236,11 +1262,18 @@
             <div class="input-box">
                 <!-- Subject pills -->
                 <div class="subject-pills" id="subjectPills">
-                    <span class="pill" onclick="setPill(this,'Maths')">📐 Maths</span>
-                    <span class="pill" onclick="setPill(this,'Physique')">⚗️ Physique</span>
-                    <span class="pill" onclick="setPill(this,'Chimie')">🧪 Chimie</span>
-                    <span class="pill" onclick="setPill(this,'SVT')">🌿 SVT</span>
-                    <span class="pill" onclick="setPill(this,'Français')">📝 Français</span>
+                    <span class="pill" onclick="setPill(this,'Maths')"><i data-lucide="calculator"></i>Maths</span>
+                    <span class="pill" onclick="setPill(this,'Physique')"><i data-lucide="activity"></i>Physique</span>
+                    <span class="pill" onclick="setPill(this,'Chimie')"><i data-lucide="flask-conical"></i>Chimie</span>
+                    <span class="pill" onclick="setPill(this,'SVT')"><i data-lucide="leaf"></i>SVT</span>
+                    <span class="pill" onclick="setPill(this,'Français')"><i data-lucide="book-open"></i>Français</span>
+                    <span class="pill" onclick="setPill(this,'Anglais')"><i data-lucide="languages"></i>Anglais</span>
+                    <span class="pill" onclick="setPill(this,'Histoire')"><i data-lucide="history"></i>Histoire</span>
+                    <span class="pill" onclick="setPill(this,'Géographie')"><i data-lucide="map"></i>Géo</span>
+                    <span class="pill" onclick="setPill(this,'Philosophie')"><i data-lucide="brain"></i>Philo</span>
+                    <span class="pill" onclick="setPill(this,'Informatique')"><i data-lucide="cpu"></i>Info</span>
+                    <span class="pill" onclick="setPill(this,'Économie')"><i data-lucide="line-chart"></i>Éco</span>
+                </div>is')">📝 Français</span>
                     <span class="pill" onclick="setPill(this,'Anglais')">🌐 Anglais</span>
                     <span class="pill" onclick="setPill(this,'Histoire')">📜 Histoire</span>
                     <span class="pill" onclick="setPill(this,'Géographie')">🗺 Géo</span>
@@ -1295,7 +1328,7 @@
                 top_ready: "KmerAI — Prêt",
                 top_thinking: "KmerAI — En train de réfléchir…",
                 input_placeholder: "Pose ta question… (Entrée pour envoyer, Maj+Entrée pour nouvelle ligne)",
-                welcome_title: "Bonjour, je suis KmerAI 👋",
+                welcome_title: "Bonjour, je suis KmerAI",
                 welcome_sub_title: "Assistant IA · Curriculum Camerounais",
                 welcome_desc: "Pose-moi n'importe quelle question sur tes cours — maths, physique, français, anglais, SVT, histoire… Je suis spécialisé dans le programme scolaire camerounais.",
                 chip_math_t: "Aide en Mathématiques",
@@ -1306,12 +1339,12 @@
                 chip_fr_d: "Dissertation, commentaire de texte",
                 chip_prep_t: "Préparer le BAC / GCE",
                 chip_prep_d: "Stratégies, révisions, exercices types",
-                msg_copy: "📋 Copier",
+                msg_copy: '<i data-lucide="clipboard" style="width:14px;height:14px;vertical-align:-2px;"></i> Copier',
                 msg_copied: "✓ Copié",
                 msg_regen: "↺ Regénérer",
                 msg_pre_copy: "Copier",
-                err_ai: "❌ Erreur de connexion au serveur IA.",
-                err_no_server: "❌ **Le serveur KmerAI n'est pas lancé.**\n\nVeuillez démarrer le serveur en lançant le fichier `start-ai-server.bat` à la racine du projet, puis réessayez.",
+                err_ai: "Erreur de connexion au serveur IA.",
+                err_no_server: "**Le serveur KmerAI n'est pas lancé.**\n\nVeuillez démarrer le serveur en lançant le fichier `start-ai-server.bat` à la racine du projet, puis réessayez.",
                 err_gen: "Erreur de génération.",
                 confirm_clear_hist: "Effacer tout l'historique ?",
                 confirm_clear_chat: "Effacer cette conversation ?",
@@ -1322,7 +1355,7 @@
                 placeholder: "Pose ta question… (Entrée pour envoyer, Maj+Entrée pour nouvelle ligne)",
                 input_footer: "KmerAI peut faire des erreurs. Vérifie les informations importantes avec ton professeur.",
                 lbl_export: "↓ Exporter",
-                lbl_clear: "🗑 Effacer",
+                lbl_clear: '<i data-lucide="trash-2" style="width:14px;height:14px;vertical-align:-2px;"></i> Effacer',
                 lbl_dashboard: "← Dashboard",
                 topic_prep: "Préparer un examen",
                 topic_method: "Méthode de résolution",
@@ -1340,7 +1373,7 @@
                 top_ready: "KmerAI — Ready",
                 top_thinking: "KmerAI — Thinking…",
                 input_placeholder: "Ask your question… (Enter to send, Shift+Enter for new line)",
-                welcome_title: "Hello, I am KmerAI 👋",
+                welcome_title: "Hello, I am KmerAI",
                 welcome_sub_title: "AI Assistant · Cameroonian Curriculum",
                 welcome_desc: "Ask me any question about your lessons — maths, physics, french, english, biology, history… I am specialized in the Cameroonian school curriculum.",
                 chip_math_t: "Mathematics Help",
@@ -1351,12 +1384,12 @@
                 chip_fr_d: "Essay, text commentary",
                 chip_prep_t: "Prepare for BAC / GCE",
                 chip_prep_d: "Strategies, revisions, exam-type exercises",
-                msg_copy: "📋 Copy",
+                msg_copy: '<i data-lucide="clipboard" style="width:14px;height:14px;vertical-align:-2px;"></i> Copy',
                 msg_copied: "✓ Copied",
                 msg_regen: "↺ Regenerate",
                 msg_pre_copy: "Copy",
-                err_ai: "❌ AI server connection error.",
-                err_no_server: "❌ **KmerAI server is not running.**\n\nPlease start the server by running the `start-ai-server.bat` file at the root of the project, then try again.",
+                err_ai: "AI server connection error.",
+                err_no_server: "**KmerAI server is not running.**\n\nPlease start the server by running the `start-ai-server.bat` file at the root of the project, then try again.",
                 err_gen: "Generation error.",
                 confirm_clear_hist: "Clear all history?",
                 confirm_clear_chat: "Clear this conversation?",
@@ -1367,7 +1400,7 @@
                 placeholder: "Ask your question… (Enter to send, Shift+Enter for new line)",
                 input_footer: "KmerAI can make mistakes. Check important info with your teacher.",
                 lbl_export: "↓ Export",
-                lbl_clear: "🗑 Clear",
+                lbl_clear: '<i data-lucide="trash-2" style="width:14px;height:14px;vertical-align:-2px;"></i> Clear',
                 lbl_dashboard: "← Dashboard",
                 topic_prep: "Prepare for exam",
                 topic_method: "Resolution method",
@@ -1974,7 +2007,7 @@ Tu es là pour aider ${name} à réussir. Commence chaque session avec enthousia
 
         // ── START ─────────────────────────────────────────────────────────
         async function initIcons() {
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         }
         init().then(initIcons).catch(console.error);
     </script>

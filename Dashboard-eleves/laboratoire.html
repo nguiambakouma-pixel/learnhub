@@ -15,7 +15,14 @@
 
     <!-- Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.min.js"></script>
+    <script>
+        if (!window.lucide) {
+            window.lucide = {
+                createIcons: function() { console.warn("Lucide failed to load. Icons not created."); }
+            };
+        }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
@@ -507,7 +514,7 @@
     <script src="js/simulations.js"></script>
     <script>
         // Init Lucide
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
 
         // UI Logic
         function showGallery() {

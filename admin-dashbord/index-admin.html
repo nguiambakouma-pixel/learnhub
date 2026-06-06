@@ -7,7 +7,14 @@
     <title>Dashboard Admin - KMERSCHOOL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../js/lucide.min.js"></script>
+    <script>
+        if (!window.lucide) {
+            window.lucide = {
+                createIcons: function() { console.warn("Lucide failed to load. Icons not created."); }
+            };
+        }
+    </script>
 
     <!-- MODULES DASHBOARD (dans l'ordre) -->
     <script src="js/secrets.js"></script>
@@ -448,7 +455,8 @@
 
             <!-- Logout -->
             <div class="text-center mt-8">
-                <button onclick="Auth.logout()" class="text-gray-500 hover:text-red-400 transition flex items-center justify-center gap-2 mx-auto">
+                <button onclick="Auth.logout()"
+                    class="text-gray-500 hover:text-red-400 transition flex items-center justify-center gap-2 mx-auto">
                     <i data-lucide="log-out" class="w-5 h-5"></i>
                     <span>Déconnexion</span>
                 </button>
@@ -461,8 +469,10 @@
     <!-- ========================================= -->
     <div id="screen-eleves" style="display: none;" class="screen min-h-screen">
         <!-- Header Mobile (visible uniquement sur mobile) -->
-        <div class="lg:hidden bg-slate-900 border-b border-slate-800 p-4 flex items-center justify-between sticky top-0 z-40">
-            <div class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-emerald-400 bg-clip-text text-transparent">
+        <div
+            class="lg:hidden bg-slate-900 border-b border-slate-800 p-4 flex items-center justify-between sticky top-0 z-40">
+            <div
+                class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-emerald-400 bg-clip-text text-transparent">
                 KMERSCHOOL
             </div>
             <button onclick="toggleSidebar()" class="p-2 text-gray-400 hover:text-white">
@@ -472,9 +482,11 @@
 
         <div class="flex flex-col lg:flex-row">
             <!-- SIDEBAR -->
-            <div id="sidebar-menu" class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 transform -translate-x-full lg:translate-x-0 lg:static lg:block transition-transform duration-300 ease-in-out p-4">
+            <div id="sidebar-menu"
+                class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 transform -translate-x-full lg:translate-x-0 lg:static lg:block transition-transform duration-300 ease-in-out p-4">
                 <!-- Overlay pour mobile (cliquer pour fermer) -->
-                <div class="lg:hidden absolute inset-0 bg-black/50 -z-10 translate-x-full w-[100vw]" onclick="document.getElementById('sidebar-menu').classList.add('-translate-x-full')"></div>
+                <div class="lg:hidden absolute inset-0 bg-black/50 -z-10 translate-x-full w-[100vw]"
+                    onclick="document.getElementById('sidebar-menu').classList.add('-translate-x-full')"></div>
 
                 <!-- Logo -->
                 <div class="mb-8">
@@ -823,7 +835,8 @@
 
                                         <!-- Publier -->
                                         <div class="flex items-center space-x-3">
-                                            <input type="checkbox" id="publieFr" checked class="w-5 h-5 rounded border-slate-700 bg-slate-800 text-indigo-500 focus:ring-indigo-500">
+                                            <input type="checkbox" id="publieFr" checked
+                                                class="w-5 h-5 rounded border-slate-700 bg-slate-800 text-indigo-500 focus:ring-indigo-500">
                                             <label class="font-semibold flex items-center gap-2">
                                                 <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
                                                 <span>Publier immédiatement</span>
@@ -1501,14 +1514,14 @@
                             <label class="block text-sm font-semibold text-gray-400 mb-2">Type d'examen *</label>
                             <select id="annaleType" required class="input-dark w-full px-4 py-3 rounded-lg">
                                 <option value="">Sélectionner...</option>
-                                <option value="bepc">📘 BEPC (Brevet)</option>
-                                <option value="probatoire">📗 Probatoire</option>
-                                <option value="bac">📕 BAC (Baccalauréat)</option>
-                                <option value="gce_olevel">📙 GCE O-Level</option>
-                                <option value="gce_alevel">📔 GCE A-Level</option>
-                                <option value="cep">📓 CEP (Primaire)</option>
-                                <option value="concours">🎯 Concours</option>
-                                <option value="autre">📚 Autre</option>
+                                <option value="bepc">BEPC (Brevet)</option>
+                                <option value="probatoire">Probatoire</option>
+                                <option value="bac">BAC (Baccalauréat)</option>
+                                <option value="gce_olevel">GCE O-Level</option>
+                                <option value="gce_alevel">GCE A-Level</option>
+                                <option value="cep">CEP (Primaire)</option>
+                                <option value="concours">Concours</option>
+                                <option value="autre">Autre</option>
                             </select>
                         </div>
 
@@ -2017,7 +2030,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-gray-400 mb-2">Sous-système (Optionnel)</label>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Sous-système
+                                    (Optionnel)</label>
                                 <select id="matiereSousSysteme" name="sous_systeme_id"
                                     onchange="matieresView.loadNiveauxForModal(this.value)"
                                     class="input-dark w-full px-4 py-3 rounded-lg text-white">
@@ -2039,7 +2053,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-gray-400 mb-2">Série/Spécialité (Optionnel)</label>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Série/Spécialité
+                                    (Optionnel)</label>
                                 <select id="matiereSerie" name="serie_id"
                                     class="input-dark w-full px-4 py-3 rounded-lg text-white">
                                     <option value="">Toutes les séries</option>
@@ -2211,7 +2226,22 @@
                 </form>
             </div>
         </div>
-    <script src="../assets/js/responsive.js"></script>
+        <script src="../assets/js/responsive.js"></script>
+
+        <!-- MODALE CONFIRMATION DÉCONNEXION ADMIN -->
+        <div id="adminModalLogout" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:99999;align-items:center;justify-content:center;backdrop-filter:blur(6px);">
+            <div style="background:#0f172a;border:1px solid rgba(99,102,241,0.4);border-radius:18px;padding:36px;max-width:420px;width:90%;text-align:center;animation:adminFadeIn 0.3s ease;">
+                <div style="font-size:52px;margin-bottom:16px;">&#x1F6AA;</div>
+                <h3 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:white;margin-bottom:10px;">Déconnexion Admin</h3>
+                <p style="color:#94a3b8;font-size:14px;line-height:1.65;margin-bottom:26px;">Vous allez terminer votre session administrateur. Vos identifiants seront requis à la prochaine connexion.</p>
+                <div style="display:flex;gap:12px;justify-content:center;">
+                    <button onclick="document.getElementById('adminModalLogout').style.display='none'" style="padding:12px 26px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:white;font-size:14px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">Annuler</button>
+                    <button id="adminConfirmLogoutBtn" onclick="(async function(){ const btn=document.getElementById('adminConfirmLogoutBtn'); btn.textContent='Déconnexion...'; btn.disabled=true; await AdminAuth._doLogout(); })()" style="padding:12px 26px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:10px;color:white;font-size:14px;font-weight:600;cursor:pointer;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Confirmer</button>
+                </div>
+            </div>
+        </div>
+        <style>@keyframes adminFadeIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }</style>
+
 </body>
 
 </html>
