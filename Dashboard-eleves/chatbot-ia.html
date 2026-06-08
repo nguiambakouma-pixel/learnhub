@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KmerAI — Assistant Éducatif</title>
-    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' file:;">
+    <!-- frame-ancestors ne fonctionne que via HTTP headers, pas via meta - supprimé -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- KaTeX for Math Rendering -->
@@ -1432,8 +1432,36 @@
 
         // ── INIT ─────────────────────────────────────────────────────────
         async function init() {
-            const { data: { user } } = await sb.auth.getUser();
-            if (!user) { window.location.href = 'onboarding_cameroun.html'; return; }
+            // Détection mode local (file:// ou serveur local) pour éviter l'écran noir
+            const isFileProtocol = window.location.protocol === 'file:';
+            const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname) ||
+                                window.location.hostname.startsWith('192.168.');
+
+            let user = null;
+            try {
+                const { data } = await sb.auth.getUser();
+                user = data?.user;
+            } catch (e) {
+                console.warn('KmerAI: auth non disponible en local:', e.message);
+            }
+
+            if (!user) {
+                if (isFileProtocol || isLocalhost) {
+                    // Mode démo local — affiche le chatbot sans redirection
+                    console.info('KmerAI: Mode démo local (sans session Supabase)');
+                    userProfile = { prenom: 'Démo', nom: 'Local', _niveau: 'Terminale', _serie: 'C', _sys: 'francophone' };
+                    applyTranslations();
+                    document.getElementById('avatarInitials').textContent = 'DL';
+                    document.getElementById('profileName').textContent = 'Mode Démo';
+                    document.getElementById('profileClass').textContent = 'Test Local';
+                    loadHistory();
+                    newChat(false);
+                    return;
+                }
+                // En production, redirection normale
+                window.location.href = 'onboarding_cameroun.html';
+                return;
+            }
             currentUser = user;
 
             const { data: prof } = await sb.from('profiles')
