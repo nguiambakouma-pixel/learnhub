@@ -1439,7 +1439,9 @@
         };
 
         function t(key, ...args) {
-            const st = JSON.parse(localStorage.getItem('kmer_eleve_settings') || '{}');
+            // Protection contre SecurityError si localStorage est bloqué par le navigateur
+            let st = {};
+            try { st = JSON.parse(localStorage.getItem('kmer_eleve_settings') || '{}'); } catch(e) {}
             let lang = st.lang || 'fr';
             let str = (I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : (I18N['fr'][key] || key);
             args.forEach((a, i) => { str = str.replace(`{${i}}`, a); });
@@ -2072,7 +2074,21 @@ Tu es là pour aider ${name} à réussir. Commence chaque session avec enthousia
         async function initIcons() {
             if (window.lucide) lucide.createIcons();
         }
-        init().then(initIcons).catch(console.error);
+        init().then(initIcons).catch(err => {
+            console.error('KmerAI init error:', err);
+            // Retirer le spinner si encore présent
+            const loader = document.getElementById('kmeraiLoader');
+            if (loader) {
+                loader.innerHTML = `
+                    <div style="max-width:400px;text-align:center;font-family:'DM Sans',sans-serif;color:#94a3b8;padding:2rem;">
+                        <div style="font-size:2rem;margin-bottom:1rem;">⚠️</div>
+                        <h3 style="color:#f1f5f9;font-size:1rem;margin-bottom:.75rem;">Erreur de chargement</h3>
+                        <p style="font-size:.8rem;line-height:1.6;margin-bottom:1rem;color:#64748b;">${err?.message || 'Erreur inconnue'}</p>
+                        <button onclick="window.location.reload()" style="padding:.5rem 1.25rem;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.4);border-radius:.5rem;color:#a5b4fc;cursor:pointer;font-size:.8rem;">🔄 Recharger</button>
+                    </div>`;
+            }
+        });
+
     </script>
     <script src="../assets/js/responsive.js"></script>
 </body>
