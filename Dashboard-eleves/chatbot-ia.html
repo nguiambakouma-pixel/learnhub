@@ -1142,6 +1142,13 @@
 
 <body>
 
+    <!-- SPINNER chargement initial — visible immédiatement, retiré par init() -->
+    <div id="kmeraiLoader" style="position:fixed;inset:0;background:#05090f;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;">
+        <div style="width:56px;height:56px;background:linear-gradient(135deg,#6366f1,#10b981);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 0 30px rgba(99,102,241,.4);animation:loaderPulse 1.5s ease-in-out infinite;">🤖</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:.875rem;color:#64748b;letter-spacing:.05em;">Chargement de KmerAI…</div>
+        <style>@keyframes loaderPulse{0%,100%{transform:scale(1);box-shadow:0 0 30px rgba(99,102,241,.4)}50%{transform:scale(1.08);box-shadow:0 0 50px rgba(16,185,129,.5)}}</style>
+    </div>
+
     <!-- BG ORBS -->
     <div class="bg-canvas">
         <div class="bg-orb"></div>
@@ -1453,22 +1460,26 @@
 
         // ── INIT ─────────────────────────────────────────────────────────
         async function init() {
-            // Détection mode local (file:// ou serveur local) pour éviter l'écran noir
             const isFileProtocol = window.location.protocol === 'file:';
             const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname) ||
                                 window.location.hostname.startsWith('192.168.');
 
+            // getSession() lit localStorage instantanément (pas de requête réseau)
+            // getUser() faisait un appel réseau qui pouvait bloquer → écran noir
             let user = null;
             try {
-                const { data } = await sb.auth.getUser();
-                user = data?.user;
+                const { data: sessionData } = await sb.auth.getSession();
+                user = sessionData?.session?.user || null;
             } catch (e) {
-                console.warn('KmerAI: auth non disponible en local:', e.message);
+                console.warn('KmerAI: session non disponible:', e.message);
             }
+
+            // Masquer le spinner de chargement
+            const loader = document.getElementById('kmeraiLoader');
+            if (loader) loader.remove();
 
             if (!user) {
                 if (isFileProtocol || isLocalhost) {
-                    // Mode démo local — affiche le chatbot sans redirection
                     console.info('KmerAI: Mode démo local (sans session Supabase)');
                     userProfile = { prenom: 'Démo', nom: 'Local', _niveau: 'Terminale', _serie: 'C', _sys: 'francophone' };
                     applyTranslations();
@@ -1479,14 +1490,14 @@
                     newChat(false);
                     return;
                 }
-                // En production, redirection normale
                 window.location.href = 'onboarding_cameroun.html';
                 return;
             }
             currentUser = user;
 
+            // 'prenom' ajouté (était manquant dans la requête originale)
             const { data: prof } = await sb.from('profiles')
-                .select('nom,avatar_url,points_total,niveau_scolaire_id,serie_id,sous_systeme_id,bio')
+                .select('prenom,nom,avatar_url,points_total,niveau_scolaire_id,serie_id,sous_systeme_id,bio')
                 .eq('id', user.id).single();
             userProfile = prof || {};
 
