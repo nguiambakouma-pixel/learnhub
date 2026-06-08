@@ -41,20 +41,20 @@
        talking to something alive and intelligent
     ═══════════════════════════════════════ */
         :root {
-            --bg: #05090f;
-            --bg2: #080e1a;
-            --surf: #0d1526;
-            --surf2: #0a1020;
-            --border: rgba(255, 255, 255, .07);
-            --border2: rgba(255, 255, 255, .04);
+            --bg: #0c1222;
+            --bg2: #111827;
+            --surf: #162033;
+            --surf2: #121c2e;
+            --border: rgba(255, 255, 255, .14);
+            --border2: rgba(255, 255, 255, .09);
             --indigo: #6366f1;
             --violet: #8b5cf6;
             --emerald: #10b981;
             --cyan: #06b6d4;
             --amber: #f59e0b;
-            --text: #cbd5e1;
-            --text2: #64748b;
-            --text3: #334155;
+            --text: #e2e8f0;
+            --text2: #94a3b8;
+            --text3: #64748b;
             --sidebar-w: 280px;
         }
 
@@ -88,7 +88,7 @@
             position: absolute;
             border-radius: 50%;
             filter: blur(80px);
-            opacity: .06;
+            opacity: .14;
             animation: orbFloat 12s ease-in-out infinite;
         }
 
@@ -941,9 +941,9 @@
             font-size: .68rem;
             font-weight: 600;
             white-space: nowrap;
-            background: rgba(255, 255, 255, .05);
+            background: rgba(255, 255, 255, .09);
             border: 1px solid var(--border2);
-            color: var(--text3);
+            color: var(--text2);
             transition: all .15s;
             flex-shrink: 0;
             display: inline-flex;
@@ -1000,7 +1000,7 @@
         }
 
         .msg-textarea::placeholder {
-            color: var(--text3);
+            color: var(--text2);
         }
 
         .send-btn {
@@ -1038,7 +1038,7 @@
         .input-footer {
             text-align: center;
             font-size: .65rem;
-            color: var(--text3);
+            color: var(--text3); opacity: .85;
             margin-top: .45rem;
         }
 
@@ -1136,6 +1136,50 @@
                 opacity: 0;
             }
         }
+
+        /* ── MODALE CUSTOM (remplace confirm() natif) ── */
+        .kmodal-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.75);
+            backdrop-filter: blur(8px);
+            z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+            animation: kmodalFadeIn .2s ease;
+            padding: 1rem;
+        }
+        @keyframes kmodalFadeIn { from { opacity:0 } to { opacity:1 } }
+        .kmodal {
+            background: linear-gradient(145deg, #162033, #111827);
+            border: 1px solid rgba(99,102,241,.25);
+            border-radius: 1.5rem;
+            padding: 2rem 1.75rem 1.75rem;
+            max-width: 400px; width: 100%;
+            box-shadow: 0 32px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.05);
+            animation: kmodalSlide .25s cubic-bezier(.34,1.56,.64,1);
+        }
+        @keyframes kmodalSlide {
+            from { transform: scale(.88) translateY(16px); opacity:0 }
+            to   { transform: none; opacity:1 }
+        }
+        .kmodal-icon { font-size:2.2rem; text-align:center; margin-bottom:.75rem; }
+        .kmodal-title { font-size:1.05rem; font-weight:700; color:#f1f5f9; text-align:center; margin-bottom:.4rem; }
+        .kmodal-msg { font-size:.84rem; color:#94a3b8; text-align:center; line-height:1.65; margin-bottom:1.5rem; }
+        .kmodal-btns { display:flex; gap:.65rem; justify-content:center; flex-wrap:wrap; }
+        .kmodal-btn {
+            padding:.55rem 1.4rem; border-radius:.75rem;
+            font-size:.84rem; font-weight:600; cursor:pointer;
+            border:none; transition:all .15s;
+            font-family:'DM Sans',sans-serif;
+        }
+        .kmodal-btn.km-cancel {
+            background:rgba(255,255,255,.08); color:#94a3b8;
+            border:1px solid rgba(255,255,255,.12);
+        }
+        .kmodal-btn.km-cancel:hover { background:rgba(255,255,255,.14); color:#e2e8f0; }
+        .kmodal-btn.km-danger { background:linear-gradient(135deg,#ef4444,#b91c1c); color:#fff; }
+        .kmodal-btn.km-danger:hover { background:linear-gradient(135deg,#f87171,#ef4444); transform:translateY(-1px); box-shadow:0 4px 16px rgba(239,68,68,.4); }
+        .kmodal-btn.km-ok { background:linear-gradient(135deg,#6366f1,#4f46e5); color:#fff; }
+        .kmodal-btn.km-ok:hover { background:linear-gradient(135deg,#818cf8,#6366f1); transform:translateY(-1px); }
     </style>
     <link rel="stylesheet" href="../responsive.css">
 </head>
@@ -1210,8 +1254,8 @@
 
         <!-- Footer -->
         <div class="sidebar-footer">
-            <button class="sidebar-footer-btn" onclick="goBack()"><i data-lucide="layout-dashboard" class="w-4 h-4 inline mr-1"></i><span data-i18n="lbl_dashboard">Dashboard</span></button>
-            <button class="sidebar-footer-btn" onclick="clearAllHistory()"><i data-lucide="trash-2" class="w-4 h-4 inline mr-1"></i><span data-i18n="lbl_clear">Effacer</span></button>
+            <button class="sidebar-footer-btn" onclick="goBack()">🏠 <span data-i18n="lbl_dashboard">Dashboard</span></button>
+            <button class="sidebar-footer-btn" onclick="clearAllHistory()">🗑️ <span data-i18n="lbl_clear">Effacer tout</span></button>
         </div>
     </aside>
 
@@ -1230,9 +1274,9 @@
                 </div>
             </div>
             <div class="topbar-actions">
-                <button class="tb-btn" onclick="exportChat()"><i data-lucide="download" class="w-4 h-4 inline mr-1"></i><span data-i18n="lbl_export">Exporter</span></button>
-                <button class="tb-btn" onclick="clearChat()"><i data-lucide="trash-2" class="w-4 h-4 inline mr-1"></i><span data-i18n="lbl_clear">Effacer</span></button>
-                <button class="tb-btn" onclick="goBack()"><i data-lucide="arrow-left" class="w-4 h-4 inline mr-1"></i><span data-i18n="nav_back">Retour</span></button>
+                <button class="tb-btn" onclick="exportChat()">📥 <span data-i18n="lbl_export">Exporter</span></button>
+                <button class="tb-btn" onclick="clearChat()">🗑️ <span data-i18n="lbl_clear">Effacer</span></button>
+                <button class="tb-btn" onclick="goBack()">← <span data-i18n="nav_back">Retour</span></button>
             </div>
         </div>
 
@@ -1657,11 +1701,16 @@ Tu es là pour aider ${name} à réussir. Commence chaque session avec enthousia
         }
 
         function clearAllHistory() {
-            if (!confirm(t('confirm_clear_hist'))) return;
-            conversations = [];
-            sessionStorage.removeItem('kmerAI_convs');
-            newChat();
-            renderHistory();
+            kConfirm(
+                t('confirm_clear_hist') || 'Supprimer tout l\'historique des conversations ?',
+                () => {
+                    conversations = [];
+                    try { sessionStorage.removeItem('kmerAI_convs'); } catch(e) {}
+                    newChat();
+                    renderHistory();
+                },
+                { icon: '🗑️', title: 'Effacer l\'historique', confirmText: 'Tout effacer' }
+            );
         }
 
         // ── SEND MESSAGE ─────────────────────────────────────────────────
@@ -2002,22 +2051,74 @@ Tu es là pour aider ${name} à réussir. Commence chaque session avec enthousia
         <div class="welcome-sub">${t('welcome_desc')}</div>
       </div>
       <div class="chips-grid">
-        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon"><i data-lucide="calculator"></i></div><div class="chip-title">${t('chip_math_t')}</div><div class="chip-desc">${t('chip_math_d')}</div></div>
-        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon"><i data-lucide="flask-conical"></i></div><div class="chip-title">${t('chip_pc_t')}</div><div class="chip-desc">${t('chip_pc_d')}</div></div>
-        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon"><i data-lucide="book-marked"></i></div><div class="chip-title">${t('chip_fr_t')}</div><div class="chip-desc">${t('chip_fr_d')}</div></div>
-        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon"><i data-lucide="graduation-cap"></i></div><div class="chip-title">${t('chip_prep_t')}</div><div class="chip-desc">${t('chip_prep_d')}</div></div>
+        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon">🔢</div><div class="chip-title">${t('chip_math_t')}</div><div class="chip-desc">${t('chip_math_d')}</div></div>
+        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon">⚗️</div><div class="chip-title">${t('chip_pc_t')}</div><div class="chip-desc">${t('chip_pc_d')}</div></div>
+        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon">📖</div><div class="chip-title">${t('chip_fr_t')}</div><div class="chip-desc">${t('chip_fr_d')}</div></div>
+        <div class="chip" onclick="sendSuggestion(this)"><div class="chip-icon">🎓</div><div class="chip-title">${t('chip_prep_t')}</div><div class="chip-desc">${t('chip_prep_d')}</div></div>
       </div>
     </div>`;
             }
         }
 
         function clearChat() {
-            if (!confirm(t('confirm_clear_chat'))) return;
-            const conv = getActiveConv();
-            if (conv) conv.messages = [];
-            clearMessages(true);
-            saveHistory();
-            renderHistory();
+            kConfirm(
+                t('confirm_clear_chat') || 'Effacer tous les messages de cette conversation ?',
+                () => {
+                    const conv = getActiveConv();
+                    if (conv) conv.messages = [];
+                    clearMessages(true);
+                    saveHistory();
+                    renderHistory();
+                },
+                { icon: '🗑️', title: 'Effacer la conversation', confirmText: 'Effacer' }
+            );
+        }
+
+        // ── MODALE CUSTOM ─────────────────────────────────────────────────
+        function kConfirm(message, onConfirm, { icon = '⚠️', title = 'Confirmation', confirmText = 'Confirmer', cancelText = 'Annuler', danger = true } = {}) {
+            const bd = document.createElement('div');
+            bd.className = 'kmodal-backdrop';
+            bd.innerHTML = `
+                <div class="kmodal" role="dialog" aria-modal="true">
+                    <div class="kmodal-icon">${icon}</div>
+                    <div class="kmodal-title">${title}</div>
+                    <div class="kmodal-msg">${message}</div>
+                    <div class="kmodal-btns">
+                        <button class="kmodal-btn km-cancel">${cancelText}</button>
+                        <button class="kmodal-btn ${danger ? 'km-danger' : 'km-ok'}">${confirmText}</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(bd);
+            const close = () => bd.remove();
+            const [cancelBtn, confirmBtn] = bd.querySelectorAll('.kmodal-btn');
+            cancelBtn.onclick = close;
+            confirmBtn.onclick = () => { close(); onConfirm(); };
+            bd.addEventListener('click', e => { if (e.target === bd) close(); });
+            document.addEventListener('keydown', function esc(e) {
+                if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
+            });
+            confirmBtn.focus();
+        }
+
+        function kAlert(message, { icon = 'ℹ️', title = 'Information' } = {}) {
+            const bd = document.createElement('div');
+            bd.className = 'kmodal-backdrop';
+            bd.innerHTML = `
+                <div class="kmodal" role="alertdialog">
+                    <div class="kmodal-icon">${icon}</div>
+                    <div class="kmodal-title">${title}</div>
+                    <div class="kmodal-msg">${message}</div>
+                    <div class="kmodal-btns">
+                        <button class="kmodal-btn km-ok">OK</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(bd);
+            const close = () => bd.remove();
+            bd.querySelector('.kmodal-btn').onclick = close;
+            bd.addEventListener('click', e => { if (e.target === bd) close(); });
+            document.addEventListener('keydown', function esc(e) {
+                if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); }
+            });
         }
 
         async function regenerate() {
