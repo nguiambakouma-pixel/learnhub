@@ -1524,6 +1524,7 @@
 
             // Prénom depuis user_metadata Supabase Auth, nom depuis profiles
             const metaPrenom = user.user_metadata?.prenom || user.user_metadata?.first_name || '';
+            userProfile.prenom = metaPrenom; // stocker pour buildSystemPrompt et autres
             const fullName = [metaPrenom, prof?.nom].filter(Boolean).join(' ') || user.email?.split('@')[0] || 'Élève';
             const initials = fullName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
             document.getElementById('avatarInitials').textContent = initials;
