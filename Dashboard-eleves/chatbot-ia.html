@@ -5,13 +5,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KmerAI — Assistant Éducatif</title>
-    <!-- frame-ancestors ne fonctionne que via HTTP headers, pas via meta - supprimé -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase : fichier local auto-hébergé (immunisé contre le blocage CDN) -->
+    <script src="../js/supabase.min.js"></script>
+    <script>
+        // Fallback CDN si le fichier local est absent
+        if (!window.supabase) {
+            var s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+            document.head.appendChild(s);
+        }
+    </script>
 
-    <!-- KaTeX for Math Rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <!-- KaTeX : optionnel, dégradation gracieuse si CDN bloqué -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" onerror="this.remove()">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" onerror="window._katexFailed=true"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onerror="window._katexFailed=true"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
@@ -1274,14 +1282,8 @@
                     <span class="pill" onclick="setPill(this,'Philosophie')"><i data-lucide="brain"></i>Philo</span>
                     <span class="pill" onclick="setPill(this,'Informatique')"><i data-lucide="cpu"></i>Info</span>
                     <span class="pill" onclick="setPill(this,'Économie')"><i data-lucide="line-chart"></i>Éco</span>
-                </div>is')">📝 Français</span>
-                    <span class="pill" onclick="setPill(this,'Anglais')"><i data-lucide="globe" class="w-4 h-4 mr-1"></i> Anglais</span>
-                    <span class="pill" onclick="setPill(this,'Histoire')"><i data-lucide="scroll" class="w-4 h-4 mr-1"></i> Histoire</span>
-                    <span class="pill" onclick="setPill(this,'Géographie')"><i data-lucide="map" class="w-4 h-4 mr-1"></i> Géo</span>
-                    <span class="pill" onclick="setPill(this,'Philosophie')"><i data-lucide="brain" class="w-4 h-4 mr-1"></i> Philo</span>
-                    <span class="pill" onclick="setPill(this,'Informatique')"><i data-lucide="laptop" class="w-4 h-4 mr-1"></i> Info</span>
-                    <span class="pill" onclick="setPill(this,'Économie')"><i data-lucide="bar-chart" class="w-4 h-4 mr-1"></i> Éco</span>
                 </div>
+
                 <div class="input-row">
                     <textarea id="msgInput" class="msg-textarea"
                         placeholder="Pose ta question… (Entrée pour envoyer, Maj+Entrée pour nouvelle ligne)" rows="1"
@@ -1305,6 +1307,25 @@
     <script>
         const SUPABASE_URL = 'https://zbbulpomopfwkqipbehk.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiYnVscG9tb3Bmd2txaXBiZWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MDM3NDksImV4cCI6MjA3ODk3OTc0OX0.Heak4t8B6vtUIX0SxlOW7W75cn1KD5UYe0lkoO1kW7A';
+
+        // Garde : si Supabase ne s'est pas chargé (CDN bloqué), on arrête proprement
+        if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+            document.body.style.cssText = 'display:flex;align-items:center;justify-content:center;height:100vh;background:#05090f;margin:0;padding:1rem;';
+            document.body.innerHTML = `
+                <div style="max-width:420px;text-align:center;font-family:'DM Sans',sans-serif;color:#94a3b8;">
+                    <div style="width:64px;height:64px;background:linear-gradient(135deg,#6366f1,#10b981);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 1.5rem;">⚠️</div>
+                    <h2 style="font-size:1.2rem;color:#f1f5f9;margin-bottom:.75rem;">Ressource bloquée par votre navigateur</h2>
+                    <p style="font-size:.875rem;line-height:1.6;margin-bottom:1.5rem;">
+                        La protection anti-pistage de votre navigateur bloque le chargement de KmerAI.<br><br>
+                        <strong style="color:#e2e8f0;">Solution :</strong> Désactivez la protection contre le pistage pour ce site, ou utilisez Chrome/Firefox.
+                    </p>
+                    <button onclick="window.location.reload()" style="padding:.65rem 1.5rem;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.4);border-radius:.65rem;color:#a5b4fc;cursor:pointer;font-size:.875rem;">
+                        🔄 Réessayer
+                    </button>
+                </div>`;
+            throw new Error('Supabase non disponible — CDN bloqué');
+        }
+
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ── STATE ─────────────────────────────────────────────────────────
