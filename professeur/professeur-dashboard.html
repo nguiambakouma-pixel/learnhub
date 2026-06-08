@@ -1150,7 +1150,7 @@
                         <div class="pst">● <span data-i18n="status_active">Compte actif</span></div>
                     </div>
                 </div>
-                <button class="btn-out" onclick="doLogout()" data-i18n="btn_logout">🚪 Déconnexion</button>
+                <button class="btn-out" onclick="doLogout()" data-i18n="btn_logout"><i data-lucide="log-out" class="w-4 h-4 mr-2"></i> Déconnexion</button>
             </div>
         </aside>
 
@@ -1274,7 +1274,7 @@
                         </div>
                         <div id="cl-wrap">
                             <div class="emp">
-                                <div class="emp-ico">⏳</div>
+                                <div class="emp-ico"><i data-lucide="clock" class="w-6 h-6"></i></div>
                                 <h4 data-i18n="loading">Chargement…</h4>
                             </div>
                         </div>
@@ -1314,8 +1314,8 @@
                                 </div>
                                 <div class="fd"><label data-i18n="field_content_type">Type de contenu</label>
                                     <select id="c-typ">
-                                        <option value="texte" data-i18n-opt="type_text">📄 Cours écrit</option>
-                                        <option value="video" data-i18n-opt="type_video">🎥 Vidéo</option>
+                                        <option value="texte" data-i18n-opt="type_text"><i data-lucide="file-text" class="w-4 h-4 mr-1"></i> Cours écrit</option>
+                                        <option value="video" data-i18n-opt="type_video"><i data-lucide="video" class="w-4 h-4 mr-1"></i> Vidéo</option>
                                     </select>
                                 </div>
                             </div>
@@ -1382,7 +1382,7 @@
                         </div>
                         <div id="xl-wrap" class="mt-4">
                             <div class="emp">
-                                <div class="emp-ico">⏳</div>
+                                <div class="emp-ico"><i data-lucide="clock" class="w-6 h-6"></i></div>
                                 <h4 data-i18n="loading">Chargement…</h4>
                             </div>
                         </div>
@@ -1394,7 +1394,7 @@
                     <div class="gl" style="max-width:1000px; margin: 0 auto;">
                         <div class="gh" style="border-bottom: none; margin-bottom: 1.5rem;">
                             <div>
-                                <div class="gtitle" id="xf-title" data-i18n="propose_exercise_title">💻 Proposer un exercice de code</div>
+                                <div class="gtitle" id="xf-title" data-i18n="propose_exercise_title"><i data-lucide="laptop" class="w-4 h-4 mr-2"></i> Proposer un exercice de code</div>
                                 <p style="font-size: 0.8rem; color: var(--mu); margin-top: 2px;" data-i18n="propose_exercise_desc">Créez un nouvel exercice technique (Algorithmique, Python, JS...).</p>
                                 <div style="margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.8rem; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.1); border-radius: 0.5rem; font-size: 0.75rem; color: var(--am);">
                                     <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
@@ -1424,9 +1424,9 @@
                             <div class="g2">
                                 <div class="fd"><label data-i18n="field_difficulty">Difficulté</label>
                                     <select id="x-diff">
-                                        <option value="facile" data-i18n-opt="diff_easy">🟢 Facile</option>
-                                        <option value="moyen" selected data-i18n-opt="diff_medium">🟡 Moyen</option>
-                                        <option value="difficile" data-i18n-opt="diff_hard">🔴 Difficile</option>
+                                        <option value="facile" data-i18n-opt="diff_easy"><i data-lucide="check-circle" class="w-4 h-4 mr-1 text-green-500"></i> Facile</option>
+                                        <option value="moyen" selected data-i18n-opt="diff_medium"><i data-lucide="minus-circle" class="w-4 h-4 mr-1 text-yellow-500"></i> Moyen</option>
+                                        <option value="difficile" data-i18n-opt="diff_hard"><i data-lucide="x-circle" class="w-4 h-4 mr-1 text-red-500"></i> Difficile</option>
                                     </select>
                                 </div>
                                 <div class="fd"><label data-i18n="field_xp">Points XP</label><input type="number"
@@ -1462,10 +1462,10 @@
                             </div>
                             <div class="sep"></div>
                             <div style="display:flex;gap:.7rem;justify-content:flex-end">
-                                <button class="btn btn-g" onclick="resetExo()" data-i18n="btn_reset">🔄
+                                <button class="btn btn-g" onclick="resetExo()" data-i18n="btn_reset"><i data-lucide="refresh-cw" class="w-4 h-4 mr-1"></i>
                                     Réinitialiser</button>
                                 <button class="btn btn-p" id="btn-exo" onclick="saveExo()"><span
-                                        data-i18n="btn_submit_exercise">📤 Soumettre l'exercice</span></button>
+                                        data-i18n="btn_submit_exercise"><i data-lucide="send" class="w-4 h-4 mr-1"></i> Soumettre l'exercice</span></button>
                             </div>
                         </div>
                     </div>
@@ -1476,7 +1476,7 @@
                     <div class="gl" style="max-width:900px; margin: 0 auto;">
                         <div class="gh" style="border-bottom: none; margin-bottom: 1.5rem;">
                             <div>
-                                <div class="gtitle" data-i18n="ni_prop_exo_simple">📝 Proposer un exercice simple</div>
+                                <div class="gtitle" data-i18n="ni_prop_exo_simple"><i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Proposer un exercice simple</div>
                                 <p style="font-size: 0.8rem; color: var(--mu); margin-top: 2px;" data-i18n="propose_simple_exo_desc">Créez des exercices pédagogiques (QCM, Ouvert...) liés à un cours.</p>
                             </div>
                         </div>
@@ -1509,9 +1509,9 @@
                                 </div>
                                 <div class="fd"><label data-i18n="field_difficulty">Difficulté</label>
                                     <select id="xs-diff">
-                                        <option value="facile">🟢 Facile</option>
-                                        <option value="moyen" selected>🟡 Moyen</option>
-                                        <option value="difficile">🔴 Difficile</option>
+                                        <option value="facile"><i data-lucide="check-circle" class="w-4 h-4 mr-1 text-green-500"></i> Facile</option>
+                                        <option value="moyen" selected><i data-lucide="minus-circle" class="w-4 h-4 mr-1 text-yellow-500"></i> Moyen</option>
+                                        <option value="difficile"><i data-lucide="x-circle" class="w-4 h-4 mr-1 text-red-500"></i> Difficile</option>
                                     </select>
                                 </div>
                             </div>
@@ -1531,8 +1531,8 @@
 
                             <div class="sep"></div>
                             <div style="display:flex;gap:.7rem;justify-content:flex-end">
-                                <button class="btn btn-g" onclick="resetExoSimple()" data-i18n="btn_reset">🔄 Réinitialiser</button>
-                                <button class="btn btn-p" id="btn-save-exs" onclick="saveExoSimple()" data-i18n="btn_save_simple_exo">💾 Enregistrer l'exercice</button>
+                                <button class="btn btn-g" onclick="resetExoSimple()" data-i18n="btn_reset"><i data-lucide="refresh-cw" class="w-4 h-4 mr-1"></i> Réinitialiser</button>
+                                <button class="btn btn-p" id="btn-save-exs" onclick="saveExoSimple()" data-i18n="btn_save_simple_exo"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Enregistrer l'exercice</button>
                             </div>
                         </div>
                     </div>
@@ -1559,7 +1559,7 @@
                         </div>
                         <div id="ep-wrap">
                             <div class="emp">
-                                <div class="emp-ico">⏳</div>
+                                <div class="emp-ico"><i data-lucide="clock" class="w-6 h-6"></i></div>
                                 <h4 data-i18n="loading">Chargement…</h4>
                             </div>
                         </div>
@@ -1570,7 +1570,7 @@
                 <div id="sec-soumettre" class="sec">
                     <div class="gl" style="max-width:840px">
                         <div class="gh">
-                            <div class="gtitle" id="ef-title" data-i18n="submit_exam_title">🚀 Nouvelle épreuve</div>
+                            <div class="gtitle" id="ef-title" data-i18n="submit_exam_title"><i data-lucide="rocket" class="w-4 h-4 mr-2"></i> Nouvelle épreuve</div>
                         </div>
                         <div class="gb">
                             <div id="al-ep" class="al"></div>
@@ -1637,9 +1637,9 @@
                             <div class="sep"></div>
                             <div style="display:flex;gap:.7rem;justify-content:flex-end">
                                 <button class="btn btn-g" id="btn-draft" onclick="saveEp('brouillon')"
-                                    data-i18n="btn_draft">💾 Brouillon</button>
+                                    data-i18n="btn_draft"><i data-lucide="save" class="w-4 h-4 mr-1"></i> Brouillon</button>
                                 <button class="btn btn-p" id="btn-subep" onclick="saveEp('soumis')"
-                                    data-i18n="btn_submit_exam">🚀 Soumettre</button>
+                                    data-i18n="btn_submit_exam"><i data-lucide="rocket" class="w-4 h-4 mr-1"></i> Soumettre</button>
                             </div>
                         </div>
                     </div>
@@ -1653,7 +1653,7 @@
                         </div>
                         <div id="pay-wrap">
                             <div class="emp">
-                                <div class="emp-ico">⏳</div>
+                                <div class="emp-ico"><i data-lucide="clock" class="w-6 h-6"></i></div>
                                 <h4 data-i18n="loading">Chargement…</h4>
                             </div>
                         </div>
@@ -1964,13 +1964,13 @@
                 dash_last_exercises: 'Derniers exercices code', btn_see_all: 'Voir tout',
                 /* Cours */
                 my_courses_title: 'Mes Cours proposés', btn_new_course: '+ Nouveau cours',
-                propose_course_title: '✏️ Proposer un nouveau cours',
+                propose_course_title: 'Proposer un nouveau cours',
                 /* Exercices */
                 my_exercises_title: 'Mes Exercices Code', btn_new_exercise: '+ Nouveau',
-                propose_exercise_title: '💻 Proposer un exercice de code',
+                propose_exercise_title: 'Proposer un exercice de code',
                 /* Épreuves */
                 my_exams_title: 'Mes Épreuves', btn_new_exam: '+ Nouvelle',
-                submit_exam_title: '🚀 Nouvelle épreuve',
+                submit_exam_title: 'Nouvelle épreuve',
                 /* Paiements */
                 payments_title: 'Historique des paiements',
                 /* Profil */
@@ -1982,7 +1982,7 @@
                 field_subsystems: 'Sous-systèmes enseignés', subsystems_readonly: '(Modifiable uniquement par l\'admin)',
                 field_lang: 'Langue de l\'interface', field_bio: 'Bio / Présentation',
                 security_title: 'Sécurité & Accès', field_new_password: 'Nouveau mot de passe',
-                field_confirm_password: 'Confirmer', btn_change_password: '🔐 Modifier le mot de passe',
+                field_confirm_password: 'Confirmer', btn_change_password: 'Modifier le mot de passe',
                 settings_title: 'Paramètres du compte',
                 settings_hint: 'Les informations critiques comme vos sections d\'enseignement sont modifiables uniquement par l\'administrateur pour garantir la cohérence des données.',
                 /* Champs formulaires */
@@ -1996,9 +1996,9 @@
                 field_solution: 'Solution correcte *', field_tests: 'Tests unitaires',
                 field_exam_type: 'Type *', field_total_score: 'Barème total',
                 /* Boutons */
-                btn_reset: '🔄 Réinitialiser', btn_submit_course: '📤 Soumettre le cours',
-                btn_submit_exercise: '📤 Soumettre l\'exercice', btn_submit_exam: '🚀 Soumettre',
-                btn_draft: '💾 Brouillon', btn_save: '💾 Enregistrer',
+                btn_reset: 'Réinitialiser', btn_submit_course: 'Soumettre le cours',
+                btn_submit_exercise: 'Soumettre l\'exercice', btn_submit_exam: 'Soumettre',
+                btn_draft: 'Brouillon', btn_save: 'Enregistrer',
                 btn_add_test: '+ Test', btn_qcm_single: '+ QCM unique', btn_qcm_multi: '+ QCM multiple',
                 btn_true_false: '+ Vrai/Faux', btn_open: '+ Ouverte',
                 /* Misc */
@@ -2009,30 +2009,30 @@
                 choose_image: 'Choisir une image', img_hint: 'JPG, PNG — Max 5 MB',
                 choose_pdf: 'Choisir un PDF', pdf_hint: 'Max 10 MB',
                 /* Options select */
-                select_placeholder: 'Sélectionner…', type_text: '📄 Cours écrit', type_video: '🎥 Vidéo',
-                diff_easy: '🟢 Facile', diff_medium: '🟡 Moyen', diff_hard: '🔴 Difficile',
+                select_placeholder: 'Sélectionner…', type_text: 'Cours écrit', type_video: 'Vidéo',
+                diff_easy: 'Facile', diff_medium: 'Moyen', diff_hard: 'Difficile',
                 filter_all: 'Tous', status_draft: 'Brouillon', status_submitted: 'Soumis',
                 status_review: 'En révision', status_validated: 'Validé', status_rejected: 'Rejeté',
                 status_active: 'Compte Actif', status_pending: 'En attente',
                 /* Badges statut */
-                badge_published: '✅ Publié', badge_pending: '⏳ En révision',
-                badge_draft_s: '📝 Brouillon', badge_submitted: '⏳ Soumis',
-                badge_in_review: '🔍 En révision', badge_validated: '✅ Validé', badge_rejected: '❌ Rejeté',
-                badge_en: '🇬🇧 Anglophone', badge_fr: '🇫🇷 Francophone', badge_bi: '🌍 Bilingual',
-                badge_easy: '🟢 Easy', badge_medium: '🟡 Medium', badge_hard: '🔴 Hard',
+                badge_published: 'Publié', badge_pending: 'En révision',
+                badge_draft_s: 'Brouillon', badge_submitted: 'Soumis',
+                badge_in_review: 'En révision', badge_validated: 'Validé', badge_rejected: 'Rejeté',
+                badge_en: 'Anglophone', badge_fr: 'Francophone', badge_bi: 'Bilingual',
+                badge_easy: 'Easy', badge_medium: 'Medium', badge_hard: 'Hard',
                 pay_paid: 'Paid', pay_pending: 'Pending', pay_failed: 'Failed',
                 /* Messages */
-                msg_course_submitted: '✅ Cours soumis ! L\'admin le publiera après vérification.',
-                msg_course_updated: '✅ Cours mis à jour — en attente de publication.',
-                msg_exercise_submitted: '✅ Exercice soumis ! Il sera publié après validation.',
-                msg_exam_submitted: '✅ Épreuve soumise pour validation !',
-                msg_draft_saved: '✅ Brouillon enregistré.',
-                msg_profile_saved: '✅ Profil mis à jour !',
-                msg_password_changed: '✅ Mot de passe modifié avec succès.',
-                msg_password_mismatch: '❌ Les mots de passe ne correspondent pas.',
-                msg_password_short: '❌ Mot de passe trop court (min. 8 caractères).',
-                msg_required_fields: '❌ Champs obligatoires manquants.',
-                msg_add_question: '❌ Ajoutez au moins une question.',
+                msg_course_submitted: 'Cours soumis ! L\'admin le publiera après vérification.',
+                msg_course_updated: 'Cours mis à jour — en attente de publication.',
+                msg_exercise_submitted: 'Exercice soumis ! Il sera publié après validation.',
+                msg_exam_submitted: 'Épreuve soumise pour validation !',
+                msg_draft_saved: 'Brouillon enregistré.',
+                msg_profile_saved: 'Profil mis à jour !',
+                msg_password_changed: 'Mot de passe modifié avec succès.',
+                msg_password_mismatch: 'Les mots de passe ne correspondent pas.',
+                msg_password_short: 'Mot de passe trop court (min. 8 caractères).',
+                msg_required_fields: 'Champs obligatoires manquants.',
+                msg_add_question: 'Ajoutez au moins une question.',
                 role_label: 'Espace Professeur',
                 page_title: 'Dashboard Professeur — KMERSCHOOL',
                 add_specialty: 'Ajouter une spécialité'
@@ -2076,13 +2076,13 @@
                 dash_last_exercises: 'Latest code exercises', btn_see_all: 'View all',
                 /* Cours */
                 my_courses_title: 'My submitted courses', btn_new_course: '+ New course',
-                propose_course_title: '✏️ Submit a new course',
+                propose_course_title: 'Submit a new course',
                 /* Exercices */
                 my_exercises_title: 'My Code Exercises', btn_new_exercise: '+ New',
-                propose_exercise_title: '💻 Submit a code exercise',
+                propose_exercise_title: 'Submit a code exercise',
                 /* Épreuves */
                 my_exams_title: 'My Examinations', btn_new_exam: '+ New',
-                submit_exam_title: '🚀 New examination',
+                submit_exam_title: 'New examination',
                 /* Paiements */
                 payments_title: 'Payment history',
                 /* Profil */
@@ -2094,7 +2094,7 @@
                 field_subsystems: 'Teaching sub-systems', subsystems_readonly: '(Only editable by admin)',
                 field_lang: 'Interface language', field_bio: 'Bio / Presentation',
                 security_title: 'Security & Access', field_new_password: 'New password',
-                field_confirm_password: 'Confirm', btn_change_password: '🔐 Change password',
+                field_confirm_password: 'Confirm', btn_change_password: 'Change password',
                 settings_title: 'Account Settings',
                 settings_hint: 'Critical information such as your teaching sub-systems can only be modified by the administrator to ensure data consistency.',
                 /* Champs formulaires */
@@ -2108,9 +2108,9 @@
                 field_solution: 'Correct solution *', field_tests: 'Unit tests',
                 field_exam_type: 'Type *', field_total_score: 'Total marks',
                 /* Boutons */
-                btn_reset: '🔄 Reset', btn_submit_course: '📤 Submit course',
-                btn_submit_exercise: '📤 Submit exercise', btn_submit_exam: '🚀 Submit',
-                btn_draft: '💾 Save draft', btn_save: '💾 Save',
+                btn_reset: 'Reset', btn_submit_course: 'Submit course',
+                btn_submit_exercise: 'Submit exercise', btn_submit_exam: 'Submit',
+                btn_draft: 'Save draft', btn_save: 'Save',
                 btn_add_test: '+ Test', btn_qcm_single: '+ MCQ single', btn_qcm_multi: '+ MCQ multiple',
                 btn_true_false: '+ True/False', btn_open: '+ Open question',
                 /* Misc */
@@ -2121,30 +2121,30 @@
                 choose_image: 'Choose an image', img_hint: 'JPG, PNG — Max 5 MB',
                 choose_pdf: 'Choose a PDF', pdf_hint: 'Max 10 MB',
                 /* Options select */
-                select_placeholder: 'Select…', type_text: '📄 Written course', type_video: '🎥 Video',
-                diff_easy: '🟢 Easy', diff_medium: '🟡 Medium', diff_hard: '🔴 Hard',
+                select_placeholder: 'Select…', type_text: 'Written course', type_video: 'Video',
+                diff_easy: 'Easy', diff_medium: 'Medium', diff_hard: 'Hard',
                 filter_all: 'All', status_draft: 'Draft', status_submitted: 'Submitted',
                 status_review: 'Under review', status_validated: 'Validated', status_rejected: 'Rejected',
                 status_active: 'Account Active', status_pending: 'Pending',
                 /* Badges statut */
-                badge_published: '✅ Published', badge_pending: '⏳ Under review',
-                badge_draft_s: '📝 Draft', badge_submitted: '⏳ Submitted',
-                badge_in_review: '🔍 Under review', badge_validated: '✅ Validated', badge_rejected: '❌ Rejected',
-                badge_en: '🇬🇧 Anglophone', badge_fr: '🇫🇷 Francophone', badge_bi: '🌍 Bilingual',
-                badge_easy: '🟢 Easy', badge_medium: '🟡 Medium', badge_hard: '🔴 Hard',
+                badge_published: 'Published', badge_pending: 'Under review',
+                badge_draft_s: 'Draft', badge_submitted: 'Submitted',
+                badge_in_review: 'Under review', badge_validated: 'Validated', badge_rejected: 'Rejected',
+                badge_en: 'Anglophone', badge_fr: 'Francophone', badge_bi: 'Bilingual',
+                badge_easy: 'Easy', badge_medium: 'Medium', badge_hard: 'Hard',
                 pay_paid: 'Paid', pay_pending: 'Pending', pay_failed: 'Failed',
                 /* Messages */
-                msg_course_submitted: '✅ Course submitted! The admin will publish it after review.',
-                msg_course_updated: '✅ Course updated — awaiting publication.',
-                msg_exercise_submitted: '✅ Exercise submitted! It will be published after validation.',
-                msg_exam_submitted: '✅ Exam submitted for validation!',
-                msg_draft_saved: '✅ Draft saved.',
-                msg_profile_saved: '✅ Profile updated!',
-                msg_password_changed: '✅ Password successfully changed.',
-                msg_password_mismatch: '❌ Passwords do not match.',
-                msg_password_short: '❌ Password too short (min. 8 characters).',
-                msg_required_fields: '❌ Required fields are missing.',
-                msg_add_question: '❌ Please add at least one question.',
+                msg_course_submitted: 'Course submitted! The admin will publish it after review.',
+                msg_course_updated: 'Course updated — awaiting publication.',
+                msg_exercise_submitted: 'Exercise submitted! It will be published after validation.',
+                msg_exam_submitted: 'Exam submitted for validation!',
+                msg_draft_saved: 'Draft saved.',
+                msg_profile_saved: 'Profile updated!',
+                msg_password_changed: 'Password successfully changed.',
+                msg_password_mismatch: 'Passwords do not match.',
+                msg_password_short: 'Password too short (min. 8 characters).',
+                msg_required_fields: 'Required fields are missing.',
+                msg_add_question: 'Please add at least one question.',
                 role_label: 'Teacher Portal',
                 page_title: 'Teacher Dashboard — KMERSCHOOL',
                 add_specialty: 'Add a specialty'
@@ -2239,21 +2239,21 @@
                 
                 // Fallback de secours robuste pour éviter le faux-positif de déconnexion sur mobile
                 if (!session) {
-                    console.log('⚠️ getSession() vide. Tentative de récupération via getUser()...');
+                    console.log('getSession() vide. Tentative de récupération via getUser()...');
                     const { data: { user } } = await sb.auth.getUser()
                     if (user) {
-                        console.log('✅ Utilisateur récupéré via getUser()! Récupération de la session...');
+                        console.log('Utilisateur récupéré via getUser()! Récupération de la session...');
                         const { data: sessionData } = await sb.auth.getSession()
                         session = sessionData?.session
                     }
                 }
 
                 if (!session) {
-                    console.log('❌ Session introuvable. Redirection vers login.html');
+                    console.log('Session introuvable. Redirection vers login.html');
                     return location.href = 'login.html'
                 }
                 uid = session.user.id
-                console.log('✅ Session active trouvée pour uid:', uid);
+                console.log('Session active trouvée pour uid:', uid);
 
                 let retryCount = 0;
                 let data = null, error = null;
@@ -2276,7 +2276,7 @@
                     if (overlay) {
                         overlay.innerHTML = `
                             <div style="text-align:center; padding: 20px;">
-                                <div style="font-size: 3rem; margin-bottom: 1rem;">📡</div>
+                                <div style="font-size: 3rem; margin-bottom: 1rem;"><i data-lucide="wifi-off" class="w-12 h-12"></i></div>
                                 <h3 style="color: white; margin-bottom: 1rem;">Problème de connexion</h3>
                                 <p style="color: var(--mu); margin-bottom: 2rem;">Nous n'arrivons pas à charger votre profil. Vérifiez votre connexion internet.</p>
                                 <button onclick="location.reload()" class="btn btn-p">Réessayer</button>
@@ -2519,7 +2519,7 @@
                     const label = LANG === 'en' ? (n.nom_en || n.nom_fr) : n.nom_fr
                     const opt = document.createElement('option')
                     opt.value = n.niveau_id || n.id
-                    opt.textContent = label + (n.est_examen ? ' 🎯' : '')
+                    opt.textContent = label + (n.est_examen ? ' (Examen)' : '')
                     opt.dataset.code = n.niveau_code || n.code
                     sel.appendChild(opt)
                 })
@@ -2577,9 +2577,9 @@
                 ...(exosSimple || []).map(x => ({ ...x, titre: x.titre || x.consigne, langage: 'Simple', est_actif: x.est_publie, _t: 'simple' }))
             ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5)
 
-            mini('d-cours', cours ?? [], c => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div><div style="font-size:.83rem;font-weight:600;color:var(--txt)">${c.titre}</div><div style="font-size:.7rem;color:var(--mu)">${c.matiere}</div></div>${c.est_publie ? `<span class="badge bok">${t('badge_published')}</span>` : `<span class="badge bwt">${t('badge_pending')}</span>`}</div>`, '📚', t('stat_courses'))
-            mini('d-ep', eps ?? [], e => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div style="font-size:.83rem;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)">${e.titre}</div>${bep(e.statut)}</div>`, '📝', t('stat_validated'))
-            mini('d-ex', allExos, x => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div><div style="font-size:.83rem;font-weight:600;color:var(--txt)">${x.titre}</div><span style="font-size:.7rem;color:var(--mu)">${x.langage} · ${x.difficulte}</span></div>${x.est_actif ? `<span class="badge bok">${t('badge_published')}</span>` : `<span class="badge bwt">${t('badge_pending')}</span>`}</div>`, '💻', t('stat_exercises'))
+            mini('d-cours', cours ?? [], c => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div><div style="font-size:.83rem;font-weight:600;color:var(--txt)">${c.titre}</div><div style="font-size:.7rem;color:var(--mu)">${c.matiere}</div></div>${c.est_publie ? `<span class="badge bok">${t('badge_published')}</span>` : `<span class="badge bwt">${t('badge_pending')}</span>`}</div>`, '<i data-lucide="book" class="w-4 h-4"></i>', t('stat_courses'))
+            mini('d-ep', eps ?? [], e => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div style="font-size:.83rem;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)">${e.titre}</div>${bep(e.statut)}</div>`, '<i data-lucide="file-text" class="w-4 h-4"></i>', t('stat_validated'))
+            mini('d-ex', allExos, x => `<div style="display:flex;justify-content:space-between;align-items:center;padding:.6rem 1.1rem;border-bottom:1px solid var(--border)"><div><div style="font-size:.83rem;font-weight:600;color:var(--txt)">${x.titre}</div><span style="font-size:.7rem;color:var(--mu)">${x.langage} · ${x.difficulte}</span></div>${x.est_actif ? `<span class="badge bok">${t('badge_published')}</span>` : `<span class="badge bwt">${t('badge_pending')}</span>`}</div>`, '<i data-lucide="laptop" class="w-4 h-4"></i>', t('stat_exercises'))
         }
 
         function mini(id, items, fn, ico, empty) {
@@ -2608,7 +2608,7 @@
                 }
             } catch (e) {
                 console.error(e)
-                w.innerHTML = `<div class="emp"><div class="emp-ico">⚠️</div><h4>Error</h4><p>${e.message}</p></div>`
+                w.innerHTML = `<div class="emp"><div class="emp-ico"><i data-lucide="alert-triangle" class="w-8 h-8"></i></div><h4>Error</h4><p>${e.message}</p></div>`
             }
         }
 
@@ -2629,8 +2629,8 @@
             document.getElementById('c-pts').value = data.points_recompense || 20
             document.getElementById('c-cont').innerHTML = data.contenu || ''
             imgUrl = data.image_url || null; pdfUrl = data.pdf_url || null
-            if (data.image_url) { document.getElementById('iname').textContent = '✅ image'; document.getElementById('iz').classList.add('done') }
-            if (data.pdf_url) { document.getElementById('pname').textContent = '✅ PDF'; document.getElementById('pz').classList.add('done') }
+            if (data.image_url) { document.getElementById('iname').textContent = 'image'; document.getElementById('iz').classList.add('done') }
+            if (data.pdf_url) { document.getElementById('pname').textContent = 'PDF'; document.getElementById('pz').classList.add('done') }
             document.getElementById('cf-title').textContent = t('propose_course_title').replace('Proposer', 'Modifier').replace('Submit', 'Edit')
             go('proposer-cours')
         }
@@ -2702,26 +2702,26 @@
         async function uploadImg(e) {
             const f = e.target.files[0]; if (!f) return
             if (f.size > 5 * 1024 * 1024) return alert('Max 5 MB')
-            document.getElementById('iname').textContent = '⏳…'
+            document.getElementById('iname').textContent = '…'
             const path = `prof/${uid}/img_${Date.now()}_${f.name.replace(/[^a-zA-Z0-9.]/g, '_')}`
             const { error } = await sb.storage.from('course-images').upload(path, f)
-            if (error) { document.getElementById('iname').textContent = '❌'; return }
+            if (error) { document.getElementById('iname').textContent = 'X'; return }
             const { data: u } = sb.storage.from('course-images').getPublicUrl(path)
             imgUrl = u.publicUrl
-            document.getElementById('iname').textContent = '✅ ' + f.name
+            document.getElementById('iname').textContent = f.name
             document.getElementById('iz').classList.add('done')
         }
 
         async function uploadPdf(e) {
             const f = e.target.files[0]; if (!f) return
             if (f.size > 10 * 1024 * 1024) return alert('Max 10 MB')
-            document.getElementById('pname').textContent = '⏳…'
+            document.getElementById('pname').textContent = '…'
             const path = `prof/${uid}/pdf_${Date.now()}_${f.name.replace(/[^a-zA-Z0-9.]/g, '_')}`
             const { error } = await sb.storage.from('course-pdfs').upload(path, f)
-            if (error) { document.getElementById('pname').textContent = '❌'; return }
+            if (error) { document.getElementById('pname').textContent = 'X'; return }
             const { data: u } = sb.storage.from('course-pdfs').getPublicUrl(path)
             pdfUrl = u.publicUrl
-            document.getElementById('pname').textContent = '✅ ' + f.name
+            document.getElementById('pname').textContent = f.name
             document.getElementById('pz').classList.add('done')
         }
 
@@ -2783,12 +2783,12 @@
                             </td>
                             <td style="color:var(--am)">${x.points_recompense} XP</td>
                             <td>${x.est_actif ? `<span class="badge bok">${pub}</span>` : `<span class="badge bwt">${pend}</span>`}</td>
-                            <td>${!x.est_actif ? `<button onclick="loadEditExoGeneric('${x.id}', '${x._type}')" style="padding:.28rem .55rem;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);color:var(--ind);border-radius:.38rem;cursor:pointer;font-size:.73rem">✏️</button>` : ''}</td>
+                            <td>${!x.est_actif ? `<button onclick="loadEditExoGeneric('${x.id}', '${x._type}')" style="padding:.28rem .55rem;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);color:var(--ind);border-radius:.38rem;cursor:pointer;font-size:.73rem"><i data-lucide="pencil" class="w-3 h-3"></i></button>` : ''}</td>
                         </tr>`).join('')}
                 </table>`
             } catch (e) {
                 console.error(e)
-                w.innerHTML = `<div class="emp"><div class="emp-ico">⚠️</div><h4>Error</h4><p>${e.message}</p></div>`
+                w.innerHTML = `<div class="emp"><div class="emp-ico"><i data-lucide="alert-triangle" class="w-8 h-8"></i></div><h4>Error</h4><p>${e.message}</p></div>`
             }
         }
 
@@ -2976,12 +2976,12 @@
                 if (f) q = q.eq('statut', f)
                 const { data, error } = await q
                 if (error) throw error
-                if (!data?.length) { w.innerHTML = `<div class="emp"><div class="emp-ico">📝</div><h4>${t('my_exams_title')}</h4></div>`; return }
+                if (!data?.length) { w.innerHTML = `<div class="emp"><div class="emp-ico"><i data-lucide="file-text" class="w-8 h-8"></i></div><h4>${t('my_exams_title')}</h4></div>`; return }
                 const th = LANG === 'en' ? ['Title', 'Subject', 'Type', 'Duration', 'Status', 'Remuneration', 'Actions'] : ['Titre', 'Matière', 'Type', 'Durée', 'Statut', 'Rémunération', 'Actions']
-                w.innerHTML = `<table><tr>${th.map(h => `<th>${h}</th>`).join('')}</tr>${data.map(e => `<tr><td style="font-weight:600;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)">${e.titre}</td><td style="color:var(--mu)">${e.matiere}</td><td style="font-size:.74rem;color:#94a3b8">${e.type_examen}</td><td style="color:var(--mu)">${e.duree_minutes} min</td><td>${bep(e.statut)}</td><td style="color:var(--am);font-weight:600">${parseFloat(e.remuneration_due || 0).toLocaleString('fr-FR')} XAF</td><td style="display:flex;gap:.3rem">${['brouillon', 'rejete'].includes(e.statut) ? `<button onclick="loadEpEdit('${e.id}')" style="padding:.28rem .55rem;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);color:var(--ind);border-radius:.38rem;cursor:pointer;font-size:.73rem">✏️</button>` : ''} ${e.commentaire_admin ? `<button onclick="alert('💬 '+${JSON.stringify(e.commentaire_admin)})" style="padding:.28rem .55rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--am);border-radius:.38rem;cursor:pointer;font-size:.73rem">💬</button>` : ''}</td></tr>`).join('')}</table>`
+                w.innerHTML = `<table><tr>${th.map(h => `<th>${h}</th>`).join('')}</tr>${data.map(e => `<tr><td style="font-weight:600;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)">${e.titre}</td><td style="color:var(--mu)">${e.matiere}</td><td style="font-size:.74rem;color:#94a3b8">${e.type_examen}</td><td style="color:var(--mu)">${e.duree_minutes} min</td><td>${bep(e.statut)}</td><td style="color:var(--am);font-weight:600">${parseFloat(e.remuneration_due || 0).toLocaleString('fr-FR')} XAF</td><td style="display:flex;gap:.3rem">${['brouillon', 'rejete'].includes(e.statut) ? `<button onclick="loadEpEdit('${e.id}')" style="padding:.28rem .55rem;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);color:var(--ind);border-radius:.38rem;cursor:pointer;font-size:.73rem"><i data-lucide="pencil" class="w-3 h-3"></i></button>` : ''} ${e.commentaire_admin ? `<button onclick="alert('${JSON.stringify(e.commentaire_admin)}')" style="padding:.28rem .55rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--am);border-radius:.38rem;cursor:pointer;font-size:.73rem"><i data-lucide="message-square" class="w-3 h-3"></i></button>` : ''}</td></tr>`).join('')}</table>`
             } catch (e) {
                 console.error(e)
-                w.innerHTML = `<div class="emp"><div class="emp-ico">⚠️</div><h4>Error</h4><p>${e.message}</p></div>`
+                w.innerHTML = `<div class="emp"><div class="emp-ico"><i data-lucide="alert-triangle" class="w-8 h-8"></i></div><h4>Error</h4><p>${e.message}</p></div>`
             }
         }
 
@@ -3110,12 +3110,12 @@
             try {
                 const { data, error } = await sb.from('paiements_professeurs').select('*').eq('prof_id', uid).order('date_paiement', { ascending: false })
                 if (error) throw error
-                if (!data?.length) { w.innerHTML = `<div class="emp"><div class="emp-ico">💳</div><h4>${t('payments_title')}</h4></div>`; return }
+                if (!data?.length) { w.innerHTML = `<div class="emp"><div class="emp-ico"><i data-lucide="credit-card" class="w-8 h-8"></i></div><h4>${t('payments_title')}</h4></div>`; return }
                 const th = LANG === 'en' ? ['Amount', 'Mode', 'Reference', 'Status', 'Date'] : ['Montant', 'Mode', 'Référence', 'Statut', 'Date']
                 w.innerHTML = `<table><tr>${th.map(h => `<th>${h}</th>`).join('')}</tr>${data.map(p => `<tr><td style="font-weight:700;color:var(--em)">${parseFloat(p.montant).toLocaleString('fr-FR')} ${p.devise}</td><td style="color:var(--mu)">${fmode(p.mode_paiement)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--mu)">${p.reference || '—'}</td><td>${bpay(p.statut)}</td><td style="color:var(--mu);font-size:.76rem">${fd(p.date_paiement)}</td></tr>`).join('')}</table>`
             } catch (e) {
                 console.error(e)
-                w.innerHTML = `<div class="emp"><div class="emp-ico">⚠️</div><h4>Error</h4><p>${e.message}</p></div>`
+                w.innerHTML = `<div class="emp"><div class="emp-ico"><i data-lucide="alert-triangle" class="w-8 h-8"></i></div><h4>Error</h4><p>${e.message}</p></div>`
             }
         }
 
@@ -3292,7 +3292,7 @@
         function shAl(id, msg, type) {
             const el = document.getElementById(id); if (!el) return
             el.className = `al show ${type === 'err' ? 'aerr' : type === 'ok' ? 'aok' : 'ainfo'}`
-            el.innerHTML = `<span>${type === 'err' ? '❌' : type === 'ok' ? '✅' : 'ℹ️'}</span><span>${msg}</span>`
+            el.innerHTML = `<span>${type === 'err' ? '<i data-lucide="x-circle" class="w-4 h-4"></i>' : type === 'ok' ? '<i data-lucide="check-circle" class="w-4 h-4"></i>' : '<i data-lucide="info" class="w-4 h-4"></i>'}</span><span>${msg}</span>`
             setTimeout(() => { el.className = 'al'; el.innerHTML = '' }, 7000)
         }
 
@@ -3304,7 +3304,7 @@
             return `<span class="badge ${cls}">${label}</span>`
         }
         function bpay(s) {
-            const m = { en_attente: 'bwt ⏳', traite: 'bwt 🔄', confirme: 'bok ✅', echoue: 'brej ❌', annule: 'bdr 🚫' }
+            const m = { en_attente: 'bwt', traite: 'bwt', confirme: 'bok', echoue: 'brej', annule: 'bdr' }
             const [cls, ico] = (m[s] || 'bdr •').split(' ')
             return `<span class="badge ${cls}">${ico} ${s}</span>`
         }
@@ -3313,7 +3313,7 @@
             const [bg, tc] = c[d] || ['rgba(99,102,241,.1)', 'var(--ind)']
             return `<span style="font-size:.7rem;font-weight:700;padding:.16rem .52rem;border-radius:99px;background:${bg};color:${tc}">${{ facile: t('diff_easy'), moyen: t('diff_medium'), difficile: t('diff_hard') }[d] || d}</span>`
         }
-        function fmode(m) { return { mtn_mobile_money: '📱 MTN MoMo', orange_money: '🟠 Orange Money', virement_bancaire: '🏦 Virement', especes: '💵 Espèces', autre: '💳 Autre' }[m] || m || '—' }
+        function fmode(m) { return { mtn_mobile_money: 'MTN MoMo', orange_money: 'Orange Money', virement_bancaire: 'Virement', especes: 'Espèces', autre: 'Autre' }[m] || m || '—' }
         function fd(d) { if (!d) return '—'; return new Date(d).toLocaleDateString(LANG === 'en' ? 'en-GB' : 'fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) }
         function slugify(s) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }
         function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;') }

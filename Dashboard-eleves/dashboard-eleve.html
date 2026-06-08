@@ -1825,15 +1825,15 @@
         <main class="main">
             <header class="topbar">
                 <div class="topbar-title" id="topbarTitle" data-i18n="menu_dashboard">Tableau de bord</div>
-                <div class="topbar-badge badge-fr" id="topbarBadge">🇫🇷 Francophone</div>
+                <div class="topbar-badge badge-fr" id="topbarBadge"><i data-lucide="globe" class="w-3 h-3 mr-1"></i> Francophone</div>
                 <div class="topbar-search">
-                    <span class="search-icon">🔍</span>
+<i data-lucide="search" class="w-4 h-4 search-icon"></i>
                     <input type="text" placeholder="Rechercher un cours, matière..." data-i18n-placeholder="search_placeholder" id="searchInput"
                         oninput="handleSearch(this.value)" />
                 </div>
                 <div class="topbar-actions">
                     <button class="icon-btn" id="notifBtn" onclick="toggleNotifPanel()">
-                        🔔
+<i data-lucide="bell" class="w-4 h-4"></i>
                         <div class="notif-dot" id="notifDot"></div>
                     </button>
                     <img class="topbar-avatar" id="topbarAvatar" src="" alt="Avatar"
@@ -1851,7 +1851,7 @@
                     </div>
                     <div class="hero-content">
                         <div>
-                            <div class="hero-greeting" id="heroGreeting" data-i18n="greet_morning">Bonjour ☀️</div>
+                            <div class="hero-greeting" id="heroGreeting" data-i18n="greet_morning">Bonjour <i data-lucide="sun" class="w-4 h-4 inline"></i></div>
                             <h1 class="hero-title"><span id="heroHello" data-i18n="hello">Bonjour</span>, <span id="heroName">Élève</span> !</h1>
                             <p class="hero-desc" data-i18n="hero_desc">Continue ton apprentissage et atteins tes objectifs du jour.</p>
                             <div class="hero-tags">
@@ -1871,7 +1871,7 @@
                 <div class="stats-row">
                     <div class="stat-card fade-up d1">
                         <div class="stat-header">
-                            <div class="stat-icon si-gold">⭐</div><span class="stat-trend trend-up" id="stPtTrend">+20
+                            <div class="stat-icon si-gold"><i data-lucide="star" class="w-5 h-5"></i></div><span class="stat-trend trend-up" id="stPtTrend">+20
                                 auj.</span>
                         </div>
                         <div class="stat-value" id="stPoints">0</div>
@@ -1879,14 +1879,14 @@
                     </div>
                     <div class="stat-card fade-up d2">
                         <div class="stat-header">
-                            <div class="stat-icon si-fire">🔥</div><span class="stat-trend trend-up" data-i18n="stat_active">Actif !</span>
+                            <div class="stat-icon si-fire"><i data-lucide="flame" class="w-5 h-5"></i></div><span class="stat-trend trend-up" data-i18n="stat_active">Actif !</span>
                         </div>
                         <div class="stat-value" id="stStreak">0</div>
                         <div class="stat-label" data-i18n="streak_days">Jours de suite</div>
                     </div>
                     <div class="stat-card fade-up d3">
                         <div class="stat-header">
-                            <div class="stat-icon si-green">✅</div><span class="stat-trend trend-n"
+                            <div class="stat-icon si-green"><i data-lucide="check-circle" class="w-5 h-5"></i></div><span class="stat-trend trend-n"
                                 id="stCoursTrend">sur — dispo</span>
                         </div>
                         <div class="stat-value" id="stCours">0</div>
@@ -1894,7 +1894,7 @@
                     </div>
                     <div class="stat-card fade-up d4">
                         <div class="stat-header">
-                            <div class="stat-icon si-blue">⏱️</div><span class="stat-trend trend-n" data-i18n="stat_month">Ce mois</span>
+                            <div class="stat-icon si-blue"><i data-lucide="timer" class="w-5 h-5"></i></div><span class="stat-trend trend-n" data-i18n="stat_month">Ce mois</span>
                         </div>
                         <div class="stat-value" id="stTemps">0h</div>
                         <div class="stat-label" data-i18n="stat_time">Temps d'étude</div>
@@ -1905,7 +1905,7 @@
                     <div class="left-col">
                         <div class="card fade-up d2">
                             <div class="card-header">
-                                <div class="card-title" data-i18n="card_continue">▶ Continuer l'apprentissage</div>
+                                <div class="card-title" data-i18n="card_continue"><i data-lucide="play" class="w-4 h-4 mr-2"></i> Continuer l'apprentissage</div>
                                 <div class="card-action" onclick="navigate('cours')" data-i18n="card_see_all">Voir tout →</div>
                             </div>
                             <div class="card-body">
@@ -1916,7 +1916,7 @@
 
                         <div class="card fade-up d3">
                             <div class="card-header">
-                                <div class="card-title" data-i18n="card_subjects">📖 Mes Matières</div>
+                                <div class="card-title" data-i18n="card_subjects"><i data-lucide="book-open" class="w-4 h-4 mr-2"></i> Mes Matières</div>
                                 <div class="card-action" onclick="navigate('cours')" data-i18n="card_browse">Parcourir →</div>
                             </div>
                             <div class="card-body">
@@ -1929,7 +1929,7 @@
                         <div class="card fade-up d1"
                             style="background:linear-gradient(135deg,#0D1B38,#0B1E35);border:1px solid rgba(245,184,0,0.2)">
                             <div class="card-header">
-                                <div class="card-title" data-i18n="card_goal">🎯 Objectif du jour</div>
+                                <div class="card-title" data-i18n="card_goal"><i data-lucide="target" class="w-4 h-4 mr-2"></i> Objectif du jour</div>
                                 <span style="font-size:11px;color:var(--gold);font-weight:700;" id="objDone">0/3</span>
                             </div>
                             <div style="padding:10px 20px 0;display:flex;align-items:center;gap:10px;">
@@ -1946,7 +1946,7 @@
 
                         <div class="card fade-up d2">
                             <div class="card-header">
-                                <div class="card-title" data-i18n="card_ranking">🏆 Classement</div>
+                                <div class="card-title" data-i18n="card_ranking"><i data-lucide="trophy" class="w-4 h-4 mr-2"></i> Classement</div>
                                 <div class="card-action" onclick="navigate('classement')" data-i18n="card_full">Complet →</div>
                             </div>
                             <div class="card-body" style="padding-top:12px;">
@@ -1956,7 +1956,7 @@
 
                         <div class="card fade-up d3">
                             <div class="card-header">
-                                <div class="card-title" data-i18n="card_badges">🥇 Mes Badges</div>
+                                <div class="card-title" data-i18n="card_badges"><i data-lucide="award" class="w-4 h-4 mr-2"></i> Mes Badges</div>
                                 <div class="card-action" onclick="navigate('profil')" data-i18n="card_see">Voir →</div>
                             </div>
                             <div class="card-body">
@@ -1970,14 +1970,14 @@
             <!-- COURS PAGE -->
             <section class="page-content" id="page-cours">
                 <div class="page-header" id="coursPageHeader">
-                    <h1 data-i18n="page_courses_title">📚 Mes Cours</h1>
+                    <h1 data-i18n="page_courses_title"><i data-lucide="book" class="w-5 h-5 mr-2 inline"></i> Mes Cours</h1>
                     <p data-i18n="page_courses_desc">Explore et continue ton apprentissage par matière</p>
                 </div>
                 <div class="filters-row">
                     <button class="filter-btn active" onclick="filterCours('all',this)" data-i18n="filter_all">Tous</button>
-                    <button class="filter-btn" onclick="filterCours('en_cours',this)" data-i18n="filter_prog">🔄 En cours</button>
-                    <button class="filter-btn" onclick="filterCours('termine',this)" data-i18n="filter_done">✅ Terminés</button>
-                    <button class="filter-btn" onclick="filterCours('nouveau',this)" data-i18n="filter_new">🆕 Nouveaux</button>
+                    <button class="filter-btn" onclick="filterCours('en_cours',this)" data-i18n="filter_prog"><i data-lucide="refresh-cw" class="w-4 h-4 mr-1"></i> En cours</button>
+                    <button class="filter-btn" onclick="filterCours('termine',this)" data-i18n="filter_done"><i data-lucide="check-circle" class="w-4 h-4 mr-1"></i> Terminés</button>
+                    <button class="filter-btn" onclick="filterCours('nouveau',this)" data-i18n="filter_new"><i data-lucide="plus-circle" class="w-4 h-4 mr-1"></i> Nouveaux</button>
                 </div>
                 <div class="cours-catalog" id="coursCatalog"></div>
             </section>
@@ -1985,27 +1985,27 @@
             <!-- EXERCICES / ANNALES redirigés -->
             <section class="page-content" id="page-examens">
                 <div class="page-header">
-                    <h1 data-i18n="page_exams_title">📝 Examens</h1>
+                    <h1 data-i18n="page_exams_title"><i data-lucide="file-text" class="w-5 h-5 mr-2 inline"></i> Examens</h1>
                     <p data-i18n="page_exams_desc">Tests officiels et évaluations</p>
                 </div>
                 <div class="wip">
-                    <div class="wip-icon">🚧</div>
+                    <div class="wip-icon"><i data-lucide="alert-triangle" class="w-8 h-8"></i></div>
                     <p style="font-size:15px;font-weight:600;" data-i18n="wip">Bientôt disponible</p>
                 </div>
             </section>
             <section class="page-content" id="page-classement">
                 <div class="page-header">
-                    <h1 data-i18n="page_ranking_title">🏆 Classement</h1>
+                    <h1 data-i18n="page_ranking_title"><i data-lucide="trophy" class="w-5 h-5 mr-2 inline"></i> Classement</h1>
                     <p data-i18n="page_ranking_desc">Ta position parmi les élèves de ta classe</p>
                 </div>
                 <div class="wip">
-                    <div class="wip-icon">🚧</div>
+                    <div class="wip-icon"><i data-lucide="alert-triangle" class="w-8 h-8"></i></div>
                     <p style="font-size:15px;font-weight:600;" data-i18n="wip">Bientôt disponible</p>
                 </div>
             </section>
             <section class="page-content" id="page-favoris">
                 <div class="page-header">
-                    <h1 data-i18n="page_fav_title">❤️ Favoris</h1>
+                    <h1 data-i18n="page_fav_title"><i data-lucide="heart" class="w-5 h-5 mr-2 inline"></i> Favoris</h1>
                     <p data-i18n="page_fav_desc">Cours et ressources sauvegardés</p>
                 </div>
                 <div class="cours-catalog" id="favorisCatalog">
@@ -2017,14 +2017,14 @@
 
             <section class="page-content" id="page-parametres">
                 <div class="page-header">
-                    <h1 data-i18n="page_settings_title">⚙️ Paramètres</h1>
+                    <h1 data-i18n="page_settings_title"><i data-lucide="settings" class="w-5 h-5 mr-2 inline"></i>Paramètres</h1>
                     <p data-i18n="page_settings_desc">Gérez vos préférences de compte, l'affichage et la sécurité.</p>
                 </div>
                 <div class="st-grid">
                     <!-- PRÉFÉRENCES & INTERFACE -->
                     <div class="card fade-up d1">
                         <div class="card-header">
-                            <div class="card-title" data-i18n="st_interface">🎨 Interface & Affichage</div>
+                            <div class="card-title" data-i18n="st_interface"><i data-lucide="palette" class="w-4 h-4 mr-2 inline"></i>Interface & Affichage</div>
                         </div>
                         <div class="card-body">
                             <div class="st-row">
@@ -2064,7 +2064,7 @@
                     <!-- NOTIFICATIONS -->
                     <div class="card fade-up d2">
                         <div class="card-header">
-                            <div class="card-title" data-i18n="st_notif_title">🔔 Notifications (Bêta)</div>
+                            <div class="card-title" data-i18n="st_notif_title"><i data-lucide="bell" class="w-4 h-4 mr-2 inline"></i>Notifications (Bêta)</div>
                         </div>
                         <div class="card-body">
                             <div class="st-row">
@@ -2093,7 +2093,7 @@
                     <!-- SÉCURITÉ -->
                     <div class="card fade-up d3">
                         <div class="card-header">
-                            <div class="card-title" data-i18n="st_sec">🔐 Sécurité du Compte</div>
+                            <div class="card-title" data-i18n="st_sec"><i data-lucide="shield" class="w-4 h-4 mr-2 inline"></i>Sécurité du Compte</div>
                         </div>
                         <div class="card-body">
                             <div class="st-row">
@@ -2109,7 +2109,7 @@
                     <!-- DÉCONNEXION -->
                     <div class="card fade-up d4" style="border-color:rgba(251,146,60,0.25);">
                         <div class="card-header">
-                            <div class="card-title">🚪 Session &amp; Déconnexion</div>
+                            <div class="card-title"><i data-lucide="log-out" class="w-4 h-4 mr-2 inline"></i>Session & Déconnexion</div>
                         </div>
                         <div class="card-body">
                             <div class="st-row">
@@ -2125,7 +2125,7 @@
                     <!-- SUPPRIMER LE COMPTE -->
                     <div class="card fade-up d5" style="border-color:rgba(244,63,94,0.3);">
                         <div class="card-header">
-                            <div class="card-title" style="color:#f87171;">⚠️ Zone de Danger</div>
+                            <div class="card-title" style="color:#f87171;"><i data-lucide="alert-triangle" class="w-4 h-4 mr-2 inline"></i>Zone de Danger</div>
                         </div>
                         <div class="card-body">
                             <div class="st-row">
@@ -2144,7 +2144,7 @@
             <!-- MODALE CONFIRMATION DÉCONNEXION -->
             <div id="modalLogout" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
                 <div style="background:#0d1b38;border:1px solid rgba(251,146,60,0.4);border-radius:16px;padding:32px;max-width:420px;width:90%;text-align:center;animation:fadeInScale 0.3s ease;">
-                    <div style="font-size:48px;margin-bottom:16px;">🚪</div>
+                    <div style="font-size:48px;margin-bottom:16px;"><i data-lucide="log-out" class="w-12 h-12"></i></div>
                     <h3 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:white;margin-bottom:10px;">Se déconnecter ?</h3>
                     <p style="color:#8892a4;font-size:14px;line-height:1.6;margin-bottom:24px;">Vous allez être déconnecté de votre session. Vous devrez entrer à nouveau vos identifiants pour accéder à votre espace.</p>
                     <div style="display:flex;gap:12px;justify-content:center;">
@@ -2157,7 +2157,7 @@
             <!-- MODALE CONFIRMATION SUPPRESSION -->
             <div id="modalDelete" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
                 <div style="background:#0d1b38;border:1px solid rgba(244,63,94,0.4);border-radius:16px;padding:32px;max-width:440px;width:90%;text-align:center;animation:fadeInScale 0.3s ease;">
-                    <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+                    <div style="font-size:48px;margin-bottom:16px;"><i data-lucide="alert-triangle" class="w-12 h-12"></i></div>
                     <h3 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#f87171;margin-bottom:10px;">Supprimer votre compte ?</h3>
                     <p style="color:#8892a4;font-size:14px;line-height:1.6;margin-bottom:16px;">Cette action est <strong style="color:#f87171;">définitive et irréversible</strong>. Toutes vos données seront supprimées&nbsp;:</p>
                     <ul style="text-align:left;color:#8892a4;font-size:13px;margin-bottom:20px;padding-left:20px;line-height:2;">
@@ -2210,7 +2210,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title" data-i18n="card_all_badges">🥇 Tous mes Badges</div>
+                        <div class="card-title" data-i18n="card_all_badges"><i data-lucide="award" class="w-4 h-4 mr-2 inline"></i>Tous mes Badges</div>
                     </div>
                     <div class="card-body">
                         <div id="profilBadgesGrid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;">
@@ -2224,7 +2224,7 @@
     <!-- Notif Panel -->
     <div class="notif-panel" id="notifPanel">
         <div class="notif-header">
-            <div class="notif-title" data-i18n="notif_title">🔔 Notifications</div><span class="notif-clear" onclick="clearNotifs()" data-i18n="notif_clear">Tout
+            <div class="notif-title" data-i18n="notif_title"><i data-lucide="bell" class="w-4 h-4 mr-2 inline"></i>Notifications</div><span class="notif-clear" onclick="clearNotifs()" data-i18n="notif_clear">Tout
                 marquer lu</span>
         </div>
         <div class="notif-list" id="notifList"></div>
@@ -2394,7 +2394,7 @@
                         matMap[mName] = {
                             id: c.mat?.id || null,
                             nom: mName,
-                            icone: c.mat?.icone || '📚',
+                            icone: c.mat?.icone || 'book',
                             couleur: c.mat?.couleur || '#4F46E5',
                             nb_cours: 0
                         };
@@ -2428,7 +2428,7 @@
                 if (ubData) {
                     STATE.badges = ubData.map(ub => ({
                         nom: ub.badge?.nom || 'Badge',
-                        icone: ub.badge?.icone_url || '🌟',
+                        icone: ub.badge?.icone_url || 'star',
                         unlocked: true
                     }));
                 }
@@ -2493,7 +2493,7 @@
                 if (loader) {
                     loader.innerHTML = `
                         <div style="text-align:center; padding: 20px;">
-                            <div style="font-size:54px; margin-bottom:15px;">🔌</div>
+                            <div style="font-size:54px; margin-bottom:15px;"><i data-lucide="wifi-off" class="w-16 h-16"></i></div>
                             <h2 style="font-family:'Syne', sans-serif; color:#F43F5E; margin-bottom:10px;">Oups ! Un problème est survenu.</h2>
                             <p style="color:#8892A4; margin-bottom:25px; max-width: 400px; line-height:1.5;">${msgError}<br>Assurez-vous d'avoir une bonne connexion internet et réessayez.</p>
                             <button onclick="window.location.reload()" style="padding:12px 24px; background:#F43F5E; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Actualiser la page</button>
@@ -2521,7 +2521,7 @@
             document.getElementById('heroAvatar').src = av;
             document.getElementById('heroPoints').textContent = (p.points_total || 0).toLocaleString('fr-FR');
             document.getElementById('heroClasse').textContent = p.niveau?.nom || '—';
-            document.getElementById('heroSys').textContent = (p.sous_systeme?.flag || '🎓') + ' ' + (p.sous_systeme?.nom || '—');
+            document.getElementById('heroSys').textContent = (p.sous_systeme?.nom || '—');
             document.getElementById('heroYear').textContent = p.annee_scolaire || '2024-2025';
 
             // Sidebar
@@ -2536,7 +2536,7 @@
             setTimeout(() => { document.getElementById('xpBar').style.width = xpPct + '%'; }, 500);
 
             // Topbar badge
-            document.getElementById('topbarBadge').textContent = (p.sous_systeme?.flag || '🎓') + ' ' + (p.sous_systeme?.nom || '—');
+            document.getElementById('topbarBadge').textContent = (p.sous_systeme?.nom || '—');
 
             // Stats
             animateCount('stPoints', 0, p.points_total || 0, 1200);
@@ -2693,7 +2693,7 @@
             const list = document.getElementById('progressionList');
             const progs = STATE.progressions.filter(p => !p.est_termine);
             if (!progs.length) {
-                list.innerHTML = `<div class="empty-state"><div class="empty-icon">📖</div><p class="empty-text">${t('empty_prog')}</p><button class="btn-primary" onclick="navigate('cours')">${t('btn_explore')}</button></div>`;
+                list.innerHTML = `<div class="empty-state"><div class="empty-icon"><i data-lucide="book-open" class="w-8 h-8"></i></div><p class="empty-text">${t('empty_prog')}</p><button class="btn-primary" onclick="navigate('cours')">${t('btn_explore')}</button></div>`;
                 return;
             }
             const barColors = ['linear-gradient(90deg,#F5B800,#FDE68A)', 'linear-gradient(90deg,#10B981,#6EE7B7)', 'linear-gradient(90deg,#3B82F6,#93C5FD)'];
@@ -2751,7 +2751,7 @@
         }
 
         function renderRanking() {
-            const nums = ['🥇', '🥈', '🥉', '4'];
+            const nums = ['1', '2', '3', '4'];
             document.getElementById('rankList').innerHTML = STATE.classement.map((r, i) => `
     <div class="rank-item ${r.isMe ? 'is-me' : ''}">
       <div class="rank-num">${nums[i] || r.rank}</div>
@@ -2765,13 +2765,13 @@
 
         function renderBadges() {
             const badges = STATE.badges.length ? STATE.badges : [
-                { nom: 'Premier Pas', icone: '🌟', unlocked: true },
-                { nom: 'Semaine de Feu', icone: '🔥', unlocked: STATE.streak_jours >= 7 },
-                { nom: 'Matheux', icone: '📐', unlocked: STATE.progressions.some(p => p.cours?.matiere === 'Mathématiques') }
+                { nom: 'Premier Pas', icone: 'star', unlocked: true },
+                { nom: 'Semaine de Feu', icone: 'flame', unlocked: STATE.streak_jours >= 7 },
+                { nom: 'Matheux', icone: 'ruler', unlocked: STATE.progressions.some(p => p.cours?.matiere === 'Mathématiques') }
             ];
             document.getElementById('badgesGrid').innerHTML = badges.map(b => `
     <div class="badge-item ${b.unlocked ? '' : 'locked'}">
-      <div class="badge-icon">${b.icone}</div>
+      <div class="badge-icon"><i data-lucide="${b.icone}" class="w-6 h-6"></i></div>
       <div class="badge-name">${b.nom}</div>
     </div>`).join('');
             return badges;
@@ -2780,7 +2780,7 @@
         function renderNotifs() {
             const unread = (STATE.notifications || []).filter(n => n.unread).length;
             document.getElementById('notifDot').style.display = unread > 0 ? 'block' : 'none';
-            const icons = { cours: '📚', badge: '🏅', points: '⭐', exam: '📝' };
+            const icons = { cours: 'book', badge: 'award', points: 'star', exam: 'file-text' };
             const list = document.getElementById('notifList');
             if (!STATE.notifications || !STATE.notifications.length) {
                 list.innerHTML = `<p style="padding:20px;text-align:center;color:var(--text-muted)">${t('empty_notif')}</p>`;
@@ -2788,7 +2788,7 @@
             }
             list.innerHTML = STATE.notifications.map(n => `
     <div class="notif-item ${n.unread ? 'unread' : ''}">
-      <div class="notif-icon-wrap">${icons[n.type] || '🔔'}</div>
+      <div class="notif-icon-wrap"><i data-lucide="${icons[n.type] || 'bell'}" class="w-5 h-5"></i></div>
       <div><div class="notif-text">${n.texte}</div><div class="notif-time">${n.temps}</div></div>
     </div>`).join('');
         }
@@ -2812,7 +2812,7 @@
                     ...item,
                     pct: prog ? prog.progression_pourcentage : 0,
                     color: '#4F46E5', // Default color
-                    icone: '📚'
+                    icone: 'book'
                 };
             });
 
@@ -2821,7 +2821,7 @@
             else if (currentFilter === 'nouveau') items = items.filter(x => x.pct === 0);
 
             if (!items.length) {
-                c.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🔍</div><p class="empty-text">${t('empty_catalog')}</p><button class="btn-primary" onclick="currentMatiereFilter=null;renderCatalog()">${t('card_see_all')}</button></div>`;
+                c.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon"><i data-lucide="search" class="w-8 h-8"></i></div><p class="empty-text">${t('empty_catalog')}</p><button class="btn-primary" onclick="currentMatiereFilter=null;renderCatalog()">${t('card_see_all')}</button></div>`;
                 return;
             }
 
@@ -2860,7 +2860,7 @@
             document.getElementById('profilName').textContent = p.nom;
             document.getElementById('profilEmail').textContent = p.email;
             document.getElementById('profilClasse').textContent = p.niveau?.nom || '—';
-            document.getElementById('profilSys').textContent = (p.sous_systeme?.flag || '🎓') + ' ' + (p.sous_systeme?.nom || '—');
+            document.getElementById('profilSys').textContent = (p.sous_systeme?.nom || '—');
             document.getElementById('profilYear').textContent = p.annee_scolaire || '2024-2025';
             document.getElementById('pStPoints').textContent = (p.points_total || 0).toLocaleString('fr-FR');
             document.getElementById('pStStreak').textContent = p.streak_jours || 0;
@@ -2871,7 +2871,7 @@
     <div class="badge-item ${b.unlocked ? '' : 'locked'}" style="padding:14px">
       <div class="badge-icon" style="font-size:32px;margin-bottom:8px">${b.icone}</div>
       <div class="badge-name" style="font-size:11px">${b.nom}</div>
-      ${!b.unlocked ? '<div style="font-size:10px;color:var(--text-faint);margin-top:3px">🔒 Verrouillé</div>' : ''}
+      ${!b.unlocked ? '<div style="font-size:10px;color:var(--text-faint);margin-top:3px"><i data-lucide="lock" class="w-3 h-3 inline"></i> Verrouillé</div>' : ''}
     </div>`).join('');
         }
 
@@ -2921,29 +2921,29 @@
                 
                 card_continue: "▶ Continuer l'apprentissage",
                 card_see_all: "Voir tout →",
-                card_subjects: "📖 Mes Matières",
+                card_subjects: "Mes Matières",
                 card_browse: "Parcourir →",
-                card_goal: "🎯 Objectif du jour",
-                card_ranking: "🏆 Classement",
+                card_goal: "Objectif du jour",
+                card_ranking: "Classement",
                 card_full: "Complet →",
-                card_badges: "🥇 Mes Badges",
+                card_badges: "Mes Badges",
                 card_see: "Voir →",
 
-                page_courses_title: "📚 Mes Cours",
+                page_courses_title: "Mes Cours",
                 page_courses_desc: "Explore et continue ton apprentissage par matière",
                 filter_all: "Tous",
-                filter_prog: "🔄 En cours",
-                filter_done: "✅ Terminés",
-                filter_new: "🆕 Nouveaux",
+                filter_prog: "En cours",
+                filter_done: "Terminés",
+                filter_new: "Nouveaux",
 
-                page_exams_title: "📝 Examens",
+                page_exams_title: "Examens",
                 page_exams_desc: "Tests officiels et évaluations",
                 test_official: "Tests officiels et évaluations",
                 wip: "Bientôt disponible",
-                page_ranking_title: "🏆 Classement",
+                page_ranking_title: "Classement",
                 page_ranking_desc: "Ta position parmi les élèves de ta classe",
                 
-                page_fav_title: "❤️ Favoris",
+                page_fav_title: "Favoris",
                 page_fav_desc: "Cours et ressources sauvegardés",
                 loading_fav: "Chargement de vos favoris...",
                 
@@ -2954,9 +2954,9 @@
                 toast_error_del: "Erreur lors de la suppression",
                 toast_notif_read: "Notifications marquées comme lues ✓",
 
-                page_settings_title: "⚙️ Paramètres",
+                page_settings_title: "Paramètres",
                 page_settings_desc: "Gérez vos préférences de compte, l'affichage et la sécurité.",
-                st_interface: "🎨 Interface & Affichage",
+                st_interface: "Interface & Affichage",
                 st_theme: "Mode d'affichage",
                 st_theme_desc: "Choisissez entre un thème clair ou sombre (Le thème sombre est recommandé).",
                 st_theme_dark: "Sombre (Défaut)",
@@ -2967,29 +2967,29 @@
                 st_anim: "Désactiver animations de page",
                 st_anim_desc: "Si coché, réduit les mouvements pour des appareils lents.",
                 
-                st_notif_title: "🔔 Notifications (Bêta)",
+                st_notif_title: "Notifications (Bêta)",
                 st_notif_course: "Mises à jour des cours",
                 st_notif_course_desc: "Être averti lorsqu'un nouveau cours de votre classe est ajouté.",
                 st_notif_rem: "Rappels de révision",
                 st_notif_rem_desc: "Notifications pour étudier ou s'entraîner aux examens.",
                 
-                st_sec: "🔐 Sécurité du Compte",
+                st_sec: "Sécurité du Compte",
                 st_pwd: "Mot de passe",
                 st_pwd_desc: "Nous vous enverrons un email sécurisé avec un lien pour configurer un nouveau mot de passe.",
                 st_pwd_btn: "Réinitialiser le mot de passe",
 
                 streak_days_short: "Streak jours",
                 stat_badges: "Badges",
-                card_all_badges: "🥇 Tous mes Badges",
+                card_all_badges: "Tous mes Badges",
                 notif_title: "🔔 Notifications",
                 notif_clear: "Tout marquer lu",
                 btn_logout: "Se déconnecter",
                 btn_delete_account: "Supprimer le compte",
 
                 // Dynamic strings
-                greet_morning: "Bon matin ☀️",
-                greet_after: "Bon après-midi 🌤️",
-                greet_evening: "Bonsoir 🌙",
+                greet_morning: "Bon matin",
+                greet_after: "Bon après-midi",
+                greet_evening: "Bonsoir",
                 hello: "Bonjour",
                 student: "Élève",
                 lvl: "Niveau",

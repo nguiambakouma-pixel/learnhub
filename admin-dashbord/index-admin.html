@@ -564,12 +564,12 @@
                 <div class="space-y-3">
                     <div class="text-xs font-semibold text-gray-500 uppercase">Statistiques</div>
                     <div class="stat-card francophone rounded-lg p-3">
-                        <div class="text-xs text-gray-400">🇫🇷 Francophone</div>
+                        <div class="text-xs text-gray-400 flex items-center gap-1"><i data-lucide="globe" class="w-3 h-3"></i> Francophone</div>
                         <div class="text-2xl font-bold text-blue-400" id="sidebarStatFr">0</div>
                         <div class="text-xs text-gray-500">élèves</div>
                     </div>
                     <div class="stat-card anglophone rounded-lg p-3">
-                        <div class="text-xs text-gray-400">🇬🇧 Anglophone</div>
+                        <div class="text-xs text-gray-400 flex items-center gap-1"><i data-lucide="globe" class="w-3 h-3"></i> Anglophone</div>
                         <div class="text-2xl font-bold text-orange-400" id="sidebarStatAn">0</div>
                         <div class="text-xs text-gray-500">élèves</div>
                     </div>
@@ -686,11 +686,11 @@
                         <div class="flex space-x-4">
                             <button onclick="Navigation.switchLanguageTab('fr')"
                                 class="tab-button active px-8 py-3 rounded-lg font-semibold text-white">
-                                🇫🇷 SECTION FRANCOPHONE
+                                <i data-lucide="globe" class="w-4 h-4 mr-1"></i> SECTION FRANCOPHONE
                             </button>
                             <button onclick="Navigation.switchLanguageTab('an')"
                                 class="tab-button px-8 py-3 rounded-lg font-semibold text-gray-400 bg-slate-800">
-                                🇬🇧 SECTION ANGLOPHONE
+                                <i data-lucide="globe" class="w-4 h-4 mr-1"></i> SECTION ANGLOPHONE
                             </button>
                         </div>
                     </div>
@@ -729,7 +729,7 @@
                                                 </datalist>
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-semibold mb-2">📑 Chapitre *</label>
+                                                <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="bookmark" class="w-4 h-4"></i> Chapitre *</label>
                                                 <input type="text" id="chapitreFr" placeholder="Ex: Les fonctions"
                                                     class="input-dark w-full px-4 py-3 rounded-lg" required>
                                             </div>
@@ -738,14 +738,14 @@
                                         <!-- Classe & Série -->
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label class="block text-sm font-semibold mb-2">🎓 Classe *</label>
+                                                <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="graduation-cap" class="w-4 h-4"></i> Classe *</label>
                                                 <select id="classeFr" onchange="loadSeriesFr()"
                                                     class="input-dark w-full px-4 py-3 rounded-lg" required>
                                                     <option value="">Sélectionner...</option>
                                                 </select>
                                             </div>
                                             <div id="serieFrContainer" style="display: none;">
-                                                <label class="block text-sm font-semibold mb-2">🎯 Série</label>
+                                                <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-4 h-4"></i> Série</label>
                                                 <select id="serieFr" class="input-dark w-full px-4 py-3 rounded-lg">
                                                     <option value="">Toutes les séries</option>
                                                 </select>
@@ -754,20 +754,20 @@
 
                                         <!-- Titre du cours -->
                                         <div>
-                                            <label class="block text-sm font-semibold mb-2">✏️ Titre du cours *</label>
+                                            <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="edit-3" class="w-4 h-4"></i> Titre du cours *</label>
                                             <input type="text" id="titreFr" placeholder="Ex: Les limites de fonctions"
                                                 class="input-dark w-full px-4 py-3 rounded-lg" required>
                                         </div>
 
                                         <!-- Image du cours -->
                                         <div>
-                                            <label class="block text-sm font-semibold mb-2">🖼️ Image du cours *</label>
+                                            <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="image" class="w-4 h-4"></i> Image du cours *</label>
                                             <div class="upload-zone-dark rounded-lg p-6 cursor-pointer"
                                                 onclick="document.getElementById('imageFr').click()">
                                                 <input type="file" id="imageFr" accept="image/*" style="display: none;"
                                                     onchange="handleImageUpload(event, 'fr')">
                                                 <div id="imagePreviewFr" class="text-center">
-                                                    <div class="text-4xl mb-2">📷</div>
+                                                    <i data-lucide="camera" class="w-10 h-10 mb-2 mx-auto text-gray-400"></i>
                                                     <p class="text-gray-400">Cliquez pour choisir une image</p>
                                                     <p class="text-xs text-gray-500 mt-2">JPG, PNG (Max 5 MB)</p>
                                                 </div>
@@ -801,20 +801,20 @@
 
                                         <!-- Vidéo -->
                                         <div>
-                                            <label class="block text-sm font-semibold mb-2">🎥 Vidéo (optionnel)</label>
+                                            <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="video" class="w-4 h-4"></i> Vidéo (optionnel)</label>
                                             <input type="url" id="videoFr" placeholder="https://youtube.com/watch?v=..."
                                                 class="input-dark w-full px-4 py-3 rounded-lg">
                                         </div>
 
                                         <!-- PDF -->
                                         <div>
-                                            <label class="block text-sm font-semibold mb-2">📄 PDF (optionnel)</label>
+                                            <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="file-text" class="w-4 h-4"></i> PDF (optionnel)</label>
                                             <div class="upload-zone-dark rounded-lg p-4 cursor-pointer"
                                                 onclick="document.getElementById('pdfFr').click()">
                                                 <input type="file" id="pdfFr" accept=".pdf" style="display: none;"
                                                     onchange="handlePdfUpload(event, 'fr')">
                                                 <div id="pdfPreviewFr" class="text-center">
-                                                    <p class="text-gray-400">📎 Cliquez pour choisir un PDF</p>
+                                                    <p class="text-gray-400 flex items-center gap-2"><i data-lucide="paperclip" class="w-4 h-4"></i> Cliquez pour choisir un PDF</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -822,12 +822,12 @@
                                         <!-- Métadonnées -->
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label class="block text-sm font-semibold mb-2">⏱️ Durée (min)</label>
+                                                <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="timer" class="w-4 h-4"></i> Durée (min)</label>
                                                 <input type="number" id="dureeFr" placeholder="45"
                                                     class="input-dark w-full px-4 py-3 rounded-lg">
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-semibold mb-2">🏆 Points XP</label>
+                                                <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="trophy" class="w-4 h-4"></i> Points XP</label>
                                                 <input type="number" id="pointsFr" value="20"
                                                     class="input-dark w-full px-4 py-3 rounded-lg">
                                             </div>
@@ -847,7 +847,7 @@
                                         <div class="flex flex-wrap gap-3">
                                             <button type="submit" id="submitBtnFr"
                                                 class="btn-primary flex-1 min-w-[200px] px-6 py-3 rounded-lg font-semibold text-white">
-                                                💾 Enregistrer le Cours
+                                                <i data-lucide="save" class="w-4 h-4 mr-2 inline"></i>Enregistrer le Cours
                                             </button>
                                             <button type="button" id="cancelEditBtnFr" style="display: none;"
                                                 onclick="App.cancelEdit('fr')"
@@ -868,7 +868,7 @@
                             <div class="space-y-6">
                                 <!-- Stats Rapides -->
                                 <div class="glass-card rounded-xl p-6">
-                                    <h3 class="font-bold mb-4">📊 Statistiques FR</h3>
+                                    <h3 class="font-bold mb-4"><i data-lucide="bar-chart-3" class="w-4 h-4 mr-2 inline"></i>Statistiques FR</h3>
                                     <div class="space-y-3">
                                         <div class="flex justify-between">
                                             <span class="text-gray-400">Total cours</span>
@@ -887,19 +887,19 @@
 
                                 <!-- Actions Rapides -->
                                 <div class="glass-card rounded-xl p-6">
-                                    <h3 class="font-bold mb-4">⚡ Actions Rapides</h3>
+                                    <h3 class="font-bold mb-4"><i data-lucide="zap" class="w-4 h-4 mr-2 inline"></i>Actions Rapides</h3>
                                     <div class="space-y-2">
                                         <button
                                             class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
-                                            📚 Voir tous les cours
+                                            <i data-lucide="book" class="w-4 h-4 mr-2 inline"></i>Voir tous les cours
                                         </button>
                                         <button
                                             class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
-                                            📝 Créer un examen
+                                            <i data-lucide="file-text" class="w-4 h-4 mr-2 inline"></i>Créer un examen
                                         </button>
                                         <button
                                             class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
-                                            📄 Ajouter une annale
+                                            <i data-lucide="file" class="w-4 h-4 mr-2 inline"></i>Ajouter une annale
                                         </button>
                                     </div>
                                 </div>
@@ -908,7 +908,7 @@
 
                         <!-- Liste des cours -->
                         <div class="mt-8 glass-card rounded-2xl p-6">
-                            <h2 class="text-xl font-bold mb-6">📚 Cours Existants - Section Francophone</h2>
+                            <h2 class="text-xl font-bold mb-6"><i data-lucide="book" class="w-5 h-5 mr-2 inline"></i>Cours Existants - Section Francophone</h2>
                             <div id="coursListFr" class="space-y-3">
                                 <p class="text-gray-500 text-center py-8">Aucun cours pour le moment</p>
                             </div>
@@ -921,13 +921,13 @@
                             <!-- CREATION FORM -->
                             <div class="lg:col-span-2">
                                 <div class="glass-card rounded-2xl p-6">
-                                    <h2 class="text-xl font-bold mb-6">➕ Create a New Course</h2>
+                                    <h2 class="text-xl font-bold mb-6"><i data-lucide="plus-circle" class="w-5 h-5 mr-2 inline"></i>Create a New Course</h2>
 
                                     <form id="coursFormAn" class="space-y-6">
                                         <!-- Subject & Chapter -->
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label class="block text-sm font-semibold mb-2">📖 Subject *</label>
+                                                <label class="block text-sm font-semibold mb-2"><i data-lucide="book-open" class="w-4 h-4 mr-2 inline"></i>Subject *</label>
                                                 <input type="text" id="matiereAn" list="matieresAnList"
                                                     placeholder="Ex: Mathematics"
                                                     class="input-dark w-full px-4 py-3 rounded-lg" required>
@@ -944,7 +944,7 @@
                                                 </datalist>
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-semibold mb-2">📑 Chapter *</label>
+                                                <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="bookmark" class="w-4 h-4"></i> Chapter *</label>
                                                 <input type="text" id="chapitreAn" placeholder="Ex: Functions"
                                                     class="input-dark w-full px-4 py-3 rounded-lg" required>
                                             </div>
@@ -953,14 +953,14 @@
                                         <!-- Class & Series -->
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label class="block text-sm font-semibold mb-2">🎓 Class *</label>
+                                                <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="graduation-cap" class="w-4 h-4"></i> Class *</label>
                                                 <select id="classeAn" onchange="loadSeriesAn()"
                                                     class="input-dark w-full px-4 py-3 rounded-lg" required>
                                                     <option value="">Select...</option>
                                                 </select>
                                             </div>
                                             <div id="serieAnContainer" style="display: none;">
-                                                <label class="block text-sm font-semibold mb-2">🎯 Series</label>
+                                                <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="target" class="w-4 h-4"></i> Series</label>
                                                 <select id="serieAn" class="input-dark w-full px-4 py-3 rounded-lg">
                                                     <option value="">All series</option>
                                                 </select>
@@ -969,20 +969,20 @@
 
                                         <!-- Course Title -->
                                         <div>
-                                            <label class="block text-sm font-semibold mb-2">✏️ Course Title *</label>
+                                            <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="edit-3" class="w-4 h-4"></i> Course Title *</label>
                                             <input type="text" id="titreAn" placeholder="Ex: Limits of functions"
                                                 class="input-dark w-full px-4 py-3 rounded-lg" required>
                                         </div>
 
                                         <!-- Course Image -->
                                         <div>
-                                            <label class="block text-sm font-semibold mb-2">🖼️ Course Image *</label>
+                                            <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="image" class="w-4 h-4"></i> Course Image *</label>
                                             <div class="upload-zone-dark rounded-lg p-6 cursor-pointer"
                                                 onclick="document.getElementById('imageAn').click()">
                                                 <input type="file" id="imageAn" accept="image/*" style="display: none;"
                                                     onchange="handleImageUpload(event, 'an')">
                                                 <div id="imagePreviewAn" class="text-center">
-                                                    <div class="text-4xl mb-2">📷</div>
+                                                    <i data-lucide="camera" class="w-10 h-10 mb-2 mx-auto text-gray-400"></i>
                                                     <p class="text-gray-400">Click to choose an image</p>
                                                     <p class="text-xs text-gray-500 mt-2">JPG, PNG (Max 5 MB)</p>
                                                 </div>
@@ -991,7 +991,7 @@
 
                                         <!-- Course Content -->
                                         <div>
-                                            <label class="block text-sm font-semibold mb-2">📝 Course Content *</label>
+                                            <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="file-text" class="w-4 h-4"></i> Course Content *</label>
                                             <div class="editor-toolbar-dark rounded-t-lg p-2 flex space-x-2">
                                                 <button type="button" onclick="Utils.formatText('bold', 'an')"
                                                     class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded">
@@ -1013,20 +1013,20 @@
 
                                         <!-- Video -->
                                         <div>
-                                            <label class="block text-sm font-semibold mb-2">🎥 Video (optional)</label>
+                                            <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="video" class="w-4 h-4"></i> Video (optional)</label>
                                             <input type="url" id="videoAn" placeholder="https://youtube.com/watch?v=..."
                                                 class="input-dark w-full px-4 py-3 rounded-lg">
                                         </div>
 
                                         <!-- PDF -->
                                         <div>
-                                            <label class="block text-sm font-semibold mb-2">📄 PDF (optional)</label>
+                                            <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="file-text" class="w-4 h-4"></i> PDF (optional)</label>
                                             <div class="upload-zone-dark rounded-lg p-4 cursor-pointer"
                                                 onclick="document.getElementById('pdfAn').click()">
                                                 <input type="file" id="pdfAn" accept=".pdf" style="display: none;"
                                                     onchange="handlePdfUpload(event, 'an')">
                                                 <div id="pdfPreviewAn" class="text-center">
-                                                    <p class="text-gray-400">📎 Click to choose a PDF</p>
+                                                    <p class="text-gray-400 flex items-center gap-2"><i data-lucide="paperclip" class="w-4 h-4"></i> Click to choose a PDF</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -1034,13 +1034,13 @@
                                         <!-- Metadata -->
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label class="block text-sm font-semibold mb-2">⏱️ Duration
+                                                <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="timer" class="w-4 h-4"></i> Duration
                                                     (min)</label>
                                                 <input type="number" id="dureeAn" placeholder="45"
                                                     class="input-dark w-full px-4 py-3 rounded-lg">
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-semibold mb-2">🏆 XP Points</label>
+                                                <label class="block text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="trophy" class="w-4 h-4"></i> XP Points</label>
                                                 <input type="number" id="pointsAn" value="20"
                                                     class="input-dark w-full px-4 py-3 rounded-lg">
                                             </div>
@@ -1049,23 +1049,23 @@
                                         <!-- Publish -->
                                         <div class="flex items-center space-x-3">
                                             <input type="checkbox" id="publieAn" checked class="w-5 h-5">
-                                            <label class="font-semibold">✅ Publish immediately</label>
+                                            <label class="font-semibold flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4"></i> Publish immediately</label>
                                         </div>
 
                                         <!-- Actions -->
                                         <div class="flex flex-wrap gap-3">
                                             <button type="submit" id="submitBtnAn"
                                                 class="btn-primary flex-1 min-w-[200px] px-6 py-3 rounded-lg font-semibold text-white">
-                                                💾 Save Course
+                                                <i data-lucide="save" class="w-4 h-4 mr-2"></i> Save Course
                                             </button>
                                             <button type="button" id="cancelEditBtnAn" style="display: none;"
                                                 onclick="App.cancelEdit('an')"
                                                 class="px-6 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg font-semibold transition">
-                                                ✖️ Cancel
+                                                <i data-lucide="x" class="w-4 h-4 mr-2"></i> Cancel
                                             </button>
                                             <button type="button" onclick="resetFormAn()"
                                                 class="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition">
-                                                🔄 Reset
+                                                <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i> Reset
                                             </button>
                                         </div>
                                     </form>
@@ -1076,7 +1076,7 @@
                             <div class="space-y-6">
                                 <!-- Quick Stats -->
                                 <div class="glass-card rounded-xl p-6">
-                                    <h3 class="font-bold mb-4">📊 Statistics EN</h3>
+                                    <h3 class="font-bold mb-4"><i data-lucide="bar-chart-3" class="w-4 h-4 mr-2 inline"></i>Statistics EN</h3>
                                     <div class="space-y-3">
                                         <div class="flex justify-between">
                                             <span class="text-gray-400">Total courses</span>
@@ -1095,19 +1095,19 @@
 
                                 <!-- Quick Actions -->
                                 <div class="glass-card rounded-xl p-6">
-                                    <h3 class="font-bold mb-4">⚡ Quick Actions</h3>
+                                    <h3 class="font-bold mb-4"><i data-lucide="zap" class="w-4 h-4 mr-2 inline"></i>Quick Actions</h3>
                                     <div class="space-y-2">
                                         <button
                                             class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
-                                            📚 View all courses
+                                            <i data-lucide="book" class="w-4 h-4 mr-2 inline"></i>View all courses
                                         </button>
                                         <button
                                             class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
-                                            📝 Create an exam
+                                            <i data-lucide="file-text" class="w-4 h-4 mr-2 inline"></i>Create an exam
                                         </button>
                                         <button
                                             class="w-full text-left px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition text-sm">
-                                            📄 Add past questions
+                                            <i data-lucide="file" class="w-4 h-4 mr-2 inline"></i>Add past questions
                                         </button>
                                     </div>
                                 </div>
@@ -1116,7 +1116,7 @@
 
                         <!-- Course list -->
                         <div class="mt-8 glass-card rounded-2xl p-6">
-                            <h2 class="text-xl font-bold mb-6">📚 Existing Courses - Anglophone Section</h2>
+                            <h2 class="text-xl font-bold mb-6"><i data-lucide="book" class="w-5 h-5 mr-2 inline"></i>Existing Courses - Anglophone Section</h2>
                             <div id="coursListAn" class="space-y-3">
                                 <p class="text-gray-500 text-center py-8">No courses yet</p>
                             </div>
@@ -1233,7 +1233,7 @@
                             <div class="flex gap-3 pt-6 shrink-0 mt-auto">
                                 <button type="submit"
                                     class="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all">
-                                    💾 Enregistrer l'exercice
+                                    <i data-lucide="save" class="w-4 h-4 mr-2 inline"></i>Enregistrer l'exercice
                                 </button>
                                 <button type="button" onclick="exercicesView.closeModal()"
                                     class="px-6 py-3 bg-slate-800 border-2 border-slate-700 text-gray-300 font-semibold rounded-lg hover:bg-slate-700 hover:text-white transition-all">
@@ -1270,15 +1270,15 @@
                         <div class="flex space-x-4 border-b border-slate-700">
                             <button onclick="systemeView.switchTab('classes')" id="tab-classes"
                                 class="systeme-tab px-6 py-3 font-semibold text-gray-400 hover:text-white transition-all border-b-2 border-transparent">
-                                🏫 Classes (Niveaux)
+                                <i data-lucide="building-2" class="w-4 h-4 mr-2 inline"></i>Classes (Niveaux)
                             </button>
                             <button onclick="systemeView.switchTab('series')" id="tab-series"
                                 class="systeme-tab px-6 py-3 font-semibold text-gray-400 hover:text-white transition-all border-b-2 border-transparent">
-                                🎯 Séries / Spécialités
+                                <i data-lucide="target" class="w-4 h-4 mr-2 inline"></i>Séries / Spécialités
                             </button>
                             <button onclick="systemeView.switchTab('matieres')" id="tab-matieres"
                                 class="systeme-tab px-6 py-3 font-semibold text-gray-400 hover:text-white transition-all border-b-2 border-transparent">
-                                📖 Matières
+                                <i data-lucide="book-open" class="w-4 h-4 mr-2 inline"></i>Matières
                             </button>
                         </div>
                     </div>
@@ -1288,7 +1288,7 @@
                                 <h3 class="text-xl font-bold">Liste des Classes (Niveaux)</h3>
                                 <button onclick="systemeView.openNiveauModal()"
                                     class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-500 transition-all flex items-center gap-2">
-                                    <span>➕ Ajouter</span>
+                                    <i data-lucide="plus" class="w-4 h-4 mr-2 inline"></i>Ajouter
                                 </button>
                             </div>
                             <div id="classesListArea" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1299,7 +1299,7 @@
                                 <h3 class="text-xl font-bold">Liste des Séries / Spécialités</h3>
                                 <button onclick="systemeView.openSerieModal()"
                                     class="px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-500 transition-all flex items-center gap-2">
-                                    <span>➕ Ajouter</span>
+                                    <i data-lucide="plus" class="w-4 h-4 mr-2 inline"></i>Ajouter
                                 </button>
                             </div>
                             <div id="seriesListArea" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
@@ -1309,7 +1309,7 @@
                                 <h3 class="text-xl font-bold">Gestion des Matières</h3>
                                 <button onclick="matieresView.openModal()"
                                     class="px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-500 transition-all flex items-center gap-2">
-                                    <span>➕ Ajouter</span>
+                                    <i data-lucide="plus" class="w-4 h-4 mr-2 inline"></i>Ajouter
                                 </button>
                             </div>
                             <div id="matieresContentArea" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1329,7 +1329,7 @@
                 class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
                 <!-- Header -->
                 <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700">
-                    <h2 class="text-lg font-bold text-white">🎓 Fiche Élève</h2>
+                    <h2 class="text-lg font-bold text-white"><i data-lucide="graduation-cap" class="w-5 h-5 mr-2 inline"></i>Fiche Élève</h2>
                     <button onclick="ElevesManager.closeDetailModal()"
                         class="text-gray-400 hover:text-white text-2xl leading-none transition">&times;</button>
                 </div>
@@ -1468,7 +1468,7 @@
                     <div class="flex gap-3 pt-6 shrink-0 mt-auto">
                         <button type="submit"
                             class="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg hover:from-indigo-500 hover:to-purple-500 transition-all">
-                            💾 Enregistrer
+                            <i data-lucide="save" class="w-4 h-4 mr-2 inline"></i>Enregistrer
                         </button>
                         <button type="button" onclick="exercicesCodeView.closeModal()"
                             class="px-6 py-3 bg-slate-800 border-2 border-slate-700 text-gray-300 font-semibold rounded-lg hover:bg-slate-700 hover:text-white transition-all">
@@ -1617,12 +1617,12 @@
                  FICHIERS (UPLOADS)
                  ======================================== -->
                     <div class="bg-indigo-500/5 p-6 rounded-lg border border-indigo-500/20 space-y-4">
-                        <h4 class="text-base font-bold text-white mb-2">📁 Fichiers</h4>
+                        <h4 class="text-base font-bold text-white mb-2"><i data-lucide="folder" class="w-4 h-4 mr-2 inline"></i>Fichiers</h4>
 
                         <!-- Sujet PDF -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-400 mb-2">
-                                📄 Sujet d'examen (PDF)
+                                <i data-lucide="file" class="w-4 h-4 mr-2 inline"></i>Sujet d'examen (PDF)
                             </label>
                             <input type="file" id="annaleSujetFile" accept=".pdf"
                                 class="input-dark w-full px-4 py-2 rounded-lg text-sm">
@@ -1632,7 +1632,7 @@
                         <!-- Correction PDF -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-400 mb-2">
-                                ✅ Correction (PDF)
+                                <i data-lucide="check-circle" class="w-4 h-4 mr-2 inline"></i>Correction (PDF)
                             </label>
                             <input type="file" id="annaleCorrectionFile" accept=".pdf"
                                 class="input-dark w-full px-4 py-2 rounded-lg text-sm">
@@ -1642,7 +1642,7 @@
                         <!-- Vidéo correction -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-400 mb-2">
-                                🎥 Correction vidéo (URL YouTube)
+                                <i data-lucide="video" class="w-4 h-4 mr-2 inline"></i>Correction vidéo (URL YouTube)
                             </label>
                             <input type="url" id="annaleVideoUrl" class="input-dark w-full px-4 py-3 rounded-lg"
                                 placeholder="https://www.youtube.com/watch?v=...">
@@ -1700,7 +1700,7 @@
                     <div class="flex gap-3 pt-6 shrink-0 mt-auto">
                         <button type="submit"
                             class="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition-all">
-                            💾 Enregistrer l'annale
+                            <i data-lucide="save" class="w-4 h-4 mr-2 inline"></i>Enregistrer l'annale
                         </button>
                         <button type="button" id="cancelAnnaleModal" onclick="annalesView.closeModal()"
                             class="px-6 py-3 bg-slate-800 border-2 border-slate-700 text-gray-300 font-semibold rounded-lg hover:bg-slate-700 hover:text-white transition-all">
@@ -1770,12 +1770,12 @@
                                 <select id="examenType" required
                                     class="input-dark w-full px-4 py-3 rounded-lg outline-none cursor-pointer">
                                     <option value="">Sélectionner un type...</option>
-                                    <option value="evaluation">📋 Évaluation</option>
-                                    <option value="controle">📝 Contrôle</option>
-                                    <option value="devoir">✍️ Devoir</option>
-                                    <option value="composition">📚 Composition</option>
-                                    <option value="examen_blanc">🎯 Examen blanc</option>
-                                    <option value="test">⚡ Test rapide</option>
+                                    <option value="evaluation">Évaluation</option>
+                                    <option value="controle">Contrôle</option>
+                                    <option value="devoir">Devoir</option>
+                                    <option value="composition">Composition</option>
+                                    <option value="examen_blanc">Examen blanc</option>
+                                    <option value="test">Test rapide</option>
                                 </select>
                             </div>
                         </div>
@@ -1786,7 +1786,7 @@
                          ======================================== -->
                     <div class="bg-emerald-500/5 rounded-xl p-6 border border-emerald-500/20">
                         <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                            <span class="p-2 bg-emerald-500/20 rounded-lg">🎓</span> Niveau et matière
+                            <span class="p-2 bg-emerald-500/20 rounded-lg"><i data-lucide="graduation-cap" class="w-5 h-5"></i></span> Niveau et matière
                         </h4>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1815,7 +1815,7 @@
                          ======================================== -->
                     <div class="bg-purple-500/5 rounded-xl p-6 border border-purple-500/20">
                         <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                            <span class="p-2 bg-purple-500/20 rounded-lg">⚙️</span> Configuration
+                            <span class="p-2 bg-purple-500/20 rounded-lg"><i data-lucide="settings" class="w-5 h-5"></i></span> Configuration
                         </h4>
 
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
